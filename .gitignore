@@ -1,0 +1,9 @@
+node_modules
+dist
+
+# Nuxt
+.nuxt
+.output
+
+# Erudit
+.erudit

@@ -1,0 +1,8 @@
+{
+    "extends": "../../playground/.erudit/nuxt/.nuxt/tsconfig.json",
+    "compilerOptions": {
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true,
+        "types": ["@types/jest"]
+    }
+}

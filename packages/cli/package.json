@@ -1,0 +1,39 @@
+{
+    "name": "erudit-cli",
+    "version": "3.0.0-dev.4",
+    "type": "module",
+    "description": "Command Line Interface for Erudit",
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/erudit-js/erudit.git",
+        "directory": "packages/cli"
+    },
+    "types": "./dist/index.d.ts",
+    "exports": {
+        ".": "./dist/index.mjs",
+        "./cli": "./bin/erudit-cli.mjs"
+    },
+    "bin": {
+        "erudit-cli": "bin/erudit-cli.mjs",
+        "erudit": "bin/erudit-cli.mjs"
+    },
+    "scripts": {
+        "dev": "bun unbuild --stub",
+        "build": "bun run prepack",
+        "prepack": "bun unbuild"
+    },
+    "files": [
+        "bin",
+        "dist"
+    ],
+    "dependencies": {
+        "erudit-cog": "workspace:3.0.0-dev.4",
+        "chalk": "^5.4.1",
+        "citty": "^0.1.6",
+        "consola": "^3.4.0"
+    },
+    "devDependencies": {
+        "unbuild": "^3.3.1"
+    }
+}

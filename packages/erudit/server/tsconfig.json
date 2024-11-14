@@ -1,0 +1,9 @@
+{
+    "extends": "../../../playground/.erudit/nuxt/.nuxt/tsconfig.server.json",
+    "compilerOptions": {
+        "verbatimModuleSyntax": true,
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true
+    },
+    "exclude": ["../module/**/*", "../globalPath.ts"]
+}

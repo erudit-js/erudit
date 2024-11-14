@@ -1,0 +1,29 @@
+{
+    "private": true,
+    "name": "erudit-monorepo",
+    "type": "module",
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/erudit-js/erudit.git"
+    },
+    "workspaces": [
+        "packages/*"
+    ],
+    "scripts": {
+        "pretty": "prettier --write .",
+        "build": "bun --filter './packages/*' build",
+        "dev": "bun --filter './packages/*' prepack --stub",
+        "publish": "bun run pretty && bun run scripts/publish",
+        "play": "bun erudit dev playground --eruditPath=./packages/erudit",
+        "play:prepare": "bun erudit prepare playground",
+        "play:build": "bun erudit build playground",
+        "play:preview": "bun erudit preview playground"
+    },
+    "devDependencies": {
+        "@types/jest": "^29.5.14",
+        "@types/node": "^22.13.9",
+        "prettier": "^3.5.3",
+        "typescript": "^5.8.2"
+    }
+}

@@ -1,0 +1,15 @@
+.frontNavSeparator {
+    --_space: calc(var(--gap) / 2);
+}
+
+.frontNavItem + .frontNavSeparator {
+    border-top: 1px solid var(--border);
+    margin-top: var(--_space);
+    padding-top: var(--_space);
+}
+
+.frontNavSeparator:has(+ .frontNavItem:not(.frontNavSeparator)) {
+    border-bottom: 1px solid var(--border);
+    padding-bottom: var(--_space);
+    margin-bottom: var(--_space);
+}

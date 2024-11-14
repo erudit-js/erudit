@@ -1,0 +1,3 @@
+{
+    "extends": "./.erudit/nuxt/.nuxt/tsconfig.json"
+}

@@ -1,0 +1,27 @@
+@use 'sass:map';
+
+@use '$/def/size';
+
+$bps: (
+    'mobile': 500px,
+    'aside1': size.$wMainMin + size.$wAside,
+    'aside2': size.$wMainMin + size.$wAside * 2,
+);
+
+@mixin above($bp) {
+    @media (min-width: map.get($bps, $bp)) {
+        @content;
+    }
+}
+
+@mixin below($bp) {
+    @media (max-width: (map.get($bps, $bp) - 1)) {
+        @content;
+    }
+}
+
+@mixin between($bp1, $bp2) {
+    @media (min-width: map.get($bps, $bp1)) and (max-width: (map.get($bps, $bp2) - 1)) {
+        @content;
+    }
+}
