@@ -1,6 +1,6 @@
 {
     "name": "erudit-cog",
-    "version": "3.0.0-dev.4",
+    "version": "3.0.0-dev.5",
     "type": "module",
     "description": "⚙️ Erudit kit, types and utils",
     "license": "MIT",

@@ -1,6 +1,6 @@
 {
     "name": "erudit",
-    "version": "3.0.0-dev.4",
+    "version": "3.0.0-dev.5",
     "type": "module",
     "description": "🤓 CMS for perfect educational sites.",
     "license": "MIT",
@@ -11,8 +11,8 @@
         "directory": "packages/erudit"
     },
     "dependencies": {
-        "erudit-cli": "workspace:3.0.0-dev.4",
-        "erudit-cog": "workspace:3.0.0-dev.4",
+        "erudit-cli": "workspace:3.0.0-dev.5",
+        "erudit-cog": "workspace:3.0.0-dev.5",
         "@bitran-js/core": "1.0.0-dev.7",
         "@bitran-js/transpiler": "1.0.0-dev.7",
         "@bitran-js/renderer-vue": "1.0.0-dev.7",

@@ -1,6 +1,6 @@
 {
     "name": "erudit-cli",
-    "version": "3.0.0-dev.4",
+    "version": "3.0.0-dev.5",
     "type": "module",
     "description": "Command Line Interface for Erudit",
     "license": "MIT",
@@ -28,7 +28,7 @@
         "dist"
     ],
     "dependencies": {
-        "erudit-cog": "workspace:3.0.0-dev.4",
+        "erudit-cog": "workspace:3.0.0-dev.5",
         "chalk": "^5.4.1",
         "citty": "^0.1.6",
         "consola": "^3.4.0"
