@@ -9,13 +9,14 @@ export interface BitranElementConfig<
     renderer: () => Promise<ElementVueRenderer<T>>;
 }
 
-export type BitranElements = Record<string, BitranElementConfig>;
+// Make BitranElements accept any kind of BitranElementConfig
+export type BitranElements = Record<string, BitranElementConfig<any>>;
 
 export interface EruditBitranConfig<
     TElements extends BitranElements = BitranElements,
 > {
     elements: TElements;
-    toc: (keyof TElements)[];
+    toc?: (keyof TElements)[];
 
     /**
      * TODO!
@@ -34,14 +35,15 @@ export interface EruditBitranConfig<
      */
 }
 
+// Update defineBitranConfig to be more flexible
 export function defineBitranConfig<T extends BitranElements>(
     config: Partial<EruditBitranConfig<T>>,
-) {
+): Partial<EruditBitranConfig<T>> {
     return config;
 }
 
 export function defineBitranElement<T extends GenericElementSchema>(
     config: BitranElementConfig<T>,
-) {
+): BitranElementConfig<T> {
     return config;
 }
