@@ -12,7 +12,7 @@
     },
     "packages/cli": {
       "name": "erudit-cli",
-      "version": "1.0.0-dev.7",
+      "version": "3.0.0-dev.5",
       "bin": {
         "erudit-cli": "bin/erudit-cli.mjs",
         "erudit": "bin/erudit-cli.mjs",
@@ -21,7 +21,7 @@
         "chalk": "^5.4.1",
         "citty": "^0.1.6",
         "consola": "^3.4.0",
-        "erudit-cog": "workspace:*",
+        "erudit-cog": "workspace:3.0.0-dev.5",
       },
       "devDependencies": {
         "unbuild": "^3.3.1",
@@ -29,7 +29,7 @@
     },
     "packages/cog": {
       "name": "erudit-cog",
-      "version": "1.0.0-dev.3",
+      "version": "3.0.0-dev.5",
       "dependencies": {
         "gradient-string": "^3.0.0",
       },
@@ -39,18 +39,18 @@
     },
     "packages/erudit": {
       "name": "erudit",
-      "version": "2.0.0-dev.8",
+      "version": "3.0.0-dev.5",
       "dependencies": {
-        "@bitran-js/core": "1.0.0-dev.7",
-        "@bitran-js/renderer-vue": "1.0.0-dev.7",
-        "@bitran-js/transpiler": "1.0.0-dev.7",
+        "@bitran-js/core": "link:@bitran-js/core",
+        "@bitran-js/renderer-vue": "link:@bitran-js/renderer-vue",
+        "@bitran-js/transpiler": "link:@bitran-js/transpiler",
         "@erudit-js/bitran-elements": "1.0.0-dev.5",
         "@floating-ui/vue": "^1.1.6",
         "chalk": "^5.4.1",
         "chokidar": "^4.0.3",
         "consola": "^3.4.0",
-        "erudit-cli": "workspace:*",
-        "erudit-cog": "workspace:*",
+        "erudit-cli": "workspace:3.0.0-dev.5",
+        "erudit-cog": "workspace:3.0.0-dev.5",
         "glob": "^11.0.1",
         "image-size": "^1.2.0",
         "nuxt": "3.15.4",
@@ -129,11 +129,11 @@
 
     "@babel/types": ["@babel/types@7.26.9", "", { "dependencies": { "@babel/helper-string-parser": "^7.25.9", "@babel/helper-validator-identifier": "^7.25.9" } }, "sha512-Y3IR1cRnOxOCDvMmNiym7XpXQ93iGDDPHx+Zj+NM+rg0fBaShfQLkg+hKPaZCEvg5N/LeCo4+Rj/i3FuJsIQaw=="],
 
-    "@bitran-js/core": ["@bitran-js/core@1.0.0-dev.7", "", {}, "sha512-os8TWa5LAwQOm1Xbwc17m6pNW5LTnkHuawZt938e3ij9N1//+mI2Q78oSmkAU92MVAsTyX3GthnLNIWZB3BCVA=="],
+    "@bitran-js/core": ["@bitran-js/core@link:@bitran-js/core", {}],
 
-    "@bitran-js/renderer-vue": ["@bitran-js/renderer-vue@1.0.0-dev.7", "", { "peerDependencies": { "@bitran-js/core": "1.0.0-dev.7", "@bitran-js/transpiler": "1.0.0-dev.7", "sass": "^1.85.1", "vue": "^3.5.13" } }, "sha512-yVC7OfYq/JWZ9CKcx+O0bA0J4+n0eha+ryFYEVGolBMzqWVO53tW/xUwJ50T7nuMpqOtEjxKIzJyv7Q0XZWcbQ=="],
+    "@bitran-js/renderer-vue": ["@bitran-js/renderer-vue@link:@bitran-js/renderer-vue", {}],
 
-    "@bitran-js/transpiler": ["@bitran-js/transpiler@1.0.0-dev.7", "", { "peerDependencies": { "@bitran-js/core": "1.0.0-dev.7", "yaml": "^2.7.0" } }, "sha512-obRbcNOtWzekxkHYSPY8mjAAjOLy95e85e3aqYDlM1CixCrJ8PjN1+5DtwAzq1C+HTEzuAMWDj7Hysx4/WujMA=="],
+    "@bitran-js/transpiler": ["@bitran-js/transpiler@link:@bitran-js/transpiler", {}],
 
     "@cloudflare/kv-asset-handler": ["@cloudflare/kv-asset-handler@0.3.4", "", { "dependencies": { "mime": "^3.0.0" } }, "sha512-YLPHc8yASwjNkmcDMQMY35yiWjoKAKnhUbPRszBRS0YgH+IXtsMp61j+yTcnCE3oO2DgP0U3iejLC8FTtKDC8Q=="],
 
@@ -1548,6 +1548,12 @@
     "@babel/helper-create-class-features-plugin/semver": ["semver@6.3.1", "", { "bin": { "semver": "bin/semver.js" } }, "sha512-BR7VvDCVHO+q2xBEWskxS6DJE1qRnb7DxzUrogb71CWoSficBxYsiAGd+Kl0mmq/MprG9yArRkyrQxTO6XjMzA=="],
 
     "@cloudflare/kv-asset-handler/mime": ["mime@3.0.0", "", { "bin": { "mime": "cli.js" } }, "sha512-jSCU7/VB1loIWBZe14aEYHU/+1UMEHoaO7qxCOVJOw9GgH72VAWppxNcjU+x9a2k3GSIBXNKxXQFqRvvZ7vr3A=="],
+
+    "@erudit-js/bitran-elements/@bitran-js/core": ["@bitran-js/core@1.0.0-dev.7", "", {}, "sha512-os8TWa5LAwQOm1Xbwc17m6pNW5LTnkHuawZt938e3ij9N1//+mI2Q78oSmkAU92MVAsTyX3GthnLNIWZB3BCVA=="],
+
+    "@erudit-js/bitran-elements/@bitran-js/renderer-vue": ["@bitran-js/renderer-vue@1.0.0-dev.7", "", { "peerDependencies": { "@bitran-js/core": "1.0.0-dev.7", "@bitran-js/transpiler": "1.0.0-dev.7", "sass": "^1.85.1", "vue": "^3.5.13" } }, "sha512-yVC7OfYq/JWZ9CKcx+O0bA0J4+n0eha+ryFYEVGolBMzqWVO53tW/xUwJ50T7nuMpqOtEjxKIzJyv7Q0XZWcbQ=="],
+
+    "@erudit-js/bitran-elements/@bitran-js/transpiler": ["@bitran-js/transpiler@1.0.0-dev.7", "", { "peerDependencies": { "@bitran-js/core": "1.0.0-dev.7", "yaml": "^2.7.0" } }, "sha512-obRbcNOtWzekxkHYSPY8mjAAjOLy95e85e3aqYDlM1CixCrJ8PjN1+5DtwAzq1C+HTEzuAMWDj7Hysx4/WujMA=="],
 
     "@isaacs/cliui/string-width": ["string-width@5.1.2", "", { "dependencies": { "eastasianwidth": "^0.2.0", "emoji-regex": "^9.2.2", "strip-ansi": "^7.0.1" } }, "sha512-HnLOCR3vjcY8beoNLtcjZ5/nxn2afmME6lhrDrebokqMap+XbeW8n9TXpPDOqdGK5qcI3oT0GKTW6wC7EMiVqA=="],
 

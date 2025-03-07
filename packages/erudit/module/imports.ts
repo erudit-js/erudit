@@ -16,6 +16,10 @@ export function setupGlobalImports() {
             name: 'defineBitranConfig',
             from: eruditPath('globals/bitran'),
         },
+        {
+            name: 'defineBitranElement',
+            from: eruditPath('globals/bitran'),
+        },
         // Content
         ...(() => {
             const imports = [

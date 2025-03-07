@@ -22,8 +22,9 @@ export async function setupBitranConfig(_nuxt: Nuxt) {
         filename: templateFilename,
         write: true,
         getContents: () => `
+            import type { EruditBitranConfig } from '@erudit/globals/bitran';
             ${config ? `import bitranConfig from '${projectPath('bitran')}';` : ''}
-            export default ${config ? 'bitranConfig' : 'undefined'};
+            export default ${config ? 'bitranConfig' : '{}'} as Partial<EruditBitranConfig>;
         `,
     });
 
