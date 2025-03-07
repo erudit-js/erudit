@@ -17,7 +17,7 @@ const { floatingStyles, middlewareData } = useFloating(
         whileElementsMounted: autoUpdate,
         middleware: [
             shift({
-                boundary: document?.querySelector('[erudit-main]'),
+                boundary: document?.querySelector('[erudit-main]') || undefined,
                 padding: 15,
             }),
             arrow({ element: arrowElement }),
@@ -27,15 +27,26 @@ const { floatingStyles, middlewareData } = useFloating(
 
 const popoverVisible = ref(false);
 
+const showDelay = 400;
 const hideDelay = 100;
-let hideTimeout;
+let showTimeout: any;
+let hideTimeout: any;
 
-function showPopover() {
+function showPopover(immediate?: boolean) {
     clearTimeout(hideTimeout);
-    popoverVisible.value = true;
+    clearTimeout(showTimeout);
+
+    if (immediate) {
+        popoverVisible.value = true;
+    } else {
+        showTimeout = setTimeout(() => {
+            popoverVisible.value = true;
+        }, showDelay);
+    }
 }
 
 function hidePopover() {
+    clearTimeout(showTimeout);
     hideTimeout = setTimeout(() => {
         popoverVisible.value = false;
     }, hideDelay);
@@ -47,8 +58,9 @@ function hidePopover() {
         ref="reference"
         :class="$style.reference"
         :style="`--popoverColor: ${data.color}`"
-        @mouseenter="showPopover"
+        @mouseenter="() => showPopover()"
         @mouseleave="hidePopover"
+        @click="() => showPopover(true)"
     >
         <MyIcon v-if="isMyIcon(data.icon)" :name="data.icon as any" />
         <MyRuntimeIcon v-else name="popover-icon" :svg="data.icon" />

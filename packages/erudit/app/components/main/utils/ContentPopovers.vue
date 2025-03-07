@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { ContentFlag } from '@package';
+import type { ContentFlag } from 'erudit-cog/schema';
 
 import type { ContentGenericData } from '@shared/content/data/base';
 
@@ -63,7 +63,7 @@ const hasPopovers = computed(() => {
 <template>
     <section v-if="hasPopovers" :class="$style.popovers">
         <ContentPopover
-            v-for="flagName of Object.keys(generic.flags)"
+            v-for="flagName of Object.keys(generic.flags) as ContentFlag[]"
             :data="flagData[flagName]"
         />
 
