@@ -52,7 +52,14 @@ useHead({
             innerHTML: (await import('$/_immediate.css?raw')).default,
         },
     ],
-    meta: [...createOgImageTags(siteUrl, defaultOgImage)],
+    meta: [
+        {
+            name: 'viewport',
+            content:
+                'width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no',
+        },
+        ...createOgImageTags(siteUrl, defaultOgImage),
+    ],
 });
 
 useSeoMeta({
