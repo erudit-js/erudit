@@ -21,32 +21,28 @@ asideMajorNav.globalNav ||= (await $fetch('/api/aside/major/nav/global', {
     responseType: 'json',
 })) as FrontNav;
 
-//
-// Check if inside book from start
-//
-
-// Reset server-leaked state from other pages
-navBookId.value = undefined;
-insideNavBook.value = false;
-
-if (contentRoute.value) {
-    for (const bookId of asideMajorNav.booksIds) {
-        if (contentRoute.value.contentId.startsWith(bookId)) {
-            navBookId.value = bookId;
-            insideNavBook.value = true;
-            break;
+const checkIfInsideBook = () => {
+    if (contentRoute.value) {
+        for (const bookId of asideMajorNav.booksIds) {
+            if (contentRoute.value.contentId.startsWith(bookId)) {
+                navBookId.value = bookId;
+                insideNavBook.value = true;
+                return;
+            }
         }
     }
-}
+
+    // If we get here, we're not in any book
+    navBookId.value = undefined;
+    insideNavBook.value = false;
+};
+
+checkIfInsideBook();
 
 onMounted(() => {
-    watch(
-        contentRoute,
-        () =>
-            (insideNavBook.value = insideNavBook.value
-                ? !!contentRoute.value
-                : false),
-    );
+    watch(contentRoute, () => {
+        checkIfInsideBook();
+    });
 });
 </script>
 
