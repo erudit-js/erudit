@@ -11,7 +11,10 @@ const { request } = defineProps<{ request: PreviewRequest }>();
 const height = defineModel<number>('height');
 
 const loading = ref(true);
+const suspensePending = ref(true);
+const effectiveLoading = computed(() => loading.value || suspensePending.value);
 
+const loadingElem = useTemplateRef('loadingElem');
 const screenElem = useTemplateRef('screenElem');
 const screenSizeObserver = new ResizeObserver(updateContentHeight);
 
@@ -40,21 +43,41 @@ const setupDisplay = setTimeout(async () => {
 });
 
 function updateContentHeight() {
-    if (!screenElem.value) return;
+    // Use the proper element for height calculation based on which one is visible
+    const targetElem = effectiveLoading.value
+        ? loadingElem.value
+        : screenElem.value;
+    if (!targetElem) return;
 
-    height.value = screenElem.value.offsetHeight;
+    height.value = targetElem.offsetHeight;
+}
+
+function onSuspenseResolve() {
+    suspensePending.value = false;
 }
 
 onMounted(() => {
-    height.value = screenElem.value?.offsetHeight ?? 0;
+    // Initialize height with either element that's available
+    const initialElement = loadingElem.value || screenElem.value;
+    height.value = initialElement?.offsetHeight ?? 0;
 
+    // Observe both elements for size changes
     watch(
-        screenElem,
+        [loadingElem, screenElem, effectiveLoading],
         () => {
-            if (screenElem.value) {
-                screenSizeObserver.disconnect();
+            screenSizeObserver.disconnect();
+
+            // Observe loading element when it's visible
+            if (effectiveLoading.value && loadingElem.value) {
+                screenSizeObserver.observe(loadingElem.value);
+            }
+            // Otherwise observe content element
+            else if (screenElem.value) {
                 screenSizeObserver.observe(screenElem.value);
             }
+
+            // Update height after elements change
+            updateContentHeight();
         },
         { immediate: true },
     );
@@ -70,14 +93,22 @@ onUnmounted(() => {
     <div :class="$style.screenContainer">
         <TransitionFade>
             <div
-                ref="screenElem"
-                :class="$style.screen"
-                :key="loading ? 'a' : 'b'"
+                v-if="effectiveLoading"
+                ref="loadingElem"
+                :class="$style.loadingOverlay"
             >
-                <PreviewLoading v-if="loading" />
-                <component v-else :is="DisplayComponent" :data="previewData" />
+                <PreviewLoading />
             </div>
         </TransitionFade>
+
+        <div ref="screenElem" :class="$style.screen">
+            <Suspense @resolve="onSuspenseResolve" v-if="DisplayComponent">
+                <component :is="DisplayComponent" :data="previewData" />
+                <template #fallback>
+                    <div></div>
+                </template>
+            </Suspense>
+        </div>
     </div>
 </template>
 
@@ -90,10 +121,21 @@ onUnmounted(() => {
     height: 100%;
 }
 
+.loadingOverlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: auto;
+    z-index: 2;
+    background-color: var(--_previewThemeBg, var(--bgAside));
+}
+
 .screen {
     position: absolute;
     bottom: 0;
     left: 0;
     width: 100%;
+    z-index: 1;
 }
 </style>
