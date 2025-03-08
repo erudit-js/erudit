@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import type { MyIconName } from '#my-icons';
 
-defineProps<{
+const props = defineProps<{
     link?: string;
     icon?: MyIconName;
     main?: string;
@@ -9,12 +9,12 @@ defineProps<{
     secondary?: string;
 }>();
 
-const nuxtLink = defineNuxtLink({});
+const vnode = h(props.link ? defineNuxtLink({}) : 'div');
 </script>
 
 <template>
     <component
-        :is="link ? nuxtLink : 'div'"
+        :is="vnode"
         :to="link"
         :class="[$style.asideListItem, active ? $style.active : '']"
     >
