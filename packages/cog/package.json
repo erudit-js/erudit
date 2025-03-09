@@ -2,12 +2,13 @@
     "name": "erudit-cog",
     "version": "3.0.0-dev.5",
     "type": "module",
-    "description": "⚙️ Erudit kit, types and utils",
-    "license": "MIT",
     "repository": {
         "type": "git",
         "url": "git+https://github.com/erudit-js/erudit.git",
         "directory": "packages/cog"
+    },
+    "devDependencies": {
+        "unbuild": "^3.3.1"
     },
     "exports": {
         "./schema": {
@@ -22,18 +23,17 @@
         },
         "./utils/*": "./dist/utils/*.mjs"
     },
+    "description": "⚙️ Erudit kit, types and utils",
+    "files": [
+        "dist"
+    ],
+    "license": "MIT",
     "scripts": {
         "dev": "bun unbuild --stub",
         "build": "bun run prepack",
         "prepack": "bun unbuild"
     },
-    "files": [
-        "dist"
-    ],
     "dependencies": {
         "gradient-string": "^3.0.0"
-    },
-    "devDependencies": {
-        "unbuild": "^3.3.1"
     }
 }
