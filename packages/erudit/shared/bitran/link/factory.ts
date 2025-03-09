@@ -3,7 +3,7 @@ import {
     StringifyFactory,
 } from '@bitran-js/transpiler';
 
-import type { LinkNode, LinkSchema } from './shared';
+import type { LinkSchema } from './shared';
 
 export class LinkParser extends RegexpInlinerParseFactory<LinkSchema> {
     regexp = /\[(.+?)\]\((.+?)\)/gm;
@@ -17,8 +17,8 @@ export class LinkParser extends RegexpInlinerParseFactory<LinkSchema> {
 }
 
 export class LinkStringifier extends StringifyFactory<LinkSchema> {
-    override async stringifyElement(elementNode: LinkNode): Promise<string> {
-        const parseData = elementNode.parseData;
+    override async stringifyElement(): Promise<string> {
+        const { parseData } = this.payload();
         return `[${parseData.label}](${parseData.target})`;
     }
 }
