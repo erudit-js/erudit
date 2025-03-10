@@ -12,6 +12,10 @@ const siteUrl = useSiteUrl();
 const pageUrl = usePageUrl();
 const baseUrlPath = useBaseUrlPath();
 
+const theme = ref({
+    brand: 'red',
+});
+
 const faviconHref = computed(() => {
     const href = baseUrlPath(favicon.value);
 
@@ -30,9 +34,12 @@ const phrase = await usePhrases('site_info_title');
 useHead({
     htmlAttrs: {
         lang: eruditConfig.language || 'en',
-        style: eruditConfig.debug?.slowTransition
-            ? `--transitionSpeed: .5s`
-            : null,
+        style: {
+            '--brand': eruditConfig.site?.style?.brandColor || undefined,
+            '--transitionSpeed': eruditConfig.debug?.slowTransition
+                ? '.5s'
+                : undefined,
+        } as any,
     },
     link: [
         { rel: 'icon', href: faviconHref },

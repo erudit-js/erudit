@@ -19,6 +19,9 @@ export interface EruditConfigSite {
         summary: string;
         practice: string;
     }>;
+    style: Partial<{
+        brandColor: string;
+    }>;
 }
 
 export interface EruditConfigSeo {

@@ -59,5 +59,7 @@ const formatText = useFormatText();
     --bitran_textMuted: var(--textMuted);
     --bitran_textDimmed: var(--textDimmed);
     --bitran_textDisabled: var(--textDisabled);
+
+    --bitran_colorBrand: var(--brand);
 }
 </style>
