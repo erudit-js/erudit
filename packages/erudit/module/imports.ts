@@ -1,4 +1,4 @@
-import { addImports, addServerImports } from 'nuxt/kit';
+import { addImports } from 'nuxt/kit';
 
 import { eruditPath } from '@erudit/globalPath';
 
