@@ -13,17 +13,28 @@ const props = defineProps<{
 
 const $style = useCssModule();
 
-const switchElement = ref<HTMLElement>();
-const asideElement = ref<HTMLElement>();
+const switchElement = useTemplateRef('switchElement');
+const asideElement = useTemplateRef('asideElement');
+
+const mounted = ref(false);
 
 const canShowSwitch = computed(
-    () => switchVisible.value && !forcedAside.value && !previewVisible.value,
+    () =>
+        mounted.value &&
+        switchVisible.value &&
+        !forcedAside.value &&
+        !previewVisible.value,
 );
-const asideForceVisible = computed(() => props.type === forcedAside.value);
+
+const asideForceVisible = computed(
+    () => props.type === forcedAside.value && !previewVisible.value,
+);
 
 const typeClass = props.type === AsideType.Major ? $style.major : $style.minor;
 
 onMounted(() => {
+    mounted.value = true;
+
     clickTargets[props.type].push(
         ...[switchElement.value!, asideElement.value!],
     );

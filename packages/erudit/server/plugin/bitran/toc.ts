@@ -1,4 +1,4 @@
-import { BlockErrorNode, type ElementNode } from '@bitran-js/core';
+import { type ElementNode } from '@bitran-js/core';
 import { IncludeNode } from '@erudit-js/bitran-elements/include/shared';
 import {
     headingName,
@@ -61,7 +61,7 @@ export async function getBitranToc(location: BitranLocation) {
         };
 
         if (ERUDIT_SERVER.BITRAN_CONFIG?.toc?.includes(node.name)) {
-            // Erudit Config says to add these products to TOC
+            // Erudit Bitran config says to add these products to TOC
             toc.push({
                 ...tocItemBase,
                 level: notHeadingLevel(),

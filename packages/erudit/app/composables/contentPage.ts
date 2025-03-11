@@ -74,9 +74,10 @@ export function useContentPage(contentData: Ref<ContentData>) {
             }
 
             title +=
-                ' - ' + eruditConfig.seo?.title ||
-                eruditConfig.site?.title ||
-                phrase.site_info_title;
+                ' - ' +
+                (eruditConfig.seo?.title ||
+                    eruditConfig.site?.title ||
+                    phrase.site_info_title);
 
             seo.title.value = title;
         })();

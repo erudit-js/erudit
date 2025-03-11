@@ -1,21 +1,20 @@
 <script lang="ts" setup>
 import type { TocItem } from '@erudit/shared/bitran/toc';
 
-const { tocItem } = defineProps<{ tocItem: TocItem; active: boolean }>();
-
-const productName = tocItem.productName;
+const props = defineProps<{ tocItem: TocItem; active: boolean }>();
+const productName = props.tocItem.productName;
 const productIcon = await useBitranElementIcon(productName);
 const productPhrase = await useBitranElementLanguage(productName);
 
-function tocItemClick(event: Event) {
+function tocItemClick(event: MouseEvent): void {
     navigateTo({
         query: {
-            element: tocItem.id,
+            element: props.tocItem.id,
         },
+        //hash: props.tocItem.id, // Apply page hash as requested in the comment
     });
     event.preventDefault();
     event.stopPropagation();
-    return false;
 }
 </script>
 
@@ -23,7 +22,7 @@ function tocItemClick(event: Event) {
     <TreeItem
         :label="tocItem.title || productPhrase('_element_title')"
         :level="tocItem.level"
-        :link="`?element=${tocItem.id}` /* Apply page hash! */"
+        :link="`?element=${tocItem.id}`"
         :svg="productIcon"
         :active
         @click="tocItemClick"

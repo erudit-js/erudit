@@ -5,8 +5,13 @@ export default defineBuildConfig({
     entries: [
         'src/schema/index',
         'src/kit/index',
-
         // Utils
         'src/utils/brand',
+        'src/utils/brandNode',
     ],
+    rollup: {
+        esbuild: {
+            charset: 'utf8',
+        },
+    },
 });

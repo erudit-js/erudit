@@ -18,6 +18,8 @@ defineProps<{ icon: string; title: string; hint?: string }>();
 </template>
 
 <style lang="scss" module>
+@use '$/def/bp';
+
 .contentTitle {
     display: flex;
     align-items: center;
@@ -25,6 +27,7 @@ defineProps<{ icon: string; title: string; hint?: string }>();
     padding: 0 var(--_pMainX);
 
     [my-icon] {
+        flex-shrink: 0;
         font-size: 1.65em;
         color: var(--textMuted);
         position: relative;
@@ -34,6 +37,27 @@ defineProps<{ icon: string; title: string; hint?: string }>();
 
     h1 {
         font-size: 1.925em;
+    }
+
+    @include bp.below('mobile') {
+        padding-top: var(--gap);
+        flex-direction: column;
+
+        [my-icon] {
+            padding: 16px;
+            background: color-mix(
+                in srgb,
+                var(--textDisabled),
+                transparent 50%
+            );
+            color: var(--text);
+            border-radius: 50%;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 1.8em;
+        }
     }
 }
 </style>

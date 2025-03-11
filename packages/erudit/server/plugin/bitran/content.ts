@@ -122,7 +122,7 @@ async function createBitranContent(
     const preRenderDataMap: Record<string, PreRenderData> = {};
     await bitranTranspiler.parser.parse(finalContent, {
         step: async (node) => {
-            const id = node.id;
+            const id = node.autoId;
             const elementTranspiler = bitranTranspiler.transpilers[node.name]!;
 
             if (node instanceof LinkNode) {

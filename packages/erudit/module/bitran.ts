@@ -1,8 +1,8 @@
 import { addTemplate } from 'nuxt/kit';
 import type { Nuxt } from 'nuxt/schema';
+import type { EruditBitranConfig } from 'erudit-cog/schema';
 
 import { eruditEndNuxtPath, projectPath } from '@erudit/globalPath';
-import type { EruditBitranConfig } from '@erudit/globals/bitran';
 import { logger } from '@erudit/module/logger';
 
 export async function setupBitranConfig(_nuxt: Nuxt) {
@@ -22,8 +22,9 @@ export async function setupBitranConfig(_nuxt: Nuxt) {
         filename: templateFilename,
         write: true,
         getContents: () => `
+            import type { EruditBitranConfig } from 'erudit-cog/schema';
             ${config ? `import bitranConfig from '${projectPath('bitran')}';` : ''}
-            export default ${config ? 'bitranConfig' : 'undefined'};
+            export default ${config ? 'bitranConfig' : '{}'} as Partial<EruditBitranConfig>;
         `,
     });
 

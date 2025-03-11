@@ -24,7 +24,7 @@
     font-size: 18px;
 
     @include bp.below('mobile') {
-        //        --_pMainBase: #{bitranDef.$asideWidth};
+        --_pMainBase: #{bitranDef.$asideWidth};
         font-size: 15px;
     }
 

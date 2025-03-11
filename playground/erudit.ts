@@ -18,11 +18,14 @@ export default defineEruditConfig({
         // favicon: {
         //     article: publicAsset('ava.jpg'),
         // },
+        // style: {
+        //     brandColor: 'light-dark(#1879d9, #4e94d9)',
+        // },
     },
-    seo: {
-        title: 'Открытая математика',
-    },
-    language: 'en',
+    // seo: {
+    //     title: 'Открытая математика',
+    // },
+    language: 'ru',
     repository: {
         name: 'math-ok/ru.omath.net',
         branch: 'main',

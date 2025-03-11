@@ -130,7 +130,6 @@ function linkClick(e: Event) {
     top: 1px;
 
     padding: 0 3px;
-    margin: 0 -2px;
 
     color: var(--linkColor);
     text-decoration-thickness: 2px;

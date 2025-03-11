@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { brandLogotype, brandColorLogotype } from 'erudit-cog/utils/brand';
+import { brandLogotype, brandColors } from 'erudit-cog/utils/brand';
 
 import eruditConfig from '#erudit/config';
 import { version } from '@erudit/package.json';
@@ -11,6 +11,10 @@ const favicon = useFavicon();
 const siteUrl = useSiteUrl();
 const pageUrl = usePageUrl();
 const baseUrlPath = useBaseUrlPath();
+
+const theme = ref({
+    brand: 'red',
+});
 
 const faviconHref = computed(() => {
     const href = baseUrlPath(favicon.value);
@@ -30,9 +34,12 @@ const phrase = await usePhrases('site_info_title');
 useHead({
     htmlAttrs: {
         lang: eruditConfig.language || 'en',
-        style: eruditConfig.debug?.slowTransition
-            ? `--transitionSpeed: .5s`
-            : null,
+        style: {
+            '--brand': eruditConfig.site?.style?.brandColor || undefined,
+            '--transitionSpeed': eruditConfig.debug?.slowTransition
+                ? '.5s'
+                : undefined,
+        } as any,
     },
     link: [
         { rel: 'icon', href: faviconHref },
@@ -52,7 +59,14 @@ useHead({
             innerHTML: (await import('$/_immediate.css?raw')).default,
         },
     ],
-    meta: [...createOgImageTags(siteUrl, defaultOgImage)],
+    meta: [
+        {
+            name: 'viewport',
+            content:
+                'width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no',
+        },
+        ...createOgImageTags(siteUrl, defaultOgImage),
+    ],
 });
 
 useSeoMeta({
@@ -115,10 +129,19 @@ if (import.meta.client) {
         '🌈',
     ];
     const emoji = emojies[Math.floor(Math.random() * emojies.length)];
+
     console.log(
-        brandColorLogotype +
-            `\nv${version} ${emoji} %cBeating heart of modern educational sites!\x1B[m\n\nLearn more: https://github.com/Gwynerva/erudit\n `,
-        'font-style: italic; color: color-mix(in srgb, currentColor, transparent 50%)',
+        '%c' +
+            brandLogotype +
+            '\n%cv' +
+            version +
+            ' ' +
+            emoji +
+            ' %cBeating heart of modern educational sites!\n\n%cLearn more: https://github.com/Gwynerva/erudit\n ',
+        `color: transparent; background: linear-gradient(to right, ${brandColors[0]}, ${brandColors[1]}); background-clip: text; -webkit-background-clip: text;`,
+        'color: inherit;',
+        'font-style: italic; color: #888;',
+        'color: inherit;',
     );
 }
 </script>

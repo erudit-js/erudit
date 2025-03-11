@@ -1,4 +1,4 @@
-import { addImports, addServerImports } from 'nuxt/kit';
+import { addImports } from 'nuxt/kit';
 
 import { eruditPath } from '@erudit/globalPath';
 
@@ -14,6 +14,10 @@ export function setupGlobalImports() {
         },
         {
             name: 'defineBitranConfig',
+            from: eruditPath('globals/bitran'),
+        },
+        {
+            name: 'defineBitranElement',
             from: eruditPath('globals/bitran'),
         },
         // Content

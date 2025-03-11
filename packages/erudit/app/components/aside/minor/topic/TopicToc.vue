@@ -23,13 +23,13 @@ type RuntimeToc = RuntimeTocItem[];
 
 const topicData = injectAsideData<AsideMinorTopic>();
 const phrase = await usePhrases('empty_toc');
-const runtimeToc = ref<RuntimeToc>();
+const runtimeToc = ref<RuntimeToc>([]);
 const tocStateKey = ref(0);
 
 watch(topicData, setupRuntimeToc);
 setupRuntimeToc();
 
-function setupRuntimeToc() {
+function setupRuntimeToc(): void {
     const _newToc: RuntimeToc = [];
 
     for (let i = 0; i < topicData.value.toc.length; i++) {
@@ -40,71 +40,81 @@ function setupRuntimeToc() {
         });
     }
 
-    tocStateKey.value++;
     runtimeToc.value = _newToc;
+    tocStateKey.value++;
 }
 
 //
 // Live TOC
 //
 
-let observer: IntersectionObserver;
+let observer: IntersectionObserver | null = null;
 let id2TocItemIndex: Record<string, number> = {};
 
-const windowEvents = ['DOMContentLoaded', 'load', 'resize', 'scroll'];
-let headings: RuntimeTocItem[];
-let closestAboveHeading: RuntimeTocItem;
+const windowEvents = ['DOMContentLoaded', 'load', 'resize', 'scroll'] as const;
+let headings: RuntimeTocItem[] = [];
+let closestAboveHeading: RuntimeTocItem | null = null;
 
-function disableLiveToc() {
+function disableLiveToc(): void {
+    // Skip if not in client-side
+    if (import.meta.server) return;
+
     // Live TOC heading with `window` events
-
-    for (const event of windowEvents)
+    for (const event of windowEvents) {
         window.removeEventListener(event, updateActiveTopHeading);
+    }
 
-    headings = closestAboveHeading = null;
+    headings = [];
+    closestAboveHeading = null;
 
     // Live TOC with Intersection Observer
+    id2TocItemIndex = {};
 
-    id2TocItemIndex = null;
+    if (observer) {
+        observer.disconnect();
+        observer = null;
+    }
 
-    observer?.disconnect();
-    observer = null;
-
-    //
-
+    // Reset active state
     if (runtimeToc.value?.length) {
-        for (const tocItem of runtimeToc.value) tocItem._active = 0;
+        for (const tocItem of runtimeToc.value) {
+            tocItem._active = 0;
+        }
     }
 }
 
-function enableLiveToc() {
+function enableLiveToc(): void {
+    // Skip if not in client-side
+    if (import.meta.server) return;
     if (!runtimeToc.value?.length) return;
 
     // Live TOC heading with `window` events
-
     headings = runtimeToc.value.filter(
         (item) => item.productName === headingName,
     );
 
-    for (const event of windowEvents)
+    for (const event of windowEvents) {
         window.addEventListener(event, updateActiveTopHeading);
+    }
 
     updateActiveTopHeading();
 
     // Live TOC with Intersection Observer
-
     observer = new IntersectionObserver(intersectionTrigger);
     id2TocItemIndex = {};
 
     for (const tocItem of runtimeToc.value) {
         const id = tocItem.id;
         id2TocItemIndex[id] = tocItem._position;
-        observer.observe(document.getElementById(id));
+        const element = document.getElementById(id);
+        if (element) {
+            observer.observe(element);
+        }
     }
 }
 
-function updateActiveTopHeading() {
-    function getBottom(id: string) {
+function updateActiveTopHeading(): void {
+    function getBottom(id: string): number {
         const defaultBottom = 1;
         const element = document.getElementById(id);
         return element ? element.getBoundingClientRect().bottom : defaultBottom;
@@ -115,39 +125,44 @@ function updateActiveTopHeading() {
         closestAboveHeading = null;
     }
 
-    if (runtimeToc.value?.length) {
-        let topIndex = 0;
-        let bottomIndex = headings.length;
-        let targetIndex = 0;
+    if (!runtimeToc.value?.length || !headings.length) return;
 
-        while (topIndex < bottomIndex) {
-            const middleIndex = ((topIndex + bottomIndex) / 2) | 0;
-            const middleHeading = headings[middleIndex];
-            const middleHeadingTop = getBottom(middleHeading.id);
+    let topIndex = 0;
+    let bottomIndex = headings.length;
+    let targetIndex = 0;
 
-            if (middleHeadingTop <= 0) {
-                targetIndex = middleIndex;
-                topIndex = middleIndex + 1;
-            } else {
-                bottomIndex = middleIndex;
-            }
+    while (topIndex < bottomIndex) {
+        const middleIndex = ((topIndex + bottomIndex) / 2) | 0;
+        const middleHeading = headings[middleIndex]!;
+        const middleHeadingTop = getBottom(middleHeading.id);
+
+        if (middleHeadingTop <= 0) {
+            targetIndex = middleIndex;
+            topIndex = middleIndex + 1;
+        } else {
+            bottomIndex = middleIndex;
         }
+    }
 
-        closestAboveHeading = headings[targetIndex];
-        if (closestAboveHeading && closestAboveHeading._active < 2)
-            closestAboveHeading._active =
-                getBottom(closestAboveHeading.id) <= 0 ? 1 : 0;
+    closestAboveHeading = headings[targetIndex]!;
+    if (closestAboveHeading && closestAboveHeading._active < 2) {
+        closestAboveHeading._active =
+            getBottom(closestAboveHeading.id) <= 0 ? 1 : 0;
     }
 }
 
-function intersectionTrigger(entries: IntersectionObserverEntry[]) {
+function intersectionTrigger(entries: IntersectionObserverEntry[]): void {
     for (const entry of entries) {
-        const tocItem = runtimeToc.value[id2TocItemIndex[entry.target.id]];
-        tocItem._active = entry.isIntersecting
-            ? 2
-            : tocItem._active === 1
-              ? 1
-              : 0;
+        const itemIndex = id2TocItemIndex[entry.target.id]!;
+        const tocItem = runtimeToc.value?.[itemIndex];
+
+        if (tocItem) {
+            tocItem._active = entry.isIntersecting
+                ? 2
+                : tocItem._active === 1
+                  ? 1
+                  : 0;
+        }
     }
 }
 
@@ -162,8 +177,9 @@ onMounted(() => {
             if (
                 stringifyBitranLocation(topicData.value.location) ===
                 stringifyBitranLocation(topicLocation.value)
-            )
+            ) {
                 enableLiveToc();
+            }
         },
         { immediate: true },
     );
@@ -176,7 +192,7 @@ onUnmounted(() => {
 
 <template>
     <section :class="$style.topicToc">
-        <TreeContainer v-if="runtimeToc.length > 0">
+        <TreeContainer v-if="runtimeToc?.length > 0" :key="tocStateKey">
             <TopicTocItem
                 v-for="tocItem of runtimeToc"
                 v-memo="[tocStateKey, tocItem.id, tocItem._active]"

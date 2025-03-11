@@ -20,6 +20,9 @@ const formatText = useFormatText();
 //         //console.log('Highlighting product:', urlElement.value);
 //     }, { immediate: true });
 // });
+
+const isDev = import.meta.dev;
+const isServer = import.meta.server;
 </script>
 
 <template>
@@ -31,6 +34,8 @@ const formatText = useFormatText();
         :editMode="false"
         :formatText
         :RenderWrapper
+        :isDev
+        :isServer
     />
 </template>
 
@@ -59,5 +64,7 @@ const formatText = useFormatText();
     --bitran_textMuted: var(--textMuted);
     --bitran_textDimmed: var(--textDimmed);
     --bitran_textDisabled: var(--textDisabled);
+
+    --bitran_colorBrand: var(--brand);
 }
 </style>

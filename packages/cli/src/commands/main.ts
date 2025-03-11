@@ -1,5 +1,5 @@
 import { defineCommand } from 'citty';
-import { brandColorLogotype } from 'erudit-cog/utils/brand';
+import { brandColorLogotype } from 'erudit-cog/utils/brandNode';
 
 import { version } from '../../package.json';
 
