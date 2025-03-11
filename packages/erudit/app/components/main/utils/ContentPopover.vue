@@ -18,7 +18,6 @@ const { floatingStyles, middlewareData } = useFloating(
         middleware: [
             shift({
                 boundary: document?.querySelector('[erudit-main]') || undefined,
-                padding: 15,
             }),
             arrow({ element: arrowElement }),
         ],
@@ -141,9 +140,10 @@ function hidePopover() {
 
     position: absolute;
     z-index: 999;
-    min-width: 300px;
     max-width: 320px;
     padding-top: var(--gap);
+    padding-left: var(--gap);
+    padding-right: var(--gap);
     line-height: normal;
 
     .arrow {
