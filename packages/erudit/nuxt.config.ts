@@ -1,4 +1,4 @@
-import { elementPackages } from '@erudit-js/bitran-elements';
+//import { elementPackages } from '@erudit-js/bitran-elements';
 
 import { eruditPath, projectPath } from './globalPath';
 
@@ -24,11 +24,29 @@ export default defineNuxtConfig({
             include: [eruditPath('**/*'), projectPath('**/*')],
         },
     },
+    // modulesDir: [
+    //     'D:/code/erudit-js/erudit/node_modules',
+    //     'D:/code/erudit-js/bitran-elements/node_modules',
+    // ],
     build: {
         transpile: [
+            'yaml',
             '@bitran-js/renderer-vue',
             '@erudit-js/bitran-elements',
-            'yaml',
+            // '@bitran-js/renderer-vue',
+            // // '@erudit-js/bitran-elements',
+            // // '@erudit-js/bitran-elements/heading/renderer',
+            // 'yaml',
+            //...elementPackages,
+            // (ctx) => (ctx.isClient ? 'slugify' : false),
+            // 'katex',
+            // '@bitran-js/core',
+            // '@bitran-js/transpiler',
+            // '@bitran-js/renderer-vue',
+            // '@erudit-js/bitran-elements',
+            // '@erudit-js/bitran-elements/heading/shared',
+            // '@erudit-js/bitran-elements/heading/transpiler',
+            // '@erudit-js/bitran-elements/heading/renderer',
         ],
     },
     ignore: [
@@ -85,18 +103,26 @@ export default defineNuxtConfig({
     },
     vite: {
         optimizeDeps: {
-            //noDiscovery: true,
+            noDiscovery: true,
             include: [
-                '@bitran-js/core',
-                '@bitran-js/transpiler',
+                'yaml',
+                '@floating-ui/vue',
+                // '@bitran-js/core',
+                // '@bitran-js/transpiler',
+                // // '@bitran-js/renderer-vue',
+                // // '@erudit-js/bitran-elements',
+                // 'gradient-string',
+                // '@floating-ui/vue',
+                // 'yaml',
+                // //
+                //...elementPackages,
+                // '@bitran-js/core',
+                // '@bitran-js/transpiler',
                 // '@bitran-js/renderer-vue',
                 // '@erudit-js/bitran-elements',
-                //
-                ...elementPackages,
-                //
-                'gradient-string',
-                '@floating-ui/vue',
-                'yaml',
+                // '@erudit-js/bitran-elements/heading/shared',
+                // '@erudit-js/bitran-elements/heading/transpiler',
+                // '@erudit-js/bitran-elements/heading/renderer',
             ],
         },
         server: { fs: { strict: false } },

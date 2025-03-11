@@ -1,14 +1,12 @@
 {
     "name": "erudit-cog",
     "version": "3.0.0-dev.5",
+    "description": "⚙️ Erudit kit, types and utils",
     "type": "module",
     "repository": {
         "type": "git",
         "url": "git+https://github.com/erudit-js/erudit.git",
         "directory": "packages/cog"
-    },
-    "devDependencies": {
-        "unbuild": "^3.3.1"
     },
     "exports": {
         "./schema": {
@@ -23,7 +21,6 @@
         },
         "./utils/*": "./dist/utils/*.mjs"
     },
-    "description": "⚙️ Erudit kit, types and utils",
     "files": [
         "dist"
     ],
@@ -35,5 +32,13 @@
     },
     "dependencies": {
         "gradient-string": "^3.0.0"
+    },
+    "peerDependencies": {
+        "@bitran-js/core": "1.0.0-dev.8",
+        "@bitran-js/renderer-vue": "1.0.0-dev.8",
+        "@bitran-js/transpiler": "1.0.0-dev.8"
+    },
+    "devDependencies": {
+        "unbuild": "^3.3.1"
     }
 }
