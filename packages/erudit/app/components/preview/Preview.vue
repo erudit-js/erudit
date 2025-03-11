@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import type { PreviewRequest } from '@app/scripts/preview/request';
 import {
+    closePreview,
     previewBlinkTrigger,
     previewRequest,
     previewTheme,
@@ -13,6 +14,7 @@ import PreviewScreen from './PreviewScreen.vue';
 const height = ref<number>(0);
 const request = shallowRef<PreviewRequest>();
 const screenKey = ref(0); // Need to change this every time for Vue transition to work
+const route = useRoute();
 
 watch(previewRequest, () => {
     if (previewRequest.value) {
@@ -21,6 +23,13 @@ watch(previewRequest, () => {
         screenKey.value++;
     }
 });
+
+watch(
+    () => route.path,
+    () => {
+        closePreview();
+    },
+);
 </script>
 
 <template>
