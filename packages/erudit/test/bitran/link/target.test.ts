@@ -1,7 +1,5 @@
 import { NO_ALIASES } from '@erudit-js/bitran-elements/aliases/shared';
 
-console.log(NO_ALIASES());
-
 import type { BitranContext } from '@erudit/shared/bitran/context';
 import {
     createLinkTarget,
