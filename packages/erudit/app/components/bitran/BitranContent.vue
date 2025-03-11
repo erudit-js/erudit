@@ -41,6 +41,7 @@ const isServer = import.meta.server;
 
 <style lang="scss" module>
 @use '@bitran-js/renderer-vue/scss/def' as bitranDef;
+@use '$/def/bp';
 
 .eruditBitranContainer {
     padding: var(--_pMainY) var(--_pMainX);
@@ -66,5 +67,9 @@ const isServer = import.meta.server;
     --bitran_textDisabled: var(--textDisabled);
 
     --bitran_colorBrand: var(--brand);
+
+    @include bp.below('mobile') {
+        --bitran_gapBlocks: calc(22px);
+    }
 }
 </style>
