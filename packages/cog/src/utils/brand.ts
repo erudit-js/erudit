@@ -8,4 +8,4 @@ export const brandLogotype = `
 `;
 
 export const brandTitle = 'Erudit';
-export const brandColors = ['#6fa552', '#4475bc'];
+export const brandColors = ['#4aa44c', '#1278b9'];

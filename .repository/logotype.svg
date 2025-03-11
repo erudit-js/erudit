@@ -1,8 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 135 135">
   <defs>
     <linearGradient id="gradient" x1="19.77" y1="115.23" x2="115.23" y2="19.77" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#4475bc"/>
-      <stop offset="1" stop-color="#6fa552"/>
+      <stop offset="0" stop-color="#4aa44c"/>
+      <stop offset="1" stop-color="#1278b9"/>
       <animateTransform
         attributeName="gradientTransform"
         type="rotate"
