@@ -1,7 +1,7 @@
 {
     "name": "@erudit-js/bitran-elements",
     "description": "📝 A collection of Bitran elements for Erudit sites",
-    "version": "3.0.0-dev.6",
+    "version": "3.0.0-dev.7",
     "type": "module",
     "main": "./dist/index.mjs",
     "types": "./dist/index.d.ts",
@@ -58,7 +58,7 @@
         "prepack": "bun run build"
     },
     "peerDependencies": {
-        "@erudit-js/cog": "workspace:3.0.0-dev.6",
+        "@erudit-js/cog": "workspace:3.0.0-dev.7",
         "@bitran-js/core": "1.0.0-dev.8",
         "@bitran-js/renderer-vue": "1.0.0-dev.8",
         "@bitran-js/transpiler": "1.0.0-dev.8",
