@@ -7,8 +7,8 @@ import {
     type ContentConfig,
     type ContentReferences,
     type ContentType,
-} from 'erudit-cog/schema';
-import { resolvePaths } from 'erudit-cog/kit';
+} from '@erudit-js/cog/schema';
+import { resolvePaths } from '@erudit-js/cog/kit';
 
 import { PROJECT_DIR } from '#erudit/globalPaths';
 import { stress } from '@erudit/utils/stress';

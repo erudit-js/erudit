@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { brandLogotype, brandColors } from 'erudit-cog/utils/brand';
+import { brandLogotype, brandColors } from '@erudit-js/cog/utils/brand';
 
 import eruditConfig from '#erudit/config';
 import { version } from '@erudit/package.json';

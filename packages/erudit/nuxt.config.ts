@@ -1,5 +1,3 @@
-//import { elementPackages } from '@erudit-js/bitran-elements';
-
 import { eruditPath, projectPath } from './globalPath';
 
 export default defineNuxtConfig({
@@ -24,29 +22,11 @@ export default defineNuxtConfig({
             include: [eruditPath('**/*'), projectPath('**/*')],
         },
     },
-    // modulesDir: [
-    //     'D:/code/erudit-js/erudit/node_modules',
-    //     'D:/code/erudit-js/bitran-elements/node_modules',
-    // ],
     build: {
         transpile: [
             'yaml',
             '@bitran-js/renderer-vue',
             '@erudit-js/bitran-elements',
-            // '@bitran-js/renderer-vue',
-            // // '@erudit-js/bitran-elements',
-            // // '@erudit-js/bitran-elements/heading/renderer',
-            // 'yaml',
-            //...elementPackages,
-            // (ctx) => (ctx.isClient ? 'slugify' : false),
-            // 'katex',
-            // '@bitran-js/core',
-            // '@bitran-js/transpiler',
-            // '@bitran-js/renderer-vue',
-            // '@erudit-js/bitran-elements',
-            // '@erudit-js/bitran-elements/heading/shared',
-            // '@erudit-js/bitran-elements/heading/transpiler',
-            // '@erudit-js/bitran-elements/heading/renderer',
         ],
     },
     ignore: [
@@ -104,26 +84,7 @@ export default defineNuxtConfig({
     vite: {
         optimizeDeps: {
             noDiscovery: true,
-            include: [
-                'yaml',
-                '@floating-ui/vue',
-                // '@bitran-js/core',
-                // '@bitran-js/transpiler',
-                // // '@bitran-js/renderer-vue',
-                // // '@erudit-js/bitran-elements',
-                // 'gradient-string',
-                // '@floating-ui/vue',
-                // 'yaml',
-                // //
-                //...elementPackages,
-                // '@bitran-js/core',
-                // '@bitran-js/transpiler',
-                // '@bitran-js/renderer-vue',
-                // '@erudit-js/bitran-elements',
-                // '@erudit-js/bitran-elements/heading/shared',
-                // '@erudit-js/bitran-elements/heading/transpiler',
-                // '@erudit-js/bitran-elements/heading/renderer',
-            ],
+            include: ['yaml', '@floating-ui/vue'],
         },
         server: { fs: { strict: false } },
         css: {

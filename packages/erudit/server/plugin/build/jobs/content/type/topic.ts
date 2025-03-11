@@ -1,5 +1,5 @@
 import { existsSync, readFileSync } from 'node:fs';
-import { topicParts, type TopicPart } from 'erudit-cog/schema';
+import { topicParts, type TopicPart } from '@erudit-js/cog/schema';
 
 import { ERUDIT_SERVER } from '@server/global';
 import { DbTopic } from '@server/db/entities/Topic';

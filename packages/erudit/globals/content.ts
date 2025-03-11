@@ -3,7 +3,7 @@ import type {
     ContentReferences,
     GroupConfig,
     TopicConfig,
-} from 'erudit-cog/schema';
+} from '@erudit-js/cog/schema';
 
 export function defineBook(book: Partial<BookConfig>) {
     return book;

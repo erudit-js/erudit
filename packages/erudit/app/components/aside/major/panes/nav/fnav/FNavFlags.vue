@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { ContentFlag } from 'erudit-cog/schema';
+import type { ContentFlag } from '@erudit-js/cog/schema';
 import { flagsData } from '@app/scripts/flag';
 
 defineProps<{ flags: Record<ContentFlag, boolean> }>();

@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { topicParts, type TopicPart } from 'erudit-cog/schema';
+import { topicParts, type TopicPart } from '@erudit-js/cog/schema';
 
 import type { TopicPartLinks } from '@erudit/shared/content/data/type/topic';
 import { TOPIC_PART_ICON } from '@erudit/shared/icons';

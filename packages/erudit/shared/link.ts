@@ -1,4 +1,4 @@
-import type { ContentType, TopicPart } from 'erudit-cog/schema';
+import type { ContentType, TopicPart } from '@erudit-js/cog/schema';
 import type { BitranLocation } from './bitran/location';
 
 export function createBitranLocationLink(location: BitranLocation) {

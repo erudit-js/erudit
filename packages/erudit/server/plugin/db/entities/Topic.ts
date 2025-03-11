@@ -1,5 +1,5 @@
 import { Column, Entity, PrimaryColumn } from 'typeorm';
-import type { TopicPart } from 'erudit-cog/schema';
+import type { TopicPart } from '@erudit-js/cog/schema';
 
 @Entity('topic')
 export class DbTopic {

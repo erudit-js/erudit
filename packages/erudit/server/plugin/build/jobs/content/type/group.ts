@@ -1,5 +1,5 @@
 import { readFileSync } from 'node:fs';
-import type { GroupConfig } from 'erudit-cog/schema';
+import type { GroupConfig } from '@erudit-js/cog/schema';
 
 import { DbGroup } from '@server/db/entities/Group';
 import { ERUDIT_SERVER } from '@erudit/server/plugin/global';

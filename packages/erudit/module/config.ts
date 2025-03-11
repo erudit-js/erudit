@@ -1,6 +1,6 @@
 import { addTemplate } from 'nuxt/kit';
 import type { Nuxt } from 'nuxt/schema';
-import type { EruditConfig } from 'erudit-cog/schema';
+import type { EruditConfig } from '@erudit-js/cog/schema';
 
 import { eruditEndNuxtPath, projectPath } from '@erudit/globalPath';
 import { logger } from '@erudit/module/logger';
@@ -22,7 +22,7 @@ export async function setupEruditConfig(_nuxt: Nuxt) {
         filename: templateFilename,
         write: true,
         getContents: () => `
-            import type { EruditConfig } from 'erudit-cog/schema';
+            import type { EruditConfig } from '@erudit-js/cog/schema';
             export default ${JSON.stringify(config, null, '    ')} as Partial<EruditConfig>;
         `,
     });

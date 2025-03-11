@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { ContentFlag } from 'erudit-cog/schema';
+import type { ContentFlag } from '@erudit-js/cog/schema';
 
 import type { ContentGenericData } from '@shared/content/data/base';
 

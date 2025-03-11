@@ -1,4 +1,4 @@
-import { isTopicPart } from 'erudit-cog/schema';
+import { isTopicPart } from '@erudit-js/cog/schema';
 
 import { DbUnique } from '@server/db/entities/Unique';
 import { ERUDIT_SERVER } from '@server/global';

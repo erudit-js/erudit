@@ -1,4 +1,4 @@
-import type { ContentType } from 'erudit-cog/schema';
+import type { ContentType } from '@erudit-js/cog/schema';
 
 export interface NavNode {
     type: ContentType;

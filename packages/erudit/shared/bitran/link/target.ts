@@ -1,4 +1,4 @@
-import { isTopicPart } from 'erudit-cog/schema';
+import { isTopicPart } from '@erudit-js/cog/schema';
 import { tryReplaceAlias } from '@erudit-js/bitran-elements/aliases/shared';
 
 import type { BitranContext } from '@shared/bitran/context';

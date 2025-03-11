@@ -1,0 +1,74 @@
+{
+    "name": "@erudit-js/bitran-elements",
+    "description": "📝 A collection of Bitran elements for Erudit sites",
+    "version": "3.0.0-dev.6",
+    "type": "module",
+    "main": "./dist/index.mjs",
+    "types": "./dist/index.d.ts",
+    "exports": {
+        ".": {
+            "types": "./dist/index.d.ts",
+            "import": "./dist/index.mjs",
+            "require": "./dist/index.mjs"
+        },
+        "./aliases/*": {
+            "types": "./dist/elements/aliases/*.d.ts",
+            "import": "./dist/elements/aliases/*.mjs",
+            "require": "./dist/elements/aliases/*.mjs"
+        },
+        "./heading/*": {
+            "types": "./dist/elements/heading/*.d.ts",
+            "import": "./dist/elements/heading/*.mjs",
+            "require": "./dist/elements/heading/*.mjs"
+        },
+        "./include/*": {
+            "types": "./dist/elements/include/*.d.ts",
+            "import": "./dist/elements/include/*.mjs",
+            "require": "./dist/elements/include/*.mjs"
+        },
+        "./math/*": {
+            "types": "./dist/elements/math/*.d.ts",
+            "import": "./dist/elements/math/*.mjs",
+            "require": "./dist/elements/math/*.mjs"
+        }
+    },
+    "typesVersions": {
+        "*": {
+            "aliases/*": [
+                "./dist/elements/aliases/*.d.ts"
+            ],
+            "heading/*": [
+                "./dist/elements/heading/*.d.ts"
+            ],
+            "include/*": [
+                "./dist/elements/include/*.d.ts"
+            ],
+            "math/*": [
+                "./dist/elements/math/*.d.ts"
+            ]
+        }
+    },
+    "files": [
+        "dist"
+    ],
+    "scripts": {
+        "pretty": "prettier --write .",
+        "dev": "bun run dev.ts",
+        "build": "bun mkdist -d --loaders=js",
+        "prepack": "bun run build"
+    },
+    "peerDependencies": {
+        "@erudit-js/cog": "workspace:3.0.0-dev.6",
+        "@bitran-js/core": "1.0.0-dev.8",
+        "@bitran-js/renderer-vue": "1.0.0-dev.8",
+        "@bitran-js/transpiler": "1.0.0-dev.8",
+        "katex": "^0.16.21",
+        "sass": "^1.85.1",
+        "vue": "^3.5.13"
+    },
+    "devDependencies": {
+        "mkdist": "^2.2.0",
+        "vite": "^6.2.1",
+        "vue-tsc": "^2.2.8"
+    }
+}

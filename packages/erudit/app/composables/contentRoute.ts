@@ -1,4 +1,4 @@
-import type { ContentType, TopicPart } from 'erudit-cog/schema';
+import type { ContentType, TopicPart } from '@erudit-js/cog/schema';
 
 interface ContentRouteBase {
     type: ContentType;

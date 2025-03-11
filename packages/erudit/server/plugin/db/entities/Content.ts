@@ -4,7 +4,7 @@ import type {
     ContentReferences,
     ContentSeo,
     ContentType,
-} from 'erudit-cog/schema';
+} from '@erudit-js/cog/schema';
 
 import type { ImageData } from '@erudit/shared/image';
 

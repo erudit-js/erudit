@@ -1,4 +1,4 @@
-import { isTopicPart, type TopicPart } from 'erudit-cog/schema';
+import { isTopicPart, type TopicPart } from '@erudit-js/cog/schema';
 import { createPreRenderData, type PreRenderData } from '@bitran-js/transpiler';
 import { BlockNode, BlocksNode } from '@bitran-js/core';
 import { type BitranContent } from '@bitran-js/renderer-vue';

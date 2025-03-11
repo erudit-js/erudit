@@ -1,4 +1,4 @@
-import type { ContentFlag, TopicPart } from 'erudit-cog/schema';
+import type { ContentFlag, TopicPart } from '@erudit-js/cog/schema';
 
 export type FrontNavType = 'book' | 'topic' | 'separator' | 'folder';
 

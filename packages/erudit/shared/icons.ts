@@ -3,7 +3,7 @@ import {
     isTopicPart,
     type ContentType,
     type TopicPart,
-} from 'erudit-cog/schema';
+} from '@erudit-js/cog/schema';
 
 import type { MyIconName } from '#my-icons';
 import type { BitranLocation } from './bitran/location';

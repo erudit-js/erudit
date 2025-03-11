@@ -1,4 +1,4 @@
-import type { EruditConfigDebug } from 'erudit-cog/schema';
+import type { EruditConfigDebug } from '@erudit-js/cog/schema';
 
 import eruditConfig from '#erudit/config';
 

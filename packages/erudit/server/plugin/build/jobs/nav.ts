@@ -1,7 +1,11 @@
 import { globSync } from 'glob';
 import chalk from 'chalk';
-import { resolvePaths } from 'erudit-cog/kit';
-import { contentTypes, topicParts, type ContentType } from 'erudit-cog/schema';
+import { resolvePaths } from '@erudit-js/cog/kit';
+import {
+    contentTypes,
+    topicParts,
+    type ContentType,
+} from '@erudit-js/cog/schema';
 
 import { PROJECT_DIR } from '#erudit/globalPaths';
 import { stress } from '@erudit/utils/stress';

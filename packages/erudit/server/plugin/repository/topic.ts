@@ -1,4 +1,4 @@
-import type { TopicPart } from 'erudit-cog/schema';
+import type { TopicPart } from '@erudit-js/cog/schema';
 
 import { ERUDIT_SERVER } from '@server/global';
 import { DbTopic } from '@server/db/entities/Topic';

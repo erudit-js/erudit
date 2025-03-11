@@ -1,4 +1,4 @@
-# Erudit CLI
+# 📟 Erudit CLI
 
 Command Line Interface for [Erudit](https://github.com/erudit-js/erudit).
 

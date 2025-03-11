@@ -1,7 +1,7 @@
 import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
 import { existsSync } from 'node:fs';
-import { resolvePaths } from 'erudit-cog/kit';
+import { resolvePaths } from '@erudit-js/cog/kit';
 
 //
 // TODO: Remove this when https://github.com/nuxt/nuxt/issues/30978 is fixed!

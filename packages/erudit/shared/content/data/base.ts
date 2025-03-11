@@ -4,7 +4,7 @@ import type {
     ContentSeo,
     ContentType,
     TopicPart,
-} from 'erudit-cog/schema';
+} from '@erudit-js/cog/schema';
 
 import type { Context } from '@shared/content/context';
 import type { PreviousNext } from '@shared/content/previousNext';

@@ -1,5 +1,5 @@
 import { fileURLToPath } from 'node:url';
-import { resolvePaths } from 'erudit-cog/kit';
+import { resolvePaths } from '@erudit-js/cog/kit';
 
 export const ERUDIT_DIR = resolvePaths(fileURLToPath(import.meta.url), '..');
 export const PROJECT_DIR = process.env.ERUDIT_PROJECT_DIR as string;

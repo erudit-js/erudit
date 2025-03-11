@@ -1,5 +1,5 @@
 import { Column, Entity, PrimaryColumn } from 'typeorm';
-import type { GroupType } from 'erudit-cog/schema';
+import type { GroupType } from '@erudit-js/cog/schema';
 
 @Entity('group')
 export class DbGroup {

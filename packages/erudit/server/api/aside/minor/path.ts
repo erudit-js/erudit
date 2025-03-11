@@ -1,4 +1,4 @@
-import { isTopicPart } from 'erudit-cog/schema';
+import { isTopicPart } from '@erudit-js/cog/schema';
 
 import type { AsideMinorContent, AsideMinorTopic } from '@shared/aside/minor';
 import { getBitranToc } from '@erudit/server/plugin/bitran/toc';

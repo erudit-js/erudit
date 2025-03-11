@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { topicParts, type TopicPart } from 'erudit-cog/schema';
+import { topicParts, type TopicPart } from '@erudit-js/cog/schema';
 
 import { injectAsideData } from '@app/scripts/aside/minor/state';
 import type { AsideMinorTopic } from '@shared/aside/minor';

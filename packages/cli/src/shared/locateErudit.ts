@@ -1,7 +1,7 @@
 import { existsSync } from 'node:fs';
 import chalk from 'chalk';
 import { consola } from 'consola';
-import { resolvePaths } from 'erudit-cog/kit';
+import { resolvePaths } from '@erudit-js/cog/kit';
 
 let eruditPath: string;
 

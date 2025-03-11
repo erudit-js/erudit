@@ -1,7 +1,7 @@
 import { consola } from 'consola';
 import chalk from 'chalk';
 import { existsSync, lstatSync } from 'node:fs';
-import { resolvePaths } from 'erudit-cog/kit';
+import { resolvePaths } from '@erudit-js/cog/kit';
 
 export function resolvePath(path: string): string {
     path = resolvePaths(path);

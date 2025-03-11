@@ -1,4 +1,8 @@
-import { isContentType, isTopicPart, type TopicPart } from 'erudit-cog/schema';
+import {
+    isContentType,
+    isTopicPart,
+    type TopicPart,
+} from '@erudit-js/cog/schema';
 
 import { ERUDIT_SERVER } from '@server/global';
 import { getIdsUp, isSkipId } from '@server/nav/utils';

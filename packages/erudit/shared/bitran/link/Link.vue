@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import type { ElementProps } from '@bitran-js/renderer-vue';
-import { isContentType, isTopicPart } from 'erudit-cog/schema';
+import { isContentType, isTopicPart } from '@erudit-js/cog/schema';
 
 import { CONTENT_TYPE_ICON, ICON, TOPIC_PART_ICON } from '@erudit/shared/icons';
 import type { LinkSchema } from './shared';

@@ -1,6 +1,6 @@
 import chalk from 'chalk';
 import { createConsola } from 'consola';
-import { brandColorTitle } from 'erudit-cog/utils/brandNode';
+import { brandColorTitle } from '@erudit-js/cog/utils/brandNode';
 
 import eruditConfig from '#erudit/config';
 

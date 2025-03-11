@@ -12,9 +12,8 @@
     ],
     "scripts": {
         "pretty": "prettier --write .",
-        "build": "bun --filter './packages/*' build",
-        "dev": "bun --filter './packages/*' prepack --stub",
-        "publish": "bun run pretty && bun run scripts/publish",
+        "build": "bun run scripts/build",
+        "publish": "bun run scripts/publish",
         "play": "bun erudit dev playground --eruditPath=./packages/erudit",
         "play:prepare": "bun erudit prepare playground",
         "play:build": "bun erudit build playground",

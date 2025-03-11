@@ -1,5 +1,5 @@
 import type { MyIconName } from '#my-icons';
-import type { ContentFlag } from 'erudit-cog/schema';
+import type { ContentFlag } from '@erudit-js/cog/schema';
 
 interface FlagData {
     icon: MyIconName;

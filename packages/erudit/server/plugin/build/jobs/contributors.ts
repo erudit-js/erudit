@@ -2,8 +2,8 @@ import { readFileSync } from 'node:fs';
 import { globSync } from 'glob';
 import path from 'node:path';
 import chalk from 'chalk';
-import { resolvePaths } from 'erudit-cog/kit';
-import type { ContributorConfig } from 'erudit-cog/schema';
+import { resolvePaths } from '@erudit-js/cog/kit';
+import type { ContributorConfig } from '@erudit-js/cog/schema';
 
 import { PROJECT_DIR } from '#erudit/globalPaths';
 import { stress } from '@erudit/utils/stress';

@@ -1,4 +1,4 @@
-import type { TopicPart } from 'erudit-cog/schema';
+import type { TopicPart } from '@erudit-js/cog/schema';
 
 import type { ContentBaseData } from '../base';
 
