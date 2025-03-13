@@ -3,36 +3,43 @@ import { ref } from 'vue';
 import {
     Render,
     useElementIcon,
+    useElementMeta,
     useElementParseData,
+    useElementPhrases,
     type ElementProps,
 } from '@bitran-js/renderer-vue';
 
-import type { DetailsSchema } from './shared';
 import { MyRuntimeIcon } from '#components';
 
+import toggleIcon from './toggle.svg?raw';
+import type { DetailsSchema } from './shared';
+
 defineProps<ElementProps<DetailsSchema>>();
+const meta = useElementMeta<DetailsSchema>();
 const content = useElementParseData<DetailsSchema>();
 const isOpen = ref(true);
 
-const toggleDetails = () => {
-    isOpen.value = !isOpen.value;
-};
-
 const detailsIcon = await useElementIcon();
+const phrase = await useElementPhrases();
 </script>
 
 <template>
-    <div :class="$style.details">
-        <header :class="$style.header" @click="toggleDetails">
-            <MyRuntimeIcon name="details" :svg="detailsIcon" />
-            <span>Шапка</span>
+    <div :class="[$style.details, !isOpen && $style.closed]">
+        <header :class="$style.header" @click="isOpen = !isOpen">
+            <MyRuntimeIcon
+                :class="$style.detailsIcon"
+                name="details"
+                :svg="detailsIcon"
+                :title="phrase('_element_title')"
+            />
+            <div :class="$style.title">
+                {{ meta.title || phrase('_element_title') }}
+            </div>
             <button :class="$style.toggleButton">
-                <span :class="[$style.arrow, isOpen ? $style.up : $style.down]"
-                    >▼</span
-                >
+                <MyRuntimeIcon name="details-toggle" :svg="toggleIcon" />
             </button>
         </header>
-        <main :class="[$style.main, { [$style.closed]: !isOpen }]">
+        <main :class="$style.main">
             <div :class="$style.content">
                 <Render :node="content" />
             </div>
@@ -41,52 +48,89 @@ const detailsIcon = await useElementIcon();
 </template>
 
 <style lang="scss" module>
+@use '@bitran-js/renderer-vue/scss/utils' as bitranUtils;
+
+$borderColor: light-dark(#d7d7d7, #333);
+
 .details {
-    background: light-dark(#f1f1f1, #1b1b1b);
+    background: color-mix(
+        in srgb,
+        light-dark(#f1f1f1, #1b1b1b),
+        transparent 50%
+    );
     border-radius: 5px;
-    border: 2px dashed light-dark(#d7d7d7, #333);
+    border: 2px dashed #{$borderColor};
 
     .header {
         display: flex;
-        justify-content: space-between;
         align-items: center;
-        padding: 0 10px;
-        cursor: pointer;
-        user-select: none;
-    }
+        gap: var(--bitran_gap);
+        padding: 10px var(--_bitran_asideWidth);
+        color: var(--bitran_textMuted);
+        font-weight: 500;
+        border-bottom: 2px dashed #{$borderColor};
 
-    .toggleButton {
-        background: none;
-        border: none;
-        cursor: pointer;
-        padding: 5px;
-    }
+        @include bitranUtils.transition(border-color);
 
-    .arrow {
-        display: inline-block;
-        transition: transform 0.3s ease;
-
-        &.up {
-            transform: rotate(180deg);
+        .detailsIcon,
+        .title,
+        .toggleButton {
+            flex-shrink: 0;
         }
 
-        &.down {
-            transform: rotate(0deg);
+        .detailsIcon {
+            font-size: 1.2em;
+            cursor: help;
+        }
+
+        .title {
+            font-size: 1.05em;
+            flex: 1;
+        }
+
+        .toggleButton {
+            border-radius: 3px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 5px;
+
+            @include bitranUtils.transition(color, background);
+
+            &:hover {
+                color: var(--bitran_text);
+                background: light-dark(#dbdbdb, #333);
+            }
+
+            [my-icon] {
+                @include bitranUtils.transition(transform);
+                transform: rotate(45deg);
+            }
         }
     }
 
     .main {
-        @include transition(height);
+        @include bitranUtils.transition(height);
         overflow: hidden;
         height: auto;
-
-        &.closed {
-            height: 0;
-        }
     }
 
     .content {
-        padding: 10px;
+        padding: 10px 0;
+    }
+
+    &.closed {
+        > .header {
+            border-bottom-color: transparent;
+        }
+
+        > .header > .toggleButton [my-icon] {
+            transform: rotate(0deg);
+        }
+
+        > .main {
+            height: 0;
+        }
     }
 }
 </style>

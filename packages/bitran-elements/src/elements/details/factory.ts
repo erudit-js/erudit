@@ -17,7 +17,7 @@ export class DetailsParser extends BlockParseFactory<DetailsSchema> {
 
         if (match) {
             this.strContent = match[1]!;
-            return true;
+            return Boolean(this.strContent.trim());
         }
 
         return false;
@@ -29,8 +29,8 @@ export class DetailsParser extends BlockParseFactory<DetailsSchema> {
         if (!node.meta.id)
             throw new Error('Details element must have an explicit ID!');
 
-        const content = new BlocksNode(node);
-        content.setNodes(await this.parseBlocks(dedent(this.strContent)));
+        const content = await this.parseBlocks(dedent(this.strContent));
+        content.parent = node;
         return content;
     }
 }

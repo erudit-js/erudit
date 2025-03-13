@@ -9,6 +9,7 @@ import {
     type BitranLocation,
 } from '@erudit-js/cog/schema';
 import { AliasesNode } from '@erudit-js/bitran-elements/aliases/shared';
+import { DetailsNode } from '@erudit-js/bitran-elements/details/shared';
 import { HeadingNode } from '@erudit-js/bitran-elements/heading/shared';
 
 import { createBitranTranspiler } from '@server/bitran/transpiler';
@@ -48,6 +49,16 @@ export async function parseBitranContent(
                     return;
                 }
 
+                if (node instanceof DetailsNode) {
+                    await addUnique(
+                        node,
+                        await bitranTranspiler.stringifier.stringify(
+                            node.parseData,
+                        ),
+                    );
+                    return;
+                }
+
                 await addUnique(node);
             }
         },
@@ -61,7 +72,7 @@ export async function parseBitranContent(
             if (blocksAfter >= blocksAfterHeading) return false;
 
             if (node instanceof AliasesNode) return;
-            // Spoiler
+            if (node instanceof DetailsNode) return;
             // Todo
 
             content +=

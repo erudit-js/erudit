@@ -26,6 +26,11 @@
             "import": "./dist/elements/link/*.mjs",
             "require": "./dist/elements/link/*.mjs"
         },
+        "./details/*": {
+            "types": "./dist/elements/details/*.d.ts",
+            "import": "./dist/elements/details/*.mjs",
+            "require": "./dist/elements/details/*.mjs"
+        },
         "./heading/*": {
             "types": "./dist/elements/heading/*.d.ts",
             "import": "./dist/elements/heading/*.mjs",
