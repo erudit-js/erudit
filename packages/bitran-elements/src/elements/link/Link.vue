@@ -1,6 +1,10 @@
 <script lang="ts" setup>
 import { h } from 'vue';
-import type { ElementProps } from '@bitran-js/renderer-vue';
+import {
+    useElementParseData,
+    useElementRenderData,
+    type ElementProps,
+} from '@bitran-js/renderer-vue';
 import {
     encodeBitranLocation,
     isContentType,
@@ -21,8 +25,8 @@ import { showPreview, togglePreview } from '@erudit/app/scripts/preview/state';
 import { PreviewRequestType } from '@erudit/app/scripts/preview/request';
 
 const { node } = defineProps<ElementProps<LinkSchema>>();
-const { label } = node.parseData;
-const linkTarget = node.renderData;
+const { label } = useElementParseData<LinkSchema>();
+const linkTarget = useElementRenderData<LinkSchema>();
 
 const baseUrlPath = useBaseUrlPath();
 const formatText = useFormatText();

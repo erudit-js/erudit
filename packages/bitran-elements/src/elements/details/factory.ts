@@ -2,12 +2,13 @@ import { BlocksNode } from '@bitran-js/core';
 import {
     BlockParseFactory,
     StringifyFactory,
+    dedent,
     indent,
 } from '@bitran-js/transpiler';
 
-import type { DeatilsSchema } from './shared';
+import type { DetailsSchema } from './shared';
 
-export class DetailsParser extends BlockParseFactory<DeatilsSchema> {
+export class DetailsParser extends BlockParseFactory<DetailsSchema> {
     regexp = /^@details$([\S\s]+)/m;
     strContent!: string;
 
@@ -29,12 +30,12 @@ export class DetailsParser extends BlockParseFactory<DeatilsSchema> {
             throw new Error('Details element must have an explicit ID!');
 
         const content = new BlocksNode(node);
-        content.setNodes(await this.parseBlocks(this.strContent));
+        content.setNodes(await this.parseBlocks(dedent(this.strContent)));
         return content;
     }
 }
 
-export class DetailsStringifier extends StringifyFactory<DeatilsSchema> {
+export class DetailsStringifier extends StringifyFactory<DetailsSchema> {
     override async stringifyElement(): Promise<string> {
         const { parseData } = this.payload();
         return `@details\n${indent(await this.stringify(parseData))}`;

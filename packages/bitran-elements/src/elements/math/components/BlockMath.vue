@@ -1,11 +1,14 @@
 <script lang="ts" setup>
-import { type ElementProps } from '@bitran-js/renderer-vue';
+import {
+    useElementRenderData,
+    type ElementProps,
+} from '@bitran-js/renderer-vue';
 
 import { type BlockMathSchema } from '../shared';
 import BlockMathGroup from './BlockMathGroup.vue';
 
-const props = defineProps<ElementProps<BlockMathSchema>>();
-const rootMathGroup = props.node.renderData;
+defineProps<ElementProps<BlockMathSchema>>();
+const rootMathGroup = useElementRenderData<BlockMathSchema>();
 </script>
 
 <template>

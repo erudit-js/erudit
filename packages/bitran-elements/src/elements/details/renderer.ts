@@ -5,9 +5,9 @@ import {
     defineLanguages,
 } from '@bitran-js/renderer-vue';
 
-import { type DeatilsSchema, DetailsNode } from './shared';
+import { type DetailsSchema, DetailsNode } from './shared';
 
-export const detailsRenderer = defineElementVueRenderer<DeatilsSchema>({
+export const detailsRenderer = defineElementVueRenderer<DetailsSchema>({
     Node: DetailsNode,
     component: defineComponent(() => import('./Details.vue')),
     icon: defineIcon(() => import('./icon.svg?raw')),

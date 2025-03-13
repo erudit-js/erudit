@@ -1,10 +1,14 @@
 <script lang="ts" setup>
-import { injectFormatText, type ElementProps } from '@bitran-js/renderer-vue';
+import {
+    injectFormatText,
+    useElementParseData,
+    type ElementProps,
+} from '@bitran-js/renderer-vue';
 
 import type { HeadingSchema } from './shared';
 
-const props = defineProps<ElementProps<HeadingSchema>>();
-const { level, title } = props.node.parseData;
+defineProps<ElementProps<HeadingSchema>>();
+const { level, title } = useElementParseData<HeadingSchema>();
 const formatText = injectFormatText();
 </script>
 

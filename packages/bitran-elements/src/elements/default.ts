@@ -6,7 +6,7 @@ import {
 import { aliasesName, type AliasesSchema } from './aliases/shared';
 import { includeName, type IncludeSchema } from './include/shared';
 import { headingName, type HeadingSchema } from './heading/shared';
-import { detailsName, type DeatilsSchema } from './details/shared';
+import { detailsName, type DetailsSchema } from './details/shared';
 import { linkName, type LinkSchema } from './link/shared';
 
 export function eruditDefaultElements(): BitranElements {
@@ -47,7 +47,7 @@ export function eruditDefaultElements(): BitranElements {
                 return headingRenderer;
             },
         }),
-        [detailsName]: defineBitranElement<DeatilsSchema>({
+        [detailsName]: defineBitranElement<DetailsSchema>({
             async transpiler() {
                 const { detailsTranspiler } = await import(
                     './details/transpiler'

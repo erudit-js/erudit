@@ -6,8 +6,8 @@ import {
 
 export const detailsName = 'details';
 
-export type DeatilsSchema = DefineElementSchema<{
+export type DetailsSchema = DefineElementSchema<{
     ParseData: BlocksNode;
 }>;
 
-export class DetailsNode extends BlockNode<DeatilsSchema> {}
+export class DetailsNode extends BlockNode<DetailsSchema> {}
