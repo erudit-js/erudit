@@ -1,3 +1,4 @@
+import type { BitranLocation } from '@erudit-js/cog/schema';
 import { type ElementNode } from '@bitran-js/core';
 import { IncludeNode } from '@erudit-js/bitran-elements/include/shared';
 import {
@@ -5,7 +6,6 @@ import {
     HeadingNode,
 } from '@erudit-js/bitran-elements/heading/shared';
 
-import type { BitranLocation } from '@erudit/shared/bitran/location';
 import type { Toc } from '@erudit/shared/bitran/toc';
 import { ERUDIT_SERVER } from '@server/global';
 import { getRawBitranContent } from './content';

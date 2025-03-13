@@ -1,11 +1,10 @@
 import type { ShallowRef } from 'vue';
-import type { BitranContent } from '@bitran-js/renderer-vue';
-
 import {
     encodeBitranLocation,
     stringifyBitranLocation,
     type BitranLocation,
-} from '@erudit/shared/bitran/location';
+} from '@erudit-js/cog/schema';
+import type { BitranContent } from '@bitran-js/renderer-vue';
 
 export async function useBitranContent(
     location: Ref<BitranLocation | undefined>,

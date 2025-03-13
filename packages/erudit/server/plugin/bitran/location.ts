@@ -1,7 +1,7 @@
 import {
     decodeBitranLocation,
     parseBitranLocation,
-} from '@erudit/shared/bitran/location';
+} from '@erudit-js/cog/schema';
 
 export function parseUrlLocation(urlLocation: string) {
     urlLocation = decodeURIComponent(urlLocation);

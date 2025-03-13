@@ -1,4 +1,5 @@
-import type { BitranLocation } from '../bitran/location';
+import type { BitranLocation } from '@erudit-js/cog/schema';
+
 import type { Toc } from '../bitran/toc';
 import type { PreviousNextItem } from '../content/previousNext';
 import type { ContentContributor } from '../contributor';

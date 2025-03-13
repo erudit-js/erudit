@@ -1,30 +1,30 @@
-import { isTopicPart } from '@erudit-js/cog/schema';
+import {
+    isTopicPart,
+    parseBitranLocation,
+    stringifyBitranLocation,
+    type BitranContext,
+} from '@erudit-js/cog/schema';
+import type { LinkParseData } from '@erudit-js/bitran-elements/link/shared';
+import {
+    createLinkTarget,
+    type LinkTarget,
+} from '@erudit-js/bitran-elements/link/target';
 
 import { DbUnique } from '@server/db/entities/Unique';
 import { ERUDIT_SERVER } from '@server/global';
 import { DbContent } from '@server/db/entities/Content';
 import { DbContributor } from '@server/db/entities/Contributor';
-
-import {
-    createLinkTarget,
-    type LinkTarget,
-} from '@erudit/shared/bitran/link/target';
 import {
     toAbsoluteContentId,
     toAbsoluteContentLocation,
 } from '@server/content/absoluteId';
-import type { BitranContext } from '@erudit/shared/bitran/context';
-import {
-    parseBitranLocation,
-    stringifyBitranLocation,
-} from '@erudit/shared/bitran/location';
+
 import {
     createBitranLocationLink,
     createContentLink,
     createContributorLink,
     createTopicPartLink,
 } from '@erudit/shared/link';
-import type { LinkParseData } from '@erudit/shared/bitran/link/shared';
 
 export async function resolveLinkTarget(
     linkData: LinkParseData,

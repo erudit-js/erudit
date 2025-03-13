@@ -1,6 +1,15 @@
 {
-    "extends": "../../tsconfig.json",
+    "extends": [
+        "../../tsconfig.json",
+        "../../playground/.erudit/nuxt/.nuxt/tsconfig.json"
+    ],
     "compilerOptions": {
-        "types": ["@types/node", "vite/client", "@types/jest"]
-    }
+        "types": [
+            "@erudit-js/cog/types",
+            "vite/client",
+            "@types/node",
+            "@types/jest"
+        ]
+    },
+    "include": ["./src/**/*"]
 }

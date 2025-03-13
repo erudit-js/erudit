@@ -1,11 +1,18 @@
 import { BlockNode, type ElementNode } from '@bitran-js/core';
 import type { BitranTranspiler } from '@bitran-js/transpiler';
-import { IncludeNode } from '@erudit-js/bitran-elements/include/shared';
+
 import {
-    AliasesNode,
+    parseBitranLocation,
+    parsePartialBitranLocation,
+    stringifyBitranLocation,
     tryReplaceAlias,
-    type Aliases,
-} from '@erudit-js/bitran-elements/aliases/shared';
+    type BitranAliases,
+    type BitranContext,
+} from '@erudit-js/cog/schema';
+import { IncludeNode } from '@erudit-js/bitran-elements/include/shared';
+import { AliasesNode } from '@erudit-js/bitran-elements/aliases/shared';
+import { LinkNode } from '@erudit-js/bitran-elements/link/shared';
+import { createLinkTarget } from '@erudit-js/bitran-elements/link/target';
 
 import { createBitranTranspiler } from '@server/bitran/transpiler';
 import { ERUDIT_SERVER } from '@server/global';
@@ -14,15 +21,6 @@ import {
     toAbsoluteContentId,
     toAbsoluteContentLocation,
 } from '@server/content/absoluteId';
-
-import type { BitranContext } from '@erudit/shared/bitran/context';
-import {
-    parseBitranLocation,
-    parsePartialBitranLocation,
-    stringifyBitranLocation,
-} from '@erudit/shared/bitran/location';
-import { createLinkTarget } from '@erudit/shared/bitran/link/target';
-import { LinkNode } from '@erudit/shared/bitran/link/shared';
 
 export type TraverseEnterFn = (payload: {
     _location: string;
@@ -87,7 +85,7 @@ export async function traverseInclude(
 async function _traverseStep(
     includeNode: IncludeNode,
     location: string,
-    aliases: Aliases,
+    aliases: BitranAliases,
     listeners: {
         enter?: TraverseEnterFn;
         step?: TraverseStepFn;
@@ -183,7 +181,7 @@ async function _traverseStep(
                         );
                         break;
                     case 'page':
-                        node.parseData.target = `page|${linkTarget.pageType}|${toAbsoluteContentId(linkTarget.path!, context.location?.path!)}`;
+                        node.parseData.target = `page|${linkTarget.pageType as any}|${toAbsoluteContentId(linkTarget.path!, context.location?.path!)}`;
                         break;
                 }
             }

@@ -15,6 +15,7 @@ export async function setup() {
 
     registerGlobals();
     ERUDIT_SERVER.CONFIG = eruditConfig;
+    globalThis.useEruditConfig = () => eruditConfig;
 
     await setupBitranConfig();
     await setupDatabase();

@@ -1,16 +1,15 @@
 <script lang="ts" setup>
-import { NO_ALIASES } from '@erudit-js/bitran-elements/aliases/shared';
-
-import { type ContentGroupData } from '@shared/content/data/type/group';
+import { NO_ALIASES } from '@erudit-js/cog/schema';
 import eruditConfig from '#erudit/config';
 
+import { type ContentGroupData } from '@shared/content/data/type/group';
+import { locationIcon } from '@erudit/shared/icons';
 import ContentDecoration from '@app/components/main/utils/ContentDecoration.vue';
 import Breadcrumb from '@app/components/main/utils/Breadcrumb.vue';
 import ContentTitle from '@app/components/main/utils/ContentTitle.vue';
 import ContentDescription from '@app/components/main/utils/ContentDescription.vue';
 import ContentPopovers from '@app/components/main/utils/ContentPopovers.vue';
 import ContentSection from '@app/components/main/utils/ContentSection.vue';
-import { locationIcon } from '@erudit/shared/icons';
 
 const location = useBitranLocation();
 

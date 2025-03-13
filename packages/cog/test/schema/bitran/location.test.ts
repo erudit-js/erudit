@@ -5,7 +5,7 @@ import {
     parsePartialBitranLocation,
     stringifyBitranLocation,
     type BitranLocation,
-} from '@erudit/shared/bitran/location';
+} from '../../../src/schema/bitran/location';
 
 const locations: [BitranLocation, string][] = [
     // Full locations

@@ -1,7 +1,6 @@
 <script lang="ts" setup>
 import { Bitran, type BitranContent } from '@bitran-js/renderer-vue';
-
-import type { BitranContext } from '@shared/bitran/context';
+import type { BitranContext } from '@erudit-js/cog/schema';
 
 import RenderWrapper from './RenderWrapper.vue';
 

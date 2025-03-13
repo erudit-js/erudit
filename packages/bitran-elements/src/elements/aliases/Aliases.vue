@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import type { ElementProps } from '@bitran-js/renderer-vue';
 
+import { MyRuntimeIcon } from '#components';
 import type { AliasesSchema } from './shared';
 import arrowRight from './arrow-right.svg?raw';
 
@@ -21,7 +22,11 @@ function selectAllOnClick(event: Event) {
                 readonly
                 @click="selectAllOnClick"
             />
-            <svg :class="$style.arrow" v-html="arrowRight"></svg>
+            <MyRuntimeIcon
+                name="alias-target"
+                :svg="arrowRight"
+                :class="$style.arrow"
+            />
             <input
                 type="text"
                 :value="target"
@@ -61,10 +66,7 @@ function selectAllOnClick(event: Event) {
         }
 
         .arrow {
-            height: 1em;
-            width: 1em;
             color: var(--bitran_textMuted);
-            fill: currentColor;
         }
     }
 }

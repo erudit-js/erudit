@@ -3,7 +3,7 @@ import {
     isContentType,
     isTopicPart,
     topicParts,
-} from '../src/schema';
+} from '../../src/schema';
 
 describe('isTopicPart', () => {
     it.each(topicParts)(

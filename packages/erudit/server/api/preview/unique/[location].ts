@@ -1,3 +1,7 @@
+import {
+    stringifyBitranLocation,
+    type BitranContext,
+} from '@erudit-js/cog/schema';
 import type { BitranContent } from '@bitran-js/renderer-vue';
 
 import { parseUrlLocation } from '@server/bitran/location';
@@ -7,8 +11,6 @@ import { DbUnique } from '@server/db/entities/Unique';
 import { getBitranContent } from '@server/bitran/content';
 
 import type { Context } from '@shared/content/context';
-import type { BitranContext } from '@shared/bitran/context';
-import { stringifyBitranLocation } from '@shared/bitran/location';
 
 interface ReturnType {
     context: Context;

@@ -1,4 +1,4 @@
-import { isTopicPart } from '@erudit-js/cog/schema';
+import { isTopicPart } from '../content/base';
 
 export const bitranLocationTypes = {
     article: true,

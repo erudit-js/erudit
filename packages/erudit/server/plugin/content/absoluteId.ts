@@ -4,7 +4,7 @@ import {
     parseBitranLocation,
     stringifyBitranLocation,
     type BitranLocation,
-} from '@shared/bitran/location';
+} from '@erudit-js/cog/schema';
 import { getNavBookOf } from '../nav/utils';
 
 export function toAbsoluteContentLocation<T extends string | BitranLocation>(

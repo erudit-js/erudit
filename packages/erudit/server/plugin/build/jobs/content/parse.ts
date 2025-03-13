@@ -1,21 +1,19 @@
 import { ElementNode, walkForward } from '@bitran-js/core';
 import { type BitranTranspiler } from '@bitran-js/transpiler';
+
 import {
-    AliasesNode,
     mergeAliases,
     NO_ALIASES,
-} from '@erudit-js/bitran-elements/aliases/shared';
+    stringifyBitranLocation,
+    type BitranContext,
+    type BitranLocation,
+} from '@erudit-js/cog/schema';
+import { AliasesNode } from '@erudit-js/bitran-elements/aliases/shared';
 import { HeadingNode } from '@erudit-js/bitran-elements/heading/shared';
 
 import { createBitranTranspiler } from '@server/bitran/transpiler';
 import { ERUDIT_SERVER } from '@server/global';
 import { DbUnique } from '@server/db/entities/Unique';
-
-import type { BitranContext } from '@shared/bitran/context';
-import {
-    stringifyBitranLocation,
-    type BitranLocation,
-} from '@shared/bitran/location';
 
 let context: BitranContext = {} as any;
 let bitranTranspiler: BitranTranspiler;

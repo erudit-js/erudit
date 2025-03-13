@@ -1,13 +1,24 @@
 <script lang="ts" setup>
+import { h } from 'vue';
 import type { ElementProps } from '@bitran-js/renderer-vue';
-import { isContentType, isTopicPart } from '@erudit-js/cog/schema';
+import {
+    encodeBitranLocation,
+    isContentType,
+    isTopicPart,
+} from '@erudit-js/cog/schema';
+
+import {
+    prerenderRoutes,
+    useBaseUrlPath,
+    useBitranElementIcon,
+    useFormatText,
+} from '#imports';
 
 import { CONTENT_TYPE_ICON, ICON, TOPIC_PART_ICON } from '@erudit/shared/icons';
 import type { LinkSchema } from './shared';
 import { MyIcon, MyRuntimeIcon } from '#components';
 import { showPreview, togglePreview } from '@erudit/app/scripts/preview/state';
 import { PreviewRequestType } from '@erudit/app/scripts/preview/request';
-import { encodeBitranLocation } from '@erudit/shared/bitran/location';
 
 const { node } = defineProps<ElementProps<LinkSchema>>();
 const { label } = node.parseData;

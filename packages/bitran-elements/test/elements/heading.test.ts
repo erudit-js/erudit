@@ -1,14 +1,16 @@
 import { BlockErrorNode, ParagraphNode } from '@bitran-js/core';
 import { defineBitranTranspiler } from '@bitran-js/transpiler';
 
+beforeEach(() => {
+    resetEruditGlobals();
+});
+
 import {
     headingName,
     type HeadingNode,
 } from '../../src/elements/heading/shared';
-import {
-    headingTranspiler,
-    defineHeadingTranspiler,
-} from '../../src/elements/heading/transpiler';
+import { headingTranspiler } from '../../src/elements/heading/transpiler';
+import { resetEruditGlobals, setEruditConfig } from './global';
 
 const bitran = defineBitranTranspiler({
     [headingName]: headingTranspiler,
@@ -110,13 +112,11 @@ it('Should apply language-specific slugify', async () => {
 # Это мой заголовок
     `.trim();
 
-    const localeBitran = defineBitranTranspiler({
-        [headingName]: defineHeadingTranspiler({
-            language: 'ru',
-        }),
+    setEruditConfig({
+        language: 'ru',
     });
 
-    const heading = (await localeBitran.parser.parse(text))
+    const heading = (await bitran.parser.parse(text))
         .children![0] as HeadingNode;
 
     expect(heading.autoId).toBe('eto-moy-zagolovok');

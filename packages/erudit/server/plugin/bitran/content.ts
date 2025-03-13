@@ -1,12 +1,18 @@
-import { isTopicPart, type TopicPart } from '@erudit-js/cog/schema';
 import { createPreRenderData, type PreRenderData } from '@bitran-js/transpiler';
 import { BlockNode, BlocksNode } from '@bitran-js/core';
 import { type BitranContent } from '@bitran-js/renderer-vue';
+
 import {
-    AliasesNode,
+    isTopicPart,
     mergeAliases,
     NO_ALIASES,
-} from '@erudit-js/bitran-elements/aliases/shared';
+    stringifyBitranLocation,
+    type BitranContext,
+    type BitranLocation,
+    type TopicPart,
+} from '@erudit-js/cog/schema';
+import { LinkNode } from '@erudit-js/bitran-elements/link/shared';
+import { AliasesNode } from '@erudit-js/bitran-elements/aliases/shared';
 import { IncludeNode } from '@erudit-js/bitran-elements/include/shared';
 
 import { ERUDIT_SERVER } from '@server/global';
@@ -16,13 +22,6 @@ import { DbGroup } from '@server/db/entities/Group';
 import { resolveLinkTarget } from '@server/bitran/products/link';
 import { traverseInclude } from '@server/bitran/products/include';
 import { createBitranTranspiler } from '@server/bitran/transpiler';
-
-import type { BitranContext } from '@erudit/shared/bitran/context';
-import {
-    stringifyBitranLocation,
-    type BitranLocation,
-} from '@erudit/shared/bitran/location';
-import { LinkNode } from '@erudit/shared/bitran/link/shared';
 
 interface RawBitranContent {
     context: BitranContext;

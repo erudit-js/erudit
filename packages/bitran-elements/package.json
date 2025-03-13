@@ -11,10 +11,20 @@
             "import": "./dist/index.mjs",
             "require": "./dist/index.mjs"
         },
+        "./default": {
+            "types": "./dist/elements/default.d.ts",
+            "import": "./dist/elements/default.mjs",
+            "require": "./dist/elements/default.mjs"
+        },
         "./aliases/*": {
             "types": "./dist/elements/aliases/*.d.ts",
             "import": "./dist/elements/aliases/*.mjs",
             "require": "./dist/elements/aliases/*.mjs"
+        },
+        "./link/*": {
+            "types": "./dist/elements/link/*.d.ts",
+            "import": "./dist/elements/link/*.mjs",
+            "require": "./dist/elements/link/*.mjs"
         },
         "./heading/*": {
             "types": "./dist/elements/heading/*.d.ts",

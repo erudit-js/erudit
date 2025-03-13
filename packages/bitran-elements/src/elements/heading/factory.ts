@@ -48,7 +48,8 @@ export class HeadingParser extends BlockParseFactory<HeadingSchema> {
     }
 
     override async alterAutoId(autoId: string, node: HeadingNode) {
-        const { provide: { language = 'en' } = {} } = this.payload();
+        const eruditConfig = useEruditConfig();
+        const language = eruditConfig?.language || 'en';
 
         const slugify = await (async () => {
             if (slugifyLoader[language]) {

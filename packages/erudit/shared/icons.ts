@@ -1,12 +1,12 @@
 import {
     isContentType,
     isTopicPart,
+    type BitranLocation,
     type ContentType,
     type TopicPart,
 } from '@erudit-js/cog/schema';
 
 import type { MyIconName } from '#my-icons';
-import type { BitranLocation } from './bitran/location';
 
 export const TOPIC_PART_ICON = {
     article: 'outline/file-lines',

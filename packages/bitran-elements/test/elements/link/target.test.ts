@@ -1,6 +1,5 @@
-import { NO_ALIASES } from '@erudit-js/bitran-elements/aliases/shared';
+import { NO_ALIASES, type BitranContext } from '@erudit-js/cog/schema';
 
-import type { BitranContext } from '@erudit/shared/bitran/context';
 import {
     createLinkTarget,
     type AbsoluteLinkTarget,
@@ -8,7 +7,7 @@ import {
     type LinkTargetType,
     type PageLinkTarget,
     type UniqueLinkTarget,
-} from '@erudit/shared/bitran/link/target';
+} from '../../../src/elements/link/target';
 
 const articleContext: BitranContext = {
     location: {

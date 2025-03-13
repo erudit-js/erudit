@@ -1,12 +1,11 @@
-import { isTopicPart } from '@erudit-js/cog/schema';
-import { tryReplaceAlias } from '@erudit-js/bitran-elements/aliases/shared';
-
-import type { BitranContext } from '@shared/bitran/context';
 import {
+    isTopicPart,
     bitranLocationTypes,
     parsePartialBitranLocation,
     stringifyBitranLocation,
-} from '@shared/bitran/location';
+    tryReplaceAlias,
+    type BitranContext,
+} from '@erudit-js/cog/schema';
 
 export type LinkTargetType = 'unique' | 'page' | 'absolute' | 'external';
 
@@ -26,7 +25,7 @@ export const linkTargetPageTypes = {
     ...bitranLocationTypes,
     // Custom page types, that does not have Bitran content
     book: true,
-};
+} as const;
 
 export type LinkTargetPageType = keyof typeof linkTargetPageTypes;
 
