@@ -2,6 +2,8 @@
 import { Bitran, type BitranContent } from '@bitran-js/renderer-vue';
 import type { BitranContext } from '@erudit-js/cog/schema';
 
+import eruditConfig from '#erudit/config';
+
 import RenderWrapper from './RenderWrapper.vue';
 
 const props = defineProps<{
@@ -35,6 +37,7 @@ const isServer = import.meta.server;
         :RenderWrapper
         :isDev
         :isServer
+        :language="eruditConfig.language"
     />
 </template>
 
