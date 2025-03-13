@@ -2,18 +2,18 @@ import {
     encodeBitranLocation,
     type BitranContext,
 } from '@erudit-js/cog/schema';
-import type { BitranContent } from '@bitran-js/renderer-vue';
 
 import { PreviewDataType, type PreviewDataBase } from '../data';
 import type { PreviewFooter } from '../footer';
 import { PreviewRequestType, type PreviewRequest } from '../request';
+import type { StringBitranContent } from '@erudit/shared/bitran/stringContent';
 
 export interface PreviewDataUnique extends PreviewDataBase {
     type: PreviewDataType.Unique;
     productName: string;
     bitran: {
         context: BitranContext;
-        content: BitranContent;
+        content: StringBitranContent;
     };
     footer: PreviewFooter;
 }

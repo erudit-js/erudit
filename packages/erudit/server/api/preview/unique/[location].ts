@@ -11,6 +11,7 @@ import { DbUnique } from '@server/db/entities/Unique';
 import { getBitranContent } from '@server/bitran/content';
 
 import type { Context } from '@shared/content/context';
+import type { StringBitranContent } from '@erudit/shared/bitran/stringContent';
 
 interface ReturnType {
     context: Context;
@@ -18,7 +19,7 @@ interface ReturnType {
     bitran: {
         productName: string;
         context: BitranContext;
-        content: BitranContent;
+        content: StringBitranContent;
     };
 }
 

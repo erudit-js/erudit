@@ -23,6 +23,8 @@ import { resolveLinkTarget } from '@server/bitran/products/link';
 import { traverseInclude } from '@server/bitran/products/include';
 import { createBitranTranspiler } from '@server/bitran/transpiler';
 
+import type { StringBitranContent } from '@shared/bitran/stringContent';
+
 interface RawBitranContent {
     context: BitranContext;
     biCode: string;
@@ -30,7 +32,7 @@ interface RawBitranContent {
 
 export async function getBitranContent(
     location: BitranLocation,
-): Promise<BitranContent> {
+): Promise<StringBitranContent> {
     const rawContent = await getRawBitranContent(location);
     const bitranContent = await createBitranContent(
         rawContent.context,
@@ -98,7 +100,7 @@ export async function getRawBitranContent(
 async function createBitranContent(
     context: BitranContext,
     biCode: string,
-): Promise<BitranContent> {
+): Promise<StringBitranContent> {
     const bitranTranspiler = await createBitranTranspiler();
 
     const root = await bitranTranspiler.parser.parse(biCode, {
