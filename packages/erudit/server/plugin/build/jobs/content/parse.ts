@@ -100,7 +100,7 @@ export async function parseBitranContent(
         dbUnique.location = createUniqueLocation(node);
         dbUnique.content =
             content || (await bitranTranspiler.stringifier.stringify(node));
-        dbUnique.title = node.parseData?.title || node.meta?.title;
+        dbUnique.title = node.parseData?.title || node.meta?.title || null;
         dbUnique.productName = node.name;
         dbUnique.context = context;
 
