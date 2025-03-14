@@ -42,6 +42,11 @@ export interface EruditConfigAds {
     bottomBlockId: string;
 }
 
+export interface EruditConfigNuxt {
+    transpile: string[];
+    optimizeDeps: string[];
+}
+
 //
 //
 //
@@ -49,10 +54,10 @@ export interface EruditConfigAds {
 export interface EruditConfig {
     language: string;
     contentTargets: string[];
-    subDeps: string[];
     debug: Partial<EruditConfigDebug>;
     site: Partial<EruditConfigSite>;
     seo: Partial<EruditConfigSeo>;
     repository: Partial<EruditConfigRepository>;
     ads: Partial<EruditConfigAds>;
+    nuxt: Partial<EruditConfigNuxt>;
 }

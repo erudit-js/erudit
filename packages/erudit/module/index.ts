@@ -28,15 +28,14 @@ export default defineNuxtModule({
         }
 
         {
-            // Handle sub dependencies
-            const subDeps = eruditConfig.subDeps || [];
-
             const transpile = (_nuxt.options.build.transpile ||= []);
             const optimizeDeps = _nuxt.options.vite.optimizeDeps || {};
             const optimizeDepsInclude = (optimizeDeps.include ||= []);
 
-            transpile.push(...subDeps);
-            optimizeDepsInclude.push(...subDeps);
+            transpile.push(...(eruditConfig.nuxt?.transpile || []));
+            optimizeDepsInclude.push(
+                ...(eruditConfig.nuxt?.optimizeDeps || []),
+            );
         }
 
         // TODO: Watch for contributors folder and create/update template with their IDs

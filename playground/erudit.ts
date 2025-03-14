@@ -1,5 +1,3 @@
-// import { transpile } from 'omath-bitran';
-
 export default defineEruditConfig({
     debug: {
         log: true,
