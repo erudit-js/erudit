@@ -84,7 +84,6 @@ $borderColor: light-dark(#d7d7d7, #333);
         }
 
         .title {
-            font-size: 1.05em;
             flex: 1;
         }
 
