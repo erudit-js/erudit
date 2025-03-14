@@ -98,29 +98,21 @@ describe('tryParseMathString', () => {
         });
     });
 
-    describe('string replacements', () => {
-        it('should replace hyphens with en dashes', () => {
-            const result = tryParseMathString('a-b');
-            expect(result).toEqual({
-                type: 'string',
-                tokens: [
-                    { type: 'word', value: 'a' },
-                    { type: 'other', value: ' – ' },
-                    { type: 'word', value: 'b' },
-                ],
-            });
-        });
-
-        it('should add spaces before and after plus symbol', () => {
-            const result = tryParseMathString('a+b');
-            expect(result).toEqual({
-                type: 'string',
-                tokens: [
-                    { type: 'word', value: 'a' },
-                    { type: 'other', value: ' + ' },
-                    { type: 'word', value: 'b' },
-                ],
-            });
+    describe('should handle replacements', () => {
+        test.each([
+            // No spaces
+            ['a-b', 'a – b'],
+            ['a+b', 'a + b'],
+            ['a=b', 'a = b'],
+            // Redundant spaces
+            ['a  -  b', 'a – b'],
+            ['a  +  b', 'a + b'],
+            ['a  =  b', 'a = b'],
+        ])('should handle %p', (input, expected) => {
+            const result = tryParseMathString(input);
+            expect(result?.tokens.map((token) => token.value).join('')).toEqual(
+                expected,
+            );
         });
     });
 });

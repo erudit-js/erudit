@@ -23,6 +23,7 @@ export type InlineMathToken = { type: 'word' | 'other'; value: string };
 const mathReplacements: [RegExp, string][] = [
     [/\s*-\s*/g, ' – '], // Hyphen to en dash
     [/\s*\+\s*/g, ' + '], // Spaces around plus
+    [/\s*=\s*/g, ' = '], // Spaces around equals
 ];
 
 /**
