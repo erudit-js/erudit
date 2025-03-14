@@ -19,9 +19,27 @@ export interface InlineMathString extends InlineMathBase {
 export type InlineMathData = InlineMathKatex | InlineMathString;
 export type InlineMathToken = { type: 'word' | 'other'; value: string };
 
-//
-//
-//
+// Math string replacements for better typography
+const mathReplacements: [RegExp, string][] = [
+    [/\s*-\s*/g, ' – '], // Hyphen to en dash
+    [/\s*\+\s*/g, ' + '], // Spaces around plus
+];
+
+/**
+ * Apply typographical replacements to improve math rendering
+ */
+function applyMathReplacements(tokens: InlineMathToken[]): InlineMathToken[] {
+    return tokens.map((token) => {
+        if (token.type === 'other') {
+            let value = token.value;
+            for (const [pattern, replacement] of mathReplacements) {
+                value = value.replace(pattern, replacement);
+            }
+            return { ...token, value };
+        }
+        return token;
+    });
+}
 
 /**
  * Try to use simple string mode for inline math as it is significantly better for SEO and also faster
@@ -52,7 +70,7 @@ export function tryParseMathString(
     if (tokens)
         return {
             type: 'string',
-            tokens,
+            tokens: applyMathReplacements(tokens),
         };
 
     return undefined;

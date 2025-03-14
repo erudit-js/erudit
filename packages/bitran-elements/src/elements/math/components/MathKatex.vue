@@ -60,6 +60,7 @@ const MathComponent = h(props.displayMath ? 'div' : 'span', {
 
 .latexDisplayMath {
     overflow: auto;
+    padding: 2px;
 
     &::-webkit-scrollbar {
         height: 7px;

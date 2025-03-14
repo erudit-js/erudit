@@ -53,7 +53,7 @@ describe('tryParseMathString', () => {
                 { type: 'word', value: 'b' },
                 { type: 'other', value: ' / ' },
                 { type: 'word', value: 'c' },
-                { type: 'other', value: ' - ' },
+                { type: 'other', value: ' – ' },
                 { type: 'word', value: 'd' },
             ],
         });
@@ -95,6 +95,32 @@ describe('tryParseMathString', () => {
                 { type: 'other', value: ' = ' },
                 { type: 'word', value: 'γ' },
             ],
+        });
+    });
+
+    describe('string replacements', () => {
+        it('should replace hyphens with en dashes', () => {
+            const result = tryParseMathString('a-b');
+            expect(result).toEqual({
+                type: 'string',
+                tokens: [
+                    { type: 'word', value: 'a' },
+                    { type: 'other', value: ' – ' },
+                    { type: 'word', value: 'b' },
+                ],
+            });
+        });
+
+        it('should add spaces before and after plus symbol', () => {
+            const result = tryParseMathString('a+b');
+            expect(result).toEqual({
+                type: 'string',
+                tokens: [
+                    { type: 'word', value: 'a' },
+                    { type: 'other', value: ' + ' },
+                    { type: 'word', value: 'b' },
+                ],
+            });
         });
     });
 });
