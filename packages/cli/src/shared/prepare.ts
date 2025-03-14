@@ -1,5 +1,6 @@
 import { existsSync, mkdirSync, rmSync, writeFileSync } from 'node:fs';
 import { consola } from 'consola';
+
 import { alias2Relative } from './alias2Relative';
 
 export async function prepare(projectPath: string, eruditPath: string) {
@@ -33,6 +34,17 @@ export async function prepare(projectPath: string, eruditPath: string) {
             },
         }
     `,
+    );
+
+    writeFileSync(
+        `${eruditBuildDir}/tsconfig.json`,
+        JSON.stringify(
+            {
+                extends: './nuxt/.nuxt/tsconfig.json',
+            },
+            null,
+            4,
+        ),
     );
 
     consola.success('Erudit build files ready!');
