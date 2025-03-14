@@ -10,6 +10,10 @@
         "url": "git+https://github.com/erudit-js/erudit.git",
         "directory": "packages/erudit"
     },
+    "bin": {
+        "erudit-cli": "bin/erudit.mjs",
+        "erudit": "bin/erudit.mjs"
+    },
     "peerDependencies": {
         "@erudit-js/bitran-elements": "workspace:3.0.0-dev.7"
     },
