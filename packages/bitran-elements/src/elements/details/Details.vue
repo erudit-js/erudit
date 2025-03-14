@@ -113,6 +113,7 @@ $borderColor: light-dark(#d7d7d7, #333);
         @include bitranUtils.transition(height);
         overflow: hidden;
         height: auto;
+        padding-right: var(--_bitran_asideWidth);
     }
 
     .content {
