@@ -32,11 +32,13 @@ interface RawBitranContent {
 
 export async function getBitranContent(
     location: BitranLocation,
+    generatePrerenderData: boolean = true,
 ): Promise<StringBitranContent> {
     const rawContent = await getRawBitranContent(location);
     const bitranContent = await createBitranContent(
         rawContent.context,
         rawContent.biCode,
+        generatePrerenderData,
     );
     return bitranContent;
 }
@@ -100,6 +102,7 @@ export async function getRawBitranContent(
 async function createBitranContent(
     context: BitranContext,
     biCode: string,
+    generatePrerenderData: boolean = true,
 ): Promise<StringBitranContent> {
     const bitranTranspiler = await createBitranTranspiler();
 
@@ -121,38 +124,42 @@ async function createBitranContent(
 
     // Building render data
     const preRenderDataMap: Record<string, PreRenderData> = {};
-    await bitranTranspiler.parser.parse(finalContent, {
-        step: async (node) => {
-            const id = node.autoId;
-            const elementTranspiler = bitranTranspiler.transpilers[node.name]!;
 
-            if (node instanceof LinkNode) {
-                try {
-                    preRenderDataMap[id] = {
-                        type: 'success',
-                        data: await resolveLinkTarget(node.parseData, {
-                            location: context.location,
-                            aliases: context.aliases ?? {},
-                        }),
-                    };
-                } catch (error: any) {
-                    preRenderDataMap[id] = {
-                        type: 'error',
-                        message: error?.message || String(error),
-                    };
+    if (generatePrerenderData) {
+        await bitranTranspiler.parser.parse(finalContent, {
+            step: async (node) => {
+                const id = node.autoId;
+                const elementTranspiler =
+                    bitranTranspiler.transpilers[node.name]!;
+
+                if (node instanceof LinkNode) {
+                    try {
+                        preRenderDataMap[id] = {
+                            type: 'success',
+                            data: await resolveLinkTarget(node.parseData, {
+                                location: context.location,
+                                aliases: context.aliases ?? {},
+                            }),
+                        };
+                    } catch (error: any) {
+                        preRenderDataMap[id] = {
+                            type: 'error',
+                            message: error?.message || String(error),
+                        };
+                    }
+                    return;
                 }
-                return;
-            }
 
-            if (id) {
-                const preRenderData = await createPreRenderData(
-                    node,
-                    elementTranspiler,
-                );
-                if (preRenderData) preRenderDataMap[id] = preRenderData;
-            }
-        },
-    });
+                if (id) {
+                    const preRenderData = await createPreRenderData(
+                        node,
+                        elementTranspiler,
+                    );
+                    if (preRenderData) preRenderDataMap[id] = preRenderData;
+                }
+            },
+        });
+    }
 
     return {
         biCode: finalContent,
