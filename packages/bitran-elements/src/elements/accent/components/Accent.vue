@@ -76,6 +76,10 @@ const accentColors = Object.keys(renderData.colors).reduce(
     background: var(--accentColor_background);
     border: 1px solid var(--accentColor_border);
 
+    :global(.accent) {
+        color: var(--accentColor_text);
+    }
+
     > header {
         display: flex;
         align-items: center;
