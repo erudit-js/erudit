@@ -24,7 +24,7 @@ const phrase = await usePhrases(
 
 const flagData: Record<ContentFlag, PopoverData> = {
     dev: {
-        icon: <MyIconName>'alert',
+        icon: <MyIconName>'construction',
         color: 'var(--warn)',
         title: phrase.flag_dev,
         description: phrase.flag_dev_description,

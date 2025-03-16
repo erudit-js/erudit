@@ -69,8 +69,14 @@ $borderColor: light-dark(#d7d7d7, #333);
         color: var(--bitran_textMuted);
         font-weight: 500;
         border-bottom: 2px dashed #{$borderColor};
+        cursor: pointer;
 
         @include bitranUtils.transition(border-color);
+
+        &:hover .toggleButton {
+            color: var(--bitran_text);
+            background: light-dark(#dbdbdb, #333);
+        }
 
         .detailsIcon,
         .title,
@@ -91,15 +97,9 @@ $borderColor: light-dark(#d7d7d7, #333);
             border-radius: 3px;
             background: none;
             border: none;
-            cursor: pointer;
             padding: 5px;
 
             @include bitranUtils.transition(color, background);
-
-            &:hover {
-                color: var(--bitran_text);
-                background: light-dark(#dbdbdb, #333);
-            }
 
             [my-icon] {
                 @include bitranUtils.transition(transform);
@@ -112,11 +112,11 @@ $borderColor: light-dark(#d7d7d7, #333);
         @include bitranUtils.transition(height);
         overflow: hidden;
         height: auto;
-        padding-right: var(--_bitran_asideWidth);
     }
 
     .content {
         padding: 10px 0;
+        padding-right: var(--_bitran_asideWidth);
     }
 
     &.closed {

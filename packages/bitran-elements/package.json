@@ -45,6 +45,11 @@
             "types": "./dist/elements/math/*.d.ts",
             "import": "./dist/elements/math/*.mjs",
             "require": "./dist/elements/math/*.mjs"
+        },
+        "./accent/*": {
+            "types": "./dist/elements/accent/*.d.ts",
+            "import": "./dist/elements/accent/*.mjs",
+            "require": "./dist/elements/accent/*.mjs"
         }
     },
     "typesVersions": {
