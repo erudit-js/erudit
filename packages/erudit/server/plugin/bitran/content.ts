@@ -1,6 +1,5 @@
 import { createPreRenderData, type PreRenderData } from '@bitran-js/transpiler';
 import { BlockNode, BlocksNode } from '@bitran-js/core';
-import { type BitranContent } from '@bitran-js/renderer-vue';
 
 import {
     isTopicPart,

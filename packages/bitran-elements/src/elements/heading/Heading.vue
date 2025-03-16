@@ -23,7 +23,7 @@ h2,
 h3,
 h4 {
     &.h {
-        color: var(--bitran_textStrong);
+        color: var(--bitran_textDeep);
         font-weight: 700;
     }
 }

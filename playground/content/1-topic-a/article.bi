@@ -8,7 +8,7 @@ $$ A^2 + B^2 = C^2 $$
 ~ bar summary|combinatorics/preface|myFormula
 
 { #da }
-Посмотрите вот на [эту](~bar) формулу!\
+Посмотрите вот на *[эту](~bar)* **формулу**!\
 Еще зацените [книгу](page|book|combinatorics) по комбинаторике!
 
 { +toc }

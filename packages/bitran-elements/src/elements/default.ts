@@ -8,6 +8,7 @@ import { includeName, type IncludeSchema } from './include/shared';
 import { headingName, type HeadingSchema } from './heading/shared';
 import { detailsName, type DetailsSchema } from './details/shared';
 import { linkName, type LinkSchema } from './link/shared';
+import { emphasisName, type EmphasisSchema } from './emphasis/shared';
 
 export function eruditDefaultElements(): BitranElements {
     return {
@@ -67,6 +68,20 @@ export function eruditDefaultElements(): BitranElements {
             async renderer() {
                 const { linkRenderer } = await import('./link/renderer');
                 return linkRenderer;
+            },
+        }),
+        [emphasisName]: defineBitranElement<EmphasisSchema>({
+            async transpiler() {
+                const { emphasisTranspiler } = await import(
+                    './emphasis/transpiler'
+                );
+                return emphasisTranspiler;
+            },
+            async renderer() {
+                const { emphasisRenderer } = await import(
+                    './emphasis/renderer'
+                );
+                return emphasisRenderer;
             },
         }),
     };
