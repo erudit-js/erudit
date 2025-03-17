@@ -11,7 +11,6 @@
 
 <style lang="scss" module>
 @use '$/def/bp';
-@use '@bitran-js/renderer-vue/scss/def' as bitranDef;
 
 .main {
     --_pMainBase: var(--gapBig);
@@ -24,8 +23,8 @@
     font-size: 18px;
 
     @include bp.below('mobile') {
-        --_pMainBase: #{bitranDef.$asideWidth};
-        font-size: 15px;
+        --_pMainBase: var(--_bitran_asideWidth);
+        font-size: 14px;
     }
 
     .mainInner {

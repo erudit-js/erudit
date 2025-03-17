@@ -42,12 +42,11 @@ const isServer = import.meta.server;
 </template>
 
 <style lang="scss" module>
-@use '@bitran-js/renderer-vue/scss/def' as bitranDef;
 @use '$/def/bp';
 
 .eruditBitranContainer {
     padding: var(--_pMainY) var(--_pMainX);
-    padding-left: calc(var(--_pMainX) - #{bitranDef.$asideWidth});
+    padding-left: calc(var(--_pMainX) - var(--_bitran_asideWidth));
 
     // Setting up Bitran
 
