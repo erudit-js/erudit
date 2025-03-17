@@ -18,6 +18,7 @@ function selectAllOnClick(event: Event) {
         <div v-for="(target, alias) of node.parseData" :class="$style.record">
             <input
                 type="text"
+                size="1"
                 :value="'~' + alias"
                 readonly
                 @click="selectAllOnClick"
@@ -29,6 +30,7 @@ function selectAllOnClick(event: Event) {
             />
             <input
                 type="text"
+                size="1"
                 :value="target"
                 readonly
                 @click="selectAllOnClick"
