@@ -55,6 +55,11 @@
             "types": "./dist/elements/emphasis/*.d.ts",
             "import": "./dist/elements/emphasis/*.mjs",
             "require": "./dist/elements/emphasis/*.mjs"
+        },
+        "./list/*": {
+            "types": "./dist/elements/list/*.d.ts",
+            "import": "./dist/elements/list/*.mjs",
+            "require": "./dist/elements/list/*.mjs"
         }
     },
     "typesVersions": {

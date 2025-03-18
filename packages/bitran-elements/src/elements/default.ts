@@ -9,6 +9,7 @@ import { headingName, type HeadingSchema } from './heading/shared';
 import { detailsName, type DetailsSchema } from './details/shared';
 import { linkName, type LinkSchema } from './link/shared';
 import { emphasisName, type EmphasisSchema } from './emphasis/shared';
+import { listName, type ListSchema } from './list/shared';
 
 export function eruditDefaultElements(): BitranElements {
     return {
@@ -82,6 +83,16 @@ export function eruditDefaultElements(): BitranElements {
                     './emphasis/renderer'
                 );
                 return emphasisRenderer;
+            },
+        }),
+        [listName]: defineBitranElement<ListSchema>({
+            async transpiler() {
+                const { listTranspiler } = await import('./list/transpiler');
+                return listTranspiler;
+            },
+            async renderer() {
+                const { listRenderer } = await import('./list/renderer');
+                return listRenderer;
             },
         }),
     };
