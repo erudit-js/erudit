@@ -67,6 +67,12 @@
             "aliases/*": [
                 "./dist/elements/aliases/*.d.ts"
             ],
+            "link/*": [
+                "./dist/elements/link/*.d.ts"
+            ],
+            "details/*": [
+                "./dist/elements/details/*.d.ts"
+            ],
             "heading/*": [
                 "./dist/elements/heading/*.d.ts"
             ],
@@ -75,6 +81,15 @@
             ],
             "math/*": [
                 "./dist/elements/math/*.d.ts"
+            ],
+            "accent/*": [
+                "./dist/elements/accent/*.d.ts"
+            ],
+            "emphasis/*": [
+                "./dist/elements/emphasis/*.d.ts"
+            ],
+            "list/*": [
+                "./dist/elements/list/*.d.ts"
             ]
         }
     },
