@@ -18,9 +18,9 @@
         "@erudit-js/bitran-elements": "workspace:3.0.0-dev.7"
     },
     "dependencies": {
-        "@bitran-js/core": "1.0.0-dev.8",
-        "@bitran-js/renderer-vue": "1.0.0-dev.8",
-        "@bitran-js/transpiler": "1.0.0-dev.8",
+        "@bitran-js/core": "1.0.0-dev.10",
+        "@bitran-js/renderer-vue": "1.0.0-dev.10",
+        "@bitran-js/transpiler": "1.0.0-dev.10",
         "@erudit-js/cli": "workspace:3.0.0-dev.7",
         "@erudit-js/cog": "workspace:3.0.0-dev.7",
         "@floating-ui/vue": "^1.1.6",

@@ -37,9 +37,9 @@
         "gradient-string": "^3.0.0"
     },
     "peerDependencies": {
-        "@bitran-js/core": "1.0.0-dev.8",
-        "@bitran-js/renderer-vue": "1.0.0-dev.8",
-        "@bitran-js/transpiler": "1.0.0-dev.8"
+        "@bitran-js/core": "1.0.0-dev.10",
+        "@bitran-js/renderer-vue": "1.0.0-dev.10",
+        "@bitran-js/transpiler": "1.0.0-dev.10"
     },
     "devDependencies": {
         "unbuild": "^3.5.0"
