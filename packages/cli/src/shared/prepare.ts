@@ -10,11 +10,15 @@ export async function prepare(projectPath: string, eruditPath: string) {
     const nodeModules = `${projectPath}/node_modules`;
     const nodeModulesErudit = `${nodeModules}/erudit`;
 
-    await alias2Relative(nodeModulesErudit, nodeModulesErudit);
-    await alias2Relative(
-        nodeModulesErudit,
-        nodeModules + '/@erudit-js/bitran-elements',
-    );
+    if (existsSync(nodeModulesErudit)) {
+        consola.start('Resolving aliases in dependencies...');
+        await alias2Relative(nodeModulesErudit, nodeModulesErudit);
+        await alias2Relative(
+            nodeModulesErudit,
+            nodeModules + '/@erudit-js/bitran-elements',
+        );
+        consola.success('Resolved aliases in dependencies!');
+    }
 
     consola.start('Cleaning up...');
 
