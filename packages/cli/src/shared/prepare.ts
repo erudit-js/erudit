@@ -7,8 +7,14 @@ export async function prepare(projectPath: string, eruditPath: string) {
     const eruditBuildDir = `${projectPath}/.erudit`;
     const distDir = `${projectPath}/dist`;
 
-    const nodeModulesErudit = `${projectPath}/node_modules/erudit`;
-    await alias2Relative(nodeModulesErudit);
+    const nodeModules = `${projectPath}/node_modules`;
+    const nodeModulesErudit = `${nodeModules}/erudit`;
+
+    await alias2Relative(nodeModulesErudit, nodeModulesErudit);
+    await alias2Relative(
+        nodeModulesErudit,
+        nodeModules + '/@erudit-js/bitran-elements',
+    );
 
     consola.start('Cleaning up...');
 

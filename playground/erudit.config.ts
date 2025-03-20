@@ -1,3 +1,5 @@
+import { mathDeps } from '@erudit-js/bitran-elements';
+
 export default defineEruditConfig({
     debug: {
         log: true,
@@ -32,5 +34,8 @@ export default defineEruditConfig({
     ads: {
         leftBlockId: 'R-A-2185026-3',
         bottomBlockId: 'R-A-2185026-1',
+    },
+    dependencies: {
+        ...mathDeps,
     },
 });

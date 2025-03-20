@@ -83,8 +83,14 @@ export default defineNuxtConfig({
     },
     vite: {
         optimizeDeps: {
-            noDiscovery: true,
-            include: ['yaml', '@floating-ui/vue'],
+            include: [
+                'yaml',
+                '@floating-ui/vue',
+                '@bitran-js/core',
+                '@bitran-js/transpiler',
+                '@bitran-js/renderer-vue',
+                '@erudit-js/bitran-elements',
+            ],
         },
         server: { fs: { strict: false } },
         css: {

@@ -42,10 +42,15 @@ export interface EruditConfigAds {
     bottomBlockId: string;
 }
 
-export interface EruditConfigNuxt {
-    transpile: string[];
-    optimizeDeps: string[];
-}
+export type EruditConfigDependencyOptions = Partial<{
+    transpile: boolean;
+    optimize: boolean;
+}>;
+
+export type EruditConfigDependencies = Record<
+    string,
+    EruditConfigDependencyOptions
+>;
 
 //
 //
@@ -59,5 +64,5 @@ export interface EruditConfig {
     seo: Partial<EruditConfigSeo>;
     repository: Partial<EruditConfigRepository>;
     ads: Partial<EruditConfigAds>;
-    nuxt: Partial<EruditConfigNuxt>;
+    dependencies: Partial<EruditConfigDependencies>;
 }

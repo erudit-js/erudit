@@ -30,7 +30,7 @@ export class DbContent {
     description?: string;
 
     @Column('simple-json', { nullable: true })
-    flags?: Record<ContentFlag, boolean>;
+    flags?: Partial<Record<ContentFlag, boolean>>;
 
     @Column('varchar', { nullable: true })
     decoration?: string;

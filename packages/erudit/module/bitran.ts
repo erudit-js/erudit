@@ -7,9 +7,10 @@ import { logger } from '@erudit/module/logger';
 
 export async function setupBitranConfig(_nuxt: Nuxt) {
     let config: Partial<EruditBitranConfig>;
+    const configPath = projectPath('bitran.config');
 
     try {
-        const projectConfig = (await import(projectPath('bitran'))).default;
+        const projectConfig = (await import(configPath)).default;
         if (!projectConfig) throw new Error('Falsy Bitran config!');
         config = projectConfig;
     } catch (error) {
@@ -23,7 +24,7 @@ export async function setupBitranConfig(_nuxt: Nuxt) {
         write: true,
         getContents: () => `
             import type { EruditBitranConfig } from '@erudit-js/cog/schema';
-            ${config ? `import bitranConfig from '${projectPath('bitran')}';` : ''}
+            ${config ? `import bitranConfig from '${configPath}';` : ''}
             export default ${config ? 'bitranConfig' : '{}'} as Partial<EruditBitranConfig>;
         `,
     });

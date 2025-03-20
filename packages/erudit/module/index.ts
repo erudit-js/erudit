@@ -32,10 +32,11 @@ export default defineNuxtModule({
             const optimizeDeps = _nuxt.options.vite.optimizeDeps || {};
             const optimizeDepsInclude = (optimizeDeps.include ||= []);
 
-            transpile.push(...(eruditConfig.nuxt?.transpile || []));
-            optimizeDepsInclude.push(
-                ...(eruditConfig.nuxt?.optimizeDeps || []),
-            );
+            const deps = eruditConfig.dependencies || {};
+            for (const [dep, options] of Object.entries(deps)) {
+                if (options?.transpile) transpile.push(dep);
+                if (options?.optimize) optimizeDepsInclude.push(dep);
+            }
         }
 
         // TODO: Watch for contributors folder and create/update template with their IDs
