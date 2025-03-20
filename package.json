@@ -16,7 +16,7 @@
         "publish": "bun run scripts/publish",
         "play": "bun erudit dev playground --eruditPath=./packages/erudit",
         "play:prepare": "bun erudit prepare playground",
-        "play:build": "bun erudit build playground",
+        "play:generate": "bun erudit generate playground",
         "play:preview": "bun erudit preview playground"
     },
     "devDependencies": {

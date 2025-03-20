@@ -7,7 +7,7 @@ import { version } from '../../package.json';
 import { init } from './init';
 import { prepare } from './prepare';
 import { dev } from './dev';
-import { build } from './build';
+import { generate } from './generate';
 import { preview } from './preview';
 
 export const main = defineCommand({
@@ -20,7 +20,7 @@ export const main = defineCommand({
         init,
         prepare,
         dev,
-        build,
+        generate,
         preview,
     },
     setup() {

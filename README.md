@@ -30,7 +30,7 @@ export default defineEruditConfig({
 Use commands provided by Erudit CLI to control your project:
 
 ```bash
-npm erudit dev|build|preview
+npm erudit dev|build|write|generate|preview
 ```
 
 ## Monorepo Structure

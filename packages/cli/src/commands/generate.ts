@@ -6,17 +6,17 @@ import { prepare } from '../shared/prepare';
 import { spawnNuxt } from '../shared/nuxt';
 import { eruditPathArg, projectPathArg, resolveArgPaths } from '../shared/args';
 
-export const build = defineCommand({
+export const generate = defineCommand({
     meta: {
-        name: 'Build',
-        description: 'Generates fully static Erudit site',
+        name: 'Generate',
+        description: 'Generates fully static production ready Erudit site',
     },
     args: {
         ...projectPathArg,
         ...eruditPathArg,
     },
     async run({ args }) {
-        logCommand('build');
+        logCommand('generate');
 
         const { projectPath, eruditPath } = resolveArgPaths(
             args.projectPath,
@@ -25,7 +25,7 @@ export const build = defineCommand({
 
         await prepare(projectPath, eruditPath);
 
-        consola.start('Starting Nuxt build...');
+        consola.start('Starting Nuxt generate...');
         await spawnNuxt('generate', projectPath);
     },
 });
