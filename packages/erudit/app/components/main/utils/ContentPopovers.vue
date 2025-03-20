@@ -24,7 +24,7 @@ const phrase = await usePhrases(
 
 const flagData: Record<ContentFlag, PopoverData> = {
     dev: {
-        icon: <MyIconName>'alert',
+        icon: <MyIconName>'construction',
         color: 'var(--warn)',
         title: phrase.flag_dev,
         description: phrase.flag_dev_description,
@@ -70,6 +70,7 @@ const hasPopovers = computed(() => {
         <ContentPopover v-if="generic?.dependencies" :data="dependenciesData">
             <ul :class="$style.dependenciesList">
                 <li v-for="(value, key) in generic.dependencies">
+                    <MyIcon :name="'arrow-left'" wrapper="span" />
                     <NuxtLink :prefetch="false" :to="key">{{ value }}</NuxtLink>
                 </li>
             </ul>
@@ -87,18 +88,23 @@ const hasPopovers = computed(() => {
 
 .dependenciesList {
     margin-top: var(--gapSmall);
-    list-style-type: square;
+    list-style-type: none;
     list-style-position: inside;
     padding-inline-start: 0;
 
     li {
-        &::marker {
-            content: '↪';
+        display: flex;
+        gap: var(--gapSmall);
+        align-items: center;
+
+        [my-icon] {
+            flex-shrink: 0;
+            font-size: 0.95em;
+            transform: scaleX(-1);
         }
 
         a {
             color: inherit;
-            padding-left: var(--gapSmall);
         }
     }
 }

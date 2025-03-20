@@ -1,6 +1,6 @@
 {
     "name": "@erudit-js/cog",
-    "version": "3.0.0-dev.6",
+    "version": "3.0.0-dev.9",
     "description": "⚙️ Erudit kit, types and utils",
     "type": "module",
     "repository": {
@@ -19,14 +19,17 @@
             "import": "./dist/kit/index.mjs",
             "require": "./dist/kit/index.mjs"
         },
-        "./utils/*": "./dist/utils/*.mjs"
+        "./utils/*": "./dist/utils/*.mjs",
+        "./types": {
+            "types": "./types.d.ts"
+        }
     },
     "files": [
-        "dist"
+        "dist",
+        "types.d.ts"
     ],
     "license": "MIT",
     "scripts": {
-        "dev": "bun unbuild --stub",
         "build": "bun run prepack",
         "prepack": "bun unbuild"
     },
@@ -34,11 +37,11 @@
         "gradient-string": "^3.0.0"
     },
     "peerDependencies": {
-        "@bitran-js/core": "1.0.0-dev.8",
-        "@bitran-js/renderer-vue": "1.0.0-dev.8",
-        "@bitran-js/transpiler": "1.0.0-dev.8"
+        "@bitran-js/core": "1.0.0-dev.10",
+        "@bitran-js/renderer-vue": "1.0.0-dev.10",
+        "@bitran-js/transpiler": "1.0.0-dev.10"
     },
     "devDependencies": {
-        "unbuild": "^3.3.1"
+        "unbuild": "^3.5.0"
     }
 }

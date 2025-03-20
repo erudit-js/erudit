@@ -1,11 +1,11 @@
 import type { ShallowRef } from 'vue';
 import type { BitranContent } from '@bitran-js/renderer-vue';
-
 import {
     encodeBitranLocation,
     stringifyBitranLocation,
     type BitranLocation,
-} from '@erudit/shared/bitran/location';
+} from '@erudit-js/cog/schema';
+import type { StringBitranContent } from '@erudit/shared/bitran/stringContent';
 
 export async function useBitranContent(
     location: Ref<BitranLocation | undefined>,
@@ -26,11 +26,23 @@ export async function useBitranContent(
 
         const apiRoute = `/api/bitran/content/${encodeBitranLocation(stringifyBitranLocation(location.value!))}`;
         nuxtApp.runWithContext(() => prerenderRoutes(apiRoute));
+
         // @ts-ignore
         contentPromise = (async () => {
-            content.value = (await $fetch(apiRoute, {
+            const stringContent = (await $fetch(apiRoute, {
                 responseType: 'json',
-            })) as BitranContent;
+            })) as StringBitranContent;
+
+            const bitranTranspiler = await useBitranTranspiler();
+            const root = await bitranTranspiler.parser.parse(
+                stringContent.biCode,
+            );
+
+            content.value = {
+                root,
+                preRenderData: stringContent.preRenderData,
+            };
+
             return content;
         })();
     });

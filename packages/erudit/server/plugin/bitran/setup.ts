@@ -5,7 +5,7 @@ import { ERUDIT_SERVER } from '@server/global';
 export async function setupBitranConfig() {
     try {
         ERUDIT_SERVER.BITRAN_CONFIG = (
-            await IMPORT(PROJECT_DIR + '/bitran.ts')
+            await IMPORT(PROJECT_DIR + '/bitran.config')
         ).default;
     } catch {}
 }

@@ -1,7 +1,7 @@
 {
     "name": "@erudit-js/bitran-elements",
     "description": "📝 A collection of Bitran elements for Erudit sites",
-    "version": "3.0.0-dev.6",
+    "version": "3.0.0-dev.9",
     "type": "module",
     "main": "./dist/index.mjs",
     "types": "./dist/index.d.ts",
@@ -11,10 +11,30 @@
             "import": "./dist/index.mjs",
             "require": "./dist/index.mjs"
         },
+        "./defaultTranspilers": {
+            "types": "./dist/elements/defaultTranspilers.d.ts",
+            "import": "./dist/elements/defaultTranspilers.mjs",
+            "require": "./dist/elements/defaultTranspilers.mjs"
+        },
+        "./defaultRenderers": {
+            "types": "./dist/elements/defaultRenderers.d.ts",
+            "import": "./dist/elements/defaultRenderers.mjs",
+            "require": "./dist/elements/defaultRenderers.mjs"
+        },
         "./aliases/*": {
             "types": "./dist/elements/aliases/*.d.ts",
             "import": "./dist/elements/aliases/*.mjs",
             "require": "./dist/elements/aliases/*.mjs"
+        },
+        "./link/*": {
+            "types": "./dist/elements/link/*.d.ts",
+            "import": "./dist/elements/link/*.mjs",
+            "require": "./dist/elements/link/*.mjs"
+        },
+        "./details/*": {
+            "types": "./dist/elements/details/*.d.ts",
+            "import": "./dist/elements/details/*.mjs",
+            "require": "./dist/elements/details/*.mjs"
         },
         "./heading/*": {
             "types": "./dist/elements/heading/*.d.ts",
@@ -30,12 +50,33 @@
             "types": "./dist/elements/math/*.d.ts",
             "import": "./dist/elements/math/*.mjs",
             "require": "./dist/elements/math/*.mjs"
+        },
+        "./accent/*": {
+            "types": "./dist/elements/accent/*.d.ts",
+            "import": "./dist/elements/accent/*.mjs",
+            "require": "./dist/elements/accent/*.mjs"
+        },
+        "./emphasis/*": {
+            "types": "./dist/elements/emphasis/*.d.ts",
+            "import": "./dist/elements/emphasis/*.mjs",
+            "require": "./dist/elements/emphasis/*.mjs"
+        },
+        "./list/*": {
+            "types": "./dist/elements/list/*.d.ts",
+            "import": "./dist/elements/list/*.mjs",
+            "require": "./dist/elements/list/*.mjs"
         }
     },
     "typesVersions": {
         "*": {
             "aliases/*": [
                 "./dist/elements/aliases/*.d.ts"
+            ],
+            "link/*": [
+                "./dist/elements/link/*.d.ts"
+            ],
+            "details/*": [
+                "./dist/elements/details/*.d.ts"
             ],
             "heading/*": [
                 "./dist/elements/heading/*.d.ts"
@@ -45,6 +86,15 @@
             ],
             "math/*": [
                 "./dist/elements/math/*.d.ts"
+            ],
+            "accent/*": [
+                "./dist/elements/accent/*.d.ts"
+            ],
+            "emphasis/*": [
+                "./dist/elements/emphasis/*.d.ts"
+            ],
+            "list/*": [
+                "./dist/elements/list/*.d.ts"
             ]
         }
     },
@@ -58,12 +108,12 @@
         "prepack": "bun run build"
     },
     "peerDependencies": {
-        "@erudit-js/cog": "workspace:3.0.0-dev.6",
-        "@bitran-js/core": "1.0.0-dev.8",
-        "@bitran-js/renderer-vue": "1.0.0-dev.8",
-        "@bitran-js/transpiler": "1.0.0-dev.8",
+        "@bitran-js/core": "1.0.0-dev.10",
+        "@bitran-js/renderer-vue": "1.0.0-dev.10",
+        "@bitran-js/transpiler": "1.0.0-dev.10",
+        "@erudit-js/cog": "workspace:3.0.0-dev.9",
         "katex": "^0.16.21",
-        "sass": "^1.85.1",
+        "sass": ">=1.85.1",
         "vue": "^3.5.13"
     },
     "devDependencies": {

@@ -19,7 +19,7 @@
         "module": "preserve",
         "noEmit": true,
         /* If your code runs in the DOM: */
-        "lib": ["webworker", "dom", "dom.iterable"],
+        "lib": ["ESNext", "webworker", "dom", "dom.iterable"],
         "paths": {}
     },
     "exclude": ["**/dist/**", "**/playground/**"]

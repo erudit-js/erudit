@@ -1,7 +1,8 @@
 <script lang="ts" setup>
 import { Bitran, type BitranContent } from '@bitran-js/renderer-vue';
+import type { BitranContext } from '@erudit-js/cog/schema';
 
-import type { BitranContext } from '@shared/bitran/context';
+import eruditConfig from '#erudit/config';
 
 import RenderWrapper from './RenderWrapper.vue';
 
@@ -36,15 +37,16 @@ const isServer = import.meta.server;
         :RenderWrapper
         :isDev
         :isServer
+        :language="eruditConfig.language"
     />
 </template>
 
 <style lang="scss" module>
-@use '@bitran-js/renderer-vue/scss/def' as bitranDef;
+@use '$/def/bp';
 
 .eruditBitranContainer {
     padding: var(--_pMainY) var(--_pMainX);
-    padding-left: calc(var(--_pMainX) - #{bitranDef.$asideWidth});
+    padding-left: calc(var(--_pMainX) - var(--_bitran_asideWidth));
 
     // Setting up Bitran
 
@@ -64,7 +66,12 @@ const isServer = import.meta.server;
     --bitran_textMuted: var(--textMuted);
     --bitran_textDimmed: var(--textDimmed);
     --bitran_textDisabled: var(--textDisabled);
+    --bitran_textDeep: var(--textDeep);
 
     --bitran_colorBrand: var(--brand);
+
+    @include bp.below('mobile') {
+        --bitran_gapBlocks: calc(22px);
+    }
 }
 </style>

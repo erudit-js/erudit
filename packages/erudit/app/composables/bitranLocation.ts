@@ -1,4 +1,4 @@
-import { locationFromPath, type BitranLocation } from '@shared/bitran/location';
+import { locationFromPath, type BitranLocation } from '@erudit-js/cog/schema';
 
 export function useBitranLocation(): ComputedRef<BitranLocation | undefined> {
     const route = useRoute();

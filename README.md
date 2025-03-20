@@ -6,17 +6,17 @@
 
 Erudit is a CMS for perfect community-driven educational sites.
 
-🚧 **This project is under heavy development!**
+🚧 **Erudit is under heavy development!**
 
 ## Getting Started
 
-Intall `erudit` and `erudit-cli` packages:
+Intall `erudit` package:
 
 ```bash
-npm install erudit erudit-cli
+npm install erudit
 ```
 
-(Optinally) Create `erudit.ts` file to configure your Erudit project:
+(Optionally) Create `erudit.ts` file to configure your Erudit project:
 
 ```ts
 export default defineEruditConfig({
@@ -30,20 +30,21 @@ export default defineEruditConfig({
 Use commands provided by Erudit CLI to control your project:
 
 ```bash
-npm erudit-cli dev|build|preview
+npm erudit dev|build|preview
 ```
 
 ## Monorepo Structure
 
-- `package/cog` — Erudit types and schemas
-- `package/kit` — useful utilities
-- `package/erudit` — Erudit app in form of Nuxt Layer
+- `packages/cog` — Erudit types, schemas, tools
+- `packages/cli` — CLI for running, building and previewing Erudit projects
+- `packages/bitran-elements` — collection of default and pluggable Bitran elements
+- `packages/erudit` — Erudit app in form of Nuxt Layer
 
 ## Local Development
 
 1. Fork `erudit-js/erudit` repository to your GitHub account and then clone it to your local device
 2. Install [Bun](https://bun.sh/) if you does not have it already
-3. Run `bun install` and then `bun build`
+3. Run `bun install` and then `bun run build`
 
 Now the project is ready for your edits.
 Try your changes using playground Erudit project located in `playground` directory.

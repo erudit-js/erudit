@@ -1,3 +1,4 @@
+import type { BitranAliases } from '@erudit-js/cog/schema';
 import { BlockParseFactory, StringifyFactory } from '@bitran-js/transpiler';
 
 import type { AliasesSchema } from './shared';
@@ -18,8 +19,8 @@ export class AliasesParser extends BlockParseFactory<AliasesSchema> {
         return true;
     }
 
-    override async createParseData(): Promise<Record<string, string>> {
-        const aliases: Record<string, string> = {};
+    override async createParseData(): Promise<BitranAliases> {
+        const aliases: BitranAliases = {};
 
         for (const [alias, target] of this.aliasesArray) {
             if (aliases[alias]) throw new Error(`Duplicate alias "${alias}"!`);

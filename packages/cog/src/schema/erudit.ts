@@ -42,6 +42,16 @@ export interface EruditConfigAds {
     bottomBlockId: string;
 }
 
+export type EruditConfigDependencyOptions = Partial<{
+    transpile: boolean;
+    optimize: boolean;
+}>;
+
+export type EruditConfigDependencies = Record<
+    string,
+    EruditConfigDependencyOptions
+>;
+
 //
 //
 //
@@ -49,10 +59,10 @@ export interface EruditConfigAds {
 export interface EruditConfig {
     language: string;
     contentTargets: string[];
-    subDeps: string[];
     debug: Partial<EruditConfigDebug>;
     site: Partial<EruditConfigSite>;
     seo: Partial<EruditConfigSeo>;
     repository: Partial<EruditConfigRepository>;
     ads: Partial<EruditConfigAds>;
+    dependencies: Partial<EruditConfigDependencies>;
 }

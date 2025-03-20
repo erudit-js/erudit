@@ -53,7 +53,7 @@ describe('tryParseMathString', () => {
                 { type: 'word', value: 'b' },
                 { type: 'other', value: ' / ' },
                 { type: 'word', value: 'c' },
-                { type: 'other', value: ' - ' },
+                { type: 'other', value: ' – ' },
                 { type: 'word', value: 'd' },
             ],
         });
@@ -95,6 +95,24 @@ describe('tryParseMathString', () => {
                 { type: 'other', value: ' = ' },
                 { type: 'word', value: 'γ' },
             ],
+        });
+    });
+
+    describe('should handle replacements', () => {
+        test.each([
+            // No spaces
+            ['a-b', 'a – b'],
+            ['a+b', 'a + b'],
+            ['a=b', 'a = b'],
+            // Redundant spaces
+            ['a  -  b', 'a – b'],
+            ['a  +  b', 'a + b'],
+            ['a  =  b', 'a = b'],
+        ])('should handle %p', (input, expected) => {
+            const result = tryParseMathString(input);
+            expect(result?.tokens.map((token) => token.value).join('')).toEqual(
+                expected,
+            );
         });
     });
 });

@@ -1,10 +1,14 @@
 <script lang="ts" setup>
-import { Render, type ElementProps } from '@bitran-js/renderer-vue';
+import {
+    Render,
+    useElementParseData,
+    type ElementProps,
+} from '@bitran-js/renderer-vue';
 
 import type { IncludeSchema } from './shared';
 
-const props = defineProps<ElementProps<IncludeSchema>>();
-const { blocks } = props.node.parseData;
+defineProps<ElementProps<IncludeSchema>>();
+const { blocks } = useElementParseData<IncludeSchema>();
 </script>
 
 <template>

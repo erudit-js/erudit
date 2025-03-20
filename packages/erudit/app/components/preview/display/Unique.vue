@@ -5,6 +5,9 @@ import type { PreviewDataUnique } from '@app/scripts/preview/data/unique';
 import type { PreviewDisplayProps } from '@app/scripts/preview/display';
 
 const { data } = defineProps<PreviewDisplayProps<PreviewDataUnique>>();
+
+const bitranTranspiler = await useBitranTranspiler();
+const root = await bitranTranspiler.parser.parse(data.bitran.content.biCode);
 </script>
 
 <template>
@@ -16,7 +19,10 @@ const { data } = defineProps<PreviewDisplayProps<PreviewDataUnique>>();
             ]"
         >
             <BitranContent
-                :content="data.bitran.content"
+                :content="{
+                    root,
+                    preRenderData: data.bitran.content.preRenderData,
+                }"
                 :context="data.bitran.context"
             />
         </div>

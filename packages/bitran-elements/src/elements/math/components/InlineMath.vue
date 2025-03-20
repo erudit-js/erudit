@@ -1,17 +1,20 @@
 <script lang="ts" setup>
-import type { ElementProps } from '@bitran-js/renderer-vue';
+import {
+    useElementRenderData,
+    type ElementProps,
+} from '@bitran-js/renderer-vue';
 
 import type { InlineMathSchema } from '../shared';
 import MathKatex from './MathKatex.vue';
 
 const props = defineProps<ElementProps<InlineMathSchema>>();
-const renderData = props.node.renderData;
+const inlineMathData = useElementRenderData<InlineMathSchema>();
 </script>
 
 <template>
-    <template v-if="renderData.type === 'string'">
+    <template v-if="inlineMathData.type === 'string'">
         <span :class="[$style.inlineMath, $style.stringMath]">
-            <template v-for="token of renderData.tokens">
+            <template v-for="token of inlineMathData.tokens">
                 <span v-if="token.type === 'word'" :class="$style.word">{{
                     token.value
                 }}</span>
@@ -23,7 +26,7 @@ const renderData = props.node.renderData;
         v-else
         :class="$style.inlineMath"
         :displayMath="false"
-        :mathHtml="renderData.html"
+        :mathHtml="inlineMathData.html"
     />
 </template>
 
@@ -33,7 +36,7 @@ const renderData = props.node.renderData;
 
 <style lang="scss" module>
 .inlineMath {
-    color: light-dark(#3e6084, #a7b3c7);
+    color: light-dark(#53687e, #aeb8c7);
 }
 
 .stringMath {

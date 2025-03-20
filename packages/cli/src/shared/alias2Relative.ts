@@ -7,19 +7,28 @@ import { resolvePaths } from '@erudit-js/cog/kit';
 // TODO: Remove this when https://github.com/nuxt/nuxt/issues/30978 is fixed!
 //
 
-export async function alias2Relative(rootDir: string) {
-    rootDir = resolvePaths(rootDir);
+export async function alias2Relative(baseDir: string, toReplaceDir: string) {
+    baseDir = resolvePaths(baseDir);
+    toReplaceDir = resolvePaths(toReplaceDir);
 
-    // Check if rootDir exists
-    if (!existsSync(rootDir)) {
+    // Check if directories exist
+    if (!existsSync(baseDir)) {
+        console.log(`Base directory ${baseDir} does not exist. Skipping...`);
         return;
     }
 
-    const ALIASES_RESOLVED_FILE = path.join(rootDir, 'ALIASES_RESOLVED');
+    if (!existsSync(toReplaceDir)) {
+        console.log(
+            `Target directory ${toReplaceDir} does not exist. Skipping...`,
+        );
+        return;
+    }
+
+    const ALIASES_RESOLVED_FILE = path.join(toReplaceDir, 'ALIASES_RESOLVED');
 
     // Check if ALIASES_RESOLVED file exists
     if (existsSync(ALIASES_RESOLVED_FILE)) {
-        console.log('Aliases already resolved. Skipping...');
+        console.log(`Aliases already resolved in ${toReplaceDir}. Skipping...`);
         return;
     }
 
@@ -31,17 +40,17 @@ export async function alias2Relative(rootDir: string) {
         '@app': './app',
     };
 
-    // Find all files in rootDir recursively
-    const allFiles = await findAllFiles(rootDir);
+    // Find all files in toReplaceDir recursively
+    const allFiles = await findAllFiles(toReplaceDir);
 
     // Process each file
     for (const filePath of allFiles) {
-        await processFile(filePath, rootDir, replaceMap);
+        await processFile(filePath, baseDir, replaceMap);
     }
 
     // Create ALIASES_RESOLVED file
     await fs.writeFile(ALIASES_RESOLVED_FILE, new Date().toISOString());
-    console.log('All aliases resolved successfully');
+    console.log(`All aliases in ${toReplaceDir} resolved successfully!`);
 }
 
 async function findAllFiles(dir: string): Promise<string[]> {
@@ -52,10 +61,10 @@ async function findAllFiles(dir: string): Promise<string[]> {
 
         for (const entry of entries) {
             const fullPath = path.join(dir, entry.name);
+            const ignore: string[] = [];
 
-            // Skip node_modules, .git, and other non-source directories
             if (entry.isDirectory()) {
-                if (!['.git', 'dist', 'build'].includes(entry.name)) {
+                if (!ignore.includes(entry.name)) {
                     results.push(...(await findAllFiles(fullPath)));
                 }
             } else if (entry.isFile() && /\.(js|ts|vue)$/.test(entry.name)) {

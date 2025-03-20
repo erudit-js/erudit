@@ -1,6 +1,5 @@
 <script lang="ts" setup>
-import type { TopicPart } from '@erudit-js/cog/schema';
-import { NO_ALIASES } from '@erudit-js/bitran-elements/aliases/shared';
+import { NO_ALIASES, type TopicPart } from '@erudit-js/cog/schema';
 
 import eruditConfig from '#erudit/config';
 

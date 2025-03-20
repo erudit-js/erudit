@@ -7,9 +7,10 @@ import { logger } from '@erudit/module/logger';
 
 export async function setupEruditConfig(_nuxt: Nuxt) {
     let config: Partial<EruditConfig> = {};
+    const configPath = projectPath('erudit.config');
 
     try {
-        const projectConfig = (await import(projectPath('erudit'))).default;
+        const projectConfig = (await import(configPath)).default;
         if (!projectConfig) throw new Error('Falsy Erudit config!');
         config = projectConfig;
     } catch (error) {

@@ -1,6 +1,7 @@
 import {
     isContentType,
     isTopicPart,
+    type BitranLocation,
     type TopicPart,
 } from '@erudit-js/cog/schema';
 
@@ -16,7 +17,6 @@ import {
     createTopicPartLink,
 } from '@shared/link';
 import { CONTENT_TYPE_ICON, ICON, TOPIC_PART_ICON } from '@erudit/shared/icons';
-import type { BitranLocation } from '@erudit/shared/bitran/location';
 
 export async function getContentContext(contentId: string): Promise<Context> {
     const context: Context = [];

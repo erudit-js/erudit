@@ -1,21 +1,24 @@
 <script lang="ts" setup>
-import { type ElementProps } from '@bitran-js/renderer-vue';
+import {
+    useElementRenderData,
+    type ElementProps,
+} from '@bitran-js/renderer-vue';
 
 import { type BlockMathSchema } from '../shared';
 import BlockMathGroup from './BlockMathGroup.vue';
 
-const props = defineProps<ElementProps<BlockMathSchema>>();
-const rootMathGroup = props.node.renderData;
+defineProps<ElementProps<BlockMathSchema>>();
+const rootMathGroup = useElementRenderData<BlockMathSchema>();
 </script>
 
 <template>
-    <div>
+    <div :class="$style.blockMath">
         <BlockMathGroup :group="rootMathGroup" :freeze="node.meta.freeze" />
     </div>
 </template>
 
 <style lang="scss" module>
-// .blockMath {
-//
-// }
+:global(.bitran-blockContainer .bitran-blockMain):has(.blockMath) {
+    overflow: auto;
+}
 </style>

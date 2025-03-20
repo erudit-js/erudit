@@ -4,8 +4,9 @@ import {
     getContributorContext,
 } from '@erudit/server/plugin/content/context';
 
+import type { LinkTargetPageType } from '@erudit-js/bitran-elements/link/target';
+
 import type { PreviewDataPageLink } from '@app/scripts/preview/data/pageLink';
-import type { LinkTargetPageType } from '@erudit/shared/bitran/link/target';
 import type { Context, ContextItem } from '@erudit/shared/content/context';
 
 export default defineEventHandler<Promise<PreviewDataPageLink>>(
@@ -27,7 +28,7 @@ export default defineEventHandler<Promise<PreviewDataPageLink>>(
                     return await getContributorContext(contentId);
             }
 
-            throw createError(`Can't handle "${pageType}" page type!`);
+            throw createError(`Can't handle "${pageType as any}" page type!`);
         })();
 
         const lastContextItem = context.pop() as ContextItem;

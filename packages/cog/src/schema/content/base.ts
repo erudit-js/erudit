@@ -24,7 +24,7 @@ export interface ContentConfig {
     navTitle: string;
     description: string;
     hidden: boolean;
-    flags: Record<ContentFlag, boolean>;
+    flags: Partial<Record<ContentFlag, boolean>>;
     seo: Partial<ContentSeo>;
     contributors: string[];
     dependencies: string[];

@@ -56,18 +56,13 @@ function getIcon(contextIcon: string) {
 
         @include transition(color);
 
-        // [my-icon]
-        // {
-        //     position: relative;
-        //     top: .6px;
-        // }
-
         &:hover {
             color: var(--textMuted);
         }
     }
 
     .sep {
+        flex-shrink: 0;
         position: relative;
         top: 0.5px;
     }

@@ -5,9 +5,7 @@ import {
 } from '@bitran-js/transpiler';
 
 import type {
-    BlockMathNode,
     BlockMathSchema,
-    InlineMathNode,
     InlineMathSchema,
     MathParseData,
 } from './shared';

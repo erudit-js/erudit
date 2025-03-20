@@ -1,5 +1,4 @@
 import { spawn } from 'node:child_process';
-//import { locateErudit } from './locateErudit';
 
 type NuxtCommand = 'dev' | 'generate' | 'prepare';
 
@@ -13,8 +12,6 @@ export async function spawnNuxt(command: NuxtCommand, projectPath: string) {
         };
 
         const _spawnNuxt = () => {
-            //const eruditPackagePath = locateErudit(projectPath);
-
             const nuxtProcess = spawn(
                 `nuxt ${command} ${projectPath}/.erudit/nuxt`,
                 {
@@ -22,7 +19,6 @@ export async function spawnNuxt(command: NuxtCommand, projectPath: string) {
                     stdio: 'inherit',
                     env: {
                         ...process.env,
-                        //ERUDIT_PACKAGE_DIR: eruditPackagePath,
                         ERUDIT_PROJECT_DIR: projectPath,
                     },
                 },
