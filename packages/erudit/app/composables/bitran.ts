@@ -7,13 +7,13 @@ import {
 import {
     defineBitranTranspiler,
     type BitranTranspiler,
-    type ElementTranspilers,
 } from '@bitran-js/transpiler';
 import { eruditDefaultTranspilers } from '@erudit-js/bitran-elements/defaultTranspilers';
 import { eruditDefaultRenderers } from '@erudit-js/bitran-elements/defaultRenderers';
 
 import eruditConfig from '#erudit/config';
-import bitranConfig from '#erudit/client/bitran';
+import projectBitranTranspilers from '#erudit/bitran/transpilers';
+import projectBitranRenderers from '#erudit/bitran/renderers';
 
 let bitranTranspiler!: BitranTranspiler;
 let bitranRenderers!: ElementVueRenderers;
@@ -27,26 +27,12 @@ globalThis.useEruditConfig = () => eruditConfig;
 export async function useBitranTranspiler() {
     if (bitranTranspiler) return bitranTranspiler;
 
-    const projectTranspilers = await getProjectTranspilers();
-
     bitranTranspiler = defineBitranTranspiler({
-        ...projectTranspilers,
+        ...projectBitranTranspilers,
         ...eruditDefaultTranspilers,
     });
 
     return bitranTranspiler;
-}
-
-async function getProjectTranspilers(): Promise<ElementTranspilers> {
-    const bitranElements = bitranConfig.elements;
-
-    if (!bitranElements) return {};
-
-    const projectTranspilers: ElementTranspilers = {};
-    for (const [name, bitranElement] of Object.entries(bitranElements))
-        projectTranspilers[name] = await bitranElement.transpiler();
-
-    return projectTranspilers;
 }
 
 //
@@ -56,27 +42,12 @@ async function getProjectTranspilers(): Promise<ElementTranspilers> {
 export async function useBitranRenderers() {
     if (bitranRenderers) return bitranRenderers;
 
-    const projectRenderers = await getProjectRenderers();
-
-    // @ts-ignore
     bitranRenderers = {
-        ...projectRenderers,
+        ...projectBitranRenderers,
         ...eruditDefaultRenderers,
     };
 
     return bitranRenderers!;
-}
-
-async function getProjectRenderers() {
-    const bitranElements = bitranConfig.elements;
-
-    if (!bitranElements) return {};
-
-    const projectRenderers: ElementVueRenderers = {};
-    for (const [name, bitranElement] of Object.entries(bitranElements))
-        projectRenderers[name] = await bitranElement.renderer();
-
-    return projectRenderers;
 }
 
 //

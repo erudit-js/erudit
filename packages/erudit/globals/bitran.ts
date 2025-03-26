@@ -1,2 +1,4 @@
-import { defineBitranConfig, defineBitranElement } from '@erudit-js/cog/schema';
-export { defineBitranConfig, defineBitranElement };
+export {
+    defineBitranTranspilers,
+    defineBitranRenderers,
+} from '@erudit-js/cog/schema';

@@ -6,7 +6,6 @@ import { ERUDIT_SERVER } from '@server/global';
 
 import { setupRebuildWatcher } from './rebuild';
 import { setupDatabase } from '../db/setup';
-import { setupBitranConfig } from '../bitran/setup';
 
 export async function setup() {
     debug.start('Running initial setup procedures...');
@@ -17,6 +16,5 @@ export async function setup() {
     ERUDIT_SERVER.CONFIG = eruditConfig;
     globalThis.useEruditConfig = () => eruditConfig;
 
-    await setupBitranConfig();
     await setupDatabase();
 }

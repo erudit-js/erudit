@@ -1,36 +1,52 @@
+import { globSync } from 'glob';
 import { addTemplate } from 'nuxt/kit';
 import type { Nuxt } from 'nuxt/schema';
-import type { EruditBitranConfig } from '@erudit-js/cog/schema';
 
 import { eruditEndNuxtPath, projectPath } from '@erudit/globalPath';
 import { logger } from '@erudit/module/logger';
 
-export async function setupBitranConfig(_nuxt: Nuxt) {
-    let config: Partial<EruditBitranConfig>;
-    const configPath = projectPath('bitran.config');
+export async function setupBitranTemplates(_nuxt: Nuxt) {
+    const transpilersPath = projectPath('bitran.transpiler');
+    const renderersPath = projectPath('bitran.renderer');
 
-    try {
-        const projectConfig = (await import(configPath)).default;
-        if (!projectConfig) throw new Error('Falsy Bitran config!');
-        config = projectConfig;
-    } catch (error) {
-        logger.warn(`Failed to load Bitran config!\n\n${error}`);
+    const hasTranspilers = globSync(transpilersPath + '.*').length > 0;
+    const hasRenderers = globSync(renderersPath + '.*').length > 0;
+    const hasBitran = hasTranspilers && hasRenderers;
+
+    if (!hasBitran) {
+        logger.warn(
+            `Failed to load Bitran. Make sure you have "bitran.transpilers" and "bitran.renderers" files in your project root!`,
+        );
     }
 
-    const templateFilename = '#erudit/client/bitran.ts';
+    const transpilersTemplate = '#erudit/bitran/transpilers.ts';
+    const renderersTemplate = '#erudit/bitran/renderers.ts';
 
     addTemplate({
-        filename: templateFilename,
+        filename: transpilersTemplate,
         write: true,
         getContents: () => `
-            import type { EruditBitranConfig } from '@erudit-js/cog/schema';
-            ${config ? `import bitranConfig from '${configPath}';` : ''}
-            export default ${config ? 'bitranConfig' : '{}'} as Partial<EruditBitranConfig>;
+            import type { ElementTranspilers } from '@bitran-js/transpiler';
+            ${hasTranspilers ? `import transpilers from '${transpilersPath}';` : ''}
+            export default ${hasTranspilers ? 'transpilers' : '{}'} as ElementTranspilers;
+        `,
+    });
+
+    addTemplate({
+        filename: renderersTemplate,
+        write: true,
+        getContents: () => `
+            import type { ElementVueRenderers } from '@bitran-js/renderer-vue';
+            ${hasRenderers ? `import renderers from '${renderersPath}';` : ''}
+            export default ${hasRenderers ? 'renderers' : '{}'} as ElementVueRenderers;
         `,
     });
 
     const alias = (_nuxt.options.alias ||= {});
-    alias['#erudit/client/bitran'] = eruditEndNuxtPath(
-        `.nuxt/${templateFilename}`,
+    alias['#erudit/bitran/transpilers'] = eruditEndNuxtPath(
+        `.nuxt/${transpilersTemplate}`,
+    );
+    alias['#erudit/bitran/renderers'] = eruditEndNuxtPath(
+        `.nuxt/${renderersTemplate}`,
     );
 }

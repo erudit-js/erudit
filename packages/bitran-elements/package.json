@@ -41,6 +41,9 @@
             "import": "./dist/elements/heading/*.mjs",
             "require": "./dist/elements/heading/*.mjs"
         },
+        "./heading/Heading.vue": {
+            "import": "./dist/elements/heading/Heading.vue"
+        },
         "./include/*": {
             "types": "./dist/elements/include/*.d.ts",
             "import": "./dist/elements/include/*.mjs",
@@ -108,9 +111,9 @@
         "prepack": "bun run build"
     },
     "peerDependencies": {
-        "@bitran-js/core": "1.0.0-dev.10",
-        "@bitran-js/renderer-vue": "1.0.0-dev.10",
-        "@bitran-js/transpiler": "1.0.0-dev.10",
+        "@bitran-js/core": "link:@bitran-js/core",
+        "@bitran-js/renderer-vue": "link:@bitran-js/renderer-vue",
+        "@bitran-js/transpiler": "link:@bitran-js/transpiler",
         "@erudit-js/cog": "workspace:3.0.0-dev.10",
         "katex": "^0.16.21",
         "sass": ">=1.85.1",

@@ -92,7 +92,9 @@ export default defineNuxtConfig({
                 '@erudit-js/bitran-elements',
             ],
         },
-        server: { fs: { strict: false } },
+        server: {
+            fs: { strict: false },
+        },
         css: {
             preprocessorOptions: {
                 scss: {

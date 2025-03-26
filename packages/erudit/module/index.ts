@@ -5,7 +5,7 @@ import { setupRestartWatcher } from '@erudit/module/restart';
 import { setupEruditConfig } from '@erudit/module/config';
 import { logger } from '@erudit/module/logger';
 import { setupGlobalImports } from '@erudit/module/imports';
-import { setupBitranConfig } from './bitran';
+import { setupBitranTemplates } from './bitran';
 import { setupGlobalPaths } from './paths';
 
 export default defineNuxtModule({
@@ -17,7 +17,7 @@ export default defineNuxtModule({
         registerGlobals();
 
         const eruditConfig = await setupEruditConfig(_nuxt);
-        await setupBitranConfig(_nuxt);
+        await setupBitranTemplates(_nuxt);
         setupGlobalPaths(_nuxt);
 
         if (eruditConfig.site?.baseUrl) {
