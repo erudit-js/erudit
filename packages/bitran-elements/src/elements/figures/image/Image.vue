@@ -12,6 +12,7 @@ import {
     onMounted,
     onUnmounted,
     shallowRef,
+    useBaseUrlPath,
     useCssModule,
     useTemplateRef,
 } from '#imports';
@@ -23,6 +24,7 @@ import FigureWrapper from '../FigureWrapper.vue';
 defineProps<ElementProps<ImageSchema>>();
 
 const style = useCssModule();
+const baseUrlPath = useBaseUrlPath();
 
 const parseData = useElementParseData<ImageSchema>();
 const renderData = useElementRenderData<ImageSchema>();
@@ -84,13 +86,13 @@ onUnmounted(() => {
     <FigureWrapper :caption="parseData.caption">
         <div class="pswp-image" ref="figure">
             <a
-                :href="contentAsset(renderData.resolvedSrc)"
+                :href="baseUrlPath(contentAsset(renderData.resolvedSrc))"
                 :data-pswp-width="renderData.size.width"
                 :data-pswp-height="renderData.size.height"
                 target="_blank"
             >
                 <img
-                    :src="contentAsset(renderData.resolvedSrc)"
+                    :src="baseUrlPath(contentAsset(renderData.resolvedSrc))"
                     :class="[
                         invertClass ? $style[`invert-${invertClass}`] : '',
                     ]"

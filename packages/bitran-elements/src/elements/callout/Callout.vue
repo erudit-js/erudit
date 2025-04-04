@@ -6,7 +6,7 @@ import {
     type ElementProps,
 } from '@bitran-js/renderer-vue';
 
-import { contentAsset } from '#imports';
+import { contentAsset, useBaseUrlPath } from '#imports';
 import type { CalloutSchema } from './shared';
 
 // Default icons
@@ -22,6 +22,7 @@ const defaultIcons = {
 
 const parseData = useElementParseData<CalloutSchema>();
 const renderData = useElementRenderData<CalloutSchema>();
+const baseUrlPath = useBaseUrlPath();
 
 const iconSrc = (() => {
     if (parseData.icon.type === 'default')
@@ -29,7 +30,7 @@ const iconSrc = (() => {
             parseData.icon.calloutType as keyof typeof defaultIcons
         ];
 
-    return contentAsset(renderData);
+    return baseUrlPath(contentAsset(renderData));
 })();
 
 const iconInversion = (() => {
