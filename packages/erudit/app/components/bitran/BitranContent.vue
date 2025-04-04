@@ -1,6 +1,9 @@
 <script lang="ts" setup>
 import { Bitran, type BitranContent } from '@bitran-js/renderer-vue';
-import type { BitranContext } from '@erudit-js/cog/schema';
+import {
+    setEruditBitranRuntime,
+    type BitranContext,
+} from '@erudit-js/cog/schema';
 
 import eruditConfig from '#erudit/config';
 
@@ -11,8 +14,17 @@ const props = defineProps<{
     context: BitranContext;
 }>();
 
+/* Remove transpiler from Bitran Vue Component at all? It takes RootNode already... */
 const bitranTranspiler = await useBitranTranspiler();
 const bitranRenderers = await useBitranRenderers();
+
+[(bitranTranspiler.parser, bitranTranspiler.stringifier)].forEach((item) => {
+    setEruditBitranRuntime(item, {
+        eruditConfig,
+        insideInclude: false,
+        context: props.context,
+    });
+});
 
 const formatText = useFormatText();
 
@@ -69,6 +81,8 @@ const isServer = import.meta.server;
     --bitran_textDeep: var(--textDeep);
 
     --bitran_colorBrand: var(--brand);
+
+    --bitran_colorBorder: var(--border);
 
     @include bp.below('mobile') {
         --bitran_gapBlocks: calc(22px);

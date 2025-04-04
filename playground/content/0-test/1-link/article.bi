@@ -18,13 +18,13 @@ This is a [link](practice|practiceParagraph) to sample paragraph in this Topic, 
 
 ## Scope: Global
 
-This is an [global link](article|test/link|sampleParagraph) to sample paragraph in current part.\
-This is an [global link](practice|test/link|practiceParagraph) to sample paragraph in Practice.
+This is an [global link](article|/test/link|sampleParagraph) to sample paragraph in current part.\
+This is an [global link](practice|/test/link|practiceParagraph) to sample paragraph in Practice.
 
 ## Aliases
 
 ~ sampleP sampleParagraph
-~ globalSampleP article|test/link|sampleParagraph
+~ globalSampleP article|/test/link|sampleParagraph
 ~ practiceP practice|practiceParagraph
 ~ relativeSampleP article|~/link|sampleParagraph
 
@@ -45,13 +45,13 @@ Relative aliased [link](~relativeSampleP).
 
 Page links target specific pages of current Erudit site.
 
-Context link to [Article](page|article). Global [link](page|article|test/link). Relative [link](page|article|~/link).\
-Context link to [Summary](page|summary). Global [link](page|summary|test/link). Relative [link](page|summary|~/link).\
-Context link to [Practice](page|practice). Global [link](page|practice|test/link). Relative [link](page|practice|~/link).\
+Context link to [Article](page|article). Global [link](page|article|/test/link). Relative [link](page|article|~/link).\
+Context link to [Summary](page|summary). Global [link](page|summary|/test/link). Relative [link](page|summary|~/link).\
+Context link to [Practice](page|practice). Global [link](page|practice|/test/link). Relative [link](page|practice|~/link).\
 
-Link to this [book](page|book|test).
+Link to this [book](page|book|/test).
 
-Global link to [group](page|group|test/sample-group). Relative [link](page|group|~/sample-group).
+Global link to [group](page|group|/test/sample-group). Relative [link](page|group|~/sample-group).
 
 Link to [contributor](page|contributor|test-contributor-1).
 

@@ -1,6 +1,6 @@
 import { spawn } from 'node:child_process';
 
-type NuxtCommand = 'dev' | 'generate' | 'prepare';
+type NuxtCommand = 'dev' | 'build' | 'generate' | 'prepare';
 
 export async function spawnNuxt(command: NuxtCommand, projectPath: string) {
     return new Promise<void>((resolve) => {

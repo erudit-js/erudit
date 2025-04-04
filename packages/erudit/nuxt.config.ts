@@ -1,3 +1,9 @@
+import {
+    PUBLIC_CONTENT_ASSET,
+    PUBLIC_CONTRIBUTOR_ASSET,
+    PUBLIC_ERUDIT_ASSET,
+    PUBLIC_USER_ASSET,
+} from './const';
 import { eruditPath, projectPath } from './globalPath';
 
 export default defineNuxtConfig({
@@ -25,6 +31,7 @@ export default defineNuxtConfig({
     build: {
         transpile: [
             'yaml',
+            'photoswipe',
             '@bitran-js/renderer-vue',
             '@erudit-js/bitran-elements',
         ],
@@ -40,6 +47,11 @@ export default defineNuxtConfig({
             projectPath(`contributors/${pattern}`),
         ),
     ],
+    esbuild: {
+        options: {
+            charset: 'utf8',
+        },
+    },
     nitro: {
         preset: 'github-pages',
         plugins: [eruditPath('server/plugin')],
@@ -49,24 +61,27 @@ export default defineNuxtConfig({
         output: {
             publicDir: projectPath('dist'),
         },
+        externals: {
+            inline: [/bitran-elements/],
+        },
         publicAssets: [
             {
-                baseURL: '/_erudit-asset/',
+                baseURL: PUBLIC_ERUDIT_ASSET,
                 dir: eruditPath('app/public'),
                 maxAge: 60 * 60 * 24 * 30,
             },
             {
-                baseURL: '/_user-asset/public/',
+                baseURL: PUBLIC_USER_ASSET,
                 dir: projectPath('public'),
                 maxAge: 60 * 60 * 24 * 30,
             },
             {
-                baseURL: '/_user-asset/content/',
+                baseURL: PUBLIC_CONTENT_ASSET,
                 dir: projectPath('content'),
                 maxAge: 60 * 60 * 24 * 30,
             },
             {
-                baseURL: '/_user-asset/contributor/',
+                baseURL: PUBLIC_CONTRIBUTOR_ASSET,
                 dir: projectPath('contributors'),
                 maxAge: 60 * 60 * 24 * 30,
             },
@@ -85,6 +100,7 @@ export default defineNuxtConfig({
         optimizeDeps: {
             include: [
                 'yaml',
+                'photoswipe',
                 '@floating-ui/vue',
                 '@bitran-js/core',
                 '@bitran-js/transpiler',
@@ -92,7 +108,9 @@ export default defineNuxtConfig({
                 '@erudit-js/bitran-elements',
             ],
         },
-        server: { fs: { strict: false } },
+        server: {
+            fs: { strict: false },
+        },
         css: {
             preprocessorOptions: {
                 scss: {

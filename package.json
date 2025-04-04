@@ -17,11 +17,12 @@
         "play": "bun erudit dev playground --eruditPath=./packages/erudit",
         "play:prepare": "bun erudit prepare playground",
         "play:build": "bun erudit build playground",
+        "play:generate": "bun erudit generate playground",
         "play:preview": "bun erudit preview playground"
     },
     "devDependencies": {
         "@types/jest": "^29.5.14",
-        "@types/node": "^22.13.10",
+        "@types/node": "^22.14.0",
         "prettier": "^3.5.3",
         "typescript": "^5.8.2"
     }

@@ -18,6 +18,10 @@ export async function walkNav(
 //
 //
 
+export function getNavBookIds() {
+    return Object.keys(ERUDIT_SERVER.NAV_BOOKS || {});
+}
+
 export function getNavBookOf(target: string | NavNode): NavNode | undefined {
     const id = typeof target === 'string' ? target : target.id;
 

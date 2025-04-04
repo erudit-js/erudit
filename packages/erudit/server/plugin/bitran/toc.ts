@@ -59,7 +59,7 @@ export async function getBitranToc(location: BitranLocation) {
         };
 
         if (
-            ERUDIT_SERVER.BITRAN_CONFIG?.toc?.includes(node.name) ||
+            ERUDIT_SERVER.CONFIG.bitran?.toc?.includes(node.name) ||
             node.meta?.toc
         ) {
             // Erudit Bitran config says to add these products to TOC

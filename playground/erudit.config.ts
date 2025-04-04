@@ -11,7 +11,7 @@ export default defineEruditConfig({
     },
     site: {
         buildUrl: 'http://localhost:3000',
-        // baseUrl: '/subfolder/',
+        baseUrl: '/subfolder/',
         // logotype: publicAsset('logotype.png'),
         title: 'Привет мир',
         slogan: 'Тестовый сайт',

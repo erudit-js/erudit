@@ -25,7 +25,6 @@ const english: EruditPhrases = {
     theme_light: 'Light',
     theme_dark: 'Dark',
     content: 'Content',
-    generator: 'Generator',
     main_page: 'Main page',
     members: 'Members',
     add_translation: 'Add translation',

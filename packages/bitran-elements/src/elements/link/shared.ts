@@ -1,7 +1,6 @@
 import { InlinerNode, type DefineElementSchema } from '@bitran-js/core';
 
 import type { LinkTarget } from './target';
-import type { Component } from 'vue';
 
 export const linkName = 'link';
 

@@ -1,2 +1,1 @@
-import { defineBitranConfig, defineBitranElement } from '@erudit-js/cog/schema';
-export { defineBitranConfig, defineBitranElement };
+export { defineServerBitran, defineAppBitran } from '@erudit-js/cog/schema';

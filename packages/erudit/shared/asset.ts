@@ -1,15 +1,22 @@
+import {
+    PUBLIC_CONTENT_ASSET,
+    PUBLIC_CONTRIBUTOR_ASSET,
+    PUBLIC_ERUDIT_ASSET,
+    PUBLIC_USER_ASSET,
+} from '@erudit/const';
+
 export function eruditAsset(path: string) {
-    return '/_erudit-asset/' + path;
+    return PUBLIC_ERUDIT_ASSET + path;
 }
 
 export function contributorAsset(path: string) {
-    return '/_user-asset/contributor/' + path;
+    return PUBLIC_CONTRIBUTOR_ASSET + path;
 }
 
 export function contentAsset(path: string) {
-    return '/_user-asset/content/' + path;
+    return PUBLIC_CONTENT_ASSET + path;
 }
 
 export function publicAsset(path: string) {
-    return '/_user-asset/public/' + path;
+    return PUBLIC_USER_ASSET + path;
 }

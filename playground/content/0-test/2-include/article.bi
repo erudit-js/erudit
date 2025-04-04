@@ -14,14 +14,14 @@ Some of includes target me!
 
 # Scope: Global
 
-<~ article|test/include|sampleParagraph
+<~ article|/test/include|sampleParagraph
 
-<~ practice|test/include|practiceParagraph
+<~ practice|/test/include|practiceParagraph
 
 # Aliases
 
 ~ sampleP sampleParagraph
-~ globalSampleP article|test/link|sampleParagraph
+~ globalSampleP article|/test/link|sampleParagraph
 ~ practiceP practice|practiceParagraph
 ~ relativeSampleP article|~/link|sampleParagraph
 

@@ -4,12 +4,7 @@
         "../../playground/.erudit/nuxt/.nuxt/tsconfig.json"
     ],
     "compilerOptions": {
-        "types": [
-            "@erudit-js/cog/types",
-            "vite/client",
-            "@types/node",
-            "@types/jest"
-        ]
+        "types": ["vite/client", "@types/node", "@types/jest"]
     },
     "include": ["./src/**/*"]
 }

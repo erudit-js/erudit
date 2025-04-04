@@ -7,5 +7,5 @@ export default defineTopic({
         title: 'Seo Link',
         description: 'This is my super duper boba',
     },
-    dependencies: ['../include', '~/preview', 'test/sample-group'],
+    dependencies: ['../include', '~/preview', '/test/sample-group'],
 });

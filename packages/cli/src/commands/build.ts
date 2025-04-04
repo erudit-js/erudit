@@ -1,15 +1,16 @@
-import { consola } from 'consola';
+import consola from 'consola';
 import { defineCommand } from 'citty';
 
-import { logCommand } from '../shared/log';
-import { prepare } from '../shared/prepare';
-import { spawnNuxt } from '../shared/nuxt';
 import { eruditPathArg, projectPathArg, resolveArgPaths } from '../shared/args';
+import { logCommand } from '../shared/log';
+import { spawnNuxt } from '../shared/nuxt';
+import { prepare } from '../shared/prepare';
 
 export const build = defineCommand({
     meta: {
         name: 'Build',
-        description: 'Generates fully static Erudit site',
+        description:
+            'Builds Erudit project for fast and convenient content writing',
     },
     args: {
         ...projectPathArg,
@@ -26,6 +27,6 @@ export const build = defineCommand({
         await prepare(projectPath, eruditPath);
 
         consola.start('Starting Nuxt build...');
-        await spawnNuxt('generate', projectPath);
+        await spawnNuxt('build', projectPath);
     },
 });

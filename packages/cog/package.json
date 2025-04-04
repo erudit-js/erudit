@@ -1,6 +1,6 @@
 {
     "name": "@erudit-js/cog",
-    "version": "3.0.0-dev.9",
+    "version": "3.0.0-dev.10",
     "description": "⚙️ Erudit kit, types and utils",
     "type": "module",
     "repository": {
@@ -19,10 +19,7 @@
             "import": "./dist/kit/index.mjs",
             "require": "./dist/kit/index.mjs"
         },
-        "./utils/*": "./dist/utils/*.mjs",
-        "./types": {
-            "types": "./types.d.ts"
-        }
+        "./utils/*": "./dist/utils/*.mjs"
     },
     "files": [
         "dist",
@@ -37,9 +34,9 @@
         "gradient-string": "^3.0.0"
     },
     "peerDependencies": {
-        "@bitran-js/core": "1.0.0-dev.10",
-        "@bitran-js/renderer-vue": "1.0.0-dev.10",
-        "@bitran-js/transpiler": "1.0.0-dev.10"
+        "@bitran-js/core": "1.0.0-dev.11",
+        "@bitran-js/renderer-vue": "1.0.0-dev.11",
+        "@bitran-js/transpiler": "1.0.0-dev.11"
     },
     "devDependencies": {
         "unbuild": "^3.5.0"

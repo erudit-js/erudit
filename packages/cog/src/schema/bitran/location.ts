@@ -1,4 +1,4 @@
-import { isTopicPart } from '../content/base';
+import { isTopicPart, isContentType } from '../content/base';
 
 export const bitranLocationTypes = {
     article: true,
@@ -75,12 +75,29 @@ export function parsePartialBitranLocation(
 ): BitranLocation {
     const parts = strLocation.split('|');
 
+    // Ensure context path is an absolute content ID for content types
+    const contextPath = (() => {
+        const basePath = contextLocation.path;
+
+        if (!basePath) {
+            return undefined;
+        }
+
+        const contextType = contextLocation.type;
+
+        if (isContentType(contextType)) {
+            return basePath.startsWith('/') ? basePath : '/' + basePath;
+        }
+
+        return basePath;
+    })();
+
     // Only unique provided. Restoring type + path
     // function -> article|foo/bar|function
     if (parts.length === 1)
         return {
             type: contextLocation.type,
-            path: contextLocation.path,
+            path: contextPath,
             unique: parts[0],
         };
 
@@ -101,7 +118,7 @@ export function parsePartialBitranLocation(
 
             return {
                 type,
-                path: contextLocation.path,
+                path: contextPath,
                 unique,
             };
         }

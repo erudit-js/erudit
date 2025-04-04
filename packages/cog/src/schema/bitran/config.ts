@@ -1,28 +1,35 @@
-import type { BitranElements } from './element';
+import type { GenericElementSchema } from '@bitran-js/core';
+import type { ElementVueRenderer } from '@bitran-js/renderer-vue';
+import type {
+    ElementTranspiler,
+    ElementTranspilers,
+} from '@bitran-js/transpiler';
 
-export type EruditBitranConfig = {
-    elements: BitranElements;
-    toc: string[];
+//
+// Server
+//
 
-    /**
-     * TODO!
-     * Groups of elements that are tracked on site and display on site index and book pages and so on.
-     *
-     * Example:
-     * tracked: {
-     *     term: {
-     *        elements: ['definition', 'axiom'],
-              title: 'Термин',
-              toc: true,
-              search: false,
-              color: '#E0E0E0',
-     *     }
-     * }
-     */
-};
+export function defineServerBitran(
+    getTranspilers: () => Promise<ElementTranspilers>,
+) {
+    return getTranspilers;
+}
 
-export function defineBitranConfig(
-    config: Partial<EruditBitranConfig>,
-): Partial<EruditBitranConfig> {
-    return config;
+//
+// App
+//
+
+export interface EruditBitranElement<
+    T extends GenericElementSchema = GenericElementSchema,
+> {
+    transpiler: ElementTranspiler<T>;
+    renderer: ElementVueRenderer<T>;
+}
+
+export type EruditBitranElements = Record<string, EruditBitranElement>;
+
+export function defineAppBitran(
+    getElements: () => Promise<EruditBitranElements>,
+) {
+    return getElements;
 }

@@ -1,30 +1,9 @@
-import {
-    defineBitranTranspiler,
-    type ElementTranspilers,
-} from '@bitran-js/transpiler';
-import { eruditDefaultTranspilers } from '@erudit-js/bitran-elements/defaultTranspilers';
+import { defineBitranTranspiler } from '@bitran-js/transpiler';
 
-import { ERUDIT_SERVER } from '@server/global';
+import getServerTranspilers from '#erudit/bitran/server';
 
 export async function createBitranTranspiler() {
-    const projectTranspilers = await getProjectTranspilers();
-
-    const bitranTranspiler = defineBitranTranspiler({
-        ...projectTranspilers,
-        ...eruditDefaultTranspilers,
-    });
-
+    const serverTranspiler = await getServerTranspilers();
+    const bitranTranspiler = defineBitranTranspiler(serverTranspiler);
     return bitranTranspiler;
-}
-
-async function getProjectTranspilers(): Promise<ElementTranspilers> {
-    const bitranElements = ERUDIT_SERVER?.BITRAN_CONFIG?.elements;
-
-    if (!bitranElements) return {};
-
-    const projectTranspilers: ElementTranspilers = {};
-    for (const [name, bitranElement] of Object.entries(bitranElements))
-        projectTranspilers[name] = await bitranElement.transpiler();
-
-    return projectTranspilers;
 }

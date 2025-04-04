@@ -1,4 +1,8 @@
-import { NO_ALIASES, type BitranContext } from '@erudit-js/cog/schema';
+import {
+    NO_ALIASES,
+    stringifyBitranLocation,
+    type BitranContext,
+} from '@erudit-js/cog/schema';
 
 import {
     createLinkTarget,
@@ -51,7 +55,7 @@ const validPageTargets: [string, Pick<PageLinkTarget, 'pageType' | 'path'>][] =
         ],
         [
             'page|summary',
-            { pageType: 'summary', path: articleContext.location.path },
+            { pageType: 'summary', path: '/' + articleContext.location.path },
         ],
         // Without "page|" prefix for non-topic parts
         ['contributor|john', { pageType: 'contributor', path: 'john' }],
@@ -67,8 +71,8 @@ const invalidPageTargets = [
 ];
 
 const validUniqueTargets: [string, string][] = [
-    ['definition', 'article|a/b/c|definition'],
-    ['practice|term', 'practice|a/b/c|term'],
+    ['definition', 'article|/a/b/c|definition'],
+    ['practice|term', 'practice|/a/b/c|term'],
     ['contributor|john|theorem', 'contributor|john|theorem'],
 ];
 
@@ -132,7 +136,7 @@ describe('createLinkTarget', () => {
             ) as UniqueLinkTarget;
 
             expect(target.type).toBe<LinkTargetType>('unique');
-            expect(target.strlocation).toBe(expected);
+            expect(stringifyBitranLocation(target.location)).toBe(expected);
         });
     }
 });

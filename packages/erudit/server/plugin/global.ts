@@ -1,5 +1,5 @@
 import type { DataSource } from 'typeorm';
-import type { EruditBitranConfig, EruditConfig } from '@erudit-js/cog/schema';
+import type { EruditConfig } from '@erudit-js/cog/schema';
 
 import type { EruditPhrases } from '@shared/types/language';
 import type { NavNode, RootNavNode } from '@server/nav/node';
@@ -11,7 +11,6 @@ interface EruditServer {
     DB: DataSource;
     NAV?: RootNavNode;
     NAV_BOOKS?: Record<string, NavNode>;
-    BITRAN_CONFIG?: Partial<EruditBitranConfig>;
 }
 
 export const ERUDIT_SERVER: EruditServer = {} as any;

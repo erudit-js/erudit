@@ -20,7 +20,6 @@ export interface EruditPhrases {
     theme_light: string;
     theme_dark: string;
     content: string;
-    generator: string;
     main_page: string;
     members: string;
     add_translation: string;

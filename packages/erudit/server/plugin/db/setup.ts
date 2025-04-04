@@ -12,6 +12,7 @@ import { DbGroup } from './entities/Group';
 import { DbHash } from './entities/Hash';
 import { DbTopic } from './entities/Topic';
 import { DbUnique } from './entities/Unique';
+import { DbFile } from './entities/File';
 
 export async function setupDatabase() {
     ERUDIT_SERVER.DB = new DataSource({
@@ -27,6 +28,7 @@ export async function setupDatabase() {
             DbHash,
             DbTopic,
             DbUnique,
+            DbFile,
         ],
     });
 

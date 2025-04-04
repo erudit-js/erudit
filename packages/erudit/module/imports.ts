@@ -1,4 +1,4 @@
-import { addImports } from 'nuxt/kit';
+import { addImports, addServerImports } from 'nuxt/kit';
 
 import { eruditPath } from '@erudit/globalPath';
 
@@ -12,14 +12,14 @@ export function setupGlobalImports() {
             name: 'defineContributor',
             from: eruditPath('globals/contributor'),
         },
-        {
-            name: 'defineBitranConfig',
-            from: eruditPath('globals/bitran'),
-        },
-        {
-            name: 'defineBitranElement',
-            from: eruditPath('globals/bitran'),
-        },
+        // Bitran
+        ...(() => {
+            const imports = ['defineAppBitran'];
+            return imports.map((name) => ({
+                name,
+                from: eruditPath(`globals/bitran`),
+            }));
+        })(),
         // Content
         ...(() => {
             const imports = [
@@ -44,6 +44,17 @@ export function setupGlobalImports() {
             return imports.map((name) => ({
                 name,
                 from: eruditPath(`shared/asset`),
+            }));
+        })(),
+    ]);
+
+    addServerImports([
+        // Bitran
+        ...(() => {
+            const imports = ['defineServerBitran'];
+            return imports.map((name) => ({
+                name,
+                from: eruditPath(`globals/bitran`),
             }));
         })(),
     ]);

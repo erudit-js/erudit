@@ -1,20 +1,25 @@
 import { BlockErrorNode, ParagraphNode } from '@bitran-js/core';
 import { defineBitranTranspiler } from '@bitran-js/transpiler';
-
-beforeEach(() => {
-    resetEruditGlobals();
-});
+import {
+    asRuntimeHolder,
+    getEruditBitranRuntime,
+    NO_ALIASES,
+    setEruditBitranRuntime,
+} from '@erudit-js/cog/schema';
 
 import {
     headingName,
     type HeadingNode,
 } from '../../src/elements/heading/shared';
 import { headingTranspiler } from '../../src/elements/heading/transpiler';
-import { resetEruditGlobals, setEruditConfig } from './global';
+import { defaultRuntime } from './defaultRuntime';
 
 const bitran = defineBitranTranspiler({
     [headingName]: headingTranspiler,
 });
+
+setEruditBitranRuntime(bitran.parser, defaultRuntime);
+setEruditBitranRuntime(bitran.stringifier, defaultRuntime);
 
 it('Should correctly parse and stringify valid headings', async () => {
     const text = `
@@ -112,8 +117,18 @@ it('Should apply language-specific slugify', async () => {
 # Это мой заголовок
     `.trim();
 
-    setEruditConfig({
-        language: 'ru',
+    setEruditBitranRuntime(bitran.parser, {
+        insideInclude: false,
+        context: {
+            aliases: NO_ALIASES(),
+            location: {
+                type: 'article',
+                path: 'foo',
+            },
+        },
+        eruditConfig: {
+            language: 'ru',
+        },
     });
 
     const heading = (await bitran.parser.parse(text))
