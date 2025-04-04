@@ -7,8 +7,16 @@ const hasAvatar = computed(() => !!props.avatar);
 
 <template>
     <div
-        :class="[$style.contributorAvatar, !hasAvatar && $style.noAvatar]"
-        :style="{ '--_avatarBlendColor': stringColor(props.contributorId) }"
+        :class="$style.contributorAvatar"
+        :style="{
+            ...(!hasAvatar
+                ? {
+                      backgroundImage: `url(${eruditAsset('user.svg')})`,
+                      backgroundColor: stringColor(props.contributorId),
+                      backgroundBlendMode: 'hard-light',
+                  }
+                : {}),
+        }"
     >
         <img
             v-if="hasAvatar"
@@ -29,12 +37,6 @@ const hasAvatar = computed(() => !!props.avatar);
     border-radius: 50%;
     overflow: hidden;
     background: var(--border);
-
-    &.noAvatar {
-        background-image: url('/_erudit-asset/user.svg');
-        background-color: var(--_avatarBlendColor);
-        background-blend-mode: hard-light;
-    }
 
     > img {
         display: block;

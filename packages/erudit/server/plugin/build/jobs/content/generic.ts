@@ -1,7 +1,7 @@
 import { existsSync } from 'node:fs';
 import { globSync } from 'glob';
 import chalk from 'chalk';
-import sizeOf from 'image-size';
+import { imageSizeFromFile } from 'image-size/fromFile';
 import {
     contentTypes,
     type ContentConfig,
@@ -21,6 +21,7 @@ import { DbContent } from '@server/db/entities/Content';
 import { IMPORT } from '@server/importer';
 import { contributorExists } from '@server/repository/contributor';
 import { DbContribution } from '@server/db/entities/Contribution';
+import { DbFile } from '@server/db/entities/File';
 
 import { contentAsset } from '@erudit/shared/asset';
 import type { ImageData } from '@erudit/shared/image';
@@ -30,6 +31,7 @@ import { contentItemPath } from './path';
 import { buildBook } from './type/book';
 import { buildGroup } from './type/group';
 import { buildTopic } from './type/topic';
+import { scanFiles } from './files';
 
 const typeBuilders: Record<ContentType, Function> = {
     book: buildBook,
@@ -41,6 +43,8 @@ export async function buildContent() {
     if (!ERUDIT_SERVER.NAV) return;
 
     debug.start('Building content...');
+
+    await scanContentFiles();
 
     const counters: Record<ContentType, number> = Object.fromEntries(
         contentTypes.map((contentType) => [contentType, 0]),
@@ -64,6 +68,16 @@ export async function buildContent() {
     );
 }
 
+async function scanContentFiles() {
+    const contentFiles = scanFiles(PROJECT_DIR + '/content');
+    for (const [path, fullPath] of Object.entries(contentFiles)) {
+        const dbFile = new DbFile();
+        dbFile.path = path;
+        dbFile.fullPath = fullPath;
+        await ERUDIT_SERVER.DB.manager.save(dbFile);
+    }
+}
+
 async function addContentItem(navNode: NavNode) {
     debug.start(
         `Adding ${stress(navNode.type)} content item ${stress(navNode.id)}...`,
@@ -74,7 +88,7 @@ async function addContentItem(navNode: NavNode) {
     dbContent.fullId = navNode.fullId;
     dbContent.type = navNode.type;
     dbContent.decoration = getDecoration(navNode);
-    dbContent.ogImage = getOgImageData(navNode);
+    dbContent.ogImage = await getOgImageData(navNode);
     dbContent.references = await getContentReferences(navNode);
 
     let config: Partial<ContentConfig> | undefined;
@@ -141,13 +155,15 @@ async function addContributions(navNode: NavNode, contributors?: string[]) {
     }
 }
 
-function getOgImageData(navNode: NavNode): ImageData | undefined {
+async function getOgImageData(
+    navNode: NavNode,
+): Promise<ImageData | undefined> {
     const ogImagePath = globSync(
         contentItemPath(navNode, 'og-image.{svg,webp,jpg,png}'),
     ).pop();
 
     if (ogImagePath) {
-        const size = sizeOf(ogImagePath);
+        const size = await imageSizeFromFile(ogImagePath);
         return {
             src: contentAsset(
                 resolvePaths(ogImagePath).replace(
@@ -155,8 +171,8 @@ function getOgImageData(navNode: NavNode): ImageData | undefined {
                     '',
                 ),
             ),
-            width: size.width!,
-            height: size.height!,
+            width: size.width,
+            height: size.height,
         };
     }
 

@@ -25,7 +25,6 @@ const russian: EruditPhrases = {
     theme_light: 'Светлая',
     theme_dark: 'Темная',
     content: 'Контент',
-    generator: 'Генератор',
     main_page: 'Главная страница',
     members: 'Участники',
     add_translation: 'Добавить перевод',

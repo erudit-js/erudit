@@ -4,6 +4,7 @@ import type { BitranTranspiler } from '@bitran-js/transpiler';
 import {
     parseBitranLocation,
     parsePartialBitranLocation,
+    setEruditBitranRuntime,
     stringifyBitranLocation,
     tryReplaceAlias,
     type BitranAliases,
@@ -11,16 +12,13 @@ import {
 } from '@erudit-js/cog/schema';
 import { IncludeNode } from '@erudit-js/bitran-elements/include/shared';
 import { AliasesNode } from '@erudit-js/bitran-elements/aliases/shared';
-import { LinkNode } from '@erudit-js/bitran-elements/link/shared';
-import { createLinkTarget } from '@erudit-js/bitran-elements/link/target';
 
 import { createBitranTranspiler } from '@server/bitran/transpiler';
 import { ERUDIT_SERVER } from '@server/global';
 import { DbUnique } from '@server/db/entities/Unique';
-import {
-    toAbsoluteContentId,
-    toAbsoluteContentLocation,
-} from '@server/content/absoluteId';
+import { getNavBookIds } from '@server/nav/utils';
+
+import { toAbsoluteLocation } from '@shared/bitran/contentId';
 
 export type TraverseEnterFn = (payload: {
     _location: string;
@@ -105,9 +103,10 @@ async function _traverseStep(
             ),
         );
 
-        includeTargetLocation = toAbsoluteContentLocation(
+        includeTargetLocation = toAbsoluteLocation(
             includeTargetLocation,
             parsedLocation.path!,
+            getNavBookIds(),
         );
     } catch (error) {
         travelMap[location] = includeNode.parseData.location;
@@ -141,6 +140,14 @@ async function _traverseStep(
 
     const bitranTranspiler = await createBitranTranspiler();
 
+    [bitranTranspiler.parser, bitranTranspiler.stringifier].forEach((item) =>
+        setEruditBitranRuntime(item, {
+            eruditConfig: ERUDIT_SERVER.CONFIG,
+            context: structuredClone(context),
+            insideInclude: true,
+        }),
+    );
+
     listeners.enter &&
         (await listeners.enter({
             _biCode: dbUnique.content,
@@ -166,25 +173,6 @@ async function _traverseStep(
                 node.meta.id = Object.keys(travelMap)
                     .concat([location])
                     .join('__');
-
-            if (node instanceof LinkNode) {
-                const linkTarget = createLinkTarget(node.parseData.target, {
-                    location: context.location,
-                    aliases: context.aliases ?? {},
-                });
-
-                switch (linkTarget.type) {
-                    case 'unique':
-                        node.parseData.target = toAbsoluteContentLocation(
-                            linkTarget.strlocation,
-                            context.location?.path!,
-                        );
-                        break;
-                    case 'page':
-                        node.parseData.target = `page|${linkTarget.pageType as any}|${toAbsoluteContentId(linkTarget.path!, context.location?.path!)}`;
-                        break;
-                }
-            }
 
             if (!(node instanceof IncludeNode)) {
                 listeners.step &&

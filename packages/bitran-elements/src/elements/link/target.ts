@@ -5,6 +5,7 @@ import {
     stringifyBitranLocation,
     tryReplaceAlias,
     type BitranContext,
+    type BitranLocation,
 } from '@erudit-js/cog/schema';
 
 export type LinkTargetType = 'unique' | 'page' | 'absolute' | 'external';
@@ -15,7 +16,7 @@ interface LinkTargetBase {
 
 export interface UniqueLinkTarget extends LinkTargetBase {
     type: 'unique';
-    strlocation: string;
+    location: BitranLocation;
     _productName?: string;
     _absoluteStrLocation?: string;
     _href?: string;
@@ -97,7 +98,7 @@ export function createLinkTarget(
                         `Page link "${target}" is referencing topic part "${pageType}" without path in non-topic context!`,
                     );
 
-                path = context.location.path;
+                path = '/' + context.location.path;
             } else {
                 if (pageTypeRequiresPath(pageType))
                     throw new Error(
@@ -128,6 +129,6 @@ export function createLinkTarget(
 
     return {
         type: 'unique',
-        strlocation: stringifyBitranLocation(location),
+        location,
     };
 }

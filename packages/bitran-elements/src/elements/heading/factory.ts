@@ -1,4 +1,8 @@
 import { BlockParseFactory, StringifyFactory } from '@bitran-js/transpiler';
+import {
+    getEruditBitranRuntime,
+    tryGetEruditBitranRuntime,
+} from '@erudit-js/cog/schema';
 
 import type { HeadingNode, HeadingParseData, HeadingSchema } from './shared';
 
@@ -48,8 +52,8 @@ export class HeadingParser extends BlockParseFactory<HeadingSchema> {
     }
 
     override async alterAutoId(autoId: string, node: HeadingNode) {
-        const eruditConfig = useEruditConfig();
-        const language = eruditConfig?.language || 'en';
+        const runtime = tryGetEruditBitranRuntime(this);
+        const language = runtime?.eruditConfig?.language || 'en';
 
         const slugify = await (async () => {
             if (slugifyLoader[language]) {

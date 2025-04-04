@@ -1,14 +1,35 @@
-import type { ElementTranspilers } from '@bitran-js/transpiler';
-import type { ElementVueRenderers } from '@bitran-js/renderer-vue';
+import type { GenericElementSchema } from '@bitran-js/core';
+import type { ElementVueRenderer } from '@bitran-js/renderer-vue';
+import type {
+    ElementTranspiler,
+    ElementTranspilers,
+} from '@bitran-js/transpiler';
 
-export function defineBitranTranspilers(
-    transpilers: ElementTranspilers,
-): ElementTranspilers {
-    return transpilers;
+//
+// Server
+//
+
+export function defineServerBitran(
+    getTranspilers: () => Promise<ElementTranspilers>,
+) {
+    return getTranspilers;
 }
 
-export function defineBitranRenderers(
-    renderers: ElementVueRenderers,
-): ElementVueRenderers {
-    return renderers;
+//
+// App
+//
+
+export interface EruditBitranElement<
+    T extends GenericElementSchema = GenericElementSchema,
+> {
+    transpiler: ElementTranspiler<T>;
+    renderer: ElementVueRenderer<T>;
+}
+
+export type EruditBitranElements = Record<string, EruditBitranElement>;
+
+export function defineAppBitran(
+    getElements: () => Promise<EruditBitranElements>,
+) {
+    return getElements;
 }

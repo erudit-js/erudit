@@ -1,16 +1,22 @@
 import { createPreRenderData, type PreRenderData } from '@bitran-js/transpiler';
-import { BlockNode, BlocksNode } from '@bitran-js/core';
+import {
+    BlockErrorNode,
+    BlockNode,
+    BlocksNode,
+    InlinerErrorNode,
+} from '@bitran-js/core';
 
 import {
     isTopicPart,
     mergeAliases,
     NO_ALIASES,
+    setEruditBitranRuntime,
     stringifyBitranLocation,
     type BitranContext,
     type BitranLocation,
+    type EruditBitranRuntime,
     type TopicPart,
 } from '@erudit-js/cog/schema';
-import { LinkNode } from '@erudit-js/bitran-elements/link/shared';
 import { AliasesNode } from '@erudit-js/bitran-elements/aliases/shared';
 import { IncludeNode } from '@erudit-js/bitran-elements/include/shared';
 
@@ -18,11 +24,12 @@ import { ERUDIT_SERVER } from '@server/global';
 import { DbUnique } from '@server/db/entities/Unique';
 import { DbTopic } from '@server/db/entities/Topic';
 import { DbGroup } from '@server/db/entities/Group';
-import { resolveLinkTarget } from '@server/bitran/products/link';
-import { traverseInclude } from '@server/bitran/products/include';
+import { traverseInclude } from '@server/bitran/elements/include';
 import { createBitranTranspiler } from '@server/bitran/transpiler';
 
 import type { StringBitranContent } from '@shared/bitran/stringContent';
+
+import { logger } from '@server/logger';
 
 interface RawBitranContent {
     context: BitranContext;
@@ -105,6 +112,16 @@ async function createBitranContent(
 ): Promise<StringBitranContent> {
     const bitranTranspiler = await createBitranTranspiler();
 
+    const runtime: EruditBitranRuntime = {
+        eruditConfig: ERUDIT_SERVER.CONFIG,
+        context,
+        insideInclude: false,
+    };
+
+    [bitranTranspiler.parser, bitranTranspiler.stringifier].forEach((item) =>
+        setEruditBitranRuntime(item, runtime),
+    );
+
     const root = await bitranTranspiler.parser.parse(biCode, {
         async step(node) {
             if (node instanceof AliasesNode) {
@@ -114,6 +131,14 @@ async function createBitranContent(
 
             if (node instanceof IncludeNode) {
                 await resolveInclude(node, context);
+                return;
+            }
+
+            if (
+                node instanceof BlockErrorNode ||
+                node instanceof InlinerErrorNode
+            ) {
+                logParseError(node.name, node.error);
                 return;
             }
         },
@@ -131,30 +156,21 @@ async function createBitranContent(
                 const elementTranspiler =
                     bitranTranspiler.transpilers[node.name]!;
 
-                if (node instanceof LinkNode) {
-                    try {
-                        preRenderDataMap[id] = {
-                            type: 'success',
-                            data: await resolveLinkTarget(node.parseData, {
-                                location: context.location,
-                                aliases: context.aliases ?? {},
-                            }),
-                        };
-                    } catch (error: any) {
-                        preRenderDataMap[id] = {
-                            type: 'error',
-                            message: error?.message || String(error),
-                        };
-                    }
-                    return;
-                }
-
                 if (id) {
                     const preRenderData = await createPreRenderData(
                         node,
                         elementTranspiler,
+                        runtime,
                     );
                     if (preRenderData) preRenderDataMap[id] = preRenderData;
+                }
+
+                if (
+                    node instanceof BlockErrorNode ||
+                    node instanceof InlinerErrorNode
+                ) {
+                    logParseError(node.name, node.error);
+                    return;
                 }
             },
         });
@@ -191,4 +207,8 @@ async function resolveInclude(
 
     includeNode.parseData.resolved = true;
     return includeNode;
+}
+
+function logParseError(nodeName: string, error: string) {
+    logger.warn(`Error parsing "${nodeName}" element!\n\n${error}`);
 }

@@ -14,10 +14,7 @@ export function setupGlobalImports() {
         },
         // Bitran
         ...(() => {
-            const imports = [
-                'defineBitranTranspilers',
-                'defineBitranRenderers',
-            ];
+            const imports = ['defineAppBitran'];
             return imports.map((name) => ({
                 name,
                 from: eruditPath(`globals/bitran`),
@@ -54,10 +51,7 @@ export function setupGlobalImports() {
     addServerImports([
         // Bitran
         ...(() => {
-            const imports = [
-                'defineBitranTranspilers',
-                'defineBitranRenderers',
-            ];
+            const imports = ['defineServerBitran'];
             return imports.map((name) => ({
                 name,
                 from: eruditPath(`globals/bitran`),

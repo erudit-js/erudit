@@ -4,18 +4,17 @@ import { Like } from 'typeorm';
 import { ERUDIT_SERVER } from '@server/global';
 import { DbContent } from '@server/db/entities/Content';
 import { DbContribution } from '@server/db/entities/Contribution';
-
 import { getContentContext } from '@server/content/context';
-import type { ContentGenericData } from '@shared/content/data/base';
-import { getIdsUp, getPreviousNextNav } from '../nav/utils';
-import { createContentLink, createTopicPartLink } from '@erudit/shared/link';
+import { DbContributor } from '@server/db/entities/Contributor';
+import { getIdsUp, getNavBookIds, getPreviousNextNav } from '@server/nav/utils';
 import { getTopicPart } from './topic';
-import type { PreviousNextItem } from '@erudit/shared/content/previousNext';
 import type { NavNode } from '../nav/node';
-import { toAbsoluteContentId } from '../content/absoluteId';
 
+import { createContentLink, createTopicPartLink } from '@erudit/shared/link';
+import type { PreviousNextItem } from '@erudit/shared/content/previousNext';
 import type { ContentContributor } from '@erudit/shared/contributor';
-import { DbContributor } from '../db/entities/Contributor';
+import type { ContentGenericData } from '@shared/content/data/base';
+import { toAbsoluteContentId } from '@erudit/shared/bitran/contentId';
 
 export async function getContentGenericData(
     contentId: string,
@@ -127,7 +126,7 @@ export async function getContentDependencies(
     strDependencies: string[],
 ) {
     const dependencyIds = strDependencies.map((rawDependency) =>
-        toAbsoluteContentId(rawDependency, contentId),
+        toAbsoluteContentId(rawDependency, contentId, getNavBookIds()),
     );
     const dependencies: Record<string, string> = {};
 

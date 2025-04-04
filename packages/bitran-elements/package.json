@@ -11,15 +11,15 @@
             "import": "./dist/index.mjs",
             "require": "./dist/index.mjs"
         },
-        "./defaultTranspilers": {
-            "types": "./dist/elements/defaultTranspilers.d.ts",
-            "import": "./dist/elements/defaultTranspilers.mjs",
-            "require": "./dist/elements/defaultTranspilers.mjs"
+        "./defaultServer": {
+            "types": "./dist/elements/defaultServer.d.ts",
+            "import": "./dist/elements/defaultServer.mjs",
+            "require": "./dist/elements/defaultServer.mjs"
         },
-        "./defaultRenderers": {
-            "types": "./dist/elements/defaultRenderers.d.ts",
-            "import": "./dist/elements/defaultRenderers.mjs",
-            "require": "./dist/elements/defaultRenderers.mjs"
+        "./defaultApp": {
+            "types": "./dist/elements/defaultApp.d.ts",
+            "import": "./dist/elements/defaultApp.mjs",
+            "require": "./dist/elements/defaultApp.mjs"
         },
         "./aliases/*": {
             "types": "./dist/elements/aliases/*.d.ts",
@@ -40,9 +40,6 @@
             "types": "./dist/elements/heading/*.d.ts",
             "import": "./dist/elements/heading/*.mjs",
             "require": "./dist/elements/heading/*.mjs"
-        },
-        "./heading/Heading.vue": {
-            "import": "./dist/elements/heading/Heading.vue"
         },
         "./include/*": {
             "types": "./dist/elements/include/*.d.ts",
@@ -68,6 +65,16 @@
             "types": "./dist/elements/list/*.d.ts",
             "import": "./dist/elements/list/*.mjs",
             "require": "./dist/elements/list/*.mjs"
+        },
+        "./callout/*": {
+            "types": "./dist/elements/callout/*.d.ts",
+            "import": "./dist/elements/callout/*.mjs",
+            "require": "./dist/elements/callout/*.mjs"
+        },
+        "./image/*": {
+            "types": "./dist/elements/figures/image/*.d.ts",
+            "import": "./dist/elements/figures/image/*.mjs",
+            "require": "./dist/elements/figures/image/*.mjs"
         }
     },
     "typesVersions": {
@@ -98,6 +105,12 @@
             ],
             "list/*": [
                 "./dist/elements/list/*.d.ts"
+            ],
+            "callout/*": [
+                "./dist/elements/callout/*.d.ts"
+            ],
+            "image/*": [
+                "./dist/elements/figures/image/*.d.ts"
             ]
         }
     },
@@ -111,17 +124,19 @@
         "prepack": "bun run build"
     },
     "peerDependencies": {
-        "@bitran-js/core": "link:@bitran-js/core",
-        "@bitran-js/renderer-vue": "link:@bitran-js/renderer-vue",
-        "@bitran-js/transpiler": "link:@bitran-js/transpiler",
+        "@bitran-js/core": "1.0.0-dev.11",
+        "@bitran-js/renderer-vue": "1.0.0-dev.11",
+        "@bitran-js/transpiler": "1.0.0-dev.11",
         "@erudit-js/cog": "workspace:3.0.0-dev.10",
         "katex": "^0.16.21",
-        "sass": ">=1.85.1",
-        "vue": "^3.5.13"
+        "sass": "^1.86.0",
+        "vue": "^3.5.13",
+        "image-size": "^2.0.2",
+        "photoswipe": "^5.4.4"
     },
     "devDependencies": {
         "mkdist": "^2.2.0",
-        "vite": "^6.2.1",
+        "vite": "^6.2.5",
         "vue-tsc": "^2.2.8"
     }
 }

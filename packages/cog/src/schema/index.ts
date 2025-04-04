@@ -8,7 +8,7 @@ export * from './bitran/location';
 export * from './bitran/aliases';
 export * from './bitran/context';
 export * from './bitran/config';
-export * from './bitran/node';
+export * from './bitran/runtime';
 
 export * from './contributor';
 export * from './erudit';

@@ -1,4 +1,1 @@
-export {
-    defineBitranTranspilers,
-    defineBitranRenderers,
-} from '@erudit-js/cog/schema';
+export { defineServerBitran, defineAppBitran } from '@erudit-js/cog/schema';

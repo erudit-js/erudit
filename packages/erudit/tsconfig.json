@@ -3,6 +3,6 @@
     "compilerOptions": {
         "experimentalDecorators": true,
         "emitDecoratorMetadata": true,
-        "types": ["@types/jest", "@erudit-js/cog/types"]
+        "types": ["@types/jest"]
     }
 }

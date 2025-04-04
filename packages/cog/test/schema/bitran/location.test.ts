@@ -6,6 +6,7 @@ import {
     stringifyBitranLocation,
     type BitranLocation,
 } from '../../../src/schema/bitran/location';
+import { isContentType } from '../../../src/schema/content/base';
 
 const locations: [BitranLocation, string][] = [
     // Full locations
@@ -23,22 +24,46 @@ const partialLocations: [string, BitranLocation, BitranLocation][] = [
         { type: 'group', path: 'qux' },
         { type: 'article', path: 'foo/bar', unique: 'baz' },
     ],
-    // Only unique
+    // Only unique - should be absolute path only for content types
     [
         'baz',
         { type: 'summary', path: 'foo/bar' },
-        { type: 'summary', path: 'foo/bar', unique: 'baz' },
+        {
+            type: 'summary',
+            path: '/foo/bar',
+            unique: 'baz',
+        },
     ],
     [
         'baz',
         { type: 'contributor', path: 'John' },
-        { type: 'contributor', path: 'John', unique: 'baz' },
+        {
+            type: 'contributor',
+            path: 'John',
+            unique: 'baz',
+        },
     ],
-    // Topic context
+    // Topic context - should be absolute path only for content types
     [
         'article|baz',
         { type: 'practice', path: 'foo/bar' },
-        { type: 'article', path: 'foo/bar', unique: 'baz' },
+        {
+            type: 'article',
+            path: '/foo/bar',
+            unique: 'baz',
+        },
+    ],
+    // Test with already absolute path in context - should remain the same
+    [
+        'baz',
+        { type: 'summary', path: '/foo/bar' },
+        { type: 'summary', path: '/foo/bar', unique: 'baz' },
+    ],
+    // Test with context location without path
+    [
+        'baz',
+        { type: 'summary' },
+        { type: 'summary', path: undefined, unique: 'baz' },
     ],
 ];
 

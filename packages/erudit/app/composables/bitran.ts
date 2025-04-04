@@ -7,18 +7,52 @@ import {
 import {
     defineBitranTranspiler,
     type BitranTranspiler,
+    type ElementTranspilers,
 } from '@bitran-js/transpiler';
-import { eruditDefaultTranspilers } from '@erudit-js/bitran-elements/defaultTranspilers';
-import { eruditDefaultRenderers } from '@erudit-js/bitran-elements/defaultRenderers';
+import type { EruditBitranElements } from '@erudit-js/cog/schema';
 
 import eruditConfig from '#erudit/config';
-import projectBitranTranspilers from '#erudit/bitran/transpilers';
-import projectBitranRenderers from '#erudit/bitran/renderers';
+import getBitranElements from '#erudit/bitran/app';
+
+let elements!: EruditBitranElements;
+let transpilers!: ElementTranspilers;
+let renderers!: ElementVueRenderers;
 
 let bitranTranspiler!: BitranTranspiler;
 let bitranRenderers!: ElementVueRenderers;
 
-globalThis.useEruditConfig = () => eruditConfig;
+//
+//
+//
+
+async function getElements() {
+    if (!elements) elements = await getBitranElements();
+
+    return elements;
+}
+
+async function getTranspilers() {
+    if (!transpilers) {
+        const elements = await getElements();
+        transpilers = Object.fromEntries(
+            Object.entries(elements).map(([key, item]) => [
+                key,
+                item.transpiler,
+            ]),
+        );
+    }
+    return transpilers;
+}
+
+async function getRenderers() {
+    if (!renderers) {
+        const elements = await getElements();
+        renderers = Object.fromEntries(
+            Object.entries(elements).map(([key, item]) => [key, item.renderer]),
+        );
+    }
+    return renderers;
+}
 
 //
 // Transpiler
@@ -28,8 +62,7 @@ export async function useBitranTranspiler() {
     if (bitranTranspiler) return bitranTranspiler;
 
     bitranTranspiler = defineBitranTranspiler({
-        ...projectBitranTranspilers,
-        ...eruditDefaultTranspilers,
+        ...(await getTranspilers()),
     });
 
     return bitranTranspiler;
@@ -43,8 +76,7 @@ export async function useBitranRenderers() {
     if (bitranRenderers) return bitranRenderers;
 
     bitranRenderers = {
-        ...projectBitranRenderers,
-        ...eruditDefaultRenderers,
+        ...(await getRenderers()),
     };
 
     return bitranRenderers!;

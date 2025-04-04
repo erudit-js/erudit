@@ -5,7 +5,7 @@ $$ A^2 + B^2 = C^2 $$
 
 # Первый заголовок
 
-~ bar summary|combinatorics/preface|myFormula
+~ bar summary|/combinatorics/preface|myFormula
 
 * Прикидываем комбинации дел и задач, занимаясь планированием.
 * Пишем комбинации букв, получая слова.\
@@ -39,7 +39,7 @@ sdf
 
 { #da }
 Посмотрите вот на *[эту](~bar)* **формулу**!\
-Еще зацените [книгу](page|book|combinatorics) по комбинаторике!
+Еще зацените [книгу](page|book|/combinatorics) по комбинаторике!
 
 { +toc }
 @important
