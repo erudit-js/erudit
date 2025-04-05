@@ -26,6 +26,7 @@ const rebuildDelay = 300;
 let watcher: FSWatcher;
 let rebuildTimeout: any;
 let rebuildRequested = false;
+let pendingRebuild = false;
 
 export async function setupRebuildWatcher() {
     if (watcher) return;
@@ -41,7 +42,11 @@ export async function setupRebuildWatcher() {
 }
 
 export async function requestServerRebuild(reason?: string) {
-    if (rebuildRequested) return;
+    // If rebuild is in progress, set flag for another rebuild after completion
+    if (rebuildRequested) {
+        pendingRebuild = true;
+        return;
+    }
 
     clearTimeout(rebuildTimeout);
     rebuildTimeout = setTimeout(async () => {
@@ -51,5 +56,11 @@ export async function requestServerRebuild(reason?: string) {
         logger.info(`Rebuilding server data!${reason ? ` ${reason}` : ''}\n\n`);
         await build();
         rebuildRequested = false;
+
+        // If changes were detected during rebuild, start another rebuild
+        if (pendingRebuild) {
+            pendingRebuild = false;
+            requestServerRebuild('Changes detected during previous rebuild');
+        }
     }, rebuildDelay);
 }
