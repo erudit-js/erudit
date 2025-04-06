@@ -1,6 +1,6 @@
 import { BlockNode, type DefineElementSchema } from '@bitran-js/core';
 
-import type { Caption } from '../caption';
+import type { Caption } from '../../figure/caption';
 
 export const imageName = 'image';
 

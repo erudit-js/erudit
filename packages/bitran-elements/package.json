@@ -5,122 +5,14 @@
     "type": "module",
     "main": "./dist/index.mjs",
     "types": "./dist/index.d.ts",
-    "exports": {
-        ".": {
-            "types": "./dist/index.d.ts",
-            "import": "./dist/index.mjs",
-            "require": "./dist/index.mjs"
-        },
-        "./defaultServer": {
-            "types": "./dist/elements/defaultServer.d.ts",
-            "import": "./dist/elements/defaultServer.mjs",
-            "require": "./dist/elements/defaultServer.mjs"
-        },
-        "./defaultApp": {
-            "types": "./dist/elements/defaultApp.d.ts",
-            "import": "./dist/elements/defaultApp.mjs",
-            "require": "./dist/elements/defaultApp.mjs"
-        },
-        "./aliases/*": {
-            "types": "./dist/elements/aliases/*.d.ts",
-            "import": "./dist/elements/aliases/*.mjs",
-            "require": "./dist/elements/aliases/*.mjs"
-        },
-        "./link/*": {
-            "types": "./dist/elements/link/*.d.ts",
-            "import": "./dist/elements/link/*.mjs",
-            "require": "./dist/elements/link/*.mjs"
-        },
-        "./details/*": {
-            "types": "./dist/elements/details/*.d.ts",
-            "import": "./dist/elements/details/*.mjs",
-            "require": "./dist/elements/details/*.mjs"
-        },
-        "./heading/*": {
-            "types": "./dist/elements/heading/*.d.ts",
-            "import": "./dist/elements/heading/*.mjs",
-            "require": "./dist/elements/heading/*.mjs"
-        },
-        "./include/*": {
-            "types": "./dist/elements/include/*.d.ts",
-            "import": "./dist/elements/include/*.mjs",
-            "require": "./dist/elements/include/*.mjs"
-        },
-        "./math/*": {
-            "types": "./dist/elements/math/*.d.ts",
-            "import": "./dist/elements/math/*.mjs",
-            "require": "./dist/elements/math/*.mjs"
-        },
-        "./accent/*": {
-            "types": "./dist/elements/accent/*.d.ts",
-            "import": "./dist/elements/accent/*.mjs",
-            "require": "./dist/elements/accent/*.mjs"
-        },
-        "./emphasis/*": {
-            "types": "./dist/elements/emphasis/*.d.ts",
-            "import": "./dist/elements/emphasis/*.mjs",
-            "require": "./dist/elements/emphasis/*.mjs"
-        },
-        "./list/*": {
-            "types": "./dist/elements/list/*.d.ts",
-            "import": "./dist/elements/list/*.mjs",
-            "require": "./dist/elements/list/*.mjs"
-        },
-        "./callout/*": {
-            "types": "./dist/elements/callout/*.d.ts",
-            "import": "./dist/elements/callout/*.mjs",
-            "require": "./dist/elements/callout/*.mjs"
-        },
-        "./image/*": {
-            "types": "./dist/elements/figures/image/*.d.ts",
-            "import": "./dist/elements/figures/image/*.mjs",
-            "require": "./dist/elements/figures/image/*.mjs"
-        }
-    },
-    "typesVersions": {
-        "*": {
-            "aliases/*": [
-                "./dist/elements/aliases/*.d.ts"
-            ],
-            "link/*": [
-                "./dist/elements/link/*.d.ts"
-            ],
-            "details/*": [
-                "./dist/elements/details/*.d.ts"
-            ],
-            "heading/*": [
-                "./dist/elements/heading/*.d.ts"
-            ],
-            "include/*": [
-                "./dist/elements/include/*.d.ts"
-            ],
-            "math/*": [
-                "./dist/elements/math/*.d.ts"
-            ],
-            "accent/*": [
-                "./dist/elements/accent/*.d.ts"
-            ],
-            "emphasis/*": [
-                "./dist/elements/emphasis/*.d.ts"
-            ],
-            "list/*": [
-                "./dist/elements/list/*.d.ts"
-            ],
-            "callout/*": [
-                "./dist/elements/callout/*.d.ts"
-            ],
-            "image/*": [
-                "./dist/elements/figures/image/*.d.ts"
-            ]
-        }
-    },
     "files": [
         "dist"
     ],
     "scripts": {
         "pretty": "prettier --write .",
+        "update-package": "bun run package.ts",
         "dev": "bun run dev.ts",
-        "build": "bun mkdist -d --loaders=js",
+        "build": "bun run update-package && bun mkdist -d --loaders=js",
         "prepack": "bun run build"
     },
     "peerDependencies": {
@@ -138,5 +30,114 @@
         "mkdist": "^2.2.0",
         "vite": "^6.2.5",
         "vue-tsc": "^2.2.8"
+    },
+    "exports": {
+        "./accent/*": {
+            "types": "./dist/elements/accent/*.d.ts",
+            "import": "./dist/elements/accent/*.mjs",
+            "require": "./dist/elements/accent/*.mjs"
+        },
+        "./aliases/*": {
+            "types": "./dist/elements/aliases/*.d.ts",
+            "import": "./dist/elements/aliases/*.mjs",
+            "require": "./dist/elements/aliases/*.mjs"
+        },
+        "./callout/*": {
+            "types": "./dist/elements/callout/*.d.ts",
+            "import": "./dist/elements/callout/*.mjs",
+            "require": "./dist/elements/callout/*.mjs"
+        },
+        "./details/*": {
+            "types": "./dist/elements/details/*.d.ts",
+            "import": "./dist/elements/details/*.mjs",
+            "require": "./dist/elements/details/*.mjs"
+        },
+        "./emphasis/*": {
+            "types": "./dist/elements/emphasis/*.d.ts",
+            "import": "./dist/elements/emphasis/*.mjs",
+            "require": "./dist/elements/emphasis/*.mjs"
+        },
+        "./heading/*": {
+            "types": "./dist/elements/heading/*.d.ts",
+            "import": "./dist/elements/heading/*.mjs",
+            "require": "./dist/elements/heading/*.mjs"
+        },
+        "./image/*": {
+            "types": "./dist/elements/image/*.d.ts",
+            "import": "./dist/elements/image/*.mjs",
+            "require": "./dist/elements/image/*.mjs"
+        },
+        "./include/*": {
+            "types": "./dist/elements/include/*.d.ts",
+            "import": "./dist/elements/include/*.mjs",
+            "require": "./dist/elements/include/*.mjs"
+        },
+        "./link/*": {
+            "types": "./dist/elements/link/*.d.ts",
+            "import": "./dist/elements/link/*.mjs",
+            "require": "./dist/elements/link/*.mjs"
+        },
+        "./list/*": {
+            "types": "./dist/elements/list/*.d.ts",
+            "import": "./dist/elements/list/*.mjs",
+            "require": "./dist/elements/list/*.mjs"
+        },
+        "./math/*": {
+            "types": "./dist/elements/math/*.d.ts",
+            "import": "./dist/elements/math/*.mjs",
+            "require": "./dist/elements/math/*.mjs"
+        },
+        ".": {
+            "types": "./dist/index.d.ts",
+            "import": "./dist/index.mjs",
+            "require": "./dist/index.mjs"
+        },
+        "./defaultServer": {
+            "types": "./dist/defaultServer.d.ts",
+            "import": "./dist/defaultServer.mjs",
+            "require": "./dist/defaultServer.mjs"
+        },
+        "./defaultApp": {
+            "types": "./dist/defaultApp.d.ts",
+            "import": "./dist/defaultApp.mjs",
+            "require": "./dist/defaultApp.mjs"
+        }
+    },
+    "typesVersions": {
+        "*": {
+            "accent/*": [
+                "./dist/elements/accent/*.d.ts"
+            ],
+            "aliases/*": [
+                "./dist/elements/aliases/*.d.ts"
+            ],
+            "callout/*": [
+                "./dist/elements/callout/*.d.ts"
+            ],
+            "details/*": [
+                "./dist/elements/details/*.d.ts"
+            ],
+            "emphasis/*": [
+                "./dist/elements/emphasis/*.d.ts"
+            ],
+            "heading/*": [
+                "./dist/elements/heading/*.d.ts"
+            ],
+            "image/*": [
+                "./dist/elements/image/*.d.ts"
+            ],
+            "include/*": [
+                "./dist/elements/include/*.d.ts"
+            ],
+            "link/*": [
+                "./dist/elements/link/*.d.ts"
+            ],
+            "list/*": [
+                "./dist/elements/list/*.d.ts"
+            ],
+            "math/*": [
+                "./dist/elements/math/*.d.ts"
+            ]
+        }
     }
 }

@@ -17,9 +17,9 @@ import {
     useTemplateRef,
 } from '#imports';
 
-import captionClasses from '../caption.module.scss';
+import captionClasses from '../../figure/caption.module.scss';
 import { type ImageSchema } from './shared';
-import FigureWrapper from '../FigureWrapper.vue';
+import FigureWrapper from '../../figure/FigureWrapper.vue';
 
 defineProps<ElementProps<ImageSchema>>();
 
@@ -120,7 +120,7 @@ onUnmounted(() => {
 </style>
 
 <style lang="scss" module>
-@use '../caption.module';
+@use '../../figure/caption.module';
 
 :global(.pswp-image) {
     display: flex;

@@ -5,7 +5,11 @@ import {
 } from '@bitran-js/transpiler';
 
 import { imageName, type ImageParseData, type ImageSchema } from './shared';
-import { parseRawCaption, toRawCaption, validateRawCaption } from '../caption';
+import {
+    parseRawCaption,
+    toRawCaption,
+    validateRawCaption,
+} from '../../figure/caption';
 
 export class ImageParser extends ObjBlockParseFactory<ImageSchema> {
     override objName = imageName;
