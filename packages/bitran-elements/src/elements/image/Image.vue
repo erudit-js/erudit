@@ -1,44 +1,39 @@
 <script lang="ts" setup>
-import {
-    type ElementProps,
-    useElementParseData,
-    useElementRenderData,
-} from '@bitran-js/renderer-vue';
-
 import PhotoSwipeLightbox from 'photoswipe/lightbox';
 
 import {
-    contentAsset,
     onMounted,
     onUnmounted,
+    ref,
     shallowRef,
-    useBaseUrlPath,
     useCssModule,
     useTemplateRef,
-} from '#imports';
+} from 'vue';
 
 import captionClasses from '../../figure/caption.module.scss';
-import { type ImageSchema } from './shared';
+import { useBaseUrlPath, contentAsset } from '#imports';
+import { type ImageParseData, type ImageRenderData } from './shared';
 import FigureWrapper from '../../figure/FigureWrapper.vue';
 
-defineProps<ElementProps<ImageSchema>>();
+const props = defineProps<{
+    parseData: ImageParseData;
+    renderData: ImageRenderData;
+}>();
 
 const style = useCssModule();
 const baseUrlPath = useBaseUrlPath();
 
-const parseData = useElementParseData<ImageSchema>();
-const renderData = useElementRenderData<ImageSchema>();
-
 const invertClass = (() => {
-    return parseData.invert;
+    return props.parseData.invert;
 })();
 
 const lightbox = shallowRef<PhotoSwipeLightbox>();
-const figureElement = useTemplateRef('figure');
+const captionElement = ref<HTMLElement | null>(null);
+const imageWrapper = useTemplateRef('imageWrapper');
 
 onMounted(() => {
     lightbox.value = new PhotoSwipeLightbox({
-        gallery: '.pswp-image',
+        gallery: imageWrapper.value!,
         children: 'a',
         bgOpacity: 1,
         imageClickAction: 'toggle-controls',
@@ -55,22 +50,19 @@ onMounted(() => {
         pswpModule: () => import('photoswipe'),
     });
 
-    const captionHtml = figureElement.value?.parentElement
-        ?.querySelector('figcaption')
-        ?.getHTML();
+    lightbox.value.on('uiRegister', () => {
+        console.log(captionElement.value);
+        if (!captionElement.value) return;
 
-    if (captionHtml) {
-        lightbox.value.on('uiRegister', () => {
-            lightbox.value!.pswp!.ui!.registerElement({
-                name: 'caption',
-                className: `${captionClasses.caption} ${captionClasses.photoswipe}`,
-                order: 9,
-                isButton: false,
-                appendTo: 'root',
-                html: captionHtml,
-            });
+        lightbox.value!.pswp!.ui!.registerElement({
+            name: 'caption',
+            className: `${captionClasses.caption} ${captionClasses.photoswipe}`,
+            order: 9,
+            isButton: false,
+            appendTo: 'root',
+            html: captionElement.value.getHTML(),
         });
-    }
+    });
 
     lightbox.value.init();
 });
@@ -83,8 +75,11 @@ onUnmounted(() => {
 </script>
 
 <template>
-    <FigureWrapper :caption="parseData.caption">
-        <div class="pswp-image" ref="figure">
+    <FigureWrapper
+        :caption="parseData.caption"
+        @captionMounted="(element) => (captionElement = element)"
+    >
+        <div ref="imageWrapper" :class="$style.imageWrapper">
             <a
                 :href="baseUrlPath(contentAsset(renderData.resolvedSrc))"
                 :data-pswp-width="renderData.size.width"
@@ -121,8 +116,9 @@ onUnmounted(() => {
 
 <style lang="scss" module>
 @use '../../figure/caption.module';
+@use '../../styles/utils';
 
-:global(.pswp-image) {
+.imageWrapper {
     display: flex;
     justify-content: center;
 }
@@ -137,12 +133,12 @@ onUnmounted(() => {
 
     .pswp_invertLight {
         img {
-            filter: invert(1);
+            filter: utils.$invertKeepColors;
         }
     }
 
     .invert-light {
-        filter: invert(1);
+        filter: utils.$invertKeepColors;
     }
 }
 
@@ -153,12 +149,12 @@ onUnmounted(() => {
 
     .pswp_invertDark {
         img {
-            filter: invert(1);
+            filter: utils.$invertKeepColors;
         }
     }
 
     .invert-dark {
-        filter: invert(1);
+        filter: utils.$invertKeepColors;
     }
 }
 </style>

@@ -16,6 +16,8 @@ import { listName } from './elements/list/shared';
 import { listTranspiler } from './elements/list/transpiler';
 import { imageName } from './elements/image/shared';
 import { imageServerTranspiler } from './elements/image/server';
+import { galleryName } from './elements/gallery/shared';
+import { galleryServerTranspiler } from './elements/gallery/server';
 
 export const eruditTranspilers: ElementTranspilers = {
     [aliasesName]: aliasesTranspiler,
@@ -26,4 +28,5 @@ export const eruditTranspilers: ElementTranspilers = {
     [emphasisName]: emphasisTranspiler,
     [listName]: listTranspiler,
     [imageName]: imageServerTranspiler,
+    [galleryName]: galleryServerTranspiler,
 };

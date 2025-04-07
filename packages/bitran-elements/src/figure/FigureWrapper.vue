@@ -1,11 +1,21 @@
 <script lang="ts" setup>
 import { Render } from '@bitran-js/renderer-vue';
+import { onMounted, useTemplateRef } from 'vue';
 
 import type { Caption } from './caption';
 
 import captionClasses from './caption.module.scss';
 
 defineProps<{ caption?: Caption }>();
+const emit = defineEmits(['captionMounted']);
+
+const captionElement = useTemplateRef('captionElement');
+
+onMounted(() => {
+    if (captionElement.value) {
+        emit('captionMounted', captionElement.value);
+    }
+});
 </script>
 
 <template>
@@ -13,6 +23,7 @@ defineProps<{ caption?: Caption }>();
         <slot></slot>
         <figcaption
             v-if="caption"
+            ref="captionElement"
             :class="[captionClasses.caption, captionClasses.figure]"
             :style="{ maxWidth: caption.maxWidth ?? '100%' }"
         >

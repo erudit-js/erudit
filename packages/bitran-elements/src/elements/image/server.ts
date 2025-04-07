@@ -15,20 +15,50 @@ import { PROJECT_DIR } from '#erudit/globalPaths';
 import { ImageParser, ImageStringifier } from './factory';
 import { ImageNode, type ImageParseData, type ImageSchema } from './shared';
 
+export function normalizeImageSrc(
+    src: string,
+    contextPath: string,
+    insideInclude: boolean,
+): string {
+    if (insideInclude) {
+        return '/' + toAbsoluteContentId(src, contextPath, getNavBookIds());
+    }
+    return src;
+}
+
+export async function getImageRenderData(src: string, contextPath: string) {
+    const absoluteSrc = toAbsoluteContentId(src, contextPath, getNavBookIds());
+    const fullPath = await getFileFullPath(absoluteSrc);
+
+    if (!fullPath) throw new Error(`Image file not found: ${absoluteSrc}`);
+
+    const dimensions = await imageSizeFromFile(
+        PROJECT_DIR + '/content/' + fullPath,
+    );
+
+    return {
+        resolvedSrc: fullPath,
+        size: {
+            width: dimensions.width,
+            height: dimensions.height,
+        },
+    };
+}
+
+//
+//
+//
+
 export class ImageServerParser extends ImageParser {
     override async parseDataFromObj(obj: RawObject): Promise<ImageParseData> {
         const parseData = await super.parseDataFromObj(obj);
         const { insideInclude, context } = getEruditBitranRuntime(this);
 
-        if (insideInclude) {
-            parseData.src =
-                '/' +
-                toAbsoluteContentId(
-                    parseData.src,
-                    context.location.path!,
-                    getNavBookIds(),
-                );
-        }
+        parseData.src = normalizeImageSrc(
+            parseData.src,
+            context.location.path!,
+            insideInclude,
+        );
 
         return parseData;
     }
@@ -42,26 +72,9 @@ export const imageServerTranspiler = defineElementTranspiler<ImageSchema>({
         if (!runtime)
             throw new Error('Missing runtime when prerendering image element!');
 
-        const src = toAbsoluteContentId(
+        return await getImageRenderData(
             node.parseData.src,
             runtime.context.location.path!,
-            getNavBookIds(),
         );
-
-        const fullPath = await getFileFullPath(src);
-
-        if (!fullPath) throw new Error(`Image file not found: ${src}`);
-
-        const dimensions = await imageSizeFromFile(
-            PROJECT_DIR + '/content/' + fullPath,
-        );
-
-        return {
-            resolvedSrc: fullPath,
-            size: {
-                width: dimensions.width,
-                height: dimensions.height,
-            },
-        };
     },
 });

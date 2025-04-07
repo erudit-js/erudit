@@ -5,8 +5,8 @@ import {
     ImageNode,
     imageName,
     type ImageParseData,
-} from '../../../src/elements/image/shared';
-import { imageTranspiler } from '../../../src/elements/image/transpiler';
+} from '../../src/elements/image/shared';
+import { imageTranspiler } from '../../src/elements/image/transpiler';
 
 const bitran = defineBitranTranspiler({
     [imageName]: imageTranspiler,

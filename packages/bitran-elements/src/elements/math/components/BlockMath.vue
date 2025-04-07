@@ -12,13 +12,7 @@ const rootMathGroup = useElementRenderData<BlockMathSchema>();
 </script>
 
 <template>
-    <div :class="$style.blockMath">
+    <div>
         <BlockMathGroup :group="rootMathGroup" :freeze="node.meta.freeze" />
     </div>
 </template>
-
-<style lang="scss" module>
-:global(.bitran-blockContainer .bitran-blockMain):has(.blockMath) {
-    overflow: auto;
-}
-</style>

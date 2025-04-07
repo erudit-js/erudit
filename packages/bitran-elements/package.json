@@ -57,6 +57,11 @@
             "import": "./dist/elements/emphasis/*.mjs",
             "require": "./dist/elements/emphasis/*.mjs"
         },
+        "./gallery/*": {
+            "types": "./dist/elements/gallery/*.d.ts",
+            "import": "./dist/elements/gallery/*.mjs",
+            "require": "./dist/elements/gallery/*.mjs"
+        },
         "./heading/*": {
             "types": "./dist/elements/heading/*.d.ts",
             "import": "./dist/elements/heading/*.mjs",
@@ -119,6 +124,9 @@
             ],
             "emphasis/*": [
                 "./dist/elements/emphasis/*.d.ts"
+            ],
+            "gallery/*": [
+                "./dist/elements/gallery/*.d.ts"
             ],
             "heading/*": [
                 "./dist/elements/heading/*.d.ts"

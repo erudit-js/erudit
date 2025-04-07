@@ -5,11 +5,11 @@ import {
     defineLanguages,
 } from '@bitran-js/renderer-vue';
 
-import { ImageNode, type ImageSchema } from './shared';
+import { GalleryNode, type GallerySchema } from './shared';
 
-export const imageRenderer = defineElementVueRenderer<ImageSchema>({
-    Node: ImageNode,
-    component: defineComponent(() => import('./ImageElement.vue')),
+export const galleryRenderer = defineElementVueRenderer<GallerySchema>({
+    Node: GalleryNode,
+    component: defineComponent(() => import('./Gallery.vue')),
     icon: defineIcon(() => import('./icon.svg?raw')),
     languages: defineLanguages({
         en: () => import('./languages/en'),
@@ -17,7 +17,7 @@ export const imageRenderer = defineElementVueRenderer<ImageSchema>({
     }),
     async createRenderData() {
         throw new Error(
-            'Creating render data in SSR for Image element is not supported!',
+            'Creating render data in SSR for Gallery element is not supported!',
         );
     },
 });
