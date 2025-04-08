@@ -14,6 +14,7 @@ import captionClasses from '../../figure/caption.module.scss';
 import { useBaseUrlPath, contentAsset } from '#imports';
 import { type ImageParseData, type ImageRenderData } from './shared';
 import FigureWrapper from '../../figure/FigureWrapper.vue';
+import { maxWidthCSS } from '../../utils/maxWidth';
 
 const props = defineProps<{
     parseData: ImageParseData;
@@ -91,9 +92,7 @@ onUnmounted(() => {
                         invertClass ? $style[`invert-${invertClass}`] : '',
                     ]"
                     :style="{
-                        maxWidth: parseData.maxWidth
-                            ? parseData.maxWidth
-                            : '100%',
+                        maxWidth: maxWidthCSS(parseData.maxWidth),
                     }"
                 />
             </a>

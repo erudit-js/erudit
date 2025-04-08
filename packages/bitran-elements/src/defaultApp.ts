@@ -30,6 +30,9 @@ import { galleryRenderer } from './elements/gallery/renderer';
 import { tableName } from './elements/table/shared';
 import { tableTranspiler } from './elements/table/transpiler';
 import { tableRenderer } from './elements/table/renderer';
+import { videoName } from './elements/video/shared';
+import { videoTranspiler } from './elements/video/transpiler';
+import { videoRenderer } from './elements/video/renderer';
 
 export const eruditElements: EruditBitranElements = {
     [aliasesName]: {
@@ -71,5 +74,9 @@ export const eruditElements: EruditBitranElements = {
     [tableName]: {
         transpiler: tableTranspiler,
         renderer: tableRenderer,
+    },
+    [videoName]: {
+        transpiler: videoTranspiler,
+        renderer: videoRenderer,
     },
 };

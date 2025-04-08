@@ -20,6 +20,8 @@ import { galleryName } from './elements/gallery/shared';
 import { galleryServerTranspiler } from './elements/gallery/server';
 import { tableName } from './elements/table/shared';
 import { tableTranspiler } from './elements/table/transpiler';
+import { videoName } from './elements/video/shared';
+import { videoServerTranspiler } from './elements/video/server';
 
 export const eruditTranspilers: ElementTranspilers = {
     [aliasesName]: aliasesTranspiler,
@@ -32,4 +34,5 @@ export const eruditTranspilers: ElementTranspilers = {
     [imageName]: imageServerTranspiler,
     [galleryName]: galleryServerTranspiler,
     [tableName]: tableTranspiler,
+    [videoName]: videoServerTranspiler,
 };

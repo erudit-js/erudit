@@ -7,6 +7,7 @@ import {
 
 import { type TableSchema } from './shared';
 import FigureWrapper from '../../figure/FigureWrapper.vue';
+import { maxWidthCSS } from '../../utils/maxWidth';
 
 defineProps<ElementProps<TableSchema>>();
 const parseData = useElementParseData<TableSchema>();
@@ -18,7 +19,7 @@ const parseData = useElementParseData<TableSchema>();
             <table
                 :class="$style.table"
                 :style="{
-                    maxWidth: parseData.maxWidth ? parseData.maxWidth : '100%',
+                    maxWidth: maxWidthCSS(parseData.maxWidth),
                 }"
             >
                 <tbody>

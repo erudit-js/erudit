@@ -97,6 +97,11 @@
             "import": "./dist/elements/table/*.mjs",
             "require": "./dist/elements/table/*.mjs"
         },
+        "./video/*": {
+            "types": "./dist/elements/video/*.d.ts",
+            "import": "./dist/elements/video/*.mjs",
+            "require": "./dist/elements/video/*.mjs"
+        },
         ".": {
             "types": "./dist/index.d.ts",
             "import": "./dist/index.mjs",
@@ -153,6 +158,9 @@
             ],
             "table/*": [
                 "./dist/elements/table/*.d.ts"
+            ],
+            "video/*": [
+                "./dist/elements/video/*.d.ts"
             ]
         }
     }
