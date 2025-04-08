@@ -2,7 +2,7 @@ import { InlinersNode, type Node } from '@bitran-js/core';
 import type {
     ParseFactory,
     Parser,
-    RawObject,
+    PlainObject,
     Stringifier,
 } from '@bitran-js/transpiler';
 
@@ -12,7 +12,11 @@ export interface Caption {
     maxWidth?: string;
 }
 
-export function validateRawCaption(rawCaption: RawObject): void {
+export function validateRawCaption(rawCaption: PlainObject | string): void {
+    if (typeof rawCaption === 'string') {
+        return;
+    }
+
     if (!rawCaption.main) {
         throw new Error('Caption must have a "main" property!');
     }
@@ -23,36 +27,52 @@ export function validateRawCaption(rawCaption: RawObject): void {
 }
 
 export async function parseRawCaption(
-    rawCaption: RawObject,
+    rawCaption: PlainObject | string,
     parent: Node,
     factory: ParseFactory,
 ): Promise<Caption> {
-    const mainInliners = new InlinersNode(parent);
-    mainInliners.setNodes(await factory.parseInliners(rawCaption.main));
+    const captionObj =
+        typeof rawCaption === 'string' ? { main: rawCaption } : rawCaption;
 
-    const secondaryInliners = rawCaption.secondary
+    const mainInliners = new InlinersNode(parent);
+    mainInliners.setNodes(await factory.parseInliners(captionObj.main));
+
+    const secondaryInliners = captionObj.secondary
         ? new InlinersNode(parent)
         : undefined;
 
     if (secondaryInliners) {
         secondaryInliners.setNodes(
-            await factory.parseInliners(rawCaption.secondary),
+            await factory.parseInliners(captionObj.secondary),
         );
     }
 
     return {
         main: mainInliners,
         secondary: secondaryInliners,
-        maxWidth: rawCaption.maxWidth,
+        maxWidth: captionObj.maxWidth,
     };
 }
 
-export async function toRawCaption(caption: Caption, stringifier: Stringifier) {
+export async function toRawCaptionObj(
+    caption: Caption,
+    stringifier: Stringifier,
+) {
+    const onlyMain = !caption.secondary && !caption.maxWidth;
+
+    if (onlyMain) {
+        return {
+            caption: await stringifier.stringify(caption.main),
+        };
+    }
+
     return {
-        ...(caption.maxWidth ? { maxWidth: caption.maxWidth } : {}),
-        main: await stringifier.stringify(caption.main),
-        ...(caption.secondary
-            ? { secondary: await stringifier.stringify(caption.secondary) }
-            : {}),
+        caption: {
+            ...(caption.maxWidth ? { maxWidth: caption.maxWidth } : {}),
+            main: await stringifier.stringify(caption.main),
+            ...(caption.secondary
+                ? { secondary: await stringifier.stringify(caption.secondary) }
+                : {}),
+        },
     };
 }

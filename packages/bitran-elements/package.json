@@ -92,6 +92,11 @@
             "import": "./dist/elements/math/*.mjs",
             "require": "./dist/elements/math/*.mjs"
         },
+        "./table/*": {
+            "types": "./dist/elements/table/*.d.ts",
+            "import": "./dist/elements/table/*.mjs",
+            "require": "./dist/elements/table/*.mjs"
+        },
         ".": {
             "types": "./dist/index.d.ts",
             "import": "./dist/index.mjs",
@@ -145,6 +150,9 @@
             ],
             "math/*": [
                 "./dist/elements/math/*.d.ts"
+            ],
+            "table/*": [
+                "./dist/elements/table/*.d.ts"
             ]
         }
     }

@@ -1,7 +1,7 @@
 import {
     ObjBlockParseFactory,
     ObjStringifyFactory,
-    type RawObject,
+    type PlainObject,
 } from '@bitran-js/transpiler';
 
 import type { GalleryParseData, GallerySchema } from './shared';
@@ -11,7 +11,9 @@ import { parseImageData, stringifyImageData } from '../image/factory';
 export class GalleryParser extends ObjBlockParseFactory<GallerySchema> {
     override objName = 'gallery';
 
-    override async parseDataFromObj(obj: RawObject): Promise<GalleryParseData> {
+    override async parseDataFromObj(
+        obj: PlainObject,
+    ): Promise<GalleryParseData> {
         const { images } = obj;
 
         if (!images || !Array.isArray(images)) {
@@ -36,19 +38,19 @@ export class GalleryParser extends ObjBlockParseFactory<GallerySchema> {
 export class GalleryStringifier extends ObjStringifyFactory<GallerySchema> {
     override objName = 'gallery';
 
-    override async createRawObject(): Promise<RawObject> {
+    override async createStrData(): Promise<PlainObject> {
         const { images } = this.payload().parseData;
 
-        const rawObject: RawObject = {
+        const PlainObject: PlainObject = {
             images: [],
         };
 
         for (const image of images) {
-            rawObject.images.push(
+            PlainObject.images.push(
                 await stringifyImageData(image, this.stringifier),
             );
         }
 
-        return rawObject;
+        return PlainObject;
     }
 }

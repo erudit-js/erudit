@@ -51,7 +51,6 @@ onMounted(() => {
     });
 
     lightbox.value.on('uiRegister', () => {
-        console.log(captionElement.value);
         if (!captionElement.value) return;
 
         lightbox.value!.pswp!.ui!.registerElement({
@@ -116,7 +115,7 @@ onUnmounted(() => {
 
 <style lang="scss" module>
 @use '../../figure/caption.module';
-@use '../../styles/utils';
+@use '../../styles/utils' as elementUtils;
 
 .imageWrapper {
     display: flex;
@@ -133,12 +132,12 @@ onUnmounted(() => {
 
     .pswp_invertLight {
         img {
-            filter: utils.$invertKeepColors;
+            filter: elementUtils.$invertKeepColors;
         }
     }
 
     .invert-light {
-        filter: utils.$invertKeepColors;
+        filter: elementUtils.$invertKeepColors;
     }
 }
 
@@ -149,12 +148,12 @@ onUnmounted(() => {
 
     .pswp_invertDark {
         img {
-            filter: utils.$invertKeepColors;
+            filter: elementUtils.$invertKeepColors;
         }
     }
 
     .invert-dark {
-        filter: utils.$invertKeepColors;
+        filter: elementUtils.$invertKeepColors;
     }
 }
 </style>

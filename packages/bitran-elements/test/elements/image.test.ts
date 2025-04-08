@@ -65,8 +65,7 @@ it('Should correctly parse and stringify image with src and simple caption', asy
     const text = `
 @image
     src: /path/to/image.jpg
-    caption:
-        main: Simple caption text
+    caption: Simple caption text
 `;
 
     const parsed = await bitran.parser.parse(text);

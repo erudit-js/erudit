@@ -73,8 +73,7 @@ it('Should correctly parse and stringify gallery with images having properties',
         - src: /path/to/image1.jpg
           invert: dark
         - src: /path/to/image2.jpg
-          caption:
-              main: Second image caption
+          caption: Second image caption
 `;
 
     const parsed = await bitran.parser.parse(text);

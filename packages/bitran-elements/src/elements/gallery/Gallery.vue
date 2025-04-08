@@ -130,32 +130,15 @@ watch(currentIndex, async () => {
 </template>
 
 <style lang="scss" module>
-@use '@bitran-js/renderer-vue/scss/bp';
 @use '@bitran-js/renderer-vue/scss/utils' as bitranUtils;
-@use '../../styles/utils';
+@use '../../styles/utils' as elementUtils;
 
 .gallery {
     .selector {
         display: flex;
-        overflow: auto;
         margin-bottom: var(--bitran_gapSmall);
 
-        &::-webkit-scrollbar {
-            height: 7px;
-        }
-
-        &::-webkit-scrollbar-thumb {
-            border-radius: 3px;
-            background: light-dark(#b6b6b6, #4f4f4f);
-        }
-
-        @include bp.below('mobile') {
-            overflow-x: scroll;
-
-            &::-webkit-scrollbar {
-                height: 5px;
-            }
-        }
+        @include elementUtils.scrollbar;
 
         .inner {
             display: flex;
@@ -181,11 +164,11 @@ watch(currentIndex, async () => {
                 }
 
                 :root[data-theme='light'] &.invertLight img {
-                    filter: utils.$invertKeepColors;
+                    filter: elementUtils.$invertKeepColors;
                 }
 
                 :root[data-theme='dark'] &.invertDark img {
-                    filter: utils.$invertKeepColors;
+                    filter: elementUtils.$invertKeepColors;
                 }
 
                 > div {

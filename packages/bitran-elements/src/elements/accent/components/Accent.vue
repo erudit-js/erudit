@@ -50,7 +50,7 @@ const accentColors = Object.keys(renderData.colors).reduce(
 </script>
 
 <template>
-    <div :class="$style.accent" :style="accentColors">
+    <div :class="$style.accent" :style="accentColors" data-erudit-accent>
         <header>
             <MyRuntimeIcon name="accent-icon" :svg="accentIcon" />
             <span>{{ parseData.title || phrase('_element_title') }}</span>

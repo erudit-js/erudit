@@ -1,4 +1,7 @@
-import { defineElementTranspiler, type RawObject } from '@bitran-js/transpiler';
+import {
+    defineElementTranspiler,
+    type PlainObject,
+} from '@bitran-js/transpiler';
 import {
     getEruditBitranRuntime,
     type EruditBitranRuntime,
@@ -13,7 +16,7 @@ import { CalloutParser, CalloutStringifier } from './factory';
 import { CalloutNode, type CalloutSchema, type CalloutIcon } from './shared';
 
 export class CalloutServerParser extends CalloutParser {
-    override parseIcon(obj: RawObject): CalloutIcon {
+    override parseIcon(obj: PlainObject): CalloutIcon {
         const icon = super.parseIcon(obj);
         const { insideInclude, context } = getEruditBitranRuntime(this);
 

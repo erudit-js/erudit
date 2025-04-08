@@ -1,9 +1,9 @@
 import {
     BlockParseFactory,
     ObjBlockParseFactory,
-    objToText,
     StringifyFactory,
-    type RawObject,
+    toStrObjectBlock,
+    type PlainObject,
 } from '@bitran-js/transpiler';
 
 import type { ListParseData, ListSchema } from './shared';
@@ -83,7 +83,7 @@ export class ListInlineParser extends BlockParseFactory<ListSchema> {
 export class ListObjectParser extends ObjBlockParseFactory<ListSchema> {
     override objName = 'list';
 
-    override async parseDataFromObj(obj: RawObject): Promise<ListParseData> {
+    override async parseDataFromObj(obj: PlainObject): Promise<ListParseData> {
         const isObj = true;
 
         const type = obj.type;
@@ -151,7 +151,7 @@ export class ListStringifier extends StringifyFactory<ListSchema> {
         }
 
         if (isListObject) {
-            return objToText('list', {
+            return toStrObjectBlock('list', {
                 type: parseData.type,
                 ...(parseData.type === 'ol' && parseData.start !== 1
                     ? { start: parseData.start }

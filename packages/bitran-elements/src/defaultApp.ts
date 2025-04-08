@@ -27,6 +27,9 @@ import { imageRenderer } from './elements/image/renderer';
 import { galleryName } from './elements/gallery/shared';
 import { galleryTranspiler } from './elements/gallery/transpiler';
 import { galleryRenderer } from './elements/gallery/renderer';
+import { tableName } from './elements/table/shared';
+import { tableTranspiler } from './elements/table/transpiler';
+import { tableRenderer } from './elements/table/renderer';
 
 export const eruditElements: EruditBitranElements = {
     [aliasesName]: {
@@ -64,5 +67,9 @@ export const eruditElements: EruditBitranElements = {
     [galleryName]: {
         transpiler: galleryTranspiler,
         renderer: galleryRenderer,
+    },
+    [tableName]: {
+        transpiler: tableTranspiler,
+        renderer: tableRenderer,
     },
 };

@@ -37,6 +37,7 @@ const MathComponent = h(props.displayMath ? 'div' : 'span', {
 
 <style lang="scss" module>
 @use '@bitran-js/renderer-vue/scss/bp';
+@use '../../../styles/utils' as elementUtils;
 
 .latexMath {
     //
@@ -59,25 +60,9 @@ const MathComponent = h(props.displayMath ? 'div' : 'span', {
 }
 
 .latexDisplayMath {
-    overflow: auto;
     padding: 2px;
 
-    &::-webkit-scrollbar {
-        height: 7px;
-    }
-
-    &::-webkit-scrollbar-thumb {
-        border-radius: 3px;
-        background: light-dark(#b6b6b6, #4f4f4f);
-    }
-
-    @include bp.below('mobile') {
-        overflow-x: scroll;
-
-        &::-webkit-scrollbar {
-            height: 5px;
-        }
-    }
+    @include elementUtils.scrollbar;
 
     :global(.base) {
         margin: 0.25em 0;

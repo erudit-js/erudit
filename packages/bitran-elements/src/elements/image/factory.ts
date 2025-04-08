@@ -3,19 +3,19 @@ import {
     ObjStringifyFactory,
     ParseFactory,
     Stringifier,
-    type RawObject,
+    type PlainObject,
 } from '@bitran-js/transpiler';
 
 import { imageName, type ImageParseData, type ImageSchema } from './shared';
 import {
     parseRawCaption,
-    toRawCaption,
+    toRawCaptionObj,
     validateRawCaption,
 } from '../../figure/caption';
 import type { BlockNode } from '@bitran-js/core';
 
 export async function parseImageData(
-    obj: RawObject,
+    obj: PlainObject,
     node: BlockNode,
     parser: ParseFactory,
 ): Promise<ImageParseData> {
@@ -48,26 +48,26 @@ export async function parseImageData(
 export async function stringifyImageData(
     parseData: ImageParseData,
     stringifier: Stringifier,
-): Promise<RawObject> {
+): Promise<PlainObject> {
     const { src, invert, caption, maxWidth } = parseData;
 
-    const rawObject: RawObject = {
+    const plainObject: PlainObject = {
         src,
     };
 
     if (invert) {
-        rawObject.invert = invert;
+        plainObject.invert = invert;
     }
 
     if (maxWidth) {
-        rawObject.maxWidth = maxWidth;
+        plainObject.maxWidth = maxWidth;
     }
 
     if (caption) {
-        rawObject.caption = await toRawCaption(caption, stringifier);
+        Object.assign(plainObject, await toRawCaptionObj(caption, stringifier));
     }
 
-    return rawObject;
+    return plainObject;
 }
 
 //
@@ -77,7 +77,7 @@ export async function stringifyImageData(
 export class ImageParser extends ObjBlockParseFactory<ImageSchema> {
     override objName = imageName;
 
-    override async parseDataFromObj(obj: RawObject): Promise<ImageParseData> {
+    override async parseDataFromObj(obj: PlainObject): Promise<ImageParseData> {
         return parseImageData(obj, this.payload().node, this);
     }
 }
@@ -85,7 +85,7 @@ export class ImageParser extends ObjBlockParseFactory<ImageSchema> {
 export class ImageStringifier extends ObjStringifyFactory<ImageSchema> {
     override objName = imageName;
 
-    override async createRawObject(): Promise<RawObject> {
+    override async createStrData(): Promise<PlainObject> {
         const { parseData } = this.payload();
         return stringifyImageData(parseData, this.stringifier);
     }

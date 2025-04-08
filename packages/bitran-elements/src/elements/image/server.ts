@@ -1,4 +1,7 @@
-import { defineElementTranspiler, type RawObject } from '@bitran-js/transpiler';
+import {
+    defineElementTranspiler,
+    type PlainObject,
+} from '@bitran-js/transpiler';
 import {
     getEruditBitranRuntime,
     type EruditBitranRuntime,
@@ -50,7 +53,7 @@ export async function getImageRenderData(src: string, contextPath: string) {
 //
 
 export class ImageServerParser extends ImageParser {
-    override async parseDataFromObj(obj: RawObject): Promise<ImageParseData> {
+    override async parseDataFromObj(obj: PlainObject): Promise<ImageParseData> {
         const parseData = await super.parseDataFromObj(obj);
         const { insideInclude, context } = getEruditBitranRuntime(this);
 
