@@ -1,14 +1,14 @@
 import { BlockNode, type DefineElementSchema } from '@bitran-js/core';
 
-import type { Caption } from '../../figure/caption';
+import { getCaptionChildren, type Caption } from '../../figure/caption';
 
 export const imageName = 'image';
 
 export interface ImageParseData {
     src: string;
     invert?: 'light' | 'dark';
-    caption?: Caption;
     maxWidth?: string;
+    caption?: Caption;
 }
 
 export interface ImageRenderData {
@@ -26,16 +26,6 @@ export type ImageSchema = DefineElementSchema<{
 
 export class ImageNode extends BlockNode<ImageSchema> {
     override get children() {
-        if (!this.parseData.caption) {
-            return undefined;
-        }
-
-        const children = [this.parseData.caption.main];
-
-        if (this.parseData.caption.secondary) {
-            children.push(this.parseData.caption.secondary);
-        }
-
-        return children;
+        return getCaptionChildren(this.parseData.caption);
     }
 }

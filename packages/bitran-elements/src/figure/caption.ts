@@ -1,7 +1,6 @@
 import { InlinersNode, type Node } from '@bitran-js/core';
 import type {
     ParseFactory,
-    Parser,
     PlainObject,
     Stringifier,
 } from '@bitran-js/transpiler';
@@ -75,4 +74,20 @@ export async function toRawCaptionObj(
                 : {}),
         },
     };
+}
+
+export function getCaptionChildren(
+    caption?: Caption,
+): InlinersNode[] | undefined {
+    if (!caption) {
+        return undefined;
+    }
+
+    const children = [caption.main];
+
+    if (caption.secondary) {
+        children.push(caption.secondary);
+    }
+
+    return children;
 }

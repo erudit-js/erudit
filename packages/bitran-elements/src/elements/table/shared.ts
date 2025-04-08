@@ -4,7 +4,7 @@ import {
     type InlinersNode,
 } from '@bitran-js/core';
 
-import type { Caption } from '../../figure/caption';
+import { getCaptionChildren, type Caption } from '../../figure/caption';
 
 export const tableName = 'table';
 
@@ -23,10 +23,7 @@ export class TableNode extends BlockNode<TableSchema> {
         const children = this.parseData.cells.flat();
 
         if (this.parseData.caption) {
-            children.push(this.parseData.caption.main);
-            if (this.parseData.caption.secondary) {
-                children.push(this.parseData.caption.secondary);
-            }
+            children.push(...getCaptionChildren(this.parseData.caption)!);
         }
 
         return children;
