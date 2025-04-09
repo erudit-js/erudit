@@ -25,11 +25,11 @@ const renderData = useElementRenderData<VideoSchema>();
 const videoElement = useTemplateRef('video');
 const observer = ref<IntersectionObserver | null>(null);
 
-const inited = ref(false);
+const wasInViewport = ref(false);
 const manuallyPaused = ref(false);
 
 if (!parseData.autoplay.value) {
-    inited.value = true;
+    wasInViewport.value = true;
     manuallyPaused.value = true;
 }
 
@@ -47,10 +47,19 @@ onMounted(() => {
         const entry = entries[0]!;
         try {
             if (entry.isIntersecting) {
-                inited.value = true;
+                wasInViewport.value = true;
                 if (!manuallyPaused.value) video.play();
             } else {
-                manuallyPaused.value = inited.value ? video.paused : false;
+                // When the video is not in the viewport:
+                if (wasInViewport.value) {
+                    // Video was in viewport before.
+                    // If it is now leaving already paused then of course it was the user, who manually paused it.
+                    manuallyPaused.value = video.paused;
+                } else {
+                    // Video was never in viewport before and user had no chance to pause it.
+                    manuallyPaused.value = false;
+                }
+
                 video.pause();
             }
         } catch {}
