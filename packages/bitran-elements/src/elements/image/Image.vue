@@ -37,6 +37,7 @@ onMounted(() => {
         gallery: imageWrapper.value!,
         children: 'a',
         bgOpacity: 1,
+        wheelToZoom: true,
         imageClickAction: 'toggle-controls',
         bgClickAction: 'close',
         doubleTapAction: 'zoom',
@@ -116,7 +117,7 @@ onUnmounted(() => {
 @use '../../figure/caption.module';
 @use '../../styles/utils' as elementUtils;
 
-.imageWrapper {
+.imageWrapper > a {
     display: flex;
     justify-content: center;
 }
