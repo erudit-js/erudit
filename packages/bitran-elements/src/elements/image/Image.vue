@@ -53,6 +53,7 @@ onMounted(() => {
                 :data-pswp-width="renderData.size.width"
                 :data-pswp-height="renderData.size.height"
                 target="_blank"
+                :class="$style.imageLink"
             >
                 <img
                     :src="baseUrlPath(contentAsset(renderData.resolvedSrc))"
@@ -60,6 +61,7 @@ onMounted(() => {
                         invertClass ? $style[`invert-${invertClass}`] : '',
                     ]"
                     :style="{
+                        width: parseData.maxWidth ? parseData.maxWidth : '100%',
                         maxWidth: maxWidthCSS(parseData.maxWidth),
                     }"
                 />
@@ -75,9 +77,17 @@ onMounted(() => {
 <style lang="scss" module>
 @use '../../shared/utils' as elementUtils;
 
-.imageWrapper > a {
-    display: flex;
-    justify-content: center;
+.imageWrapper {
+    text-align: center;
+
+    a {
+        display: inline-block;
+    }
+
+    img {
+        display: block;
+        margin: 0;
+    }
 }
 
 :root[data-theme='light'] {

@@ -33,6 +33,9 @@ import { tableRenderer } from './elements/table/renderer';
 import { videoName } from './elements/video/shared';
 import { videoTranspiler } from './elements/video/transpiler';
 import { videoRenderer } from './elements/video/renderer';
+import { flexName } from './elements/flex/shared';
+import { flexTranspiler } from './elements/flex/transpiler';
+import { flexRenderer } from './elements/flex/renderer';
 
 export const eruditElements: EruditBitranElements = {
     [aliasesName]: {
@@ -78,5 +81,9 @@ export const eruditElements: EruditBitranElements = {
     [videoName]: {
         transpiler: videoTranspiler,
         renderer: videoRenderer,
+    },
+    [flexName]: {
+        transpiler: flexTranspiler,
+        renderer: flexRenderer,
     },
 };

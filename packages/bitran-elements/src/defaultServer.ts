@@ -22,6 +22,8 @@ import { tableName } from './elements/table/shared';
 import { tableTranspiler } from './elements/table/transpiler';
 import { videoName } from './elements/video/shared';
 import { videoServerTranspiler } from './elements/video/server';
+import { flexName } from './elements/flex/shared';
+import { flexTranspiler } from './elements/flex/transpiler';
 
 export const eruditTranspilers: ElementTranspilers = {
     [aliasesName]: aliasesTranspiler,
@@ -35,4 +37,5 @@ export const eruditTranspilers: ElementTranspilers = {
     [galleryName]: galleryServerTranspiler,
     [tableName]: tableTranspiler,
     [videoName]: videoServerTranspiler,
+    [flexName]: flexTranspiler,
 };
