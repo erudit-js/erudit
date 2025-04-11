@@ -8,8 +8,8 @@ import {
 } from '@bitran-js/renderer-vue';
 
 import { type VideoSchema } from './shared';
-import FigureWrapper from '../../figure/FigureWrapper.vue';
-import { maxWidthCSS } from '../../utils/maxWidth';
+import FigureWrapper from '../../shared/figure/FigureWrapper.vue';
+import { maxWidthCSS } from '../../shared/maxWidth';
 
 import { useBaseUrlPath, contentAsset } from '#imports';
 
@@ -96,7 +96,7 @@ onUnmounted(() => {
 </template>
 
 <style lang="scss" module>
-@use '../../styles/utils' as elementUtils;
+@use '../../shared/utils' as elementUtils;
 
 .video {
     margin: 0 auto;

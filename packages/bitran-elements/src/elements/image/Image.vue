@@ -3,9 +3,9 @@ import { onMounted, ref, useCssModule, useTemplateRef } from 'vue';
 
 import { useBaseUrlPath, contentAsset } from '#imports';
 import { type ImageParseData, type ImageRenderData } from './shared';
-import FigureWrapper from '../../figure/FigureWrapper.vue';
-import { maxWidthCSS } from '../../utils/maxWidth';
-import { usePhotoSwipe } from '../../composables/photoswipe';
+import FigureWrapper from '../../shared/figure/FigureWrapper.vue';
+import { maxWidthCSS } from '../../shared/maxWidth';
+import { usePhotoSwipe } from '../../shared/photoswipe/composable';
 
 const props = defineProps<{
     parseData: ImageParseData;
@@ -69,11 +69,11 @@ onMounted(() => {
 </template>
 
 <style lang="scss">
-@use '../../styles/photoswipe';
+@use '../../shared/photoswipe/style';
 </style>
 
 <style lang="scss" module>
-@use '../../styles/utils' as elementUtils;
+@use '../../shared/utils' as elementUtils;
 
 .imageWrapper > a {
     display: flex;

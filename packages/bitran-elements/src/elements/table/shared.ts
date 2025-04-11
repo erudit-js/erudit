@@ -4,7 +4,7 @@ import {
     type InlinersNode,
 } from '@bitran-js/core';
 
-import { getCaptionChildren, type Caption } from '../../figure/caption';
+import { getCaptionChildren, type Caption } from '../../shared/figure/caption';
 
 export const tableName = 'table';
 

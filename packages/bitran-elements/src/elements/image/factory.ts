@@ -11,7 +11,7 @@ import {
     parseRawCaption,
     toRawCaptionObj,
     validateRawCaption,
-} from '../../figure/caption';
+} from '../../shared/figure/caption';
 import type { BlockNode } from '@bitran-js/core';
 
 export async function parseImageData(

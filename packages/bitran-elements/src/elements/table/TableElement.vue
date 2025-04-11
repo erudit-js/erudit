@@ -6,8 +6,8 @@ import {
 } from '@bitran-js/renderer-vue';
 
 import { type TableSchema } from './shared';
-import FigureWrapper from '../../figure/FigureWrapper.vue';
-import { maxWidthCSS } from '../../utils/maxWidth';
+import FigureWrapper from '../../shared/figure/FigureWrapper.vue';
+import { maxWidthCSS } from '../../shared/maxWidth';
 
 defineProps<ElementProps<TableSchema>>();
 const parseData = useElementParseData<TableSchema>();
@@ -38,7 +38,7 @@ const parseData = useElementParseData<TableSchema>();
 </template>
 
 <style lang="scss" module>
-@use '../../styles/utils' as elementUtils;
+@use '../../shared/utils' as elementUtils;
 
 .tableWrapper {
     @include elementUtils.scrollbar;

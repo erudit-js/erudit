@@ -13,8 +13,8 @@ import {
 } from '@bitran-js/renderer-vue';
 
 import { type DiagramSchema } from './shared';
-import FigureWrapper from '../../figure/FigureWrapper.vue';
-import { usePhotoSwipe } from '../../composables/photoswipe';
+import FigureWrapper from '../../shared/figure/FigureWrapper.vue';
+import { usePhotoSwipe } from '../../shared/photoswipe/composable';
 
 defineProps<ElementProps<DiagramSchema>>();
 
@@ -209,7 +209,7 @@ onUnmounted(() => {
 </template>
 
 <style lang="scss">
-@use '../../styles/photoswipe';
+@use '../../shared/photoswipe/style';
 
 [id^='__mermaid__'] {
     --text: color-mix(

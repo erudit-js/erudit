@@ -14,7 +14,7 @@ import {
     parseRawCaption,
     toRawCaptionObj,
     validateRawCaption,
-} from '../../figure/caption';
+} from '../../shared/figure/caption';
 
 export class TableParser extends ObjBlockParseFactory<TableSchema> {
     override objName = tableName;

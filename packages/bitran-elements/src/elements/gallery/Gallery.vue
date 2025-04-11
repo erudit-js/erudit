@@ -131,7 +131,7 @@ watch(currentIndex, async () => {
 
 <style lang="scss" module>
 @use '@bitran-js/renderer-vue/scss/utils' as bitranUtils;
-@use '../../styles/utils' as elementUtils;
+@use '../../shared/utils' as elementUtils;
 
 .gallery {
     .selector {

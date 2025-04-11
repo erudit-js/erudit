@@ -9,7 +9,7 @@ import {
     validateRawCaption,
     parseRawCaption,
     toRawCaptionObj,
-} from '../../figure/caption';
+} from '../../shared/figure/caption';
 
 export class VideoParser extends ObjBlockParseFactory<VideoSchema> {
     override objName = videoName;

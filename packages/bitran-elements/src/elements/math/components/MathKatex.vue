@@ -37,7 +37,7 @@ const MathComponent = h(props.displayMath ? 'div' : 'span', {
 
 <style lang="scss" module>
 @use '@bitran-js/renderer-vue/scss/bp';
-@use '../../../styles/utils' as elementUtils;
+@use '../../../shared/utils' as elementUtils;
 
 .latexMath {
     //

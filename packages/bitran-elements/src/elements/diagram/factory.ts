@@ -15,7 +15,7 @@ import {
     parseRawCaption,
     toRawCaptionObj,
     validateRawCaption,
-} from '../../figure/caption';
+} from '../../shared/figure/caption';
 
 export class DiagramParser extends ObjBlockParseFactory<DiagramSchema> {
     override objName = diagramName;

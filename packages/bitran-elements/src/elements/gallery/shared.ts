@@ -1,7 +1,7 @@
 import { BlockNode, type DefineElementSchema } from '@bitran-js/core';
 
 import type { ImageParseData, ImageRenderData } from '../image/shared';
-import { getCaptionChildren, type Caption } from '../../figure/caption';
+import { getCaptionChildren, type Caption } from '../../shared/figure/caption';
 
 export const galleryName = 'gallery';
 
