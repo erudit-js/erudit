@@ -27,7 +27,7 @@ onMounted(() => {
             :class="[captionClasses.caption, captionClasses.figure]"
             :style="{ maxWidth: caption.maxWidth ?? '100%' }"
         >
-            <div :class="$style.main">
+            <div :class="captionClasses.main">
                 <Render :node="caption.main" />
             </div>
             <div v-if="caption.secondary">

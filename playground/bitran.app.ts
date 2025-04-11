@@ -25,6 +25,9 @@ import { termRenderer } from './elements/term/renderer';
 import { calloutName } from '@erudit-js/bitran-elements/callout/shared';
 import { calloutTranspiler } from '@erudit-js/bitran-elements/callout/transpiler';
 import { calloutRenderer } from '@erudit-js/bitran-elements/callout/renderer';
+import { diagramName } from '@erudit-js/bitran-elements/diagram/shared';
+import { diagramTranspiler } from '@erudit-js/bitran-elements/diagram/transpiler';
+import { diagramRenderer } from '@erudit-js/bitran-elements/diagram/renderer';
 
 export default defineAppBitran(async () => {
     return {
@@ -55,6 +58,10 @@ export default defineAppBitran(async () => {
         [calloutName]: {
             transpiler: calloutTranspiler,
             renderer: calloutRenderer,
+        },
+        [diagramName]: {
+            transpiler: diagramTranspiler,
+            renderer: diagramRenderer,
         },
     };
 });

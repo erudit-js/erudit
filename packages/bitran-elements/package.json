@@ -24,7 +24,8 @@
         "sass": "^1.86.0",
         "vue": "^3.5.13",
         "image-size": "^2.0.2",
-        "photoswipe": "^5.4.4"
+        "photoswipe": "^5.4.4",
+        "mermaid": "^11.6.0"
     },
     "devDependencies": {
         "mkdist": "^2.2.0",
@@ -51,6 +52,11 @@
             "types": "./dist/elements/details/*.d.ts",
             "import": "./dist/elements/details/*.mjs",
             "require": "./dist/elements/details/*.mjs"
+        },
+        "./diagram/*": {
+            "types": "./dist/elements/diagram/*.d.ts",
+            "import": "./dist/elements/diagram/*.mjs",
+            "require": "./dist/elements/diagram/*.mjs"
         },
         "./emphasis/*": {
             "types": "./dist/elements/emphasis/*.d.ts",
@@ -131,6 +137,9 @@
             ],
             "details/*": [
                 "./dist/elements/details/*.d.ts"
+            ],
+            "diagram/*": [
+                "./dist/elements/diagram/*.d.ts"
             ],
             "emphasis/*": [
                 "./dist/elements/emphasis/*.d.ts"

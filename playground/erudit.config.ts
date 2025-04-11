@@ -1,4 +1,4 @@
-import { mathDeps } from '@erudit-js/bitran-elements';
+import { diagramDeps, mathDeps } from '@erudit-js/bitran-elements';
 
 export default defineEruditConfig({
     debug: {
@@ -37,5 +37,6 @@ export default defineEruditConfig({
     },
     dependencies: {
         ...mathDeps,
+        ...diagramDeps,
     },
 });

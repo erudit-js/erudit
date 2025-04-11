@@ -6,6 +6,7 @@ import {
     StringifyFactory,
     stringifyYAML,
     toStrObjectBlock,
+    type ObjBlockParseMode,
 } from '@bitran-js/transpiler';
 
 import { tableName, type TableParseData, type TableSchema } from './shared';
@@ -17,6 +18,13 @@ import {
 
 export class TableParser extends ObjBlockParseFactory<TableSchema> {
     override objName = tableName;
+
+    override getParseMode(content: string): ObjBlockParseMode {
+        const objectMarkers = ['maxWidth: ', '    caption:', 'cells: |'];
+        return objectMarkers.some((marker) => content.includes(marker))
+            ? 'object'
+            : 'string';
+    }
 
     override async parseDataFromObj(content: any): Promise<TableParseData> {
         if (isPlainObject(content)) {
@@ -100,13 +108,6 @@ export class TableParser extends ObjBlockParseFactory<TableSchema> {
                 );
             }),
         );
-    }
-
-    override getParseMode(content: string) {
-        const objectMarkers = ['maxWidth: ', 'caption: ', 'cells: |'];
-        return objectMarkers.some((marker) => content.includes(marker))
-            ? 'object'
-            : 'string';
     }
 }
 

@@ -22,10 +22,6 @@
         bottom: 0;
         width: 100%;
         padding: var(--gap);
-        background: color-mix(
-            in srgb,
-            light-dark(white, black),
-            transparent 20%
-        );
+        background: color-mix(in srgb, var(--bgMain), transparent 20%);
     }
 }

@@ -5,3 +5,8 @@ export const mathDeps: EruditConfigDependencies = {
         optimize: true,
     },
 };
+
+export const diagramDeps: EruditConfigDependencies = {
+    mermaid: { optimize: true },
+    ...mathDeps,
+};

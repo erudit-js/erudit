@@ -16,6 +16,8 @@ import { statementName } from './elements/statement/shared';
 import { statementTranspiler } from './elements/statement/transpiler';
 import { termName } from './elements/term/shared';
 import { termTranspiler } from './elements/term/transpiler';
+import { diagramName } from '@erudit-js/bitran-elements/diagram/shared';
+import { diagramTranspiler } from '@erudit-js/bitran-elements/diagram/transpiler';
 
 export default defineServerBitran(async () => {
     return {
@@ -26,5 +28,6 @@ export default defineServerBitran(async () => {
         [statementName]: statementTranspiler,
         [termName]: termTranspiler,
         [calloutName]: calloutServerTranspiler,
+        [diagramName]: diagramTranspiler,
     };
 });
