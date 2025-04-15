@@ -7,7 +7,7 @@ import { version } from '@erudit/package.json';
         link="https://github.com/erudit-js/erudit"
         target="_blank"
         icon="chip"
-        main="Erudit:"
+        main="Erudit"
         :secondary="version"
     />
 </template>

@@ -27,7 +27,7 @@ function linkAttrs(link: string) {
         <AsideListItem
             icon="users"
             v-bind="linkAttrs('/members')"
-            :main="phrase.members + ':'"
+            :main="phrase.members"
             :secondary="memberCount!.toString()"
         />
     </PaneContentScroll>
