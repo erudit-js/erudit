@@ -1,7 +1,7 @@
 import {
     ObjBlockParseFactory,
     ObjStringifyFactory,
-    type RawObject,
+    type PlainObject,
 } from '@bitran-js/transpiler';
 
 import {
@@ -15,7 +15,9 @@ import {
 export class CalloutParser extends ObjBlockParseFactory<CalloutSchema> {
     override objName = calloutName;
 
-    override async parseDataFromObj(obj: RawObject): Promise<CalloutParseData> {
+    override async parseDataFromObj(
+        obj: PlainObject,
+    ): Promise<CalloutParseData> {
         if (!obj.content || typeof obj.content !== 'string')
             throw new Error('Callout must have a string "content" property!');
 
@@ -29,7 +31,7 @@ export class CalloutParser extends ObjBlockParseFactory<CalloutSchema> {
         };
     }
 
-    parseIcon(obj: RawObject): CalloutIcon {
+    parseIcon(obj: PlainObject): CalloutIcon {
         const rawIcon = obj.icon;
         if (!rawIcon) throw new Error('Callout must have an "icon" property!');
 
@@ -72,10 +74,10 @@ export class CalloutParser extends ObjBlockParseFactory<CalloutSchema> {
 export class CalloutStringifier extends ObjStringifyFactory<CalloutSchema> {
     override objName = calloutName;
 
-    override async createRawObject(): Promise<RawObject> {
+    override async createStrData(): Promise<PlainObject> {
         const { icon, title, content } = this.payload().parseData;
 
-        const obj: RawObject = {};
+        const obj: PlainObject = {};
         obj.title = title;
         obj.icon = this.stringifyIcon(icon);
         obj.content = await this.stringify(content);

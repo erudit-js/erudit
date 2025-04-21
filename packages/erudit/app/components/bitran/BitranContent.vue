@@ -56,7 +56,7 @@ const isServer = import.meta.server;
 <style lang="scss" module>
 @use '$/def/bp';
 
-.eruditBitranContainer {
+:global(.bitran-component).eruditBitranContainer {
     padding: var(--_pMainY) var(--_pMainX);
     padding-left: calc(var(--_pMainX) - var(--_bitran_asideWidth));
 

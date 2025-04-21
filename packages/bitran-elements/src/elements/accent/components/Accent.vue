@@ -11,8 +11,8 @@ import {
 
 import type { AccentSchema } from '../shared';
 
-import ColumnSections from './ColumnSections.vue';
 import RowSections from './RowSections.vue';
+import Expander from '../../../shared/Expander.vue';
 
 defineProps<ElementProps<AccentSchema>>();
 const parseData = useElementParseData<AccentSchema>();
@@ -50,7 +50,7 @@ const accentColors = Object.keys(renderData.colors).reduce(
 </script>
 
 <template>
-    <div :class="$style.accent" :style="accentColors">
+    <div :class="$style.accent" :style="accentColors" data-erudit-accent>
         <header>
             <MyRuntimeIcon name="accent-icon" :svg="accentIcon" />
             <span>{{ parseData.title || phrase('_element_title') }}</span>
@@ -65,7 +65,17 @@ const accentColors = Object.keys(renderData.colors).reduce(
                 v-if="parseData.direction === 'row'"
                 :sections="resolvedSections"
             />
-            <ColumnSections v-else :sections="resolvedSections" />
+            <template v-else>
+                <Expander
+                    v-for="section of resolvedSections"
+                    :label="section.title || section.id"
+                    :class="$style.expander"
+                >
+                    <div :class="$style.columnSection">
+                        <Render :node="section.content" />
+                    </div>
+                </Expander>
+            </template>
         </template>
     </div>
 </template>
@@ -101,8 +111,16 @@ const accentColors = Object.keys(renderData.colors).reduce(
         padding-bottom: var(--_bitran_asideWidth);
     }
 
-    .sections {
-        color: red;
+    .expander {
+        --_expander_borderColor: var(--accentColor_border);
+        --_expander_textColor: var(--accentColor_text);
+        --_expander_gapX: var(--_bitran_asideWidth);
+        --_expander_gapY: var(--bitran_gap);
+
+        .columnSection {
+            padding: var(--_expander_gapY) var(--_expander_gapX);
+            padding-left: 0;
+        }
     }
 }
 </style>

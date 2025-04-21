@@ -21,7 +21,7 @@ const root = await bitranTranspiler.parser.parse(data.bitran.content.biCode);
             <BitranContent
                 :content="{
                     root,
-                    preRenderData: data.bitran.content.preRenderData,
+                    renderDataStorage: data.bitran.content.renderDataStorage,
                 }"
                 :context="data.bitran.context"
             />

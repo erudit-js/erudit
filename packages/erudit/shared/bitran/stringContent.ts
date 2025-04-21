@@ -1,6 +1,6 @@
-import type { PreRenderData } from '@bitran-js/transpiler';
+import type { RenderDataStorage } from '@bitran-js/core';
 
 export interface StringBitranContent {
     biCode: string;
-    preRenderData?: Record<string, PreRenderData>;
+    renderDataStorage: RenderDataStorage;
 }

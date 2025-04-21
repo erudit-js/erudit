@@ -6,7 +6,6 @@ import {
     parseBitranLocation,
     stringifyBitranLocation,
     type BitranContext,
-    type EruditBitranRuntime,
 } from '@erudit-js/cog/schema';
 
 import { DbUnique } from '@server/db/entities/Unique';
@@ -27,7 +26,12 @@ import {
 } from '@erudit/shared/bitran/contentId';
 
 import { LinkParser, LinkStringifier } from './factory';
-import { type LinkParseData, type LinkSchema, LinkNode } from './shared';
+import {
+    type LinkParseData,
+    type LinkSchema,
+    LinkNode,
+    linkRenderDataGenerator,
+} from './shared';
 import { createLinkTarget, type LinkTarget } from './target';
 
 export class LinkServerParser extends LinkParser {
@@ -151,11 +155,16 @@ export const linkServerTranspiler = defineElementTranspiler<LinkSchema>({
     Node: LinkNode,
     Parsers: [LinkServerParser],
     Stringifier: LinkStringifier,
-    async createPreRenderData(node, runtime: EruditBitranRuntime) {
-        if (!runtime)
-            throw new Error(
-                'Missing runtime when prerendering link data! The runtime is necessary to resolve link data!',
-            );
-        return await resolveLinkTarget(node.parseData, runtime.context);
+    renderDataGenerator: {
+        ...linkRenderDataGenerator,
+        async createValue({ node, extra: runtime }) {
+            if (!runtime) {
+                throw new Error(
+                    'Missing runtime when prerendering link data! The runtime is necessary to resolve link data!',
+                );
+            }
+
+            return await resolveLinkTarget(node.parseData, runtime.context);
+        },
     },
 });

@@ -1,0 +1,28 @@
+@use '@bitran-js/renderer-vue/scss/bp';
+
+$invertKeepColors: invert(1) hue-rotate(180deg) brightness(0.9);
+
+@mixin scrollbar {
+    overflow: auto;
+
+    &::-webkit-scrollbar {
+        height: 7px;
+        width: 7px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        border-radius: 3px;
+        background: light-dark(#b6b6b6, #4f4f4f);
+    }
+
+    ::-webkit-scrollbar-corner {
+        background: transparent;
+    }
+
+    @include bp.below('mobile') {
+        &::-webkit-scrollbar {
+            height: 5px;
+            width: 5px;
+        }
+    }
+}

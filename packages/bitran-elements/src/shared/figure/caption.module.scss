@@ -1,0 +1,27 @@
+.caption {
+    font-size: 0.9em;
+    text-align: center;
+
+    color: var(--textMuted) !important;
+
+    * {
+        color: inherit !important;
+    }
+
+    .main {
+        font-weight: 600;
+    }
+
+    &.figure {
+        margin: 0 auto;
+        margin-top: var(--gap);
+    }
+
+    &.photoswipe {
+        position: absolute;
+        bottom: 0;
+        width: 100%;
+        padding: var(--gap);
+        background: color-mix(in srgb, var(--bgMain), transparent 20%);
+    }
+}

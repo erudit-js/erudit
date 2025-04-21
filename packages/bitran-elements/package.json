@@ -1,142 +1,193 @@
 {
     "name": "@erudit-js/bitran-elements",
     "description": "📝 A collection of Bitran elements for Erudit sites",
-    "version": "3.0.0-dev.10",
+    "version": "3.0.0-dev.11",
     "type": "module",
     "main": "./dist/index.mjs",
     "types": "./dist/index.d.ts",
+    "files": [
+        "dist"
+    ],
+    "scripts": {
+        "pretty": "prettier --write .",
+        "update-package": "bun run package.ts",
+        "dev": "bun run dev.ts",
+        "build": "bun run update-package && bun mkdist -d --loaders=js",
+        "prepack": "bun run build"
+    },
+    "peerDependencies": {
+        "@bitran-js/core": "1.0.0-dev.12",
+        "@bitran-js/renderer-vue": "1.0.0-dev.12",
+        "@bitran-js/transpiler": "1.0.0-dev.12",
+        "@erudit-js/cog": "workspace:3.0.0-dev.11",
+        "katex": "^0.16.21",
+        "sass": "^1.86.0",
+        "vue": "^3.5.13",
+        "image-size": "^2.0.2",
+        "photoswipe": "^5.4.4",
+        "mermaid": "^11.6.0",
+        "@floating-ui/vue": "^1.1.6"
+    },
+    "devDependencies": {
+        "mkdist": "^2.2.0",
+        "vite": "^6.2.5",
+        "vue-tsc": "^2.2.8"
+    },
     "exports": {
-        ".": {
-            "types": "./dist/index.d.ts",
-            "import": "./dist/index.mjs",
-            "require": "./dist/index.mjs"
-        },
-        "./defaultServer": {
-            "types": "./dist/elements/defaultServer.d.ts",
-            "import": "./dist/elements/defaultServer.mjs",
-            "require": "./dist/elements/defaultServer.mjs"
-        },
-        "./defaultApp": {
-            "types": "./dist/elements/defaultApp.d.ts",
-            "import": "./dist/elements/defaultApp.mjs",
-            "require": "./dist/elements/defaultApp.mjs"
+        "./accent/*": {
+            "types": "./dist/elements/accent/*.d.ts",
+            "import": "./dist/elements/accent/*.mjs",
+            "require": "./dist/elements/accent/*.mjs"
         },
         "./aliases/*": {
             "types": "./dist/elements/aliases/*.d.ts",
             "import": "./dist/elements/aliases/*.mjs",
             "require": "./dist/elements/aliases/*.mjs"
         },
-        "./link/*": {
-            "types": "./dist/elements/link/*.d.ts",
-            "import": "./dist/elements/link/*.mjs",
-            "require": "./dist/elements/link/*.mjs"
+        "./callout/*": {
+            "types": "./dist/elements/callout/*.d.ts",
+            "import": "./dist/elements/callout/*.mjs",
+            "require": "./dist/elements/callout/*.mjs"
         },
         "./details/*": {
             "types": "./dist/elements/details/*.d.ts",
             "import": "./dist/elements/details/*.mjs",
             "require": "./dist/elements/details/*.mjs"
         },
-        "./heading/*": {
-            "types": "./dist/elements/heading/*.d.ts",
-            "import": "./dist/elements/heading/*.mjs",
-            "require": "./dist/elements/heading/*.mjs"
-        },
-        "./include/*": {
-            "types": "./dist/elements/include/*.d.ts",
-            "import": "./dist/elements/include/*.mjs",
-            "require": "./dist/elements/include/*.mjs"
-        },
-        "./math/*": {
-            "types": "./dist/elements/math/*.d.ts",
-            "import": "./dist/elements/math/*.mjs",
-            "require": "./dist/elements/math/*.mjs"
-        },
-        "./accent/*": {
-            "types": "./dist/elements/accent/*.d.ts",
-            "import": "./dist/elements/accent/*.mjs",
-            "require": "./dist/elements/accent/*.mjs"
+        "./diagram/*": {
+            "types": "./dist/elements/diagram/*.d.ts",
+            "import": "./dist/elements/diagram/*.mjs",
+            "require": "./dist/elements/diagram/*.mjs"
         },
         "./emphasis/*": {
             "types": "./dist/elements/emphasis/*.d.ts",
             "import": "./dist/elements/emphasis/*.mjs",
             "require": "./dist/elements/emphasis/*.mjs"
         },
+        "./flex/*": {
+            "types": "./dist/elements/flex/*.d.ts",
+            "import": "./dist/elements/flex/*.mjs",
+            "require": "./dist/elements/flex/*.mjs"
+        },
+        "./gallery/*": {
+            "types": "./dist/elements/gallery/*.d.ts",
+            "import": "./dist/elements/gallery/*.mjs",
+            "require": "./dist/elements/gallery/*.mjs"
+        },
+        "./heading/*": {
+            "types": "./dist/elements/heading/*.d.ts",
+            "import": "./dist/elements/heading/*.mjs",
+            "require": "./dist/elements/heading/*.mjs"
+        },
+        "./image/*": {
+            "types": "./dist/elements/image/*.d.ts",
+            "import": "./dist/elements/image/*.mjs",
+            "require": "./dist/elements/image/*.mjs"
+        },
+        "./include/*": {
+            "types": "./dist/elements/include/*.d.ts",
+            "import": "./dist/elements/include/*.mjs",
+            "require": "./dist/elements/include/*.mjs"
+        },
+        "./link/*": {
+            "types": "./dist/elements/link/*.d.ts",
+            "import": "./dist/elements/link/*.mjs",
+            "require": "./dist/elements/link/*.mjs"
+        },
         "./list/*": {
             "types": "./dist/elements/list/*.d.ts",
             "import": "./dist/elements/list/*.mjs",
             "require": "./dist/elements/list/*.mjs"
         },
-        "./callout/*": {
-            "types": "./dist/elements/callout/*.d.ts",
-            "import": "./dist/elements/callout/*.mjs",
-            "require": "./dist/elements/callout/*.mjs"
+        "./math/*": {
+            "types": "./dist/elements/math/*.d.ts",
+            "import": "./dist/elements/math/*.mjs",
+            "require": "./dist/elements/math/*.mjs"
         },
-        "./image/*": {
-            "types": "./dist/elements/figures/image/*.d.ts",
-            "import": "./dist/elements/figures/image/*.mjs",
-            "require": "./dist/elements/figures/image/*.mjs"
+        "./problem/*": {
+            "types": "./dist/elements/problem/*.d.ts",
+            "import": "./dist/elements/problem/*.mjs",
+            "require": "./dist/elements/problem/*.mjs"
+        },
+        "./table/*": {
+            "types": "./dist/elements/table/*.d.ts",
+            "import": "./dist/elements/table/*.mjs",
+            "require": "./dist/elements/table/*.mjs"
+        },
+        "./video/*": {
+            "types": "./dist/elements/video/*.d.ts",
+            "import": "./dist/elements/video/*.mjs",
+            "require": "./dist/elements/video/*.mjs"
+        },
+        ".": {
+            "types": "./dist/index.d.ts",
+            "import": "./dist/index.mjs",
+            "require": "./dist/index.mjs"
+        },
+        "./defaultServer": {
+            "types": "./dist/defaultServer.d.ts",
+            "import": "./dist/defaultServer.mjs",
+            "require": "./dist/defaultServer.mjs"
+        },
+        "./defaultApp": {
+            "types": "./dist/defaultApp.d.ts",
+            "import": "./dist/defaultApp.mjs",
+            "require": "./dist/defaultApp.mjs"
         }
     },
     "typesVersions": {
         "*": {
-            "aliases/*": [
-                "./dist/elements/aliases/*.d.ts"
-            ],
-            "link/*": [
-                "./dist/elements/link/*.d.ts"
-            ],
-            "details/*": [
-                "./dist/elements/details/*.d.ts"
-            ],
-            "heading/*": [
-                "./dist/elements/heading/*.d.ts"
-            ],
-            "include/*": [
-                "./dist/elements/include/*.d.ts"
-            ],
-            "math/*": [
-                "./dist/elements/math/*.d.ts"
-            ],
             "accent/*": [
                 "./dist/elements/accent/*.d.ts"
             ],
-            "emphasis/*": [
-                "./dist/elements/emphasis/*.d.ts"
-            ],
-            "list/*": [
-                "./dist/elements/list/*.d.ts"
+            "aliases/*": [
+                "./dist/elements/aliases/*.d.ts"
             ],
             "callout/*": [
                 "./dist/elements/callout/*.d.ts"
             ],
+            "details/*": [
+                "./dist/elements/details/*.d.ts"
+            ],
+            "diagram/*": [
+                "./dist/elements/diagram/*.d.ts"
+            ],
+            "emphasis/*": [
+                "./dist/elements/emphasis/*.d.ts"
+            ],
+            "flex/*": [
+                "./dist/elements/flex/*.d.ts"
+            ],
+            "gallery/*": [
+                "./dist/elements/gallery/*.d.ts"
+            ],
+            "heading/*": [
+                "./dist/elements/heading/*.d.ts"
+            ],
             "image/*": [
-                "./dist/elements/figures/image/*.d.ts"
+                "./dist/elements/image/*.d.ts"
+            ],
+            "include/*": [
+                "./dist/elements/include/*.d.ts"
+            ],
+            "link/*": [
+                "./dist/elements/link/*.d.ts"
+            ],
+            "list/*": [
+                "./dist/elements/list/*.d.ts"
+            ],
+            "math/*": [
+                "./dist/elements/math/*.d.ts"
+            ],
+            "problem/*": [
+                "./dist/elements/problem/*.d.ts"
+            ],
+            "table/*": [
+                "./dist/elements/table/*.d.ts"
+            ],
+            "video/*": [
+                "./dist/elements/video/*.d.ts"
             ]
         }
-    },
-    "files": [
-        "dist"
-    ],
-    "scripts": {
-        "pretty": "prettier --write .",
-        "dev": "bun run dev.ts",
-        "build": "bun mkdist -d --loaders=js",
-        "prepack": "bun run build"
-    },
-    "peerDependencies": {
-        "@bitran-js/core": "1.0.0-dev.11",
-        "@bitran-js/renderer-vue": "1.0.0-dev.11",
-        "@bitran-js/transpiler": "1.0.0-dev.11",
-        "@erudit-js/cog": "workspace:3.0.0-dev.10",
-        "katex": "^0.16.21",
-        "sass": "^1.86.0",
-        "vue": "^3.5.13",
-        "image-size": "^2.0.2",
-        "photoswipe": "^5.4.4"
-    },
-    "devDependencies": {
-        "mkdist": "^2.2.0",
-        "vite": "^6.2.5",
-        "vue-tsc": "^2.2.8"
     }
 }

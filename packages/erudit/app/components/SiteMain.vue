@@ -1,8 +1,6 @@
 <template>
     <main :class="$style.main" erudit-main>
-        <ClientOnly>
-            <Preview />
-        </ClientOnly>
+        <Preview />
         <div :class="$style.mainInner">
             <slot></slot>
         </div>

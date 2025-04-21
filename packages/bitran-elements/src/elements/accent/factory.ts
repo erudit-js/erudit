@@ -1,7 +1,7 @@
 import {
     ObjBlockParseFactory,
     ObjStringifyFactory,
-    type RawObject,
+    type PlainObject,
 } from '@bitran-js/transpiler';
 
 import type { AccentParseData, AccentSchema, AccentSection } from './shared';
@@ -14,7 +14,9 @@ export class AccentParser extends ObjBlockParseFactory<AccentSchema> {
         return super.canParse(strBlock);
     }
 
-    override async parseDataFromObj(obj: RawObject): Promise<AccentParseData> {
+    override async parseDataFromObj(
+        obj: PlainObject,
+    ): Promise<AccentParseData> {
         if ('main' in obj) {
             const main = obj.main.trim();
 
@@ -150,11 +152,11 @@ export class AccentParser extends ObjBlockParseFactory<AccentSchema> {
 export class AccentStringifier extends ObjStringifyFactory<AccentSchema> {
     override objName!: string;
 
-    override async createRawObject(): Promise<RawObject> {
+    override async createStrData(): Promise<PlainObject> {
         this.objName = this.payload().parseData.objName;
 
         const { parseData } = this.payload();
-        const obj: RawObject = {};
+        const obj: PlainObject = {};
 
         if (parseData.title) {
             obj.title = parseData.title;

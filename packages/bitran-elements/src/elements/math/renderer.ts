@@ -8,12 +8,11 @@ import {
 import {
     BlockMathNode,
     InlineMathNode,
-    getMathExpresion,
     type InlineMathSchema,
     type BlockMathSchema,
+    blockMathRenderDataGenerator,
+    inlineMathRenderDataGenerator,
 } from './shared';
-import { renderBlockMath } from './block';
-import { renderInlineMath } from './inline';
 
 const icon = defineIcon(() => import('./icon.svg?raw'));
 const languages = defineLanguages({
@@ -26,9 +25,7 @@ export const blockMathRenderer = defineElementVueRenderer<BlockMathSchema>({
     languages,
     Node: BlockMathNode,
     component: defineComponent(() => import('./components/BlockMath.vue')),
-    async createRenderData(node: BlockMathNode) {
-        return renderBlockMath(getMathExpresion(node));
-    },
+    renderDataGenerator: blockMathRenderDataGenerator,
 });
 
 export const inlineMathRenderer = defineElementVueRenderer<InlineMathSchema>({
@@ -36,7 +33,5 @@ export const inlineMathRenderer = defineElementVueRenderer<InlineMathSchema>({
     languages,
     Node: InlineMathNode,
     component: defineComponent(() => import('./components/InlineMath.vue')),
-    async createRenderData(node: InlineMathNode) {
-        return renderInlineMath(getMathExpresion(node));
-    },
+    renderDataGenerator: inlineMathRenderDataGenerator,
 });

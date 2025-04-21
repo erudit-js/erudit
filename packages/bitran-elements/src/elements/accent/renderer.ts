@@ -19,10 +19,17 @@ export function defineAccentRenderer(
         component: defineComponent(() => import('./components/Accent.vue')),
         icon: accentRenderArg.icon,
         languages: accentRenderArg.languages,
-        async createRenderData() {
-            return {
-                ...accentRenderArg,
-            };
+        renderDataGenerator: {
+            createKey({ node }) {
+                return `accent:${node.name}`;
+            },
+            createValue() {
+                return {
+                    colors: {
+                        ...accentRenderArg.colors,
+                    },
+                };
+            },
         },
     });
 }

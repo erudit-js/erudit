@@ -47,7 +47,7 @@ onMounted(() => {
         <AsideListItem
             @click="_cycle"
             :icon="themeItem![0]"
-            :main="phrase.theme + ':'"
+            :main="phrase.theme"
             :secondary="themeItem![1]"
         />
     </ClientOnly>

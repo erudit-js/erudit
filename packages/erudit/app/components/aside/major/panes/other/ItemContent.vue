@@ -23,7 +23,7 @@ if (strDate) {
         :link="`https://github.com/${eruditConfig.repository?.name}`"
         target="_blank"
         icon="draw"
-        :main="phrase.content + ':'"
+        :main="phrase.content"
         :secondary
     />
 </template>

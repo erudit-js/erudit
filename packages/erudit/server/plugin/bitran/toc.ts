@@ -4,6 +4,10 @@ import {
     headingName,
     HeadingNode,
 } from '@erudit-js/bitran-elements/heading/shared';
+import {
+    ProblemNode,
+    ProblemsNode,
+} from '@erudit-js/bitran-elements/problem/shared';
 
 import type { Toc } from '@erudit/shared/bitran/toc';
 import { ERUDIT_SERVER } from '@server/global';
@@ -57,6 +61,16 @@ export async function getBitranToc(location: BitranLocation) {
             // No heading found in TOC, place at root level
             return 0;
         };
+
+        // Problems by default are in TOC
+        if (node instanceof ProblemsNode || node instanceof ProblemNode) {
+            toc.push({
+                ...tocItemBase,
+                level: notHeadingLevel(),
+                title: node.meta?.title || node.parseData.info.title,
+            });
+            return;
+        }
 
         if (
             ERUDIT_SERVER.CONFIG.bitran?.toc?.includes(node.name) ||

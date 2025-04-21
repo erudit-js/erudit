@@ -2,6 +2,7 @@ import {
     BlockNode,
     type BlocksNode,
     type DefineElementSchema,
+    type RenderDataGenerator,
 } from '@bitran-js/core';
 
 export const calloutName = 'callout';
@@ -43,3 +44,13 @@ export class CalloutNode extends BlockNode<CalloutSchema> {
         return this.parseData.content ? [this.parseData.content] : undefined;
     }
 }
+
+export const calloutRenderDataGenerator: RenderDataGenerator<CalloutSchema> = {
+    createKey({ node }) {
+        if (node.parseData.icon.type === 'default') {
+            return undefined;
+        }
+
+        return `${calloutName}:${node.parseData.icon.src}`;
+    },
+};

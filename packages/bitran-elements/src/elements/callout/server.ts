@@ -1,19 +1,24 @@
-import { defineElementTranspiler, type RawObject } from '@bitran-js/transpiler';
 import {
-    getEruditBitranRuntime,
-    type EruditBitranRuntime,
-} from '@erudit-js/cog/schema';
+    defineElementTranspiler,
+    type PlainObject,
+} from '@bitran-js/transpiler';
+import { getEruditBitranRuntime } from '@erudit-js/cog/schema';
 
 import { getNavBookIds } from '@server/nav/utils';
 import { getFileFullPath } from '@server/repository/file';
-
 import { toAbsoluteContentId } from '@erudit/shared/bitran/contentId';
 
 import { CalloutParser, CalloutStringifier } from './factory';
-import { CalloutNode, type CalloutSchema, type CalloutIcon } from './shared';
+import {
+    CalloutNode,
+    type CalloutSchema,
+    type CalloutIcon,
+    calloutRenderDataGenerator,
+    type CalloutIconCustom,
+} from './shared';
 
 export class CalloutServerParser extends CalloutParser {
-    override parseIcon(obj: RawObject): CalloutIcon {
+    override parseIcon(obj: PlainObject): CalloutIcon {
         const icon = super.parseIcon(obj);
         const { insideInclude, context } = getEruditBitranRuntime(this);
 
@@ -35,29 +40,30 @@ export const calloutServerTranspiler = defineElementTranspiler<CalloutSchema>({
     Node: CalloutNode,
     Parsers: [CalloutServerParser],
     Stringifier: CalloutStringifier,
-    async createPreRenderData(node, runtime: EruditBitranRuntime) {
-        if (!runtime)
-            throw new Error(
-                'Missing runtime when prerendering callout element!',
-            );
+    renderDataGenerator: {
+        ...calloutRenderDataGenerator,
+        async createValue({ node, extra: runtime }) {
+            if (!runtime) {
+                throw new Error(
+                    `Missing runtime when prerendering filename for Callout element!`,
+                );
+            }
 
-        const icon = node.parseData.icon;
+            const icon = node.parseData.icon as CalloutIconCustom;
 
-        if (icon.type === 'custom') {
-            const src = toAbsoluteContentId(
+            const absoluteContentPath = toAbsoluteContentId(
                 icon.src,
                 runtime.context.location.path!,
                 getNavBookIds(),
             );
 
-            const fullPath = await getFileFullPath(src);
+            const filepath = await getFileFullPath(absoluteContentPath);
 
-            if (!fullPath)
-                throw new Error(`Callot icon file not found: ${src}`);
+            if (!filepath) {
+                throw new Error(`File not found for content path: ${icon.src}`);
+            }
 
-            return fullPath;
-        }
-
-        return 'bobik';
+            return filepath;
+        },
     },
 });

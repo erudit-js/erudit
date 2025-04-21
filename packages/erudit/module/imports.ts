@@ -33,6 +33,11 @@ export function setupGlobalImports() {
                 from: eruditPath(`globals/content`),
             }));
         })(),
+        // Problems Generation
+        {
+            name: 'defineProblemGenerator',
+            from: '@erudit-js/bitran-elements/problem/generator',
+        },
         // Helper Asset Path Functions
         ...(() => {
             const imports = [

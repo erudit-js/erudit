@@ -2,29 +2,24 @@ import { defineElementTranspiler } from '@bitran-js/transpiler';
 
 import {
     BlockMathNode,
-    getMathExpresion,
+    blockMathRenderDataGenerator,
     InlineMathNode,
+    inlineMathRenderDataGenerator,
     type BlockMathSchema,
     type InlineMathSchema,
 } from './shared';
 import { BlockMathParser, InlineMathParser, MathStringifier } from './factory';
-import { renderBlockMath } from './block';
-import { renderInlineMath } from './inline';
 
 export const blockMathTranspiler = defineElementTranspiler<BlockMathSchema>({
     Node: BlockMathNode,
     Parsers: [BlockMathParser],
     Stringifier: MathStringifier,
-    async createPreRenderData(node: BlockMathNode) {
-        return renderBlockMath(getMathExpresion(node));
-    },
+    renderDataGenerator: blockMathRenderDataGenerator,
 });
 
 export const inlineMathTranspiler = defineElementTranspiler<InlineMathSchema>({
     Node: InlineMathNode,
     Parsers: [InlineMathParser],
     Stringifier: MathStringifier,
-    async createPreRenderData(node: InlineMathNode) {
-        return renderInlineMath(getMathExpresion(node));
-    },
+    renderDataGenerator: inlineMathRenderDataGenerator,
 });

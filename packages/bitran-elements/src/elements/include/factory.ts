@@ -1,9 +1,9 @@
 import {
     BlockParseFactory,
     ObjBlockParseFactory,
-    objToText,
     StringifyFactory,
-    type RawObject,
+    toStrObjectBlock,
+    type PlainObject,
 } from '@bitran-js/transpiler';
 
 import {
@@ -37,7 +37,9 @@ export class IncludeParser extends BlockParseFactory<IncludeSchema> {
 export class ResolvedIncludeParser extends ObjBlockParseFactory<IncludeSchema> {
     override objName = includeName;
 
-    override async parseDataFromObj(obj: RawObject): Promise<IncludeParseData> {
+    override async parseDataFromObj(
+        obj: PlainObject,
+    ): Promise<IncludeParseData> {
         if (obj.error) throw obj.error;
 
         return {
@@ -61,7 +63,7 @@ export class IncludeStringifier extends StringifyFactory<IncludeSchema> {
             if (parseData.error) obj.error = parseData.error;
             else obj.blocks = await this.stringify(parseData.blocks!);
 
-            return objToText(includeName, obj);
+            return toStrObjectBlock(includeName, obj);
         } else {
             return `<~ ${parseData.location}`;
         }

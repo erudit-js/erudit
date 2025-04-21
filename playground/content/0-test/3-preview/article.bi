@@ -6,7 +6,7 @@ Testing Preview window with different links within site content:
 [Heading](sampleHeading) link.\
 [Heading](includeHeading) with include link.\
 [Product](sampleParagraph1) link.\
-[Book](page|book|test) link.\
+[Book](page|book|/test) link.\
 [Group](page|group|~/sample-group) link.\
 [Topic part](page|article) link.\
 
