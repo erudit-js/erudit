@@ -16,7 +16,12 @@ import { toAbsoluteContentId } from '@erudit/shared/bitran/contentId';
 import { PROJECT_DIR } from '#erudit/globalPaths';
 
 import { ImageParser, ImageStringifier } from './factory';
-import { ImageNode, type ImageParseData, type ImageSchema } from './shared';
+import {
+    ImageNode,
+    imageRenderDataGenerator,
+    type ImageParseData,
+    type ImageSchema,
+} from './shared';
 
 export function normalizeImageSrc(
     src: string,
@@ -29,8 +34,19 @@ export function normalizeImageSrc(
     return src;
 }
 
-export async function getImageRenderData(src: string, contextPath: string) {
-    const absoluteSrc = toAbsoluteContentId(src, contextPath, getNavBookIds());
+export async function getImageRenderData(
+    src: string,
+    runtime: EruditBitranRuntime,
+) {
+    if (!runtime)
+        throw new Error('Missing runtime when prerendering image element!');
+
+    const absoluteSrc = toAbsoluteContentId(
+        src,
+        runtime.context.location.path!,
+        getNavBookIds(),
+    );
+
     const fullPath = await getFileFullPath(absoluteSrc);
 
     if (!fullPath) throw new Error(`Image file not found: ${absoluteSrc}`);
@@ -71,13 +87,10 @@ export const imageServerTranspiler = defineElementTranspiler<ImageSchema>({
     Node: ImageNode,
     Parsers: [ImageServerParser],
     Stringifier: ImageStringifier,
-    async createPreRenderData(node, runtime: EruditBitranRuntime) {
-        if (!runtime)
-            throw new Error('Missing runtime when prerendering image element!');
-
-        return await getImageRenderData(
-            node.parseData.src,
-            runtime.context.location.path!,
-        );
+    renderDataGenerator: {
+        ...imageRenderDataGenerator,
+        async createValue({ node, extra: runtime }) {
+            return await getImageRenderData(node.parseData.src, runtime);
+        },
     },
 });

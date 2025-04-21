@@ -16,16 +16,17 @@
         "prepack": "bun run build"
     },
     "peerDependencies": {
-        "@bitran-js/core": "1.0.0-dev.11",
-        "@bitran-js/renderer-vue": "1.0.0-dev.11",
-        "@bitran-js/transpiler": "1.0.0-dev.11",
+        "@bitran-js/core": "1.0.0-dev.12",
+        "@bitran-js/renderer-vue": "1.0.0-dev.12",
+        "@bitran-js/transpiler": "1.0.0-dev.12",
         "@erudit-js/cog": "workspace:3.0.0-dev.11",
         "katex": "^0.16.21",
         "sass": "^1.86.0",
         "vue": "^3.5.13",
         "image-size": "^2.0.2",
         "photoswipe": "^5.4.4",
-        "mermaid": "^11.6.0"
+        "mermaid": "^11.6.0",
+        "@floating-ui/vue": "^1.1.6"
     },
     "devDependencies": {
         "mkdist": "^2.2.0",
@@ -103,6 +104,11 @@
             "import": "./dist/elements/math/*.mjs",
             "require": "./dist/elements/math/*.mjs"
         },
+        "./problem/*": {
+            "types": "./dist/elements/problem/*.d.ts",
+            "import": "./dist/elements/problem/*.mjs",
+            "require": "./dist/elements/problem/*.mjs"
+        },
         "./table/*": {
             "types": "./dist/elements/table/*.d.ts",
             "import": "./dist/elements/table/*.mjs",
@@ -172,6 +178,9 @@
             ],
             "math/*": [
                 "./dist/elements/math/*.d.ts"
+            ],
+            "problem/*": [
+                "./dist/elements/problem/*.d.ts"
             ],
             "table/*": [
                 "./dist/elements/table/*.d.ts"

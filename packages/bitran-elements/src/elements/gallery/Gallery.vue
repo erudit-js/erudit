@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import { ref } from 'vue';
 import {
     useElementParseData,
     useElementRenderData,
@@ -6,17 +7,9 @@ import {
 } from '@bitran-js/renderer-vue';
 
 import Image from '../image/Image.vue';
+import PaneView from '../../shared/PaneView.vue';
 import { type GallerySchema } from './shared';
-import {
-    contentAsset,
-    ref,
-    useBaseUrlPath,
-    onMounted,
-    onUnmounted,
-    watch,
-    useTemplateRef,
-    nextTick,
-} from '#imports';
+import { contentAsset, useBaseUrlPath } from '#imports';
 
 defineProps<ElementProps<GallerySchema>>();
 
@@ -25,54 +18,7 @@ const baseUrlPath = useBaseUrlPath();
 const parseData = useElementParseData<GallerySchema>();
 const renderData = useElementRenderData<GallerySchema>();
 
-const staticFirstImage = ref(true); // Start with static positioning
-const animatedHeight = ref(false); // No height animation initially
 const currentIndex = ref(0);
-
-const imageRef = useTemplateRef('imageRef');
-const wrapperRef = useTemplateRef('wrapperRef');
-const resizeObserver = ref<ResizeObserver | null>(null);
-
-const updateWrapperHeight = () => {
-    if (!imageRef.value || !wrapperRef.value) return;
-    wrapperRef.value.style.height = `${imageRef.value.offsetHeight}px`;
-};
-
-onMounted(() => {
-    resizeObserver.value = new ResizeObserver(updateWrapperHeight);
-
-    if (imageRef.value && resizeObserver.value) {
-        updateWrapperHeight();
-        resizeObserver.value.observe(imageRef.value);
-        nextTick().then(() => {
-            // First disable static positioning
-            staticFirstImage.value = false;
-            // Then after a small delay, enable height animation
-            setTimeout(() => {
-                animatedHeight.value = true;
-            }, 100);
-        });
-    }
-});
-
-onUnmounted(() => {
-    if (resizeObserver.value) {
-        resizeObserver.value.disconnect();
-    }
-});
-
-watch(currentIndex, async () => {
-    if (resizeObserver.value) {
-        resizeObserver.value.disconnect();
-    }
-
-    await new Promise((resolve) => setTimeout(resolve, 10));
-
-    if (imageRef.value && resizeObserver.value) {
-        resizeObserver.value.observe(imageRef.value);
-        updateWrapperHeight();
-    }
-});
 </script>
 
 <template>
@@ -106,26 +52,13 @@ watch(currentIndex, async () => {
                 </button>
             </div>
         </div>
-        <div
-            :class="[
-                $style.imageWrapper,
-                animatedHeight && $style.animateHeight,
-            ]"
-            ref="wrapperRef"
-        >
-            <TransitionFade>
-                <div
-                    ref="imageRef"
-                    :key="currentIndex"
-                    :class="[staticFirstImage && $style.static]"
-                >
-                    <Image
-                        :parseData="parseData.images[currentIndex]!"
-                        :renderData="renderData.images[currentIndex]!"
-                    />
-                </div>
-            </TransitionFade>
-        </div>
+
+        <PaneView :paneKey="currentIndex">
+            <Image
+                :parseData="parseData.images[currentIndex]!"
+                :renderData="renderData.images[currentIndex]!"
+            />
+        </PaneView>
     </div>
 </template>
 
@@ -179,27 +112,6 @@ watch(currentIndex, async () => {
                     display: block;
                     object-fit: cover;
                 }
-            }
-        }
-    }
-
-    .imageWrapper {
-        position: relative;
-        overflow: hidden;
-        height: auto;
-
-        &.animateHeight {
-            @include bitranUtils.transition(height);
-        }
-
-        > div {
-            position: absolute;
-            left: 0;
-            top: 0;
-            width: 100%;
-
-            &.static {
-                position: static;
             }
         }
     }

@@ -1,14 +1,8 @@
 <script lang="ts" setup>
-import {
-    ref,
-    computed,
-    watch,
-    onMounted,
-    onUnmounted,
-    useTemplateRef,
-} from 'vue';
+import { ref, computed } from 'vue';
 import { Render } from '@bitran-js/renderer-vue';
 
+import PaneView from '../../../shared/PaneView.vue';
 import type { AccentSection } from '../shared';
 
 const props = defineProps<{ sections: AccentSection[] }>();
@@ -30,44 +24,6 @@ const isSectionActive = (sectionId: string) => {
 const activeContent = computed(() => {
     return activeSection.value?.content;
 });
-
-const sectionRef = useTemplateRef('sectionRef');
-const wrapperRef = useTemplateRef('wrapperRef');
-const resizeObserver = ref<ResizeObserver | null>(null);
-
-const updateWrapperHeight = () => {
-    if (!sectionRef.value || !wrapperRef.value) return;
-    wrapperRef.value.style.height = `${sectionRef.value.offsetHeight}px`;
-};
-
-onMounted(() => {
-    resizeObserver.value = new ResizeObserver(updateWrapperHeight);
-});
-
-onUnmounted(() => {
-    if (resizeObserver.value) {
-        resizeObserver.value.disconnect();
-    }
-});
-
-watch(
-    activeSection,
-    async () => {
-        if (resizeObserver.value) {
-            resizeObserver.value.disconnect();
-        }
-
-        await new Promise((resolve) => setTimeout(resolve, 10));
-
-        if (activeSection.value && sectionRef.value && resizeObserver.value) {
-            resizeObserver.value.observe(sectionRef.value);
-            updateWrapperHeight();
-        } else if (wrapperRef.value) {
-            wrapperRef.value.style.height = '0px';
-        }
-    },
-    { immediate: true },
-);
 </script>
 
 <template>
@@ -87,17 +43,11 @@ watch(
             </button>
         </div>
 
-        <div :class="$style.sectionWrapper" ref="wrapperRef">
-            <TransitionFade>
-                <section
-                    v-if="activeContent"
-                    ref="sectionRef"
-                    :key="activeSection!.id"
-                >
-                    <Render :node="activeContent" />
-                </section>
-            </TransitionFade>
-        </div>
+        <PaneView :paneKey="activeSection?.id || Symbol()">
+            <div v-if="activeContent" :class="$style.activeSection">
+                <Render :node="activeContent" />
+            </div>
+        </PaneView>
     </div>
 </template>
 
@@ -152,22 +102,10 @@ watch(
         }
     }
 
-    .sectionWrapper {
-        overflow: hidden;
-        position: relative;
-        height: 0;
-
-        @include bitranUtils.transition(height);
-
-        > section {
-            position: absolute;
-            left: 0;
-            top: 0;
-            padding: var(--bitran_gap);
-            padding-left: 0;
-            padding-right: var(--_bitran_asideWidth);
-            width: 100%;
-        }
+    .activeSection {
+        padding: var(--bitran_gap);
+        padding-left: 0;
+        padding-right: var(--_bitran_asideWidth);
     }
 }
 </style>

@@ -2,10 +2,7 @@ import {
     defineElementTranspiler,
     type PlainObject,
 } from '@bitran-js/transpiler';
-import {
-    type EruditBitranRuntime,
-    getEruditBitranRuntime,
-} from '@erudit-js/cog/schema';
+import { getEruditBitranRuntime } from '@erudit-js/cog/schema';
 
 import { GalleryParser, GalleryStringifier } from './factory';
 import {
@@ -14,6 +11,7 @@ import {
     type GalleryParseData,
 } from './shared';
 import { normalizeImageSrc, getImageRenderData } from '../image/server';
+import { imageRenderDataKey } from '../image/shared';
 
 export class GalleryServerParser extends GalleryParser {
     override async parseDataFromObj(
@@ -38,21 +36,21 @@ export const galleryServerTranspiler = defineElementTranspiler<GallerySchema>({
     Node: GalleryNode,
     Parsers: [GalleryServerParser],
     Stringifier: GalleryStringifier,
-    async createPreRenderData(node, runtime: EruditBitranRuntime) {
-        if (!runtime)
-            throw new Error(
-                'Missing runtime when prerendering gallery element!',
+    renderDataGenerator: {
+        async createValue({ storage, node, extra: runtime }) {
+            const imageSources = node.parseData.images.map(
+                (image) => image.src,
             );
 
-        const images = await Promise.all(
-            node.parseData.images.map(async (image) => {
-                return await getImageRenderData(
-                    image.src,
-                    runtime.context.location.path!,
-                );
-            }),
-        );
+            for (const imageSource of imageSources) {
+                const imageKey = imageRenderDataKey(imageSource);
+                storage[imageKey] ||= {
+                    type: 'success',
+                    data: await getImageRenderData(imageSource, runtime),
+                };
+            }
 
-        return { images };
+            return undefined;
+        },
     },
 });

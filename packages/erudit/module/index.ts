@@ -7,6 +7,7 @@ import { logger } from '@erudit/module/logger';
 import { setupGlobalImports } from '@erudit/module/imports';
 import { setupBitranTemplates } from './bitran';
 import { setupGlobalPaths } from './paths';
+import { setupProblemGenerators } from './problemGenerators';
 
 export default defineNuxtModule({
     meta: { name: 'Erudit', configKey: 'erudit' },
@@ -18,6 +19,7 @@ export default defineNuxtModule({
 
         const eruditConfig = await setupEruditConfig(_nuxt);
         await setupBitranTemplates(_nuxt);
+        await setupProblemGenerators(_nuxt);
         setupGlobalPaths(_nuxt);
 
         if (eruditConfig.site?.baseUrl) {

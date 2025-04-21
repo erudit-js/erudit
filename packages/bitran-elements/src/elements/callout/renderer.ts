@@ -5,7 +5,11 @@ import {
     defineLanguages,
 } from '@bitran-js/renderer-vue';
 
-import { CalloutNode, type CalloutSchema } from './shared';
+import {
+    CalloutNode,
+    calloutRenderDataGenerator,
+    type CalloutSchema,
+} from './shared';
 
 export const calloutRenderer = defineElementVueRenderer<CalloutSchema>({
     Node: CalloutNode,
@@ -15,9 +19,5 @@ export const calloutRenderer = defineElementVueRenderer<CalloutSchema>({
         en: () => import('./languages/en'),
         ru: () => import('./languages/ru'),
     }),
-    async createRenderData() {
-        throw new Error(
-            'Creating render data in SSR for Callout element is not supported!',
-        );
-    },
+    renderDataGenerator: calloutRenderDataGenerator,
 });

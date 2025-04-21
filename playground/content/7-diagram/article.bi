@@ -47,7 +47,7 @@ $$ A^2 + B^2 = C^2 $$
         question -->|Да| arrangement[**Размещение**]:::featured
         question -->|Нет| combination[**Сочетание**]:::featured
 
-        arrangement -->|Без повторений| awr["$$ \sset{sdf} A_n^k = \frac{n!}{(n-k)!} $$"]
+        arrangement -->|Без повторений| awr["$$ \set{sdf} A_n^k = \frac{n!}{(n-k)!} $$"]
         arrangement -->|С повторениями| ar["$$ \bar{A}_n^k = n^k $$"]
 
         combination -->|Без повторений| cwr["$$ C_n^k = \frac{n!}{(n-k)! \ k!} $$"]

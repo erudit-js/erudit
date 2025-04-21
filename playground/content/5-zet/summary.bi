@@ -1,5 +1,16 @@
 ~ a group|group-x
 
+@gallery
+    images:
+        -   src: ava.jpg
+            invert: light
+
+        -   src: ava.jpg
+            invert: dark
+            maxWidth: 450px
+            caption:
+              main: Черный как нефть негр
+
 Привет, мир!\
 А это мой красивый текст! [Anthony](page|article|/test/link)
 
@@ -76,14 +87,3 @@ $$ A^2 + B^2 = C^2 $$
         Привет, мир!
 
         $$ A^2 + B^2 = C^2 $$
-
-@gallery
-    images:
-        -   src: ava.jpg
-            invert: light
-
-        -   src: ava.jpg
-            invert: dark
-            maxWidth: 450px
-            caption:
-              main: Черный как нефть негр

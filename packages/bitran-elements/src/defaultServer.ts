@@ -24,6 +24,11 @@ import { videoName } from './elements/video/shared';
 import { videoServerTranspiler } from './elements/video/server';
 import { flexName } from './elements/flex/shared';
 import { flexTranspiler } from './elements/flex/transpiler';
+import { problemName, problemsName } from './elements/problem/shared';
+import {
+    problemServerTranspiler,
+    problemsServerTranspiler,
+} from './elements/problem/server';
 
 export const eruditTranspilers: ElementTranspilers = {
     [aliasesName]: aliasesTranspiler,
@@ -38,4 +43,6 @@ export const eruditTranspilers: ElementTranspilers = {
     [tableName]: tableTranspiler,
     [videoName]: videoServerTranspiler,
     [flexName]: flexTranspiler,
+    [problemName]: problemServerTranspiler,
+    [problemsName]: problemsServerTranspiler,
 };

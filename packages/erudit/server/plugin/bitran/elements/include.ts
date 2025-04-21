@@ -1,6 +1,5 @@
 import { BlockNode, type ElementNode } from '@bitran-js/core';
 import type { BitranTranspiler } from '@bitran-js/transpiler';
-
 import {
     parseBitranLocation,
     parsePartialBitranLocation,
@@ -34,11 +33,6 @@ export type TraverseStepFn = (payload: {
 
 export type TraverseLeaveFn = (payload: { _location: string }) => Promise<any>;
 
-/**
- * This operation is heavy as fuck.
- * It consumes a lot of memory and is slow.
- * Use as rarely as possible!
- */
 export async function traverseInclude(
     includeNode: IncludeNode,
     context: BitranContext,
@@ -52,27 +46,32 @@ export async function traverseInclude(
         parsePartialBitranLocation(includeNode.id, context.location),
     );
 
+    // Always use absolute locations as keys for travelMap to avoid infinite loop bugs
+    const absEntryLocation = toAbsoluteLocation(
+        entryLocation,
+        context.location.path!,
+        getNavBookIds(),
+    );
+
     const travelMap: Record<string, string | null> = {
-        // Not displayed when error, but needed for checking infinite loops
-        [entryLocation]: null,
+        [absEntryLocation]: null,
     };
 
     try {
         await _traverseStep(
             includeNode,
-            entryLocation,
+            absEntryLocation,
             context.aliases,
             listeners,
             travelMap,
         );
     } catch (message) {
-        let finalMessage = `Include Traversal Error!\n\n${message}\n\n`;
+        let finalMessage = `Include Traversal Error!\n\n${message instanceof Error ? message.message : message}\n\n`;
 
-        for (const [location, includeTarget] of Object.entries(
-            travelMap,
-        ).reverse()) {
+        // Print the traversal path in the order of traversal
+        for (const location of Object.keys(travelMap)) {
+            const includeTarget = travelMap[location];
             if (includeTarget === null) continue;
-
             finalMessage += `at "${printIncludeTarget(includeTarget)}" in "${location}"\n`;
         }
 
@@ -110,11 +109,16 @@ async function _traverseStep(
         );
     } catch (error) {
         travelMap[location] = includeNode.parseData.location;
-        throw error;
+        throw new Error(
+            `Failed to resolve include target location "${includeNode.parseData.location}" from "${location}": ${error instanceof Error ? error.message : error}`,
+        );
     }
 
+    // Use only absolute locations as keys for infinite loop detection
     if (includeTargetLocation in travelMap)
-        throw `Include "${printIncludeTarget(includeNode.parseData.location)}" targets "${includeTargetLocation}" which creates infinite loop!`;
+        throw new Error(
+            `Include "${printIncludeTarget(includeNode.parseData.location)}" targets "${includeTargetLocation}" which creates infinite loop!`,
+        );
 
     travelMap[location] = includeNode.parseData.location;
 
@@ -127,7 +131,9 @@ async function _traverseStep(
     });
 
     if (!dbUnique)
-        throw `Include "${printIncludeTarget(includeNode.parseData.location)}" is targeting to non-existing unique "${includeTargetLocation}"!`;
+        throw new Error(
+            `Include "${printIncludeTarget(includeNode.parseData.location)}" is targeting non-existing unique "${includeTargetLocation}"!`,
+        );
 
     //
     // Creating Bitran core within loaded unique's location context.
@@ -148,18 +154,19 @@ async function _traverseStep(
         }),
     );
 
-    listeners.enter &&
-        (await listeners.enter({
+    if (listeners.enter) {
+        await listeners.enter({
             _biCode: dbUnique.content,
             _location: includeTargetLocation,
             _bitranTranspiler: bitranTranspiler,
-        }));
+        });
+    }
 
     //
     // Parsing unique content and sub-traversing all includes if any.
     //
 
-    let stepErrorMessage: string | undefined;
+    let stepErrorMessage: string | Error | undefined;
 
     await bitranTranspiler.parser.parse(dbUnique.content, {
         step: async (node) => {
@@ -175,13 +182,13 @@ async function _traverseStep(
                     .join('__');
 
             if (!(node instanceof IncludeNode)) {
-                listeners.step &&
-                    (await listeners.step({
+                if (listeners.step) {
+                    await listeners.step({
                         _location: includeTargetLocation,
                         _node: node,
                         _bitranTranspiler: bitranTranspiler,
-                    }));
-
+                    });
+                }
                 return;
             }
 
@@ -193,8 +200,9 @@ async function _traverseStep(
                     listeners,
                     travelMap,
                 );
-            } catch (message: any) {
-                stepErrorMessage = message;
+            } catch (err: any) {
+                stepErrorMessage =
+                    err instanceof Error ? err : new Error(String(err));
             }
         },
     });
@@ -205,10 +213,11 @@ async function _traverseStep(
     // Leaving from current Include
     //
 
-    listeners.leave &&
-        (await listeners.leave({
+    if (listeners.leave) {
+        await listeners.leave({
             _location: includeTargetLocation,
-        }));
+        });
+    }
 }
 
 function printIncludeTarget(target: string) {

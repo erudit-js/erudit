@@ -1,4 +1,8 @@
-import { BlockNode, type DefineElementSchema } from '@bitran-js/core';
+import {
+    BlockNode,
+    type DefineElementSchema,
+    type RenderDataGenerator,
+} from '@bitran-js/core';
 import { getCaptionChildren, type Caption } from '../../shared/figure/caption';
 
 export const videoName = 'video';
@@ -25,3 +29,9 @@ export class VideoNode extends BlockNode<VideoSchema> {
         return getCaptionChildren(this.parseData.caption);
     }
 }
+
+export const videoRenderDataGenerator: RenderDataGenerator<VideoSchema> = {
+    createKey({ node }) {
+        return `${videoName}:${node.parseData.src}`;
+    },
+};

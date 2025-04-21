@@ -7,6 +7,7 @@ import {
     stringifyBitranLocation,
     type BitranLocation,
 } from '@erudit-js/cog/schema';
+
 import type { StringBitranContent } from '@erudit/shared/bitran/stringContent';
 
 import eruditConfig from '#erudit/config';
@@ -81,7 +82,7 @@ export async function useBitranContent(
 
             content.value = {
                 root,
-                preRenderData: stringContent.preRenderData,
+                renderDataStorage: stringContent.renderDataStorage,
             };
 
             return content;

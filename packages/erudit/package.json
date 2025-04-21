@@ -20,9 +20,9 @@
         "@erudit-js/bitran-elements": "workspace:3.0.0-dev.11"
     },
     "dependencies": {
-        "@bitran-js/core": "1.0.0-dev.11",
-        "@bitran-js/renderer-vue": "1.0.0-dev.11",
-        "@bitran-js/transpiler": "1.0.0-dev.11",
+        "@bitran-js/core": "1.0.0-dev.12",
+        "@bitran-js/renderer-vue": "1.0.0-dev.12",
+        "@bitran-js/transpiler": "1.0.0-dev.12",
         "@floating-ui/vue": "^1.1.6",
         "chalk": "^5.4.1",
         "chokidar": "^4.0.3",

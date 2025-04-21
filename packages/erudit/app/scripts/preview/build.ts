@@ -1,13 +1,15 @@
 import { PreviewDataType, type PreviewData } from './data';
 import { PreviewRequestType, type PreviewRequest } from './request';
-
-import { buildGenericLink } from './data/genericLink';
-import { buildPageLink } from './data/pageLink';
-import { buildUnique } from './data/unique';
-import { createPreviewError } from './data/alert';
 import { PreviewThemeName } from './state';
 
-const builders = [buildGenericLink, buildPageLink, buildUnique];
+const builders = [
+    async (request: PreviewRequest) =>
+        (await import('./data/genericLink')).buildGenericLink(request),
+    async (request: PreviewRequest) =>
+        (await import('./data/pageLink')).buildPageLink(request),
+    async (request: PreviewRequest) =>
+        (await import('./data/unique')).buildUnique(request),
+];
 
 export async function buildPreviewData(
     request: PreviewRequest,
@@ -24,6 +26,8 @@ export async function buildPreviewData(
                 'expected_page_hash',
             );
 
+            const { createPreviewError } = await import('./data/alert');
+
             return createPreviewError({
                 title: phrase.preview_missing_title,
                 message: phrase.preview_missing_explain_mismatch,
@@ -35,6 +39,8 @@ export async function buildPreviewData(
                 'preview_missing_explain',
                 'element_id',
             );
+
+            const { createPreviewError } = await import('./data/alert');
 
             return createPreviewError({
                 title: phrase.preview_missing_title,
@@ -66,6 +72,7 @@ export async function buildPreviewData(
         if (result) return result;
     }
 
+    const { createPreviewError } = await import('./data/alert');
     throw createPreviewError({
         message: `Unable to build preview data for request!`,
         pre: JSON.stringify(request, null, 4),

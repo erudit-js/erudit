@@ -1,11 +1,13 @@
-import { createPreRenderData, type PreRenderData } from '@bitran-js/transpiler';
 import {
     BlockErrorNode,
     BlockNode,
     BlocksNode,
+    createRenderData,
+    ElementNode,
     InlinerErrorNode,
+    walkDown,
+    type RenderDataStorage,
 } from '@bitran-js/core';
-
 import {
     isTopicPart,
     mergeAliases,
@@ -26,10 +28,9 @@ import { DbTopic } from '@server/db/entities/Topic';
 import { DbGroup } from '@server/db/entities/Group';
 import { traverseInclude } from '@server/bitran/elements/include';
 import { createBitranTranspiler } from '@server/bitran/transpiler';
+import { logger } from '@server/logger';
 
 import type { StringBitranContent } from '@shared/bitran/stringContent';
-
-import { logger } from '@server/logger';
 
 interface RawBitranContent {
     context: BitranContext;
@@ -122,63 +123,56 @@ async function createBitranContent(
         setEruditBitranRuntime(item, runtime),
     );
 
+    const renderDataStorage: RenderDataStorage = {};
+
+    async function makePreRender(node: ElementNode) {
+        if (generatePrerenderData === false) {
+            return;
+        }
+
+        const transpiler = bitranTranspiler.transpilers[node.name];
+        await createRenderData({
+            storage: renderDataStorage,
+            node,
+            extra: runtime,
+            generator: transpiler?.renderDataGenerator,
+        });
+    }
+
     const root = await bitranTranspiler.parser.parse(biCode, {
         async step(node) {
-            if (node instanceof AliasesNode) {
-                mergeAliases(context.aliases, node.parseData);
-                return;
+            switch (true) {
+                case node instanceof AliasesNode:
+                    mergeAliases(context.aliases, node.parseData);
+                    break;
+                case node instanceof IncludeNode:
+                    await resolveInclude(node, context);
+                    break;
+                case node instanceof BlockErrorNode:
+                case node instanceof InlinerErrorNode:
+                    logParseError(node.name, node.error);
+                    return;
             }
+
+            await makePreRender(node);
 
             if (node instanceof IncludeNode) {
-                await resolveInclude(node, context);
-                return;
-            }
-
-            if (
-                node instanceof BlockErrorNode ||
-                node instanceof InlinerErrorNode
-            ) {
-                logParseError(node.name, node.error);
-                return;
+                for (const block of node.parseData.blocks?.children || []) {
+                    await walkDown(block, async (child) => {
+                        if (child instanceof ElementNode) {
+                            await makePreRender(child);
+                        }
+                    });
+                }
             }
         },
     });
 
     const finalContent = await bitranTranspiler.stringifier.stringify(root);
 
-    // Building render data
-    const preRenderDataMap: Record<string, PreRenderData> = {};
-
-    if (generatePrerenderData) {
-        await bitranTranspiler.parser.parse(finalContent, {
-            step: async (node) => {
-                const id = node.autoId;
-                const elementTranspiler =
-                    bitranTranspiler.transpilers[node.name]!;
-
-                if (id) {
-                    const preRenderData = await createPreRenderData(
-                        node,
-                        elementTranspiler,
-                        runtime,
-                    );
-                    if (preRenderData) preRenderDataMap[id] = preRenderData;
-                }
-
-                if (
-                    node instanceof BlockErrorNode ||
-                    node instanceof InlinerErrorNode
-                ) {
-                    logParseError(node.name, node.error);
-                    return;
-                }
-            },
-        });
-    }
-
     return {
         biCode: finalContent,
-        preRenderData: preRenderDataMap,
+        renderDataStorage,
     };
 }
 

@@ -88,7 +88,7 @@ export async function useBitranRenderers() {
 
 export async function useBitranElementRenderer(productName: string) {
     const renderer =
-        (await useBitranRenderers())[productName] ||
+        (await getRenderers())[productName] ||
         getDefaultBitranRenderers()[productName];
 
     if (!renderer)

@@ -11,6 +11,7 @@ import {
 import { resolvePaths } from '@erudit-js/cog/kit';
 
 import { PROJECT_DIR } from '#erudit/globalPaths';
+import { scanContentPaths } from '@erudit/utils/contentPath';
 import { stress } from '@erudit/utils/stress';
 
 import { debug, logger } from '@server/logger';
@@ -31,7 +32,6 @@ import { contentItemPath } from './path';
 import { buildBook } from './type/book';
 import { buildGroup } from './type/group';
 import { buildTopic } from './type/topic';
-import { scanFiles } from './files';
 
 const typeBuilders: Record<ContentType, Function> = {
     book: buildBook,
@@ -69,7 +69,7 @@ export async function buildContent() {
 }
 
 async function scanContentFiles() {
-    const contentFiles = scanFiles(PROJECT_DIR + '/content');
+    const contentFiles = scanContentPaths(PROJECT_DIR + '/content');
     for (const [path, fullPath] of Object.entries(contentFiles)) {
         const dbFile = new DbFile();
         dbFile.path = path;

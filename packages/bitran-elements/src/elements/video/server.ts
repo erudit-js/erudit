@@ -2,11 +2,7 @@ import {
     defineElementTranspiler,
     type PlainObject,
 } from '@bitran-js/transpiler';
-
-import {
-    getEruditBitranRuntime,
-    type EruditBitranRuntime,
-} from '@erudit-js/cog/schema';
+import { getEruditBitranRuntime } from '@erudit-js/cog/schema';
 
 import { getFileFullPath } from '@server/repository/file';
 import { getNavBookIds } from '@server/nav/utils';
@@ -14,7 +10,12 @@ import { getNavBookIds } from '@server/nav/utils';
 import { toAbsoluteContentId } from '@erudit/shared/bitran/contentId';
 
 import { VideoParser, VideoStringifier } from './factory';
-import { VideoNode, type VideoSchema, type VideoParseData } from './shared';
+import {
+    VideoNode,
+    type VideoSchema,
+    type VideoParseData,
+    videoRenderDataGenerator,
+} from './shared';
 
 export class VideoServerParser extends VideoParser {
     override async parseDataFromObj(obj: PlainObject): Promise<VideoParseData> {
@@ -39,21 +40,30 @@ export const videoServerTranspiler = defineElementTranspiler<VideoSchema>({
     Node: VideoNode,
     Parsers: [VideoServerParser],
     Stringifier: VideoStringifier,
-    async createPreRenderData(node, runtime: EruditBitranRuntime) {
-        if (!runtime)
-            throw new Error('Missing runtime when prerendering video element!');
+    renderDataGenerator: {
+        ...videoRenderDataGenerator,
+        async createValue({ node, extra: runtime }) {
+            if (!runtime) {
+                throw new Error(
+                    'Missing runtime when prerendering video element!',
+                );
+            }
 
-        const absoluteSrc = toAbsoluteContentId(
-            node.parseData.src,
-            runtime.context.location.path!,
-            getNavBookIds(),
-        );
-        const fullPath = await getFileFullPath(absoluteSrc);
+            const absoluteSrc = toAbsoluteContentId(
+                node.parseData.src,
+                runtime.context.location.path!,
+                getNavBookIds(),
+            );
 
-        if (!fullPath) throw new Error(`Video file not found: ${absoluteSrc}`);
+            const fullPath = await getFileFullPath(absoluteSrc);
 
-        return {
-            resolvedSrc: fullPath,
-        };
+            if (!fullPath) {
+                throw new Error(`Video file not found: ${absoluteSrc}`);
+            }
+
+            return {
+                resolvedSrc: fullPath,
+            };
+        },
     },
 });

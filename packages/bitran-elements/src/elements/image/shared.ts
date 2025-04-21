@@ -1,4 +1,8 @@
-import { BlockNode, type DefineElementSchema } from '@bitran-js/core';
+import {
+    BlockNode,
+    type DefineElementSchema,
+    type RenderDataGenerator,
+} from '@bitran-js/core';
 
 import { getCaptionChildren, type Caption } from '../../shared/figure/caption';
 
@@ -29,3 +33,13 @@ export class ImageNode extends BlockNode<ImageSchema> {
         return getCaptionChildren(this.parseData.caption);
     }
 }
+
+export const imageRenderDataKey = (src: string) => {
+    return `${imageName}:${src}`;
+};
+
+export const imageRenderDataGenerator: RenderDataGenerator<ImageSchema> = {
+    createKey({ node }) {
+        return imageRenderDataKey(node.parseData.src);
+    },
+};
