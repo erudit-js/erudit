@@ -17,7 +17,7 @@ export type AsideMinorType =
 
 export interface AsideMinorTopic extends AsideMinorBase {
     type: 'topic';
-    fullContentId: string;
+    topicId: string;
     location: BitranLocation;
     nav: Partial<{
         previous: PreviousNextItem;
@@ -33,7 +33,7 @@ export interface AsideMinorTopic extends AsideMinorBase {
 
 export interface AsideMinorContent extends AsideMinorBase {
     type: 'group' | 'book';
-    fullContentId: string;
+    contentId: string;
     nav: Partial<{
         previous: PreviousNextItem;
         next: PreviousNextItem;

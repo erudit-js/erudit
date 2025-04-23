@@ -23,6 +23,7 @@ import { IMPORT } from '@server/importer';
 import { contributorExists } from '@server/repository/contributor';
 import { DbContribution } from '@server/db/entities/Contribution';
 import { DbFile } from '@server/db/entities/File';
+import { DbContentId } from '@server/db/entities/ContentId';
 
 import { contentAsset } from '@erudit/shared/asset';
 import type { ImageData } from '@erudit/shared/image';
@@ -83,9 +84,13 @@ async function addContentItem(navNode: NavNode) {
         `Adding ${stress(navNode.type)} content item ${stress(navNode.id)}...`,
     );
 
+    const dbContentId = new DbContentId();
+    dbContentId.fullId = navNode.fullId;
+    dbContentId.shortId = navNode.id;
+    await ERUDIT_SERVER.DB.manager.save(dbContentId);
+
     const dbContent = new DbContent();
-    dbContent.contentId = navNode.id;
-    dbContent.fullId = navNode.fullId;
+    dbContent.contentId = navNode.fullId;
     dbContent.type = navNode.type;
     dbContent.decoration = getDecoration(navNode);
     dbContent.ogImage = await getOgImageData(navNode);
@@ -134,7 +139,7 @@ async function addContributions(navNode: NavNode, contributors?: string[]) {
     if (!contributors || !contributors.length) {
         if (navNode.type !== 'book' && navNode.type !== 'group')
             logger.warn(
-                `${navNode.type.at(0)!.toUpperCase() + navNode.type.slice(1)} ${stress(navNode.id)} has no contributors!`,
+                `${navNode.type.at(0)!.toUpperCase() + navNode.type.slice(1)} ${stress(navNode.fullId)} has no contributors!`,
             );
 
         return;
@@ -143,13 +148,13 @@ async function addContributions(navNode: NavNode, contributors?: string[]) {
     for (const contributorId of contributors) {
         if (!(await contributorExists(contributorId))) {
             logger.warn(
-                `Skipping unknown contributor ${stress(contributorId)} when adding ${navNode.type} ${stress(navNode.id)}!`,
+                `Skipping unknown contributor ${stress(contributorId)} when adding ${navNode.type} ${stress(navNode.fullId)}!`,
             );
             continue;
         }
 
         const dbContribution = new DbContribution();
-        dbContribution.contentId = navNode.id;
+        dbContribution.contentId = navNode.fullId;
         dbContribution.contributorId = contributorId;
         await ERUDIT_SERVER.DB.manager.save(dbContribution);
     }

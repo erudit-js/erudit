@@ -15,7 +15,6 @@ const functionPhrases: Record<string, Function> = {};
 const phraseApiRoute = (phraseId: EruditPhraseId) =>
     `/api/language/phrase/${phraseId}`;
 const functionsApiRoute = '/api/language/functions';
-const phraseIdsApiRoute = '/api/language/phraseIds';
 
 export function usePhrases<T extends EruditPhraseId[]>(
     ...phraseIds: T
@@ -26,11 +25,9 @@ export function usePhrases<T extends EruditPhraseId[]>(
         nuxt.payload.data[payloadKey] ||=
             {});
 
-    const prerenderAllPromise = prerenderAllPhrases();
     const prepareFunctionsPromise = prepareFunctions(payload);
 
     return (async () => {
-        await prerenderAllPromise;
         await prepareFunctionsPromise;
 
         payload.strPhrases ||= {};
@@ -56,19 +53,6 @@ export function usePhrases<T extends EruditPhraseId[]>(
 
         return phraseCaller as PhraseCaller<T>;
     })();
-}
-
-async function prerenderAllPhrases() {
-    if (import.meta.dev) return;
-
-    if (import.meta.client) return;
-
-    const nuxt = useNuxtApp();
-
-    const phraseIds = await $fetch(phraseIdsApiRoute);
-    nuxt.runWithContext(() =>
-        prerenderRoutes(phraseIds.map((phraseId) => phraseApiRoute(phraseId))),
-    );
 }
 
 async function prepareFunctions(payload: LanguagePayload) {

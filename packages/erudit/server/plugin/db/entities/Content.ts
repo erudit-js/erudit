@@ -14,10 +14,6 @@ export class DbContent {
     contentId!: string;
 
     @Column('varchar')
-    @Index({ unique: true })
-    fullId!: string;
-
-    @Column('varchar')
     type!: ContentType;
 
     @Column('varchar', { nullable: true })

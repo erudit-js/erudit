@@ -29,8 +29,8 @@ export async function useBitranContent(
             })();
         }
 
-        const apiRoute = `/api/bitran/content/${encodeBitranLocation(stringifyBitranLocation(location.value!))}`;
-        nuxtApp.runWithContext(() => prerenderRoutes(apiRoute));
+        const contentApiRoute = `/api/bitran/content/${encodeBitranLocation(stringifyBitranLocation(location.value!))}`;
+        nuxtApp.runWithContext(() => prerenderRoutes(contentApiRoute));
 
         // @ts-ignore
         contentPromise = (async () => {
@@ -49,7 +49,7 @@ export async function useBitranContent(
             if (payload.location === locationString) {
                 stringContent = payload;
             } else {
-                stringContent = await $fetch(apiRoute, {
+                stringContent = await $fetch(contentApiRoute, {
                     responseType: 'json',
                 });
 

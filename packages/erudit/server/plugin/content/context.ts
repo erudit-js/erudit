@@ -106,7 +106,7 @@ export async function getLocationContext(
 
 async function getDbContent(contentId: string): Promise<DbContent> {
     const dbContent = await ERUDIT_SERVER.DB.manager.findOne(DbContent, {
-        select: ['type', 'title', 'fullId', 'contentId'],
+        select: ['type', 'title', 'contentId'],
         where: { contentId },
     });
 

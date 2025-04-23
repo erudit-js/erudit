@@ -71,18 +71,6 @@ const href = (() => {
     }
 })();
 
-// Prerendering data for previews to work after site build
-switch (linkTarget.type) {
-    case 'page':
-        prerenderRoutes(`/api/preview/page${linkTarget._href}`);
-        break;
-    case 'unique':
-        prerenderRoutes(
-            `/api/preview/unique/${encodeBitranLocation(linkTarget._absoluteStrLocation!)}`,
-        );
-        break;
-}
-
 const doubleClick = {
     timeout: null as any,
     startTimeout() {
@@ -98,7 +86,6 @@ const doubleClick = {
 
 function linkClick(e: Event) {
     // Direct link traversal is disabled, use double click instead!
-
     e.stopPropagation();
     e.preventDefault();
 

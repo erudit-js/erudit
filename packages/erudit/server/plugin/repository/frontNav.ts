@@ -46,12 +46,12 @@ async function toFrontNavItem(arg: ToFuncArg): Promise<FrontNavItem> {
         case 'group':
             const dbGroup = await ERUDIT_SERVER.DB.manager.findOne(DbGroup, {
                 select: ['type'],
-                where: { contentId: arg.node.id },
+                where: { contentId: arg.node.fullId },
             });
 
             if (!dbGroup)
                 throw new Error(
-                    `Missing group content item "${arg.node.id}" when creating front nav!`,
+                    `Missing group content item "${arg.node.fullId}" when creating front nav!`,
                 );
 
             if (dbGroup.type === 'folder') return await toFrontNavFolder(arg);
@@ -107,7 +107,7 @@ async function toFrontNavTopic({
     node,
     level,
 }: ToFuncArg): Promise<FrontNavTopic> {
-    const topicPart = await getTopicPart(node.id);
+    const topicPart = await getTopicPart(node.fullId);
     return {
         type: 'topic',
         part: topicPart,
@@ -121,7 +121,7 @@ async function toFrontNavBase({
 }: ToFuncArg): Promise<Omit<FrontNavBase, 'type'>> {
     const dbContent = await ERUDIT_SERVER.DB.manager.findOne(DbContent, {
         select: ['title', 'navTitle', 'flags'],
-        where: { contentId: node.id },
+        where: { contentId: node.fullId },
     });
 
     return {

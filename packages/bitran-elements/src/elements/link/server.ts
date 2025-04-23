@@ -13,6 +13,10 @@ import { ERUDIT_SERVER } from '@server/global';
 import { DbContent } from '@server/db/entities/Content';
 import { DbContributor } from '@server/db/entities/Contributor';
 import { getNavBookIds } from '@server/nav/utils';
+import {
+    getFullContentId,
+    getShortContentId,
+} from '@server/repository/contentId';
 
 import {
     createBitranLocationLink,
@@ -82,6 +86,12 @@ export async function resolveLinkTarget(
             getNavBookIds(),
         );
 
+        if (absoluteLocation.path) {
+            absoluteLocation.path = await getFullContentId(
+                absoluteLocation.path,
+            );
+        }
+
         const strAbsoluteLocation = stringifyBitranLocation(absoluteLocation);
 
         const dbUnique = await ERUDIT_SERVER.DB.manager.findOne(DbUnique, {
@@ -94,17 +104,23 @@ export async function resolveLinkTarget(
 
         const targetLocation = parseBitranLocation(dbUnique.location);
 
+        if (targetLocation.path) {
+            targetLocation.path = await getShortContentId(targetLocation.path);
+        }
+
         linkTarget._productName = dbUnique.productName;
         linkTarget._href = createBitranLocationLink(targetLocation);
         linkTarget._absoluteStrLocation =
             stringifyBitranLocation(targetLocation);
     } else if (linkTarget.type === 'page') {
         if (isContentType(linkTarget.pageType)) {
-            const absoluteContentId = toAbsoluteContentId(
+            let absoluteContentId = toAbsoluteContentId(
                 linkTarget.path!,
                 context.location?.path!,
                 getNavBookIds(),
             );
+
+            absoluteContentId = await getFullContentId(absoluteContentId);
 
             const dbContent = await ERUDIT_SERVER.DB.manager.findOne(
                 DbContent,
@@ -113,14 +129,16 @@ export async function resolveLinkTarget(
                 },
             );
 
+            const shortContentId = await getShortContentId(absoluteContentId);
+
             if (!dbContent)
                 throw new Error(
                     `Page "${linkTarget.pageType}|${absoluteContentId}" does not exist!`,
                 );
 
             linkTarget._href = isTopicPart(linkTarget.pageType)
-                ? createTopicPartLink(linkTarget.pageType, absoluteContentId)
-                : createContentLink(linkTarget.pageType, absoluteContentId);
+                ? createTopicPartLink(linkTarget.pageType, shortContentId)
+                : createContentLink(linkTarget.pageType, shortContentId);
 
             return linkTarget;
         }

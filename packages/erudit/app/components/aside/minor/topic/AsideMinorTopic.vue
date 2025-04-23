@@ -18,7 +18,7 @@ watch(topicData, () => (contributePaneVisible.value = false));
         <TopicToc />
         <TopicContributors v-if="topicData.contributors" />
         <AsideMinorContribute
-            :fullContentId="topicData.fullContentId"
+            :contentId="topicData.topicId"
             v-model:pane="contributePaneVisible"
         />
     </AsideMinorPane>

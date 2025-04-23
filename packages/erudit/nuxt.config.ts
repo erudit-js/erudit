@@ -53,11 +53,6 @@ export default defineNuxtConfig({
             projectPath(`contributors/${pattern}`),
         ),
     ],
-    esbuild: {
-        options: {
-            charset: 'utf8',
-        },
-    },
     nitro: {
         preset: 'github-pages',
         plugins: [eruditPath('server/plugin')],
@@ -94,6 +89,7 @@ export default defineNuxtConfig({
         ],
         esbuild: {
             options: {
+                charset: 'utf8',
                 tsconfigRaw: {
                     compilerOptions: {
                         experimentalDecorators: true, // Make TypeORM work with Nuxt,

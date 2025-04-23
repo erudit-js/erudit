@@ -46,7 +46,7 @@ export async function getPreviousNextNav(contentId: string) {
     let finish = false;
 
     await walkNav(async (navNode) => {
-        if (navNode.id === contentId) {
+        if (navNode.fullId === contentId) {
             book = getNavBookOf(navNode);
             finish = true;
             return;
@@ -94,7 +94,7 @@ export async function getNavNode(
     let navNode: NavNode | undefined;
 
     await walkNav(async (_navNode) => {
-        if (_navNode.id === contentId) {
+        if (_navNode.fullId === contentId) {
             navNode = _navNode;
             return false;
         }
@@ -112,7 +112,7 @@ export async function getIdsUp(contentId: string): Promise<string[]> {
 
     let currentNavNode: any = startNavNode;
     while (currentNavNode?.id) {
-        ids.push(currentNavNode.id);
+        ids.push(currentNavNode.fullId);
         currentNavNode = currentNavNode.parent;
     }
 
@@ -123,7 +123,7 @@ export async function isSkipId(contentId: string) {
     let hidden = false;
 
     await walkNav(async (navNode) => {
-        if (navNode.id === contentId) {
+        if (navNode.fullId === contentId) {
             hidden = navNode.skip;
             return false;
         }

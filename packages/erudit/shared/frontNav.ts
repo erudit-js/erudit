@@ -8,7 +8,7 @@ export interface FrontNavBase {
     fullId: string;
     label: string;
     level: number;
-    flags?: Record<ContentFlag, boolean>;
+    flags?: Partial<Record<ContentFlag, boolean>>;
 }
 
 export interface FrontNavTopic extends FrontNavBase {

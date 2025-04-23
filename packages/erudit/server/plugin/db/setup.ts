@@ -3,6 +3,7 @@ import { DataSource } from 'typeorm';
 
 import { PROJECT_DIR } from '#erudit/globalPaths';
 import { ERUDIT_SERVER } from '@server/global';
+import { logger } from '../logger';
 
 // Database Entities
 import { DbContributor } from './entities/Contributor';
@@ -14,7 +15,7 @@ import { DbHash } from './entities/Hash';
 import { DbTopic } from './entities/Topic';
 import { DbUnique } from './entities/Unique';
 import { DbFile } from './entities/File';
-import { logger } from '../logger';
+import { DbContentId } from './entities/ContentId';
 
 export async function setupDatabase() {
     rmSync(PROJECT_DIR + '/.erudit/data.sqlite', { force: true });
@@ -27,6 +28,7 @@ export async function setupDatabase() {
         dropSchema: true,
         entities: [
             DbBook,
+            DbContentId,
             DbContent,
             DbContribution,
             DbContributor,
