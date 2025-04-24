@@ -18,7 +18,7 @@ export class StrongParser extends RegexpInlinerParseFactory<EmphasisSchema> {
 }
 
 export class ItalicParser extends RegexpInlinerParseFactory<EmphasisSchema> {
-    regexp = /\*([^*]+?)\*/gm;
+    regexp = /\*(.+?)\*/gm;
 
     override async parseDataFromRegexp(match: RegExpExecArray) {
         const inliners = await this.parseInliners(match[1]!);
