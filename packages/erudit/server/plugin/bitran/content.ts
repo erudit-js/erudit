@@ -1,6 +1,5 @@
 import {
     BlockErrorNode,
-    BlockNode,
     BlocksNode,
     createRenderData,
     ElementNode,
@@ -12,7 +11,6 @@ import {
     isTopicPart,
     mergeAliases,
     NO_ALIASES,
-    setEruditBitranRuntime,
     stringifyBitranLocation,
     type BitranContext,
     type BitranLocation,
@@ -179,14 +177,7 @@ async function resolveInclude(
     let _blocks;
 
     try {
-        const blocks: BlockNode[] = [];
-
-        await traverseInclude(includeNode, context, {
-            step: async ({ _node }) => {
-                if (_node instanceof BlockNode) blocks.push(_node);
-            },
-        });
-
+        const blocks = await traverseInclude(includeNode, context, {});
         const blocksNode = new BlocksNode(includeNode);
         blocksNode.setNodes(blocks);
         _blocks = blocksNode;
