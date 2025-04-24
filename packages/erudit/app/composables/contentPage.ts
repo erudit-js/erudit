@@ -62,15 +62,14 @@ export function useContentPage(contentData: Ref<ContentData>) {
                 contentData.value.generic.title ||
                 contentData.value.generic.contentId.split('/').pop();
 
+            if (contentRoute.value!.type === 'topic') {
+                const topicPart = contentRoute.value!.topicPart;
+                if (topicPart !== 'article') title += ` | ${phrase[topicPart]}`;
+            }
+
             if (contentData.value.type !== 'book') {
                 const bookTitle = contentData.value?.bookTitle;
                 title += bookTitle ? ` | ${bookTitle}` : '';
-            }
-
-            if (contentRoute.value!.type === 'topic') {
-                const topicPart = contentRoute.value!.topicPart;
-
-                if (topicPart !== 'article') title += ` | ${phrase[topicPart]}`;
             }
 
             title +=
