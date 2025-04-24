@@ -1,11 +1,6 @@
 import { BlockErrorNode, ParagraphNode } from '@bitran-js/core';
 import { defineBitranTranspiler } from '@bitran-js/transpiler';
-import {
-    asRuntimeHolder,
-    getEruditBitranRuntime,
-    NO_ALIASES,
-    setEruditBitranRuntime,
-} from '@erudit-js/cog/schema';
+import { NO_ALIASES, setEruditBitranRuntime } from '@erudit-js/cog/schema';
 
 import {
     headingName,

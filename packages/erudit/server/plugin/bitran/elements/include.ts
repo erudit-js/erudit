@@ -144,15 +144,11 @@ async function _traverseStep(
         aliases: dbUnique.context.aliases,
     };
 
-    const bitranTranspiler = await createBitranTranspiler();
-
-    [bitranTranspiler.parser, bitranTranspiler.stringifier].forEach((item) =>
-        setEruditBitranRuntime(item, {
-            eruditConfig: ERUDIT_SERVER.CONFIG,
-            context: structuredClone(context),
-            insideInclude: true,
-        }),
-    );
+    const bitranTranspiler = await createBitranTranspiler({
+        eruditConfig: ERUDIT_SERVER.CONFIG,
+        context: structuredClone(context),
+        insideInclude: true,
+    });
 
     if (listeners.enter) {
         await listeners.enter({

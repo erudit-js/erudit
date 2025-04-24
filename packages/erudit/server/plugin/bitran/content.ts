@@ -111,17 +111,13 @@ async function createBitranContent(
     biCode: string,
     generatePrerenderData: boolean = true,
 ): Promise<StringBitranContent> {
-    const bitranTranspiler = await createBitranTranspiler();
-
     const runtime: EruditBitranRuntime = {
         eruditConfig: ERUDIT_SERVER.CONFIG,
-        context,
         insideInclude: false,
+        context,
     };
 
-    [bitranTranspiler.parser, bitranTranspiler.stringifier].forEach((item) =>
-        setEruditBitranRuntime(item, runtime),
-    );
+    const bitranTranspiler = await createBitranTranspiler(runtime);
 
     const renderDataStorage: RenderDataStorage = {};
 
