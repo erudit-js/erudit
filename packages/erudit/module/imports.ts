@@ -27,6 +27,7 @@ export function setupGlobalImports() {
                 'defineGroup',
                 'defineTopic',
                 'defineContentReferences',
+                'defineContentSource',
             ];
             return imports.map((name) => ({
                 name,

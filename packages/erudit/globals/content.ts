@@ -1,6 +1,7 @@
 import type {
     BookConfig,
     ContentReferences,
+    ContentReferenceSource,
     GroupConfig,
     TopicConfig,
 } from '@erudit-js/cog/schema';
@@ -19,4 +20,8 @@ export function defineTopic(topic: Partial<TopicConfig>) {
 
 export function defineContentReferences(references: ContentReferences) {
     return references;
+}
+
+export function defineContentSource(source: ContentReferenceSource) {
+    return source;
 }
