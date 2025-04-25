@@ -7,6 +7,7 @@ import {
     Render,
     type ElementProps,
     useElementLanguage,
+    injectFormatText,
 } from '@bitran-js/renderer-vue';
 
 import type { AccentSchema } from '../shared';
@@ -19,6 +20,8 @@ const parseData = useElementParseData<AccentSchema>();
 const renderData = useElementRenderData<AccentSchema>();
 const mainNode = parseData.main;
 const accentIcon = await useElementIcon();
+
+const pretty = injectFormatText();
 
 const elementLanguage = await useElementLanguage();
 const phrase = await useElementPhrases();
@@ -53,7 +56,9 @@ const accentColors = Object.keys(renderData.colors).reduce(
     <div :class="$style.accent" :style="accentColors" data-erudit-accent>
         <header>
             <MyRuntimeIcon name="accent-icon" :svg="accentIcon" />
-            <span>{{ parseData.title || phrase('_element_title') }}</span>
+            <span>{{
+                pretty(parseData.title || phrase('_element_title'))
+            }}</span>
         </header>
 
         <main v-if="mainNode" :class="$style.content">
