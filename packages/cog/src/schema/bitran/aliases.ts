@@ -8,7 +8,7 @@ export function tryReplaceAlias(
     target: string,
     aliases: BitranAliases,
 ): string {
-    if (!target.match(/^~\w+$/)) return target;
+    if (!target.match(/^~\S+$/)) return target;
 
     const alias = target.substring(1);
     const replacement = aliases[alias];
