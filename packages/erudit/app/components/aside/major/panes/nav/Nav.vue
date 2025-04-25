@@ -23,12 +23,21 @@ asideMajorNav.globalNav ||= (await $fetch('/api/aside/major/nav/global', {
 
 const checkIfInsideBook = () => {
     if (contentRoute.value) {
+        let bestMatch: string | undefined = undefined;
+
         for (const bookId of asideMajorNav.booksIds) {
             if (contentRoute.value.contentId.startsWith(bookId)) {
-                navBookId.value = bookId;
-                insideNavBook.value = true;
-                return;
+                // If we don't have a match yet or this match is longer (more specific)
+                if (!bestMatch || bookId.length > bestMatch.length) {
+                    bestMatch = bookId;
+                }
             }
+        }
+
+        if (bestMatch) {
+            navBookId.value = bestMatch;
+            insideNavBook.value = true;
+            return;
         }
     }
 
