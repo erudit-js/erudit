@@ -90,7 +90,9 @@ export function useContentPage(contentData: Ref<ContentData>) {
                 contentData.value.generic?.description;
 
             if (customDescription) {
-                seo.description.value = customDescription;
+                seo.description.value = customDescription
+                    .trim()
+                    .replace(/\n/g, ' ');
                 return;
             }
 
