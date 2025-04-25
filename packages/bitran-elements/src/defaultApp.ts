@@ -42,6 +42,9 @@ import {
     problemTranspiler,
 } from './elements/problem/transpiler';
 import { problemRenderer, problemsRenderer } from './elements/problem/renderer';
+import { hrName } from './elements/hr/shared';
+import { hrTranspiler } from './elements/hr/transpiler';
+import { hrRenderer } from './elements/hr/renderer';
 
 export const eruditElements: EruditBitranElements = {
     [aliasesName]: {
@@ -99,5 +102,9 @@ export const eruditElements: EruditBitranElements = {
     [problemsName]: {
         transpiler: problemsTranspiler,
         renderer: problemsRenderer,
+    },
+    [hrName]: {
+        transpiler: hrTranspiler,
+        renderer: hrRenderer,
     },
 };

@@ -79,6 +79,11 @@
             "import": "./dist/elements/heading/*.mjs",
             "require": "./dist/elements/heading/*.mjs"
         },
+        "./hr/*": {
+            "types": "./dist/elements/hr/*.d.ts",
+            "import": "./dist/elements/hr/*.mjs",
+            "require": "./dist/elements/hr/*.mjs"
+        },
         "./image/*": {
             "types": "./dist/elements/image/*.d.ts",
             "import": "./dist/elements/image/*.mjs",
@@ -163,6 +168,9 @@
             ],
             "heading/*": [
                 "./dist/elements/heading/*.d.ts"
+            ],
+            "hr/*": [
+                "./dist/elements/hr/*.d.ts"
             ],
             "image/*": [
                 "./dist/elements/image/*.d.ts"
