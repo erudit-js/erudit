@@ -191,6 +191,51 @@ it('Should correctly parse and stringify a problems set with complex content', a
     expect(stringified).toEqual(text.trim());
 });
 
+it('Should correctly parse and stringify problems with labels', async () => {
+    const text = `
+@problems
+    title: Labeled Problems
+    level: medium
+    set:
+        - label: Problem A
+          description: |
+              This is problem A.
+        - label: Problem B
+          description: |
+              This is problem B.
+          hint: |
+              Here's a hint for problem B.
+`;
+
+    const parsed = await bitran.parser.parse(text);
+
+    expect(parsed.children).toBeDefined();
+    expect(parsed.children!.length).toBe(1);
+
+    // Check the problems element
+    const problems = parsed.children![0] as ProblemsNode;
+    expect(problems).toBeInstanceOf(ProblemsNode);
+
+    // Check the problems have correct labels
+    expect(problems.parseData.set).toBeDefined();
+    expect(problems.parseData.set.length).toBe(2);
+    expect(problems.parseData.set[0]!.label).toBe('Problem A');
+    expect(problems.parseData.set[0]!.description.source).toContain(
+        'This is problem A.',
+    );
+    expect(problems.parseData.set[1]!.label).toBe('Problem B');
+    expect(problems.parseData.set[1]!.description.source).toContain(
+        'This is problem B.',
+    );
+    expect(problems.parseData.set[1]!.hints![0]!.source).toBe(
+        "Here's a hint for problem B.\n",
+    );
+
+    // Check stringification
+    const stringified = await bitran.stringifier.stringify(parsed);
+    expect(stringified).toEqual(text.trim());
+});
+
 it('Should reject problems element without info', async () => {
     const text = `
 @problems

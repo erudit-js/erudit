@@ -49,6 +49,10 @@ export interface ProblemContent {
     note?: ProblemContentItem;
 }
 
+export interface SetProblemContent extends ProblemContent {
+    label?: string;
+}
+
 export interface SharedProblem {
     info: ProblemInfo;
 }
@@ -121,7 +125,7 @@ export const problemsName = 'problems';
 
 export interface ProblemsParseData extends SharedProblem {
     shared?: BlocksNode;
-    set: ProblemContent[];
+    set: SetProblemContent[];
 }
 
 export interface ProblemsRenderData {

@@ -2,7 +2,6 @@ import {
     ObjBlockParseFactory,
     ObjStringifyFactory,
     ParseFactory,
-    StringifyFactory,
     type PlainObject,
 } from '@bitran-js/transpiler';
 
@@ -18,6 +17,7 @@ import {
     type ProblemSchema,
     type ProblemsParseData,
     type ProblemsSchema,
+    type SetProblemContent,
 } from './shared';
 
 export function parseProblemInfo(obj: PlainObject): ProblemInfo {
@@ -283,11 +283,23 @@ export class ProblemsParser extends ObjBlockParseFactory<ProblemsSchema> {
             );
         }
 
-        const set: ProblemContent[] = [];
+        const set: SetProblemContent[] = [];
 
         for (const [index, problemContent] of obj.set.entries()) {
             try {
-                set.push(await parseProblemContent(problemContent, this));
+                const content = await parseProblemContent(problemContent, this);
+
+                if (problemContent.label !== undefined) {
+                    if (typeof problemContent.label !== 'string') {
+                        throw new Error(`Problem label must be a string!`);
+                    }
+                    set.push({
+                        label: problemContent.label,
+                        ...content,
+                    });
+                } else {
+                    set.push(content);
+                }
             } catch (error: any) {
                 throw new Error(
                     `Error parsing problem content item ${index + 1}: ${error.message}`,
@@ -327,7 +339,12 @@ export class ProblemsStringifier extends ObjStringifyFactory<ProblemsSchema> {
 
         for (const problem of parseData.set) {
             const problemObj = problemContentToStrData(problem);
-            result.set.push(problemObj);
+
+            if (problem.label !== undefined) {
+                result.set.push({ label: problem.label, ...problemObj });
+            } else {
+                result.set.push(problemObj);
+            }
         }
 
         return result;
