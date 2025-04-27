@@ -49,6 +49,8 @@ const parseData = useElementParseData<TableSchema>();
     overflow: hidden;
     font-size: 0.94em;
 
+    background: var(--bgMain);
+
     border: 1px solid
         color-mix(
             in srgb,
@@ -71,6 +73,8 @@ const parseData = useElementParseData<TableSchema>();
     );
 
     [data-erudit-accent] & {
+        background: color-mix(in srgb, var(--bgMain), var(--accentColor_text) 10%);
+
         border-color: color-mix(
             in srgb,
             var(--accentColor_border),
