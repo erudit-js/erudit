@@ -31,6 +31,8 @@ import {
 } from './elements/problem/server';
 import { hrName } from './elements/hr/shared';
 import { hrTranspiler } from './elements/hr/transpiler';
+import { todoName } from './elements/todo/shared';
+import { todoTranspiler } from './elements/todo/transpiler';
 
 export const eruditTranspilers: ElementTranspilers = {
     [aliasesName]: aliasesTranspiler,
@@ -48,4 +50,5 @@ export const eruditTranspilers: ElementTranspilers = {
     [problemName]: problemServerTranspiler,
     [problemsName]: problemsServerTranspiler,
     [hrName]: hrTranspiler,
+    [todoName]: todoTranspiler,
 };

@@ -119,6 +119,11 @@
             "import": "./dist/elements/table/*.mjs",
             "require": "./dist/elements/table/*.mjs"
         },
+        "./todo/*": {
+            "types": "./dist/elements/todo/*.d.ts",
+            "import": "./dist/elements/todo/*.mjs",
+            "require": "./dist/elements/todo/*.mjs"
+        },
         "./video/*": {
             "types": "./dist/elements/video/*.d.ts",
             "import": "./dist/elements/video/*.mjs",
@@ -192,6 +197,9 @@
             ],
             "table/*": [
                 "./dist/elements/table/*.d.ts"
+            ],
+            "todo/*": [
+                "./dist/elements/todo/*.d.ts"
             ],
             "video/*": [
                 "./dist/elements/video/*.d.ts"
