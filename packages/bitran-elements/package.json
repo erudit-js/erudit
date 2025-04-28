@@ -16,9 +16,9 @@
         "prepack": "bun run build"
     },
     "peerDependencies": {
-        "@bitran-js/core": "1.0.0-dev.12",
-        "@bitran-js/renderer-vue": "1.0.0-dev.12",
-        "@bitran-js/transpiler": "1.0.0-dev.12",
+        "@bitran-js/core": "1.0.0-dev.13",
+        "@bitran-js/renderer-vue": "1.0.0-dev.13",
+        "@bitran-js/transpiler": "1.0.0-dev.13",
         "@erudit-js/cog": "workspace:3.0.0-dev.12",
         "katex": "^0.16.21",
         "sass": "^1.86.0",
