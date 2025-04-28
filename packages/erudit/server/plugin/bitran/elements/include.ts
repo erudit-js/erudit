@@ -3,7 +3,6 @@ import type { BitranTranspiler } from '@bitran-js/transpiler';
 import {
     parseBitranLocation,
     parsePartialBitranLocation,
-    setEruditBitranRuntime,
     stringifyBitranLocation,
     tryReplaceAlias,
     type BitranAliases,
@@ -41,7 +40,7 @@ export async function traverseInclude(
         step?: TraverseStepFn;
         leave?: TraverseLeaveFn;
     },
-) {
+): Promise<BlockNode[]> {
     const entryLocation = stringifyBitranLocation(
         parsePartialBitranLocation(includeNode.id, context.location),
     );
@@ -58,7 +57,7 @@ export async function traverseInclude(
     };
 
     try {
-        await _traverseStep(
+        return await _traverseInclude(
             includeNode,
             absEntryLocation,
             context.aliases,
@@ -79,7 +78,7 @@ export async function traverseInclude(
     }
 }
 
-async function _traverseStep(
+async function _traverseInclude(
     includeNode: IncludeNode,
     location: string,
     aliases: BitranAliases,
@@ -89,7 +88,7 @@ async function _traverseStep(
         leave?: TraverseLeaveFn;
     },
     travelMap: Record<string, string | null>,
-) {
+): Promise<BlockNode[]> {
     let includeTargetLocation: string;
 
     try {
@@ -144,15 +143,11 @@ async function _traverseStep(
         aliases: dbUnique.context.aliases,
     };
 
-    const bitranTranspiler = await createBitranTranspiler();
-
-    [bitranTranspiler.parser, bitranTranspiler.stringifier].forEach((item) =>
-        setEruditBitranRuntime(item, {
-            eruditConfig: ERUDIT_SERVER.CONFIG,
-            context: structuredClone(context),
-            insideInclude: true,
-        }),
-    );
+    const bitranTranspiler = await createBitranTranspiler({
+        eruditConfig: ERUDIT_SERVER.CONFIG,
+        context: structuredClone(context),
+        insideInclude: true,
+    });
 
     if (listeners.enter) {
         await listeners.enter({
@@ -168,7 +163,7 @@ async function _traverseStep(
 
     let stepErrorMessage: string | Error | undefined;
 
-    await bitranTranspiler.parser.parse(dbUnique.content, {
+    const rootNode = await bitranTranspiler.parser.parse(dbUnique.content, {
         step: async (node) => {
             if (stepErrorMessage) return;
 
@@ -193,7 +188,7 @@ async function _traverseStep(
             }
 
             try {
-                await _traverseStep(
+                await _traverseInclude(
                     node,
                     includeTargetLocation,
                     context.aliases,
@@ -218,6 +213,8 @@ async function _traverseStep(
             _location: includeTargetLocation,
         });
     }
+
+    return (rootNode.children as BlockNode[]) ?? [];
 }
 
 function printIncludeTarget(target: string) {

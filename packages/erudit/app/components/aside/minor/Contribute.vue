@@ -3,7 +3,7 @@ import eruditConfig from '#erudit/config';
 
 import AsideOverlayPane from '../utils/AsideOverlayPane.vue';
 
-const props = defineProps<{ fullContentId: string }>();
+const props = defineProps<{ contentId: string }>();
 const phrase = await usePhrases(
     'make_contribution',
     'material_improvement',
@@ -23,7 +23,7 @@ const issueLink = computed(() => {
 const editPageLink = computed(() => {
     const ghRepository = eruditConfig.repository;
     return ghRepository
-        ? `https://github.com/${ghRepository.name}/tree/${ghRepository.branch}/content/${props.fullContentId}`
+        ? `https://github.com/${ghRepository.name}/tree/${ghRepository.branch}/content/${props.contentId}`
         : null;
 });
 </script>

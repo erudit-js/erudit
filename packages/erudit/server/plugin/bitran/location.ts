@@ -3,23 +3,37 @@ import {
     parseBitranLocation,
 } from '@erudit-js/cog/schema';
 
-export function parseUrlLocation(urlLocation: string) {
-    urlLocation = decodeURIComponent(urlLocation);
-    urlLocation = decodeBitranLocation(urlLocation);
+import { getFullContentId } from '@server/repository/contentId';
 
-    if (!urlLocation)
+export async function parseClientBitranLocation(clientLocation: string) {
+    clientLocation = decodeURIComponent(clientLocation);
+    clientLocation = decodeBitranLocation(clientLocation);
+
+    if (!clientLocation) {
         throw createError({
-            statusCode: 500,
+            statusCode: 400,
             statusText: 'Empty content location router parameter!',
         });
+    }
 
     try {
-        return parseBitranLocation(urlLocation);
-    } catch (error: any) {
+        const location = parseBitranLocation(clientLocation);
+
+        if (location.path) {
+            location.path = await getFullContentId(location.path);
+        }
+
+        return location;
+    } catch (_error) {
+        let error = `Failed to parse client location "${clientLocation}"!`;
+
+        if (_error) {
+            error += '\n\n' + _error;
+        }
+
         throw createError({
-            statusCode: 404,
-            statusText:
-                error?.message || `Can't parse location "${urlLocation}"!`,
+            statusCode: 400,
+            statusText: error,
         });
     }
 }

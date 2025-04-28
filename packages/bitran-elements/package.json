@@ -1,7 +1,7 @@
 {
     "name": "@erudit-js/bitran-elements",
     "description": "📝 A collection of Bitran elements for Erudit sites",
-    "version": "3.0.0-dev.11",
+    "version": "3.0.0-dev.12",
     "type": "module",
     "main": "./dist/index.mjs",
     "types": "./dist/index.d.ts",
@@ -16,10 +16,10 @@
         "prepack": "bun run build"
     },
     "peerDependencies": {
-        "@bitran-js/core": "1.0.0-dev.12",
-        "@bitran-js/renderer-vue": "1.0.0-dev.12",
-        "@bitran-js/transpiler": "1.0.0-dev.12",
-        "@erudit-js/cog": "workspace:3.0.0-dev.11",
+        "@bitran-js/core": "1.0.0-dev.13",
+        "@bitran-js/renderer-vue": "1.0.0-dev.13",
+        "@bitran-js/transpiler": "1.0.0-dev.13",
+        "@erudit-js/cog": "workspace:3.0.0-dev.12",
         "katex": "^0.16.21",
         "sass": "^1.86.0",
         "vue": "^3.5.13",
@@ -79,6 +79,11 @@
             "import": "./dist/elements/heading/*.mjs",
             "require": "./dist/elements/heading/*.mjs"
         },
+        "./hr/*": {
+            "types": "./dist/elements/hr/*.d.ts",
+            "import": "./dist/elements/hr/*.mjs",
+            "require": "./dist/elements/hr/*.mjs"
+        },
         "./image/*": {
             "types": "./dist/elements/image/*.d.ts",
             "import": "./dist/elements/image/*.mjs",
@@ -113,6 +118,11 @@
             "types": "./dist/elements/table/*.d.ts",
             "import": "./dist/elements/table/*.mjs",
             "require": "./dist/elements/table/*.mjs"
+        },
+        "./todo/*": {
+            "types": "./dist/elements/todo/*.d.ts",
+            "import": "./dist/elements/todo/*.mjs",
+            "require": "./dist/elements/todo/*.mjs"
         },
         "./video/*": {
             "types": "./dist/elements/video/*.d.ts",
@@ -164,6 +174,9 @@
             "heading/*": [
                 "./dist/elements/heading/*.d.ts"
             ],
+            "hr/*": [
+                "./dist/elements/hr/*.d.ts"
+            ],
             "image/*": [
                 "./dist/elements/image/*.d.ts"
             ],
@@ -184,6 +197,9 @@
             ],
             "table/*": [
                 "./dist/elements/table/*.d.ts"
+            ],
+            "todo/*": [
+                "./dist/elements/todo/*.d.ts"
             ],
             "video/*": [
                 "./dist/elements/video/*.d.ts"

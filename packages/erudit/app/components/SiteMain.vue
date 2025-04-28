@@ -22,7 +22,7 @@
 
     @include bp.below('mobile') {
         --_pMainBase: var(--_bitran_asideWidth);
-        font-size: 14px;
+        font-size: 15px;
     }
 
     .mainInner {

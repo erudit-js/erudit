@@ -9,6 +9,7 @@ import { ERUDIT_SERVER } from '@server/global';
 import { getIdsUp, isSkipId } from '@server/nav/utils';
 import { DbContent } from '@server/db/entities/Content';
 import { DbContributor } from '@server/db/entities/Contributor';
+import { getFullContentId } from '@server/repository/contentId';
 
 import type { Context } from '@shared/content/context';
 import {
@@ -19,6 +20,8 @@ import {
 import { CONTENT_TYPE_ICON, ICON, TOPIC_PART_ICON } from '@erudit/shared/icons';
 
 export async function getContentContext(contentId: string): Promise<Context> {
+    contentId = await getFullContentId(contentId);
+
     const context: Context = [];
 
     for (const _contentId of (await getIdsUp(contentId)).reverse()) {
@@ -106,7 +109,7 @@ export async function getLocationContext(
 
 async function getDbContent(contentId: string): Promise<DbContent> {
     const dbContent = await ERUDIT_SERVER.DB.manager.findOne(DbContent, {
-        select: ['type', 'title', 'fullId', 'contentId'],
+        select: ['type', 'title', 'contentId'],
         where: { contentId },
     });
 

@@ -62,7 +62,8 @@ const MathComponent = h(props.displayMath ? 'div' : 'span', {
 .latexDisplayMath {
     padding: 2px;
 
-    @include elementUtils.scrollbar;
+    overflow-y: hidden;
+    @include elementUtils.scrollbar($x: auto, $y: hidden);
 
     :global(.base) {
         margin: 0.25em 0;

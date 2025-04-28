@@ -2,6 +2,8 @@ import type { TopicPart } from '@erudit-js/cog/schema';
 
 import { ERUDIT_SERVER } from '@server/global';
 import { DbTopic } from '@server/db/entities/Topic';
+import { getShortContentId } from '@server/repository/contentId';
+
 import type { TopicPartLinks } from '@shared/content/data/type/topic';
 import { createTopicPartLink } from '@shared/link';
 
@@ -23,10 +25,11 @@ export async function getTopicPart(contentId: string): Promise<TopicPart> {
 
 export async function getTopicPartsLinks(topicId: string) {
     const existingTopicParts = await getTopicParts(topicId);
+    const shortTopicId = await getShortContentId(topicId);
     const links: TopicPartLinks = {};
 
     for (const topicPart of existingTopicParts)
-        links[topicPart] = createTopicPartLink(topicPart, topicId);
+        links[topicPart] = createTopicPartLink(topicPart, shortTopicId);
 
     return links;
 }

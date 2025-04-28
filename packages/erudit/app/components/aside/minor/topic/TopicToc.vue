@@ -174,12 +174,7 @@ onMounted(() => {
 
             if (!topicData.value.location || !topicLocation.value) return;
 
-            if (
-                stringifyBitranLocation(topicData.value.location) ===
-                stringifyBitranLocation(topicLocation.value)
-            ) {
-                enableLiveToc();
-            }
+            enableLiveToc();
         },
         { immediate: true },
     );

@@ -5,7 +5,7 @@ import { buildPreviewData } from '@app/scripts/preview/build';
 import { getPreviewDisplayComponent } from '@app/scripts/preview/display';
 import { createPreviewError } from '@app/scripts/preview/data/alert';
 
-import { PreviewDisplayAlert } from '#components';
+import { LazyPreviewDisplayAlert } from '#components';
 
 const { request } = defineProps<{ request: PreviewRequest }>();
 const height = defineModel<number>('height');
@@ -35,7 +35,7 @@ const setupDisplay = setTimeout(async () => {
             message: error?.message || error,
         });
 
-        DisplayComponent.value = PreviewDisplayAlert;
+        DisplayComponent.value = LazyPreviewDisplayAlert;
     }
 
     await nextTick();

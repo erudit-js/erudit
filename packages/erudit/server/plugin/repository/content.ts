@@ -23,11 +23,12 @@ export async function getContentGenericData(
         where: { contentId },
     });
 
-    if (!dbContent)
+    if (!dbContent) {
         throw createError({
             statusCode: 404,
             message: `Content item "${contentId}" not found!`,
         });
+    }
 
     const previousNext = await getPreviousNext(contentId);
     const decoration = await getContentDecoration(contentId);
@@ -57,12 +58,12 @@ export async function getPreviousNext(contentId: string) {
     const { previousNav, nextNav } = await getPreviousNextNav(contentId);
 
     async function getItemData(navNode: NavNode): Promise<PreviousNextItem> {
-        const title = await getContentTitle(navNode.id);
+        const title = await getContentTitle(navNode.fullId);
 
         const link = await (async () => {
             if (navNode.type === 'topic')
                 return createTopicPartLink(
-                    await getTopicPart(navNode.id),
+                    await getTopicPart(navNode.fullId),
                     navNode.id,
                 );
 
@@ -164,15 +165,6 @@ export async function getContentLink(contentId: string) {
     const topicPart = await getTopicPart(contentId);
 
     return createTopicPartLink(topicPart, contentId);
-}
-
-export async function getFullContentId(contentId: string) {
-    const dbContent = await ERUDIT_SERVER.DB.manager.findOne(DbContent, {
-        select: ['fullId'],
-        where: { contentId },
-    });
-
-    return dbContent?.fullId;
 }
 
 export async function getContentContributors(contentId: string) {

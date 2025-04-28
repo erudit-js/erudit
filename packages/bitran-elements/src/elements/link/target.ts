@@ -2,7 +2,6 @@ import {
     isTopicPart,
     bitranLocationTypes,
     parsePartialBitranLocation,
-    stringifyBitranLocation,
     tryReplaceAlias,
     type BitranContext,
     type BitranLocation,

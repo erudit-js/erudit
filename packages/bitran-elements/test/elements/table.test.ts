@@ -329,3 +329,38 @@ it('Should correctly handle rows starting and ending with pipes', async () => {
     const stringified = await bitran.stringifier.stringify(parsed);
     expect(stringified).toEqual(text.trim());
 });
+
+it('Should preserve backslashes', async () => {
+    const text = `
+@table
+    $\\green{69}$ | My text
+    Row2 | $\\frac{1}{2}$
+`;
+
+    const parsed = await bitran.parser.parse(text);
+
+    expect(parsed.children).toBeDefined();
+    expect(parsed.children!.length).toBe(1);
+
+    const tableNode = parsed.children![0] as TableNode;
+    expect(tableNode).toBeInstanceOf(TableNode);
+
+    const parseData = tableNode.parseData as TableParseData;
+    expect(parseData.cells).toBeDefined();
+    expect(parseData.cells.length).toBe(2);
+
+    // Check cell with math expression containing backslashes
+    const firstCell = await bitran.stringifier.stringify(
+        parseData.cells[0]![0]!,
+    );
+    expect(firstCell).toBe('$\\green{69}$ ');
+
+    const lastCell = await bitran.stringifier.stringify(
+        parseData.cells[1]![1]!,
+    );
+    expect(lastCell).toBe(' $\\frac{1}{2}$');
+
+    // Check stringification preserves the backslashes
+    const stringified = await bitran.stringifier.stringify(parsed);
+    expect(stringified).toEqual(text.trim());
+});

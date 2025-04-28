@@ -12,7 +12,7 @@ export async function buildGroup({
     config,
 }: BuilderFunctionArgs<GroupConfig>) {
     const dbGroup = new DbGroup();
-    dbGroup.contentId = navNode.id;
+    dbGroup.contentId = navNode.fullId;
     dbGroup.type = config?.type || 'folder';
 
     try {
@@ -26,7 +26,7 @@ export async function buildGroup({
             await parseBitranContent(
                 {
                     type: 'group',
-                    path: navNode.id,
+                    path: dbGroup.contentId,
                 },
                 strContent,
             );

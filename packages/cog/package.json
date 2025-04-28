@@ -1,6 +1,6 @@
 {
     "name": "@erudit-js/cog",
-    "version": "3.0.0-dev.11",
+    "version": "3.0.0-dev.12",
     "description": "⚙️ Erudit kit, types and utils",
     "type": "module",
     "repository": {
@@ -34,9 +34,9 @@
         "gradient-string": "^3.0.0"
     },
     "peerDependencies": {
-        "@bitran-js/core": "1.0.0-dev.12",
-        "@bitran-js/renderer-vue": "1.0.0-dev.12",
-        "@bitran-js/transpiler": "1.0.0-dev.12"
+        "@bitran-js/core": "1.0.0-dev.13",
+        "@bitran-js/renderer-vue": "1.0.0-dev.13",
+        "@bitran-js/transpiler": "1.0.0-dev.13"
     },
     "devDependencies": {
         "unbuild": "^3.5.0"

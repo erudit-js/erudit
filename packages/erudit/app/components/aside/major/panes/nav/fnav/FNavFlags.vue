@@ -2,7 +2,7 @@
 import type { ContentFlag } from '@erudit-js/cog/schema';
 import { flagsData } from '@app/scripts/flag';
 
-defineProps<{ flags: Record<ContentFlag, boolean> }>();
+defineProps<{ flags: Partial<Record<ContentFlag, boolean>> }>();
 
 const phrases = Object.values(flagsData).map((data) => data.title);
 const phrase = await usePhrases(...phrases);

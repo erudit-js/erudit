@@ -5,6 +5,7 @@ import type { PreviewFooter } from '../footer';
 export interface PreviewDataPageLink extends PreviewDataBase {
     type: PreviewDataType.PageLink;
     footer: PreviewFooter;
+    description?: string;
 }
 
 export async function buildPageLink(

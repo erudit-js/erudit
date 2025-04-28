@@ -1,5 +1,16 @@
 import eruditConfig from '#erudit/config';
 
+export interface FormatState {
+    quoteOpen: boolean;
+}
+
+const defaultFormatState: FormatState = {
+    quoteOpen: false,
+};
+
+export type FormatFunction = (text: string, state?: FormatState) => string;
+export type FormatterFunction = (text: string, state: FormatState) => string;
+
 let formatFunction: FormatFunction;
 
 export function useFormatText() {
@@ -11,10 +22,8 @@ export function useFormatText() {
     return formatFunction;
 }
 
-type FormatFunction = (text: string) => string;
-
 function createFormatFunction(language?: string): FormatFunction {
-    const formatters: FormatFunction[] = [];
+    const formatters: FormatterFunction[] = [];
 
     //
     // Em Dashes
@@ -36,10 +45,11 @@ function createFormatFunction(language?: string): FormatFunction {
             }
         })();
 
-        formatters.push((text) => {
-            let open = false;
+        formatters.push((text, state) => {
             return text.replaceAll(/"/gm, () => {
-                return (open = !open) ? quoteSymbols[0] : quoteSymbols[1];
+                return (state.quoteOpen = !state.quoteOpen)
+                    ? quoteSymbols[0]
+                    : quoteSymbols[1];
             });
         });
     }
@@ -60,10 +70,13 @@ function createFormatFunction(language?: string): FormatFunction {
     //
     //
 
-    function formatText(text: string): string {
+    function formatText(
+        text: string,
+        state: FormatState = defaultFormatState,
+    ): string {
         if (!text) return text;
 
-        for (const formatter of formatters) text = formatter(text);
+        for (const formatter of formatters) text = formatter(text, state);
 
         return text;
     }

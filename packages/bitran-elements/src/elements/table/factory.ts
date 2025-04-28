@@ -15,6 +15,7 @@ import {
     toRawCaptionObj,
     validateRawCaption,
 } from '../../shared/figure/caption';
+import type { Node } from '@bitran-js/core';
 
 export class TableParser extends ObjBlockParseFactory<TableSchema> {
     override objName = tableName;
@@ -85,6 +86,12 @@ export class TableParser extends ObjBlockParseFactory<TableSchema> {
 
                     if (char === '\\' && !isEscaped) {
                         isEscaped = true;
+                        // Only skip adding the backslash if it's escaping a pipe
+                        if (i + 1 < row.length && row[i + 1] === '|') {
+                            continue;
+                        }
+                        // Otherwise, add the backslash to the current cell
+                        currentCell += char;
                         continue;
                     }
 
@@ -117,9 +124,9 @@ export class TableStringifier extends StringifyFactory<TableSchema> {
 
         // Format each row with | separators
         const formattedRows = await Promise.all(
-            parseData.cells.map(async (row) => {
+            parseData.cells.map(async (row: Node[]) => {
                 const stringifiedCells = await Promise.all(
-                    row.map(async (cellContent) => {
+                    row.map(async (cellContent: Node) => {
                         const content = await this.stringify(cellContent);
                         // Escape pipe characters in cell content
                         return content.replace(/\|/g, '\\|');

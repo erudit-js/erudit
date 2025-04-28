@@ -1,6 +1,5 @@
 import { globSync } from 'glob';
 import chalk from 'chalk';
-import { resolvePaths } from '@erudit-js/cog/kit';
 import {
     contentTypes,
     topicParts,
@@ -54,13 +53,15 @@ async function scanChildNodes(
     parent: NavNode | RootNavNode,
     insideBook: boolean,
 ): Promise<{ children: NavNode[] | undefined; newIds: Ids }> {
-    const currentFsPath = isRootNode(parent) ? '' : parent.path;
+    const currentFsPath = isRootNode(parent) ? '' : parent.path + '/';
 
     const nodeFsPaths = globSync(
-        `${PROJECT_DIR}/content/${currentFsPath}/*/{${contentTypes.join(',')}}.{ts,js}`,
-    )
-        .sort()
-        .map((path) => resolvePaths(path));
+        `${currentFsPath}*/{${contentTypes.join(',')}}.{ts,js}`,
+        {
+            cwd: PROJECT_DIR + '/content',
+            posix: true,
+        },
+    ).sort();
 
     let newIds: Ids = {};
     const children: NavNode[] = [];
@@ -77,11 +78,7 @@ async function scanChildNodes(
 
         if (!pathParts) continue; // Wrong path pattern
 
-        const nodePath = nodeFsPath
-            .replace(PROJECT_DIR + '/content/', '')
-            .split('/')
-            .slice(0, -1)
-            .join('/');
+        const nodePath = nodeFsPath.split('/').slice(0, -1).join('/');
 
         if (pathParts.type === 'book' && insideBook) {
             logger.warn(

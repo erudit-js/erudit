@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import {
     useElementNode,
     useElementParseData,
@@ -23,6 +23,17 @@ const activeProblemIndex = ref(0);
 const isProblemActive = (index: number) => {
     return activeProblemIndex.value === index;
 };
+
+// Compute fallback numbers for problems without a label
+const fallbackNumbers = computed(() => {
+    let count = 1;
+    return parseData.set.map(problem => {
+        if (problem.label == null) {
+            return count++;
+        }
+        return null;
+    });
+});
 </script>
 
 <template>
@@ -38,7 +49,7 @@ const isProblemActive = (index: number) => {
                 :class="[$style.option, isProblemActive(i) && $style.active]"
                 @click="activeProblemIndex = i"
             >
-                {{ i + 1 }}
+                {{ problem.label ?? fallbackNumbers[i] }}
             </button>
         </div>
 

@@ -40,7 +40,7 @@ watch(contentData, () => (contributePaneVisible.value = false));
             {{ phrase.no_contributors }}
         </section>
         <AsideMinorContribute
-            :fullContentId="contentData.fullContentId"
+            :contentId="contentData.contentId"
             v-model:pane="contributePaneVisible"
         />
     </AsideMinorPane>

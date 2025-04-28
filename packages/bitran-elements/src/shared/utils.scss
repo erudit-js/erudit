@@ -2,8 +2,9 @@
 
 $invertKeepColors: invert(1) hue-rotate(180deg) brightness(0.9);
 
-@mixin scrollbar {
-    overflow: auto;
+@mixin scrollbar($x: auto, $y: auto) {
+    overflow-x: $x;
+    overflow-y: $y;
 
     &::-webkit-scrollbar {
         height: 7px;

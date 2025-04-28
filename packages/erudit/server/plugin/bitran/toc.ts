@@ -1,5 +1,5 @@
 import { type ElementNode } from '@bitran-js/core';
-import type { BitranLocation } from '@erudit-js/cog/schema';
+import { NO_ALIASES, type BitranLocation } from '@erudit-js/cog/schema';
 import {
     headingName,
     HeadingNode,
@@ -16,7 +16,12 @@ import { createBitranTranspiler } from './transpiler';
 
 export async function getBitranToc(location: BitranLocation) {
     const content = await getBitranContent(location, false);
-    const bitranCore = await createBitranTranspiler();
+
+    const bitranCore = await createBitranTranspiler({
+        eruditConfig: ERUDIT_SERVER.CONFIG,
+        insideInclude: false,
+        context: { aliases: NO_ALIASES(), location },
+    });
 
     const toc: Toc = [];
 

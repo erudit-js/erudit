@@ -27,9 +27,9 @@ onMounted(() => {
     watch(
         topicData,
         () => {
-            if (previousFullId === topicData.value.fullContentId) return;
+            if (previousFullId === topicData.value.topicId) return;
 
-            previousFullId = topicData.value.fullContentId;
+            previousFullId = topicData.value.topicId;
             showcase.value = [...topicData.value.contributors!]
                 .sort(() => 0.5 - Math.random())
                 .slice(0, counter.value.showcase);

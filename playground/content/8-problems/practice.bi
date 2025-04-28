@@ -92,7 +92,8 @@
               $$ A^2 + B^2 = C^2 $$
           answer: |
               First answer.
-        - description: |
+        - label: Aboba
+          description: |
               Second problem description.
           hints:
               - Hint for the second problem

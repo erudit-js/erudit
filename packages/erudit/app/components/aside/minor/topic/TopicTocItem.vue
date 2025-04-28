@@ -6,6 +6,8 @@ const productName = props.tocItem.productName;
 const productIcon = await useBitranElementIcon(productName);
 const productPhrase = await useBitranElementLanguage(productName);
 
+const pretty = useFormatText();
+
 function tocItemClick(event: MouseEvent): void {
     navigateTo({
         query: {
@@ -20,7 +22,7 @@ function tocItemClick(event: MouseEvent): void {
 
 <template>
     <TreeItem
-        :label="tocItem.title || productPhrase('_element_title')"
+        :label="pretty(tocItem.title || productPhrase('_element_title'))"
         :level="tocItem.level"
         :link="`?element=${tocItem.id}`"
         :svg="productIcon"

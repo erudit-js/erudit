@@ -1,6 +1,7 @@
 import { getTopicPartsLinks } from '@server/repository/topic';
 import { getContentBookFor } from '@server/repository/book';
 import { getContentGenericData } from '@server/repository/content';
+import { getFullContentId } from '@server/repository/contentId';
 
 import type { ContentGenericData } from '@shared/content/data/base';
 import type { ContentTopicData } from '@shared/content/data/type/topic';
@@ -8,13 +9,15 @@ import type { ContentGroupData } from '@shared/content/data/type/group';
 import type { ContentBookData } from '@shared/content/data/type/book';
 
 export default defineEventHandler(async (event) => {
-    const contentId = getQuery(event)?.contentId as string;
+    let contentId = getQuery(event)?.contentId as string;
+    contentId = await getFullContentId(contentId);
 
-    if (!contentId)
+    if (!contentId) {
         throw createError({
             statusCode: 400,
             statusText: 'Missing content ID!',
         });
+    }
 
     const generic = await getContentGenericData(contentId);
 

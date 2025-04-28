@@ -42,6 +42,12 @@ import {
     problemTranspiler,
 } from './elements/problem/transpiler';
 import { problemRenderer, problemsRenderer } from './elements/problem/renderer';
+import { hrName } from './elements/hr/shared';
+import { hrTranspiler } from './elements/hr/transpiler';
+import { hrRenderer } from './elements/hr/renderer';
+import { todoName } from './elements/todo/shared';
+import { todoTranspiler } from './elements/todo/transpiler';
+import { todoRenderer } from './elements/todo/renderer';
 
 export const eruditElements: EruditBitranElements = {
     [aliasesName]: {
@@ -100,4 +106,12 @@ export const eruditElements: EruditBitranElements = {
         transpiler: problemsTranspiler,
         renderer: problemsRenderer,
     },
+    [hrName]: {
+        transpiler: hrTranspiler,
+        renderer: hrRenderer,
+    },
+    [todoName]: {
+        transpiler: todoTranspiler,
+        renderer: todoRenderer,
+    }
 };

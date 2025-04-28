@@ -1,4 +1,5 @@
 import { PreviewDataType, type PreviewData } from './data';
+import { createPreviewError } from './data/alert';
 import { PreviewRequestType, type PreviewRequest } from './request';
 import { PreviewThemeName } from './state';
 
@@ -26,8 +27,6 @@ export async function buildPreviewData(
                 'expected_page_hash',
             );
 
-            const { createPreviewError } = await import('./data/alert');
-
             return createPreviewError({
                 title: phrase.preview_missing_title,
                 message: phrase.preview_missing_explain_mismatch,
@@ -39,8 +38,6 @@ export async function buildPreviewData(
                 'preview_missing_explain',
                 'element_id',
             );
-
-            const { createPreviewError } = await import('./data/alert');
 
             return createPreviewError({
                 title: phrase.preview_missing_title,
@@ -72,7 +69,6 @@ export async function buildPreviewData(
         if (result) return result;
     }
 
-    const { createPreviewError } = await import('./data/alert');
     throw createPreviewError({
         message: `Unable to build preview data for request!`,
         pre: JSON.stringify(request, null, 4),

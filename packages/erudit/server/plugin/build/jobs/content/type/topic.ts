@@ -9,7 +9,7 @@ import { parseBitranContent } from '../parse';
 
 export async function buildTopic({ navNode }: BuilderFunctionArgs) {
     const dbTopic = new DbTopic();
-    dbTopic.contentId = navNode.id;
+    dbTopic.contentId = navNode.fullId;
     const existingTopicParts: TopicPart[] = [];
 
     for (const topicPart of topicParts) {
@@ -25,7 +25,7 @@ export async function buildTopic({ navNode }: BuilderFunctionArgs) {
         await parseBitranContent(
             {
                 type: topicPart,
-                path: navNode.id,
+                path: dbTopic.contentId,
             },
             strContent,
         );
