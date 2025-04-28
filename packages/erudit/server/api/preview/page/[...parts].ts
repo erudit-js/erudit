@@ -1,13 +1,17 @@
+import type { LinkTargetPageType } from '@erudit-js/bitran-elements/link/target';
+import { isContentType } from '@erudit-js/cog/schema';
+
 import {
     getContentContext,
     getTopicPartContext,
     getContributorContext,
-} from '@erudit/server/plugin/content/context';
+} from '@server/content/context';
+import { getFullContentId } from '@server/repository/contentId';
+import { ERUDIT_SERVER } from '@server/global';
+import { DbContent } from '@server/db/entities/Content';
 
-import type { LinkTargetPageType } from '@erudit-js/bitran-elements/link/target';
-
-import type { PreviewDataPageLink } from '@app/scripts/preview/data/pageLink';
 import type { Context, ContextItem } from '@erudit/shared/content/context';
+import type { PreviewDataPageLink } from '@app/scripts/preview/data/pageLink';
 
 export default defineEventHandler<Promise<PreviewDataPageLink>>(
     async (event) => {
@@ -37,8 +41,30 @@ export default defineEventHandler<Promise<PreviewDataPageLink>>(
             .map((c) => c.title)
             .join(' / ');
 
+        const description = await (async () => {
+            if (!isContentType(pageType)) {
+                return;
+            }
+
+            const fullContentId = await getFullContentId(contentId);
+            const dbContent = await ERUDIT_SERVER.DB.manager.findOne(
+                DbContent,
+                {
+                    select: ['description'],
+                    where: { contentId: fullContentId },
+                },
+            );
+
+            if (!dbContent) {
+                return;
+            }
+
+            return dbContent.description?.trim();
+        })();
+
         return <PreviewDataPageLink>{
             type: 'page-link',
+            description,
             footer: {
                 secondary:
                     (contextStr ? contextStr + ' • ' : '') +
