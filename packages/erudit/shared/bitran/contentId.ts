@@ -4,6 +4,7 @@ import {
     stringifyBitranLocation,
     type BitranLocation,
 } from '@erudit-js/cog/schema';
+import { detectContentBookId } from '../content/bookId';
 
 export function toAbsoluteLocation<T extends string | BitranLocation>(
     location: T,
@@ -43,11 +44,10 @@ export function toAbsoluteContentId(
 
         if (contentId.startsWith('~/')) {
             const restPath = contentId.substring(2);
+            const bookId = detectContentBookId(contextId, bookIds ?? []);
 
-            for (const bookId of bookIds ?? []) {
-                if (contextId.startsWith(bookId)) {
-                    return bookId + '/' + restPath;
-                }
+            if (bookId) {
+                return bookId + '/' + restPath;
             }
 
             // Not in any book, convert to absolute path

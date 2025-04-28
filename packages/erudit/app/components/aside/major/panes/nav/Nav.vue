@@ -7,6 +7,8 @@ import {
     navBookVisible,
 } from '@app/scripts/aside/major/nav';
 
+import { detectContentBookId } from '@shared/content/bookId';
+
 import NavGlobal from './NavGlobal.vue';
 import NavBook from './NavBook.vue';
 
@@ -23,19 +25,13 @@ asideMajorNav.globalNav ||= (await $fetch('/api/aside/major/nav/global', {
 
 const checkIfInsideBook = () => {
     if (contentRoute.value) {
-        let bestMatch: string | undefined = undefined;
+        const bookId = detectContentBookId(
+            contentRoute.value.contentId,
+            asideMajorNav.booksIds
+        );
 
-        for (const bookId of asideMajorNav.booksIds) {
-            if (contentRoute.value.contentId.startsWith(bookId)) {
-                // If we don't have a match yet or this match is longer (more specific)
-                if (!bestMatch || bookId.length > bestMatch.length) {
-                    bestMatch = bookId;
-                }
-            }
-        }
-
-        if (bestMatch) {
-            navBookId.value = bestMatch;
+        if (bookId) {
+            navBookId.value = bookId;
             insideNavBook.value = true;
             return;
         }
