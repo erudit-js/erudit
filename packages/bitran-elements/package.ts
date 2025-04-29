@@ -44,7 +44,7 @@ async function main() {
     // Write updated package.json
     writeFileSync(
         PACKAGE_JSON_PATH,
-        JSON.stringify(packageJson, null, 4),
+        JSON.stringify(packageJson, null, 4) + '\n',
         'utf-8',
     );
 
