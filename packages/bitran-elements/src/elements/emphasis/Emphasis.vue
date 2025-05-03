@@ -16,6 +16,7 @@ const { type, inliners } = useElementParseData<EmphasisSchema>();
 <template>
     <em
         :class="[
+            $style.em,
             'accent' in meta ? $style.accent : undefined,
             type === 'bold' ? $style.bold : $style.italic,
             ...(meta.classes || []),
@@ -26,6 +27,10 @@ const { type, inliners } = useElementParseData<EmphasisSchema>();
 </template>
 
 <style lang="scss" module>
+.em {
+    font-style: inherit;
+}
+
 .bold {
     font-weight: 530;
     color: var(--bitran_textDeep);
