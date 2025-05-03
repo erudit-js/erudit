@@ -1,13 +1,13 @@
 <script lang="ts" setup>
 import type { FrontNav } from '@shared/frontNav';
+import { detectContentBookId } from '@shared/content/bookId';
+
 import {
     getAsideMajorNavPayload,
     insideNavBook,
     navBookId,
     navBookVisible,
 } from '@app/scripts/aside/major/nav';
-
-import { detectContentBookId } from '@shared/content/bookId';
 
 import NavGlobal from './NavGlobal.vue';
 import NavBook from './NavBook.vue';

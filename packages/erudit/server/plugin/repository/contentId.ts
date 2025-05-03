@@ -1,26 +1,40 @@
-import { DbContentId } from '@server/db/entities/ContentId';
-import { ERUDIT_SERVER } from '@server/global';
+import { getNavBookIds, getNavNode } from '@server/nav/utils';
+import { toAbsoluteContentPath } from '@shared/bitran/contentId';
 
-async function findContentId(contentId: string): Promise<DbContentId> {
-    const dbContentId = await ERUDIT_SERVER.DB.manager.findOne(DbContentId, {
-        where: [{ shortId: contentId }, { fullId: contentId }],
-    });
-
-    if (!dbContentId) {
-        throw new Error(
-            `Can't find both short or full content id: ${contentId}!`,
-        );
-    }
-
-    return dbContentId;
+export function getFullContentId(mixedContentId: string): string {
+    const navNode = getNavNode(mixedContentId);
+    return navNode.fullId;
 }
 
-export async function getFullContentId(maybeShortId: string): Promise<string> {
-    const dbContentId = await findContentId(maybeShortId);
-    return dbContentId.fullId;
+export function getShortContentId(mixedContentId: string): string {
+    const navNode = getNavNode(mixedContentId);
+    return navNode.shortId;
 }
 
-export async function getShortContentId(maybeFullId: string): Promise<string> {
-    const dbContentId = await findContentId(maybeFullId);
-    return dbContentId.shortId;
+export function serverAbsolutizeContentPath(
+    relativePath: string,
+    contextPath: string,
+) {
+    const absolutePath = toAbsoluteContentPath(
+        relativePath,
+        contextPath,
+        getNavBookIds('full'),
+    );
+
+    return absolutePath;
+}
+
+export function resolveClientContentId(
+    clientContentId: string,
+    contextContentId: string,
+    mode: 'full' | 'short',
+): string {
+    const absoluteContentId = serverAbsolutizeContentPath(
+        clientContentId,
+        contextContentId,
+    );
+
+    return mode === 'full'
+        ? getFullContentId(absoluteContentId)
+        : getShortContentId(absoluteContentId);
 }

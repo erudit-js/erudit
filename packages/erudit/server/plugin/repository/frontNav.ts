@@ -125,14 +125,11 @@ async function toFrontNavBase({
     });
 
     return {
-        id: node.id,
+        id: node.shortId,
         fullId: node.fullId,
         level,
         flags: dbContent?.flags,
-        label:
-            dbContent?.navTitle ||
-            dbContent?.title ||
-            node.id.split('/').pop()!,
+        label: dbContent?.navTitle || dbContent?.title || node.idPart,
     };
 }
 

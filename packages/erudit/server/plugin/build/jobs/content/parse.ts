@@ -29,7 +29,11 @@ export async function parseBitranContent(
     context.location = location;
     context.aliases = NO_ALIASES();
 
-    bitranTranspiler ||= await createBitranTranspiler();
+    bitranTranspiler ||= await createBitranTranspiler({
+        context,
+        eruditConfig: ERUDIT_SERVER.CONFIG,
+        insideInclude: false,
+    });
 
     // Tracking heading nodes to deal with them later
     const headings: HeadingNode[] = [];

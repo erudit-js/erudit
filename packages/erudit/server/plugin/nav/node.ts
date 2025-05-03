@@ -3,7 +3,8 @@ import type { ContentType } from '@erudit-js/cog/schema';
 export interface NavNode {
     type: ContentType;
     path: string;
-    id: string;
+    idPart: string;
+    shortId: string;
     fullId: string;
     skip: boolean;
     children?: NavNode[];

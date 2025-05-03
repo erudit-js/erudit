@@ -93,8 +93,8 @@ async function scanChildNodes(
         const parentId = isRootNode(parent)
             ? ''
             : parent.skip
-              ? parent.id.split('/').slice(0, -1).join('/')
-              : parent.id;
+              ? parent.fullId.split('/').slice(0, -1).join('/')
+              : parent.fullId;
 
         // Regular id might not include parent id part if it is skipped
         const id = parentId ? `${parentId}/${pathParts.id}` : pathParts.id;
@@ -114,14 +114,30 @@ async function scanChildNodes(
             ? pathParts.id
             : `${parent.fullId}/${pathParts.id}`;
 
+        // Short id skips parent ids for nodes with skip=true, except current node
+        const shortId = isRootNode(parent)
+            ? pathParts.id
+            : (() => {
+                  // Traverse up, skipping parent ids where skip=true
+                  let ids: string[] = [];
+                  let p: NavNode | RootNavNode | undefined = parent;
+                  while (p && !isRootNode(p)) {
+                      if (!p.skip) ids.unshift(p.idPart);
+                      p = p.parent;
+                  }
+                  ids.push(pathParts.id);
+                  return ids.join('/');
+              })();
+
         const skip = pathParts.sep === '+';
 
         const childNode: NavNode = {
             parent,
             type: pathParts.type,
             path: nodePath,
-            id,
+            idPart: pathParts.id,
             fullId,
+            shortId,
             skip,
         };
 
@@ -200,7 +216,7 @@ function debugPrintNav(node: RootNavNode) {
         console.log(
             isRootNode(node)
                 ? chalk.dim('#root')
-                : `${'  '.repeat(indent)}${node.id.split('/').pop()} ${chalk.dim(`[${node.type}${node.skip ? ', ' + chalk.yellow('skip') : ''}]`)}`,
+                : `${'  '.repeat(indent)}${node.idPart} ${chalk.dim(`[${node.type}${node.skip ? ', ' + chalk.yellow('skip') : ''}]`)}`,
         );
 
         if (node.children)

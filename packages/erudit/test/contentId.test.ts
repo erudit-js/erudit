@@ -1,5 +1,5 @@
 import {
-    toAbsoluteContentId,
+    toAbsoluteContentPath,
     resolveContentPath,
 } from '@erudit/shared/bitran/contentId';
 
@@ -54,23 +54,23 @@ describe('resolveContentPath', () => {
     });
 });
 
-describe('toAbsoluteContentId', () => {
+describe('toAbsoluteContentPath', () => {
     const bookIds = ['combinatorics', 'group/book'];
 
     it('should not use context on absolute paths', () => {
-        expect(toAbsoluteContentId('/foo/bar/../baz', 'qux/vaz', bookIds)).toBe(
-            'foo/baz',
-        );
+        expect(
+            toAbsoluteContentPath('/foo/bar/../baz', 'qux/vaz', bookIds),
+        ).toBe('foo/baz');
     });
 
     it('should fallback to absolute path if not inside book', () => {
-        expect(toAbsoluteContentId('~/foo/bar', 'unknown-book', bookIds)).toBe(
-            'foo/bar',
-        );
+        expect(
+            toAbsoluteContentPath('~/foo/bar', 'unknown-book', bookIds),
+        ).toBe('foo/bar');
     });
 
     it('should correctly handle book-relative paths', () => {
-        expect(toAbsoluteContentId('~/foo/bar', 'group/book', bookIds)).toBe(
+        expect(toAbsoluteContentPath('~/foo/bar', 'group/book', bookIds)).toBe(
             'group/book/foo/bar',
         );
     });
@@ -83,7 +83,7 @@ describe('toAbsoluteContentId', () => {
         ];
 
         for (const [contentId, context, expected] of testCases) {
-            expect(toAbsoluteContentId(contentId!, context!, bookIds)).toBe(
+            expect(toAbsoluteContentPath(contentId!, context!, bookIds)).toBe(
                 expected,
             );
         }

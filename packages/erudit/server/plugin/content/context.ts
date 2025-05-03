@@ -20,11 +20,11 @@ import {
 import { CONTENT_TYPE_ICON, ICON, TOPIC_PART_ICON } from '@erudit/shared/icons';
 
 export async function getContentContext(contentId: string): Promise<Context> {
-    contentId = await getFullContentId(contentId);
+    contentId = getFullContentId(contentId);
 
     const context: Context = [];
 
-    for (const _contentId of (await getIdsUp(contentId)).reverse()) {
+    for (const _contentId of getIdsUp(contentId).reverse()) {
         const dbContent = await getDbContent(_contentId);
 
         context.push({
