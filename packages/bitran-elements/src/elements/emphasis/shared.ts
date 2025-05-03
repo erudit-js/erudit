@@ -4,7 +4,7 @@ import {
     type InlinersNode,
 } from '@bitran-js/core';
 
-export const emphasisName = 'strong';
+export const emphasisName = 'emphasis';
 
 export interface EmphasisParseData {
     type: 'bold' | 'italic';
