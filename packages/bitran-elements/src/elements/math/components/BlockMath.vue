@@ -12,7 +12,15 @@ const rootMathGroup = useElementRenderData<BlockMathSchema>();
 </script>
 
 <template>
-    <div>
+    <div :class="$style.blockMath">
         <BlockMathGroup :group="rootMathGroup" :freeze="node.meta.freeze" />
     </div>
 </template>
+
+<style lang="scss" module>
+@use '../../../shared/utils' as elementUtils;
+
+.blockMath {
+    @include elementUtils.scrollbar($x: auto, $y: hidden);
+}
+</style>
