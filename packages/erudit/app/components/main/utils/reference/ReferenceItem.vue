@@ -1,7 +1,9 @@
 <script lang="ts" setup>
-import type { ContentReferenceItem } from '@package';
+import type { ContentReferenceItem } from '@erudit-js/cog/schema';
 
 defineProps<{ reference: ContentReferenceItem }>();
+
+const pretty = useFormatText();
 </script>
 
 <template>
@@ -10,7 +12,7 @@ defineProps<{ reference: ContentReferenceItem }>();
         <div :class="$style.body">
             <div :class="$style.header">
                 <a :href="reference.link" target="_blank">{{
-                    reference.title
+                    pretty(reference.title)
                 }}</a>
                 <MyIcon
                     v-if="reference.link"
@@ -19,7 +21,7 @@ defineProps<{ reference: ContentReferenceItem }>();
                 />
             </div>
             <div v-if="reference.description" :class="$style.description">
-                {{ reference.description }}
+                {{ pretty(reference.description) }}
             </div>
         </div>
     </div>

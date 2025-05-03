@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { ContentReferenceGroup } from '@package';
+import type { ContentReferenceGroup } from '@erudit-js/cog/schema';
 
 import ReferenceSource from './ReferenceSource.vue';
 import ReferenceItem from './ReferenceItem.vue';
