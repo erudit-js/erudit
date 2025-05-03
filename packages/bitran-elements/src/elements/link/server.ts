@@ -12,10 +12,11 @@ import { DbUnique } from '@server/db/entities/Unique';
 import { ERUDIT_SERVER } from '@server/global';
 import { DbContent } from '@server/db/entities/Content';
 import { DbContributor } from '@server/db/entities/Contributor';
-import { getNavBookIds } from '@server/nav/utils';
 import {
     getFullContentId,
     getShortContentId,
+    resolveClientContentId,
+    serverAbsolutizeContentPath,
 } from '@server/repository/contentId';
 
 import {
@@ -24,10 +25,6 @@ import {
     createContributorLink,
     createTopicPartLink,
 } from '@erudit/shared/link';
-import {
-    toAbsoluteContentId,
-    toAbsoluteLocation,
-} from '@erudit/shared/bitran/contentId';
 
 import { LinkParser, LinkStringifier } from './factory';
 import {
@@ -46,10 +43,10 @@ export class LinkServerParser extends LinkParser {
         const { insideInclude, context } = getEruditBitranRuntime(this);
 
         const absolutize = (path: string) => {
-            const absolutePath = toAbsoluteContentId(
+            const absolutePath = resolveClientContentId(
                 path,
                 context.location.path!,
-                getNavBookIds(),
+                'full',
             );
             return '/' + absolutePath.replace(/\\/g, '/');
         };
@@ -80,19 +77,17 @@ export async function resolveLinkTarget(
     const linkTarget = createLinkTarget(linkData.target, context);
 
     if (linkTarget.type === 'unique') {
-        const absoluteLocation = toAbsoluteLocation(
-            linkTarget.location,
-            context.location?.path!,
-            getNavBookIds(),
-        );
-
-        if (absoluteLocation.path) {
-            absoluteLocation.path = await getFullContentId(
-                absoluteLocation.path,
+        if (linkTarget.location.path) {
+            linkTarget.location.path = resolveClientContentId(
+                linkTarget.location.path!,
+                context.location.path!,
+                'full',
             );
         }
 
-        const strAbsoluteLocation = stringifyBitranLocation(absoluteLocation);
+        const strAbsoluteLocation = stringifyBitranLocation(
+            linkTarget.location,
+        );
 
         const dbUnique = await ERUDIT_SERVER.DB.manager.findOne(DbUnique, {
             select: ['location', 'productName'],
@@ -105,7 +100,7 @@ export async function resolveLinkTarget(
         const targetLocation = parseBitranLocation(dbUnique.location);
 
         if (targetLocation.path) {
-            targetLocation.path = await getShortContentId(targetLocation.path);
+            targetLocation.path = getShortContentId(targetLocation.path);
         }
 
         linkTarget._productName = dbUnique.productName;
@@ -114,10 +109,10 @@ export async function resolveLinkTarget(
             stringifyBitranLocation(targetLocation);
     } else if (linkTarget.type === 'page') {
         if (isContentType(linkTarget.pageType)) {
-            let absoluteContentId = toAbsoluteContentId(
+            let absoluteContentId = resolveClientContentId(
                 linkTarget.path!,
                 context.location?.path!,
-                getNavBookIds(),
+                'short',
             );
 
             absoluteContentId = await getFullContentId(absoluteContentId);

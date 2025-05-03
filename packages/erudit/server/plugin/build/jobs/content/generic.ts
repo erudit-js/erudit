@@ -23,7 +23,6 @@ import { IMPORT } from '@server/importer';
 import { contributorExists } from '@server/repository/contributor';
 import { DbContribution } from '@server/db/entities/Contribution';
 import { DbFile } from '@server/db/entities/File';
-import { DbContentId } from '@server/db/entities/ContentId';
 
 import { contentAsset } from '@erudit/shared/asset';
 import type { ImageData } from '@erudit/shared/image';
@@ -81,13 +80,8 @@ async function scanContentFiles() {
 
 async function addContentItem(navNode: NavNode) {
     debug.start(
-        `Adding ${stress(navNode.type)} content item ${stress(navNode.id)}...`,
+        `Adding ${stress(navNode.type)} content item ${stress(navNode.shortId)}...`,
     );
-
-    const dbContentId = new DbContentId();
-    dbContentId.fullId = navNode.fullId;
-    dbContentId.shortId = navNode.id;
-    await ERUDIT_SERVER.DB.manager.save(dbContentId);
 
     const dbContent = new DbContent();
     dbContent.contentId = navNode.fullId;

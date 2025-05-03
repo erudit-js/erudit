@@ -8,10 +8,8 @@ import {
 } from '@erudit-js/cog/schema';
 import { imageSizeFromFile } from 'image-size/fromFile';
 
-import { getNavBookIds } from '@erudit/server/plugin/nav/utils';
+import { serverAbsolutizeContentPath } from '@server/repository/contentId';
 import { getFileFullPath } from '@server/repository/file';
-
-import { toAbsoluteContentId } from '@erudit/shared/bitran/contentId';
 
 import { PROJECT_DIR } from '#erudit/globalPaths';
 
@@ -29,8 +27,9 @@ export function normalizeImageSrc(
     insideInclude: boolean,
 ): string {
     if (insideInclude) {
-        return '/' + toAbsoluteContentId(src, contextPath, getNavBookIds());
+        return '/' + serverAbsolutizeContentPath(src, contextPath);
     }
+
     return src;
 }
 
@@ -41,10 +40,9 @@ export async function getImageRenderData(
     if (!runtime)
         throw new Error('Missing runtime when prerendering image element!');
 
-    const absoluteSrc = toAbsoluteContentId(
+    const absoluteSrc = serverAbsolutizeContentPath(
         src,
         runtime.context.location.path!,
-        getNavBookIds(),
     );
 
     const fullPath = await getFileFullPath(absoluteSrc);

@@ -50,3 +50,51 @@ it('Should correctly parse and stringify emphasis with meta', async () => {
     inlinersNode.setNodes(emphasisInliners);
     expect(await bitran.stringifier.stringify(inlinersNode)).toBe(text);
 });
+
+it('Should correctly parse and stringify nested bold in italic', async () => {
+    const text = `*I **love** you*`;
+    const emphasisInliners = await bitran.parser.parseInliners(text);
+
+    // Should have 1 italic node
+    expect(emphasisInliners.length).toBe(1);
+
+    const italicNode = emphasisInliners[0]! as EmphasisNode;
+    expect(italicNode).toBeInstanceOf(EmphasisNode);
+    expect(italicNode.parseData.type).toBe('italic');
+
+    // The italic node should have 3 children: "I ", bold("love"), " you"
+    const italicInliners = italicNode.parseData.inliners.children!;
+    expect(italicInliners.length).toBe(3);
+
+    // Check bold node inside italic
+    const boldNode = italicInliners[1]! as EmphasisNode;
+    expect(boldNode).toBeInstanceOf(EmphasisNode);
+    expect(boldNode.parseData.type).toBe('bold');
+
+    // Check stringification
+    const inlinersNode = new InlinersNode(undefined);
+    inlinersNode.setNodes(emphasisInliners);
+    expect(await bitran.stringifier.stringify(inlinersNode)).toBe(text);
+});
+
+it('Should correctly parse and stringify bold and italic together (***test***)', async () => {
+    const text = `***test***`;
+    const emphasisInliners = await bitran.parser.parseInliners(text);
+
+    // Should parse as a bold node with an italic node inside or vice versa
+    expect(emphasisInliners.length).toBe(1);
+
+    // Check outer node
+    const outerNode = emphasisInliners[0]! as EmphasisNode;
+    expect(outerNode).toBeInstanceOf(EmphasisNode);
+
+    // Check inner node
+    const innerInliners = outerNode.parseData.inliners.children!;
+    expect(innerInliners.length).toBe(1);
+    expect(innerInliners[0]).toBeInstanceOf(EmphasisNode);
+
+    // Verify we can stringify back to the original
+    const inlinersNode = new InlinersNode(undefined);
+    inlinersNode.setNodes(emphasisInliners);
+    expect(await bitran.stringifier.stringify(inlinersNode)).toBe(text);
+});

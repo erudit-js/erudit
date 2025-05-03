@@ -30,7 +30,6 @@ export async function useBitranContent(
         }
 
         const contentApiRoute = `/api/bitran/content/${encodeBitranLocation(stringifyBitranLocation(location.value!))}`;
-        nuxtApp.runWithContext(() => prerenderRoutes(contentApiRoute));
 
         // @ts-ignore
         contentPromise = (async () => {

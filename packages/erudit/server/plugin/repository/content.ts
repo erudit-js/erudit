@@ -6,7 +6,11 @@ import { DbContent } from '@server/db/entities/Content';
 import { DbContribution } from '@server/db/entities/Contribution';
 import { getContentContext } from '@server/content/context';
 import { DbContributor } from '@server/db/entities/Contributor';
-import { getIdsUp, getNavBookIds, getPreviousNextNav } from '@server/nav/utils';
+import { getIdsUp, getPreviousNextNav } from '@server/nav/utils';
+import {
+    getShortContentId,
+    resolveClientContentId,
+} from '@server/repository/contentId';
 import { getTopicPart } from './topic';
 import type { NavNode } from '../nav/node';
 
@@ -14,7 +18,6 @@ import { createContentLink, createTopicPartLink } from '@erudit/shared/link';
 import type { PreviousNextItem } from '@erudit/shared/content/previousNext';
 import type { ContentContributor } from '@erudit/shared/contributor';
 import type { ContentGenericData } from '@shared/content/data/base';
-import { toAbsoluteContentId } from '@erudit/shared/bitran/contentId';
 
 export async function getContentGenericData(
     contentId: string,
@@ -64,10 +67,10 @@ export async function getPreviousNext(contentId: string) {
             if (navNode.type === 'topic')
                 return createTopicPartLink(
                     await getTopicPart(navNode.fullId),
-                    navNode.id,
+                    navNode.shortId,
                 );
 
-            return createContentLink(navNode.type, navNode.id);
+            return createContentLink(navNode.type, navNode.shortId);
         })();
 
         return {
@@ -126,9 +129,13 @@ export async function getContentDependencies(
     contentId: string,
     strDependencies: string[],
 ) {
-    const dependencyIds = strDependencies.map((rawDependency) =>
-        toAbsoluteContentId(rawDependency, contentId, getNavBookIds()),
-    );
+    const dependencyIds: string[] = [];
+    for (const rawDependency of strDependencies) {
+        dependencyIds.push(
+            resolveClientContentId(rawDependency, contentId, 'full'),
+        );
+    }
+
     const dependencies: Record<string, string> = {};
 
     for (const dependencyId of dependencyIds)
@@ -153,18 +160,22 @@ export async function getContentLink(contentId: string) {
         where: { contentId },
     });
 
-    if (!dbContent)
+    if (!dbContent) {
         throw createError({
             statusCode: 404,
             statusText: `Missing "${contentId}" content item!`,
         });
+    }
 
-    if (dbContent.type !== 'topic')
-        return createContentLink(dbContent.type, contentId);
+    const shortContentId = getShortContentId(contentId);
+
+    if (dbContent.type !== 'topic') {
+        return createContentLink(dbContent.type, shortContentId);
+    }
 
     const topicPart = await getTopicPart(contentId);
 
-    return createTopicPartLink(topicPart, contentId);
+    return createTopicPartLink(topicPart, shortContentId);
 }
 
 export async function getContentContributors(contentId: string) {

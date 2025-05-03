@@ -14,9 +14,10 @@ import { AliasesNode } from '@erudit-js/bitran-elements/aliases/shared';
 import { createBitranTranspiler } from '@server/bitran/transpiler';
 import { ERUDIT_SERVER } from '@server/global';
 import { DbUnique } from '@server/db/entities/Unique';
-import { getNavBookIds } from '@server/nav/utils';
-
-import { toAbsoluteLocation } from '@shared/bitran/contentId';
+import {
+    resolveClientContentId,
+    serverAbsolutizeContentPath,
+} from '@server/repository/contentId';
 
 export type TraverseEnterFn = (payload: {
     _location: string;
@@ -41,16 +42,19 @@ export async function traverseInclude(
         leave?: TraverseLeaveFn;
     },
 ): Promise<BlockNode[]> {
-    const entryLocation = stringifyBitranLocation(
-        parsePartialBitranLocation(includeNode.id, context.location),
+    const rawLocation = parsePartialBitranLocation(
+        includeNode.id,
+        context.location,
     );
 
-    // Always use absolute locations as keys for travelMap to avoid infinite loop bugs
-    const absEntryLocation = toAbsoluteLocation(
-        entryLocation,
-        context.location.path!,
-        getNavBookIds(),
-    );
+    if (rawLocation.path) {
+        rawLocation.path = serverAbsolutizeContentPath(
+            rawLocation.path,
+            context.location.path!,
+        );
+    }
+
+    const absEntryLocation = stringifyBitranLocation(rawLocation);
 
     const travelMap: Record<string, string | null> = {
         [absEntryLocation]: null,
@@ -94,18 +98,21 @@ async function _traverseInclude(
     try {
         const parsedLocation = parseBitranLocation(location);
 
-        includeTargetLocation = stringifyBitranLocation(
-            parsePartialBitranLocation(
+        includeTargetLocation = (() => {
+            const _location = parsePartialBitranLocation(
                 tryReplaceAlias(includeNode.parseData.location, aliases),
                 parsedLocation,
-            ),
-        );
+            );
 
-        includeTargetLocation = toAbsoluteLocation(
-            includeTargetLocation,
-            parsedLocation.path!,
-            getNavBookIds(),
-        );
+            if (_location.path) {
+                _location.path = serverAbsolutizeContentPath(
+                    _location.path,
+                    parsedLocation.path!,
+                );
+            }
+
+            return stringifyBitranLocation(_location);
+        })();
     } catch (error) {
         travelMap[location] = includeNode.parseData.location;
         throw new Error(

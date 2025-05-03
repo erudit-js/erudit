@@ -1,5 +1,5 @@
-import { ERUDIT_SERVER } from '@server/global';
+import { getNavBookIds } from '@server/nav/utils';
 
 export default defineEventHandler(() => {
-    return Object.keys(ERUDIT_SERVER.NAV_BOOKS || {});
+    return getNavBookIds('short');
 });

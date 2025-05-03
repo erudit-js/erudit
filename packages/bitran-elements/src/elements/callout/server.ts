@@ -4,9 +4,7 @@ import {
 } from '@bitran-js/transpiler';
 import { getEruditBitranRuntime } from '@erudit-js/cog/schema';
 
-import { getNavBookIds } from '@server/nav/utils';
 import { getFileFullPath } from '@server/repository/file';
-import { toAbsoluteContentId } from '@erudit/shared/bitran/contentId';
 
 import { CalloutParser, CalloutStringifier } from './factory';
 import {
@@ -16,6 +14,7 @@ import {
     calloutRenderDataGenerator,
     type CalloutIconCustom,
 } from './shared';
+import { serverAbsolutizeContentPath } from '@erudit/server/plugin/repository/contentId';
 
 export class CalloutServerParser extends CalloutParser {
     override parseIcon(obj: PlainObject): CalloutIcon {
@@ -25,11 +24,7 @@ export class CalloutServerParser extends CalloutParser {
         if (insideInclude && icon.type === 'custom') {
             icon.src =
                 '/' +
-                toAbsoluteContentId(
-                    icon.src,
-                    context.location.path!,
-                    getNavBookIds(),
-                );
+                serverAbsolutizeContentPath(icon.src, context.location.path!);
         }
 
         return icon;
@@ -51,10 +46,9 @@ export const calloutServerTranspiler = defineElementTranspiler<CalloutSchema>({
 
             const icon = node.parseData.icon as CalloutIconCustom;
 
-            const absoluteContentPath = toAbsoluteContentId(
+            const absoluteContentPath = serverAbsolutizeContentPath(
                 icon.src,
                 runtime.context.location.path!,
-                getNavBookIds(),
             );
 
             const filepath = await getFileFullPath(absoluteContentPath);

@@ -27,6 +27,8 @@ const captionElement = ref<HTMLElement | null>(null);
 const isInViewport = ref(false);
 const errorMessage = ref<string | null>(null);
 const hasError = ref(false);
+const katexPreloadEl = ref<HTMLElement | null>(null);
+const fontsLoaded = ref(false);
 
 const diagramId = '__mermaid__' + useId();
 
@@ -39,11 +41,35 @@ function hasLatex(content: string): boolean {
     return latexRegex.display.test(content) || latexRegex.inline.test(content);
 }
 
+// Helper function to create a delay
+const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
+async function preloadKatexFonts(): Promise<void> {
+    if (!katexPreloadEl.value || fontsLoaded.value) return;
+
+    await import('katex/dist/katex.min.css');
+    const katex = await import('katex');
+
+    // Render a simple formula in the invisible container to load fonts
+    katex.default.render('\\sum_{i=1}^n i^2 = \\frac{n(n+1)(2n+1)}{6}', katexPreloadEl.value, {
+        displayMode: true
+    });
+
+    // Wait a bit for fonts to load
+    await delay(200);
+    fontsLoaded.value = true;
+}
+
 async function processLatexContent(content: string): Promise<string> {
     if (!hasLatex(content)) return content;
 
     await import('katex/dist/katex.min.css');
     const katex = await import('katex');
+
+    // Ensure fonts are loaded before rendering
+    if (!fontsLoaded.value) {
+        await preloadKatexFonts();
+    }
 
     const renderMathWithKatex = (
         text: string,
@@ -123,6 +149,11 @@ async function renderDiagram() {
         // Reset error state
         hasError.value = false;
         errorMessage.value = null;
+
+        // Check if we need to preload KaTeX fonts
+        if (hasLatex(diagramRaw) && !fontsLoaded.value) {
+            await preloadKatexFonts();
+        }
 
         const mermaid = (await import('mermaid')).default;
 
@@ -205,6 +236,11 @@ onUnmounted(() => {
         >
             <Loading />
         </div>
+        <!-- Invisible element for preloading KaTeX fonts -->
+        <div
+            ref="katexPreloadEl"
+            style="position: absolute; visibility: hidden; height: 0; width: 0; overflow: hidden;"
+        ></div>
     </FigureWrapper>
 </template>
 

@@ -37,7 +37,6 @@ const MathComponent = h(props.displayMath ? 'div' : 'span', {
 
 <style lang="scss" module>
 @use '@bitran-js/renderer-vue/scss/bp';
-@use '../../../shared/utils' as elementUtils;
 
 .latexMath {
     //
@@ -61,12 +60,10 @@ const MathComponent = h(props.displayMath ? 'div' : 'span', {
 
 .latexDisplayMath {
     padding: 2px;
-
-    overflow-y: hidden;
-    @include elementUtils.scrollbar($x: auto, $y: hidden);
+    margin: -0.55em 0;
 
     :global(.base) {
-        margin: 0.25em 0;
+        margin: 0.6em 0;
     }
     :global(.katex-display) {
         margin: 0;

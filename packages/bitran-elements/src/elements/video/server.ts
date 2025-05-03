@@ -4,10 +4,8 @@ import {
 } from '@bitran-js/transpiler';
 import { getEruditBitranRuntime } from '@erudit-js/cog/schema';
 
+import { serverAbsolutizeContentPath } from '@server/repository/contentId';
 import { getFileFullPath } from '@server/repository/file';
-import { getNavBookIds } from '@server/nav/utils';
-
-import { toAbsoluteContentId } from '@erudit/shared/bitran/contentId';
 
 import { VideoParser, VideoStringifier } from './factory';
 import {
@@ -25,10 +23,9 @@ export class VideoServerParser extends VideoParser {
         if (insideInclude) {
             parseData.src =
                 '/' +
-                toAbsoluteContentId(
+                serverAbsolutizeContentPath(
                     parseData.src,
                     context.location.path!,
-                    getNavBookIds(),
                 );
         }
 
@@ -49,10 +46,9 @@ export const videoServerTranspiler = defineElementTranspiler<VideoSchema>({
                 );
             }
 
-            const absoluteSrc = toAbsoluteContentId(
+            const absoluteSrc = serverAbsolutizeContentPath(
                 node.parseData.src,
                 runtime.context.location.path!,
-                getNavBookIds(),
             );
 
             const fullPath = await getFileFullPath(absoluteSrc);

@@ -57,7 +57,16 @@ export default defineNuxtConfig({
         preset: 'github-pages',
         plugins: [eruditPath('server/plugin')],
         prerender: {
+            crawlLinks: true,
             failOnError: false,
+            concurrency: 10,
+            ignore: [
+                (path: string) => {
+                    const regexps = [/\?element=/gm, /#/gm, /\.json\?/gm];
+                    const shouldIgnore = regexps.some((re) => re.test(path));
+                    return shouldIgnore;
+                },
+            ],
         },
         output: {
             publicDir: projectPath('dist'),

@@ -7,5 +7,6 @@ export function detectContentBookId(contentId: string, bookIds: string[]) {
             }
         }
     }
+
     return bestMatch;
 }

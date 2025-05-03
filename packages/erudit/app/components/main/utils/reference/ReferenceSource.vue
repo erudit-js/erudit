@@ -1,6 +1,7 @@
 <script lang="ts" setup>
+import type { ContentReferenceSource } from '@erudit-js/cog/schema';
+
 import { type MyIconName } from '#my-icons';
-import type { ContentReferenceSource } from '@package';
 
 const props = defineProps<{ source: ContentReferenceSource }>();
 
@@ -15,6 +16,7 @@ const typeIcon = computed<MyIconName>(() => {
     }
 });
 
+const pretty = useFormatText();
 const phrase = await usePhrases('reference_source_featured');
 </script>
 
@@ -26,7 +28,7 @@ const phrase = await usePhrases('reference_source_featured');
         <div :class="$style.body">
             <div :class="$style.header">
                 <MyIcon :name="typeIcon" :class="$style.headerTypeIcon" />
-                <a :href="source.link" target="_blank">{{ source.title }}</a>
+                <a :href="source.link" target="_blank">{{ pretty(source.title) }}</a>
                 <MyIcon
                     v-if="source.featured"
                     name="star"
@@ -40,10 +42,10 @@ const phrase = await usePhrases('reference_source_featured');
                 />
             </div>
             <div v-if="source.description" :class="$style.description">
-                {{ source.description }}
+                {{ pretty(source.description) }}
             </div>
             <div v-if="source.comment" :class="$style.comment">
-                {{ source.comment }}
+                {{ pretty(source.comment) }}
             </div>
         </div>
     </div>

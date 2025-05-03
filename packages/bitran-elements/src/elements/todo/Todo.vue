@@ -33,13 +33,13 @@ const todoIcon = await useElementIcon();
         align-items: center;
         gap: var(--bitran_gap);
         padding: var(--bitran_gap);
-        padding-bottom: 0;
         font-weight: 600;
     }
 
     .content {
         padding: var(--bitran_gap);
         padding-left: 0;
+        padding-top: 0;
         padding-right: var(--_bitran_asideWidth);
     }
 }

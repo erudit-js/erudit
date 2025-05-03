@@ -47,17 +47,19 @@ const pharse = await usePhrases('to_index', 'about_book');
             </section>
             <FNav :nav="book.children!" :contentId="contentRoute?.contentId">
                 <template v-slot:before>
-                    <TreeItem
-                        icon="arrow-left"
-                        :label="pharse.to_index"
-                        @click="insideNavBook = false"
-                    />
-                    <TreeItem
-                        icon="book-question"
-                        :label="pharse.about_book"
-                        :active="contentRoute?.contentId === book.id"
-                        :link="`/book/${book.id}`"
-                    />
+                    <section :class="$style.bookActions">
+                        <TreeItem
+                            icon="arrow-left"
+                            :label="pharse.to_index"
+                            @click="insideNavBook = false"
+                        />
+                        <TreeItem
+                            icon="book-question"
+                            :label="pharse.about_book"
+                            :active="contentRoute?.contentId === book.id"
+                            :link="`/book/${book.id}`"
+                        />
+                    </section>
                 </template>
             </FNav>
         </PaneContentScroll>
@@ -83,5 +85,11 @@ const pharse = await usePhrases('to_index', 'about_book');
     .flags {
         flex-shrink: 0;
     }
+}
+
+.bookActions {
+    border-bottom: 1px solid var(--border);
+    padding-bottom: calc(var(--gap)/2);
+    margin-bottom: calc(var(--gap)/2);
 }
 </style>

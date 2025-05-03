@@ -1,50 +1,18 @@
-import {
-    isContentType,
-    parseBitranLocation,
-    stringifyBitranLocation,
-    type BitranLocation,
-} from '@erudit-js/cog/schema';
 import { detectContentBookId } from '../content/bookId';
 
-export function toAbsoluteLocation<T extends string | BitranLocation>(
-    location: T,
-    contextId: string,
-    bookIds?: string[],
-) {
-    const isStringLocation = typeof location === 'string';
-    const parsedLocation = isStringLocation
-        ? parseBitranLocation(location)
-        : (location as BitranLocation);
-
-    if (isContentType(parsedLocation.type)) {
-        parsedLocation.path = toAbsoluteContentId(
-            parsedLocation.path!,
-            contextId,
-            bookIds,
-        );
-        return (
-            isStringLocation
-                ? stringifyBitranLocation(parsedLocation)
-                : parsedLocation
-        ) as T;
-    }
-
-    return location;
-}
-
-export function toAbsoluteContentId(
-    contentId: string,
-    contextId: string,
+export function toAbsoluteContentPath(
+    contentPath: string,
+    contextPath: string,
     bookIds?: string[],
 ) {
     const unresolvedPath = (() => {
-        if (contentId.startsWith('/')) {
-            return contentId;
+        if (contentPath.startsWith('/')) {
+            return contentPath;
         }
 
-        if (contentId.startsWith('~/')) {
-            const restPath = contentId.substring(2);
-            const bookId = detectContentBookId(contextId, bookIds ?? []);
+        if (contentPath.startsWith('~/')) {
+            const restPath = contentPath.substring(2);
+            const bookId = detectContentBookId(contextPath, bookIds ?? []);
 
             if (bookId) {
                 return bookId + '/' + restPath;
@@ -54,7 +22,7 @@ export function toAbsoluteContentId(
             return '/' + restPath;
         }
 
-        return contextId + '/' + contentId;
+        return contextPath + '/' + contentPath;
     })();
 
     return resolveContentPath(unresolvedPath);

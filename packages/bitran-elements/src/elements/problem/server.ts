@@ -1,7 +1,6 @@
 import { defineElementTranspiler } from '@bitran-js/transpiler';
 
-import { getNavBookIds } from '@server/nav/utils';
-import { toAbsoluteContentId } from '@erudit/shared/bitran/contentId';
+import { serverAbsolutizeContentPath } from '@server/repository/contentId';
 
 import {
     type ProblemsSchema,
@@ -22,10 +21,9 @@ export const problemServerTranspiler = defineElementTranspiler<ProblemSchema>({
                 );
             }
 
-            const generatorContentPath = toAbsoluteContentId(
+            const generatorContentPath = serverAbsolutizeContentPath(
                 node.parseData.generatorSrc!,
                 runtime.context.location.path!,
-                getNavBookIds(),
             );
 
             return {
@@ -51,10 +49,9 @@ export const problemsServerTranspiler = defineElementTranspiler<ProblemsSchema>(
 
                     const key = problemRenderDataKey(generatorPath)!;
 
-                    const generatorContentPath = toAbsoluteContentId(
+                    const generatorContentPath = serverAbsolutizeContentPath(
                         generatorPath,
                         runtime.context.location.path!,
-                        getNavBookIds(),
                     );
 
                     storage[key] ||= {

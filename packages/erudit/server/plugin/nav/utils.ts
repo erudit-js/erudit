@@ -1,5 +1,5 @@
 import { ERUDIT_SERVER } from '@server/global';
-import { isRootNode, type NavNode } from '@server/nav/node';
+import { isRootNode, type NavNode, type RootNavNode } from '@server/nav/node';
 
 export async function walkNav(
     step: (node: NavNode) => Promise<void | false>,
@@ -18,12 +18,22 @@ export async function walkNav(
 //
 //
 
-export function getNavBookIds() {
-    return Object.keys(ERUDIT_SERVER.NAV_BOOKS || {});
+export function getNavBookIds(mode: 'full' | 'short'): string[] {
+    const bookIds: string[] = [];
+
+    if (!ERUDIT_SERVER.NAV_BOOKS) {
+        return bookIds;
+    }
+
+    for (const navBook of Object.values(ERUDIT_SERVER.NAV_BOOKS)) {
+        bookIds.push(mode === 'full' ? navBook.fullId : navBook.shortId);
+    }
+
+    return bookIds;
 }
 
 export function getNavBookOf(target: string | NavNode): NavNode | undefined {
-    const id = typeof target === 'string' ? target : target.id;
+    const id = typeof target === 'string' ? target : target.fullId;
 
     if (!id || !ERUDIT_SERVER.NAV_BOOKS) return undefined;
 
@@ -88,32 +98,64 @@ export async function getPreviousNextNav(contentId: string) {
     };
 }
 
-export async function getNavNode(
-    contentId: string,
-): Promise<NavNode | undefined> {
-    let navNode: NavNode | undefined;
+/**
+ * Find navigation node by mixed content ID.
+ * It can be full ID, short ID or any combination of present and missing skipped parts.
+ */
+export function getNavNode(mixedContentId: string): NavNode {
+    const parts = mixedContentId.split('/');
+    let foundNode: NavNode | undefined;
 
-    await walkNav(async (_navNode) => {
-        if (_navNode.fullId === contentId) {
-            navNode = _navNode;
-            return false;
+    function search(node: NavNode, partIdx: number): NavNode | undefined {
+        const targetIdPart = parts[partIdx];
+        const nodeIdPart = node.idPart;
+
+        if (nodeIdPart === targetIdPart) {
+            if (partIdx === parts.length - 1) {
+                return node;
+            }
+
+            for (const child of node.children || []) {
+                const deepResult = search(child, partIdx + 1);
+                if (deepResult) return deepResult;
+            }
         }
-    });
 
-    return navNode;
+        if (node.skip) {
+            for (const child of node.children || []) {
+                const deepResult = search(child, partIdx);
+                if (deepResult) return deepResult;
+            }
+        }
+
+        return undefined;
+    }
+
+    for (const child of ERUDIT_SERVER.NAV?.children || []) {
+        foundNode = search(child, 0);
+        if (foundNode) break;
+    }
+
+    if (!foundNode) {
+        throw new Error(
+            `Failed to find navigation content node for ID: ${mixedContentId}`,
+        );
+    }
+
+    return foundNode;
 }
 
-export async function getIdsUp(contentId: string): Promise<string[]> {
-    const startNavNode = await getNavNode(contentId);
-
-    if (!startNavNode) return [];
-
+export function getIdsUp(contentId: string): string[] {
     const ids: string[] = [];
+    const startNavNode = getNavNode(contentId);
 
-    let currentNavNode: any = startNavNode;
-    while (currentNavNode?.id) {
+    if (!startNavNode) return ids;
+
+    let currentNavNode: NavNode = startNavNode;
+
+    while (currentNavNode?.idPart) {
         ids.push(currentNavNode.fullId);
-        currentNavNode = currentNavNode.parent;
+        currentNavNode = currentNavNode.parent as NavNode;
     }
 
     return ids;
