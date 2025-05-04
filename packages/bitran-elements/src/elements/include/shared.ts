@@ -17,4 +17,9 @@ export type IncludeSchema = DefineElementSchema<{
     ParseData: IncludeParseData;
 }>;
 
-export class IncludeNode extends BlockNode<IncludeSchema> {}
+export class IncludeNode extends BlockNode<IncludeSchema> {
+    override get children() {
+        const children = this.parseData.blocks?.children ?? [];
+        return children.length > 0 ? children : undefined;
+    }
+}

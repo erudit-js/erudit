@@ -63,6 +63,7 @@
 
 $$ A^2 + B^2 = C^2 $$
 
+{ #my-callout }
 @callout
     title: Hello World
     icon: ava.jpg
@@ -71,6 +72,7 @@ $$ A^2 + B^2 = C^2 $$
 
         $$ A^2 + B^2 = C^2 $$
 
+{ #my-image }
 @image
     src: ava.jpg
     invert: light

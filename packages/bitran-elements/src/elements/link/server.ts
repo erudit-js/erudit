@@ -16,7 +16,6 @@ import {
     getFullContentId,
     getShortContentId,
     resolveClientContentId,
-    serverAbsolutizeContentPath,
 } from '@server/repository/contentId';
 
 import {

@@ -140,7 +140,12 @@ async function createBitranContent(
                     mergeAliases(context.aliases, node.parseData);
                     break;
                 case node instanceof IncludeNode:
-                    await resolveInclude(node, context);
+                    const includeNode = await resolveInclude(node, context);
+                    await walkDown(includeNode, async (child) => {
+                        if (child instanceof ElementNode) {
+                            await makePreRender(child);
+                        }
+                    });
                     break;
                 case node instanceof BlockErrorNode:
                 case node instanceof InlinerErrorNode:
@@ -149,20 +154,12 @@ async function createBitranContent(
             }
 
             await makePreRender(node);
-
-            if (node instanceof IncludeNode) {
-                for (const block of node.parseData.blocks?.children || []) {
-                    await walkDown(block, async (child) => {
-                        if (child instanceof ElementNode) {
-                            await makePreRender(child);
-                        }
-                    });
-                }
-            }
         },
     });
 
     const finalContent = await bitranTranspiler.stringifier.stringify(root);
+
+    console.log(finalContent);
 
     return {
         biCode: finalContent,
