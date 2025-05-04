@@ -61,6 +61,7 @@ const MathComponent = h(props.displayMath ? 'div' : 'span', {
 .latexDisplayMath {
     padding: 2px;
     margin: -0.55em 0;
+    min-width: 0;
 
     :global(.base) {
         margin: 0.6em 0;
