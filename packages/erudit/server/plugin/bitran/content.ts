@@ -159,8 +159,6 @@ async function createBitranContent(
 
     const finalContent = await bitranTranspiler.stringifier.stringify(root);
 
-    console.log(finalContent);
-
     return {
         biCode: finalContent,
         renderDataStorage,
