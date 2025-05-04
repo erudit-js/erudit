@@ -16,7 +16,7 @@ const paneVisible = defineModel<boolean>('pane');
 const issueLink = computed(() => {
     const ghRepositorty = eruditConfig.repository;
     return ghRepositorty
-        ? `https://github.com/${ghRepositorty.name}/issues/`
+        ? `https://github.com/${ghRepositorty.name}/issues/new/choose`
         : null;
 });
 
