@@ -13,7 +13,7 @@ const rootMathGroup = useElementRenderData<BlockMathSchema>();
 
 <template>
     <div :class="$style.blockMath">
-        <BlockMathGroup :group="rootMathGroup" :freeze="node.meta.freeze" />
+        <BlockMathGroup :group="rootMathGroup" :freeze="'freeze' in node.meta" />
     </div>
 </template>
 
