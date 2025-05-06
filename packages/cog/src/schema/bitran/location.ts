@@ -39,10 +39,24 @@ export function stringifyBitranLocation(location: BitranLocation): string {
         throw new Error(message);
     }
 
+    const normalizedPath = (() => {
+        if (!location.path) {
+            return '';
+        }
+
+        if (location.path === '/') {
+            return '/';
+        }
+
+        return location.path.endsWith('/')
+            ? location.path.slice(0, -1)
+            : location.path;
+    })();
+
     return (
         location.type +
         '|' +
-        (location.path || '') +
+        (normalizedPath || '') +
         (location.unique ? '|' + location.unique : '')
     );
 }

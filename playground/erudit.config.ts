@@ -1,6 +1,7 @@
 import { diagramDeps, mathDeps } from '@erudit-js/bitran-elements';
 
 export default defineEruditConfig({
+    //contentTargets: ['test', 'zet'],
     debug: {
         log: true,
         slowTransition: true,
@@ -27,9 +28,9 @@ export default defineEruditConfig({
     // },
     language: 'ru',
     repository: {
-        name: 'math-ok/ru.omath.net',
+        name: 'open-math/ru.omath.net',
         branch: 'main',
-        sharedUrl: 'math-ok/shared',
+        sharedUrl: 'open-math/shared',
     },
     ads: {
         leftBlockId: 'R-A-2185026-3',

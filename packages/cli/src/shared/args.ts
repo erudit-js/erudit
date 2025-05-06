@@ -22,6 +22,15 @@ export const projectPathArg = {
     },
 } satisfies { projectPath: ArgDef };
 
+export const contentTargetsArg = {
+    target: {
+        type: 'string',
+        description: 'Content targets to process',
+        required: false,
+        default: '',
+    },
+} satisfies { target: ArgDef };
+
 export function resolveArgPaths(projectPath: string, eruditPath: string) {
     consola.start('Resolving project path...');
     projectPath = resolvePath(projectPath);

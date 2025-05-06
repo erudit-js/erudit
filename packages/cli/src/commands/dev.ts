@@ -4,7 +4,12 @@ import { defineCommand } from 'citty';
 import { logCommand } from '../shared/log';
 import { prepare } from '../shared/prepare';
 import { spawnNuxt } from '../shared/nuxt';
-import { eruditPathArg, projectPathArg, resolveArgPaths } from '../shared/args';
+import {
+    contentTargetsArg,
+    eruditPathArg,
+    projectPathArg,
+    resolveArgPaths,
+} from '../shared/args';
 
 export const dev = defineCommand({
     meta: {
@@ -14,6 +19,7 @@ export const dev = defineCommand({
     args: {
         ...projectPathArg,
         ...eruditPathArg,
+        ...contentTargetsArg,
     },
     async run({ args }) {
         logCommand('dev');
@@ -23,7 +29,11 @@ export const dev = defineCommand({
             args.eruditPath,
         );
 
-        await prepare(projectPath, eruditPath);
+        await prepare({
+            projectPath,
+            eruditPath,
+            contentTargets: args.target,
+        });
 
         consola.start('Starting Nuxt dev...');
         await spawnNuxt('dev', projectPath);

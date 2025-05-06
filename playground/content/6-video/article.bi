@@ -1,5 +1,6 @@
 Привет мир!
 
+{ #my-video }
 @video
     src: semafore-training.mp4
     maxWidth: 250px

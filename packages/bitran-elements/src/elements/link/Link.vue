@@ -6,13 +6,11 @@ import {
     type ElementProps,
 } from '@bitran-js/renderer-vue';
 import {
-    encodeBitranLocation,
     isContentType,
     isTopicPart,
 } from '@erudit-js/cog/schema';
 
 import {
-    prerenderRoutes,
     useBaseUrlPath,
     useBitranElementIcon,
     useFormatText,
@@ -122,14 +120,7 @@ function linkClick(e: Event) {
 
 <style lang="scss" module>
 .link {
-    --linkColor: var(--brand); //light-dark(#3e66a1, #77a0db);
-
-    display: inline-flex;
-    align-items: center;
-    gap: 3px;
-
-    position: relative;
-    top: 1px;
+    --linkColor: var(--brand);
 
     padding: 0 3px;
 
@@ -152,13 +143,16 @@ function linkClick(e: Event) {
     }
 
     .icon {
-        flex-shrink: 0;
         position: relative;
-        top: 1px;
+        top: 1.75px;
         font-size: 0.86em;
-
+        padding-right: 3.5px;
         text-decoration: none;
         color: color-mix(in srgb, var(--linkColor), transparent 10%);
+
+        svg {
+            display: inline;
+        }
     }
 
     .label {

@@ -3,7 +3,7 @@ import { DataSource } from 'typeorm';
 
 import { PROJECT_DIR } from '#erudit/globalPaths';
 import { ERUDIT_SERVER } from '@server/global';
-import { logger } from '../logger';
+import { logger } from '@server/logger';
 
 // Database Entities
 import { DbContributor } from './entities/Contributor';

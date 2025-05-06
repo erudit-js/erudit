@@ -1,3 +1,4 @@
+import { trailingSlash } from '@erudit/utils/slash';
 import type { ContentData } from '@shared/content/data';
 
 export function useContentData<T extends ContentData>() {
@@ -21,12 +22,13 @@ export function useContentData<T extends ContentData>() {
                 return;
             }
 
-            const contentId = contentRoute.value.contentId;
+            const dataKey = trailingSlash(contentRoute.value.contentId, false);
 
-            const payloadValue = (payload[contentId] ||= await $fetch(
+            const payloadValue = (payload[dataKey] ||= await $fetch(
                 '/api/content/data',
-                { query: { contentId } },
+                { query: { contentId: dataKey } },
             ));
+
             data.value = payloadValue as T;
             return data;
         })();
