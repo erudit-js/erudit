@@ -118,6 +118,38 @@ describe('stringifyBitranLocation', () => {
             ).toThrow();
         });
     }
+
+    it('should normalize trailing slash in path', () => {
+        expect(
+            stringifyBitranLocation({
+                type: 'article',
+                path: 'foo/',
+                unique: 'bar',
+            }),
+        ).toBe('article|foo|bar');
+    });
+
+    it('should keep root path as "/"', () => {
+        expect(
+            stringifyBitranLocation({
+                type: 'article',
+                path: '/',
+                unique: 'bar',
+            }),
+        ).toBe('article|/|bar');
+    });
+
+    it('should normalize trailing slash in path without unique', () => {
+        expect(stringifyBitranLocation({ type: 'article', path: 'foo/' })).toBe(
+            'article|foo',
+        );
+    });
+
+    it('should keep root path as "/" without unique', () => {
+        expect(stringifyBitranLocation({ type: 'article', path: '/' })).toBe(
+            'article|/',
+        );
+    });
 });
 
 describe('parseBitranLocation', () => {

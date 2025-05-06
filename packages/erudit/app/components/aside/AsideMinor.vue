@@ -1,12 +1,12 @@
 <script lang="ts" setup>
-import type { AsideMinorData } from '@shared/asideMinor';
+import type { AsideMinorData } from '@shared/aside/minor';
+import { trailingSlash } from '@erudit/utils/slash';
 import { asideMinorKey } from '@app/scripts/aside/minor/state';
 
 import {
     LazyAsideMinorNews,
     LazyAsideMinorTopic,
     LazyAsideMinorContent,
-    LazyAsideMinorContributor,
 } from '#components';
 
 let setupI = 0;
@@ -19,7 +19,7 @@ const AsideMinorPane = shallowRef<Component>();
 
 async function setupAsideMinorData() {
     const currentSetupI = ++setupI;
-    const path = route.path;
+    const dataKey = trailingSlash(route.path, false);
     const payloadKey = 'aside-minor';
     const asideMinorPayload =
         (nuxtApp.static.data[payloadKey] ||=
@@ -28,8 +28,8 @@ async function setupAsideMinorData() {
 
     const data: AsideMinorData = await (async () => {
         const payloadKeyValue: AsideMinorData | 'news' = (asideMinorPayload[
-            path
-        ] ||= await $fetch(`/api/aside/minor/path`, { query: { path } }));
+            dataKey
+        ] ||= await $fetch(`/api/aside/minor/path`, { query: { path: dataKey } }));
 
         if (payloadKeyValue === 'news') {
             // We do not save news in the payload as it will always have the same content.
