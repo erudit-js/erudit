@@ -15,12 +15,10 @@ import {
     type NavNode,
     type RootNavNode,
 } from '@server/nav/node';
-import { ERUDIT_SERVER } from '../../global';
+import { ERUDIT_SERVER } from '@server/global';
 
 type Ids = Record<string, string>;
 let ids: Ids;
-
-const contentTargets = ERUDIT_SERVER.CONFIG?.contentTargets || [];
 
 const nodePathRegexp = new RegExp(
     `(?<pos>\\d+)(?<sep>-|\\+)(?<id>[\\w-]+)\\/(?<type>${contentTypes.join('|')})\\..*`,
@@ -178,7 +176,11 @@ async function scanChildNodes(
 }
 
 function satisfiesContentTargets(nodePath: string): boolean {
-    if (contentTargets.length === 0) return true;
+    const contentTargets = ERUDIT_SERVER.CONFIG?.contentTargets || [];
+
+    if (contentTargets.length === 0) {
+        return true;
+    }
 
     for (const target of contentTargets)
         if (nodePath.startsWith(target) || target.search(nodePath) === 0)
