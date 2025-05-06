@@ -1,6 +1,7 @@
 import { diagramDeps, mathDeps } from '@erudit-js/bitran-elements';
 
 export default defineEruditConfig({
+    //contentTargets: ['test', 'zet'],
     debug: {
         log: true,
         slowTransition: true,

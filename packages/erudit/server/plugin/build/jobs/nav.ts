@@ -16,6 +16,7 @@ import {
     type RootNavNode,
 } from '@server/nav/node';
 import { ERUDIT_SERVER } from '@server/global';
+import { readFileSync } from 'fs';
 
 type Ids = Record<string, string>;
 let ids: Ids;
@@ -23,6 +24,8 @@ let ids: Ids;
 const nodePathRegexp = new RegExp(
     `(?<pos>\\d+)(?<sep>-|\\+)(?<id>[\\w-]+)\\/(?<type>${contentTypes.join('|')})\\..*`,
 );
+
+const contentFilter = createContentFilter();
 
 export async function buildNav() {
     debug.start('Building navigation tree...');
@@ -86,8 +89,6 @@ async function scanChildNodes(
             continue;
         }
 
-        if (!satisfiesContentTargets(nodePath)) continue; // Not a content target
-
         const parentId = isRootNode(parent)
             ? ''
             : parent.skip
@@ -126,6 +127,30 @@ async function scanChildNodes(
                   ids.push(pathParts.id);
                   return ids.join('/');
               })();
+
+        const shouldSkip = (() => {
+            const targets = [
+                ...contentFilter.cliContentTargets,
+                ...(ERUDIT_SERVER.CONFIG?.contentTargets || []),
+            ];
+
+            // If there are no filters, allow all nodes
+            if (targets.length === 0) {
+                return false;
+            }
+
+            // If the node passes at least one filter, keep it
+            for (const target of targets) {
+                if (contentFilter.strFilter(fullId, target)) {
+                    return false;
+                }
+            }
+
+            // Node failed all filters, skip it
+            return true;
+        })();
+
+        if (shouldSkip) continue;
 
         const skip = pathParts.sep === '+';
 
@@ -175,18 +200,29 @@ async function scanChildNodes(
     };
 }
 
-function satisfiesContentTargets(nodePath: string): boolean {
-    const contentTargets = ERUDIT_SERVER.CONFIG?.contentTargets || [];
+function createContentFilter() {
+    const cliContentTargets = (() => {
+        try {
+            return JSON.parse(
+                readFileSync(PROJECT_DIR + '/.erudit/targets.json', 'utf-8'),
+            );
+        } catch (error) {}
 
-    if (contentTargets.length === 0) {
-        return true;
-    }
+        return [];
+    })();
 
-    for (const target of contentTargets)
-        if (nodePath.startsWith(target) || target.search(nodePath) === 0)
+    const strFilter = (fullId: string, filterItem: string) => {
+        if (fullId.startsWith(filterItem) || filterItem.search(fullId) === 0) {
             return true;
+        }
 
-    return false;
+        return false;
+    };
+
+    return {
+        cliContentTargets,
+        strFilter,
+    };
 }
 
 function validNode(node: NavNode): boolean {

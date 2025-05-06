@@ -1,7 +1,12 @@
 import consola from 'consola';
 import { defineCommand } from 'citty';
 
-import { eruditPathArg, projectPathArg, resolveArgPaths } from '../shared/args';
+import {
+    contentTargetsArg,
+    eruditPathArg,
+    projectPathArg,
+    resolveArgPaths,
+} from '../shared/args';
 import { logCommand } from '../shared/log';
 import { spawnNuxt } from '../shared/nuxt';
 import { prepare } from '../shared/prepare';
@@ -15,6 +20,7 @@ export const build = defineCommand({
     args: {
         ...projectPathArg,
         ...eruditPathArg,
+        ...contentTargetsArg,
     },
     async run({ args }) {
         logCommand('build');
@@ -24,7 +30,11 @@ export const build = defineCommand({
             args.eruditPath,
         );
 
-        await prepare(projectPath, eruditPath);
+        await prepare({
+            projectPath,
+            eruditPath,
+            contentTargets: args.target,
+        });
 
         consola.start('Starting Nuxt build...');
         await spawnNuxt('build', projectPath);

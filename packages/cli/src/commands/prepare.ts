@@ -24,7 +24,10 @@ export const prepare = defineCommand({
             args.eruditPath,
         );
 
-        await _prepare(projectPath, eruditPath);
+        await _prepare({
+            projectPath,
+            eruditPath,
+        });
 
         consola.start('Generating Nuxt build files...');
         await spawnNuxt('prepare', projectPath);
