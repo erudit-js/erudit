@@ -15,9 +15,9 @@ const watchTargets: string[] = [
     // Erudit Nuxt module non-runtime files
     ...globSync(eruditPath('module/**/*')),
     // Erudit config in project root
-    ...globSync(projectPath('erudit.{js,ts}')),
+    ...globSync(projectPath('erudit.config.{js,ts}')),
     // Erudit Bitran config in project root
-    ...globSync(projectPath('bitran.{js,ts}')),
+    ...globSync(projectPath('bitran.{app,server}.{js,ts}')),
 ];
 
 const ignoreTargets: string[] = [
