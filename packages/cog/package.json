@@ -1,6 +1,6 @@
 {
     "name": "@erudit-js/cog",
-    "version": "3.0.0-dev.14",
+    "version": "3.0.0-dev.15",
     "description": "⚙️ Erudit kit, types and utils",
     "type": "module",
     "repository": {

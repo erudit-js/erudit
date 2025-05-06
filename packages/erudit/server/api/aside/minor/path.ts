@@ -7,10 +7,7 @@ import {
     getPreviousNext,
 } from '@server/repository/content';
 import { getTopicPartsLinks } from '@server/repository/topic';
-import {
-    getFullContentId,
-    getShortContentId,
-} from '@server/repository/contentId';
+import { getFullContentId } from '@server/repository/contentId';
 
 export default defineEventHandler(async (event) => {
     const query = getQuery<{ path: string }>(event);
@@ -72,7 +69,7 @@ async function createContentData(
     path: string,
 ): Promise<AsideMinorContent> {
     const rawContentId = path.split('/').slice(1).join('/');
-    const contentId = (await getFullContentId(rawContentId))!;
+    const contentId = getFullContentId(rawContentId);
     const previousNext = await getPreviousNext(contentId);
     const contributors = await getContentContributors(contentId);
 

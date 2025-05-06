@@ -27,9 +27,9 @@ export default defineEruditConfig({
     // },
     language: 'ru',
     repository: {
-        name: 'math-ok/ru.omath.net',
+        name: 'open-math/ru.omath.net',
         branch: 'main',
-        sharedUrl: 'math-ok/shared',
+        sharedUrl: 'open-math/shared',
     },
     ads: {
         leftBlockId: 'R-A-2185026-3',
