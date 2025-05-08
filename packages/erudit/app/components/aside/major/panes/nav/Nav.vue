@@ -27,7 +27,7 @@ const checkIfInsideBook = () => {
     if (contentRoute.value) {
         const bookId = detectContentBookId(
             contentRoute.value.contentId,
-            asideMajorNav.booksIds
+            asideMajorNav.booksIds,
         );
 
         if (bookId) {

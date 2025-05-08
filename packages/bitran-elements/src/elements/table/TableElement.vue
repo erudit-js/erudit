@@ -73,7 +73,11 @@ const parseData = useElementParseData<TableSchema>();
     );
 
     [data-erudit-accent] & {
-        background: color-mix(in srgb, var(--bgMain), var(--accentColor_text) 10%);
+        background: color-mix(
+            in srgb,
+            var(--bgMain),
+            var(--accentColor_text) 10%
+        );
 
         border-color: color-mix(
             in srgb,

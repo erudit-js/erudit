@@ -1,4 +1,4 @@
-import type { EruditAds } from './ads';
+import type { EruditAdsBanners } from './ads';
 import type { EruditBitran } from './bitran';
 import type { EruditDebug } from './debug';
 import type { EruditDependencies } from './dependencies';
@@ -11,7 +11,7 @@ export interface EruditConfig {
     language?: EruditLanguage;
     debug?: EruditDebug;
     conentTargets?: string[];
-    ads?: EruditAds;
+    ads?: EruditAdsBanners;
     site?: EruditSite;
     seo?: EruditSeo;
     repository?: EruditRepository;

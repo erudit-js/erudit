@@ -28,7 +28,7 @@ function paneStyle(paneKey: MajorPaneKey) {
                 :style="paneStyle(paneKey)"
             />
         </div>
-        <AdsLeftBanner v-if="eruditConfig.ads?.leftBlockId" />
+        <AdsBannerAside v-if="eruditConfig.ads?.aside" />
     </div>
 </template>
 

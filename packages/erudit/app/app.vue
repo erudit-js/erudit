@@ -12,10 +12,6 @@ const siteUrl = useSiteUrl();
 const pageUrl = usePageUrl();
 const baseUrlPath = useBaseUrlPath();
 
-const theme = ref({
-    brand: 'red',
-});
-
 const faviconHref = computed(() => {
     const href = baseUrlPath(favicon.value);
 

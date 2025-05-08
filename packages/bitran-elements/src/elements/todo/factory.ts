@@ -1,6 +1,10 @@
-import { ObjBlockParseFactory, ObjStringifyFactory, type PlainObject } from "@bitran-js/transpiler";
+import {
+    ObjBlockParseFactory,
+    ObjStringifyFactory,
+    type PlainObject,
+} from '@bitran-js/transpiler';
 
-import { todoName, type TodoParseData, type TodoSchema } from "./shared";
+import { todoName, type TodoParseData, type TodoSchema } from './shared';
 
 export class TodoParser extends ObjBlockParseFactory<TodoSchema> {
     override objName = todoName;
@@ -15,7 +19,7 @@ export class TodoParser extends ObjBlockParseFactory<TodoSchema> {
         return {
             title,
             content: content ? await this.parseBlocks(content) : undefined,
-        }
+        };
     }
 }
 
@@ -27,7 +31,9 @@ export class TodoStringifier extends ObjStringifyFactory<TodoSchema> {
 
         return {
             title: parseData.title,
-            content: parseData.content ? await this.stringify(parseData.content) : undefined,
+            content: parseData.content
+                ? await this.stringify(parseData.content)
+                : undefined,
         };
     }
 }

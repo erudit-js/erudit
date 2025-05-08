@@ -1,40 +1,47 @@
 type AdsProvider = 'yandex' | 'custom';
 
-interface AdsBannerBase {
+interface AdsBase {
     provider: AdsProvider;
+}
+
+export interface CustomAdsItem {
+    src: string;
+    link: string;
 }
 
 //
 //
 //
 
-export interface EruditAdsYandex extends AdsBannerBase {
+export interface EruditAdsYandex extends AdsBase {
     provider: 'yandex';
     blockId: string;
 }
 
-export interface EruditAdsCustomBottom extends AdsBannerBase {
+export interface EruditAdsCustom extends AdsBase {
     provider: 'custom';
-    src: string;
+    banners: CustomAdsItem[];
 }
 
-export interface EruditAdsCustomAside extends AdsBannerBase {
-    provider: 'custom';
-    src: {
-        full: string;
-        mobile: string;
-    };
-}
+export type EruditAds = EruditAdsYandex | EruditAdsCustom;
 
 //
 //
 //
 
-export type EruditAdsBottom = EruditAdsYandex | EruditAdsCustomBottom;
+export type EruditAdsAsideBanner =
+    | EruditAdsYandex
+    | {
+          provider: 'custom';
+          banners: {
+              full?: CustomAdsItem[];
+              mobile?: CustomAdsItem[];
+          };
+      };
 
-export type EruditAdsAside = EruditAdsYandex | EruditAdsCustomAside;
+export type EruditAdsBottomBanner = EruditAdsYandex | EruditAdsCustom;
 
-export interface EruditAds {
-    aside?: EruditAdsAside;
-    bottom?: EruditAdsBottom;
+export interface EruditAdsBanners {
+    aside?: EruditAdsAsideBanner;
+    bottom?: EruditAdsBottomBanner;
 }

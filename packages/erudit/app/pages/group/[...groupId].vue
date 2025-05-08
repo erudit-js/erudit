@@ -60,5 +60,7 @@ const phrase = await usePhrases('group');
         />
     </ContentSection>
 
-    <AdsBottomBanner v-if="eruditConfig.ads?.bottomBlockId" />
+    <ContentSection v-if="eruditConfig.ads?.bottom">
+        <AdsBannerBottom />
+    </ContentSection>
 </template>

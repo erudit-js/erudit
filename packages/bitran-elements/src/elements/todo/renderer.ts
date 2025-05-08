@@ -1,6 +1,11 @@
-import { defineComponent, defineElementVueRenderer, defineIcon, defineLanguages } from "@bitran-js/renderer-vue";
+import {
+    defineComponent,
+    defineElementVueRenderer,
+    defineIcon,
+    defineLanguages,
+} from '@bitran-js/renderer-vue';
 
-import { TodoNode, type TodoSchema } from "./shared";
+import { TodoNode, type TodoSchema } from './shared';
 
 export const todoRenderer = defineElementVueRenderer<TodoSchema>({
     Node: TodoNode,
@@ -10,7 +15,7 @@ export const todoRenderer = defineElementVueRenderer<TodoSchema>({
         en: () => import('./languages/en'),
         ru: () => import('./languages/ru'),
     }),
-    canRender({ isDev}) {
+    canRender({ isDev }) {
         return isDev === true;
-    }
-})
+    },
+});
