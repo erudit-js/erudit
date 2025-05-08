@@ -6,7 +6,7 @@ import {
 } from '@bitran-js/transpiler';
 
 import type { BitranContext } from './context';
-import type { EruditConfig } from '../erudit';
+import type { EruditConfig } from '../erudit/config';
 
 export interface EruditBitranRuntime {
     eruditConfig: Partial<EruditConfig>;

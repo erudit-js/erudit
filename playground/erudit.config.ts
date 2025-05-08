@@ -32,10 +32,10 @@ export default defineEruditConfig({
         branch: 'main',
         sharedUrl: 'open-math/shared',
     },
-    ads: {
-        leftBlockId: 'R-A-2185026-3',
-        bottomBlockId: 'R-A-2185026-1',
-    },
+    // ads: {
+    //     leftBlockId: 'R-A-2185026-3',
+    //     bottomBlockId: 'R-A-2185026-1',
+    // },
     dependencies: {
         ...mathDeps,
         ...diagramDeps,

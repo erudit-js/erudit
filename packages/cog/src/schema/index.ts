@@ -11,4 +11,13 @@ export * from './bitran/config';
 export * from './bitran/runtime';
 
 export * from './contributor';
-export * from './erudit';
+
+export * from './erudit/debug';
+export * from './erudit/site';
+export * from './erudit/seo';
+export * from './erudit/languages';
+export * from './erudit/ads';
+export * from './erudit/config';
+export * from './erudit/repository';
+export * from './erudit/bitran';
+export * from './erudit/dependencies';
