@@ -2,6 +2,9 @@ import type { EruditConfigDebug } from '@erudit-js/cog/schema';
 
 import eruditConfig from '#erudit/config';
 
+let languagesCache: any;
+let repositoryCache: any;
+
 function useFakeUrl(
     fakeApiTarget: keyof EruditConfigDebug['fakeApi'],
 ): boolean {
@@ -27,9 +30,11 @@ export async function useExternalApiLanguages() {
     const fake = useFakeUrl('languages');
 
     if (fake) {
-        payload.languages ||= await $fetch('/api/fake/shared/languages');
+        payload.languages ||= languagesCache ||= await $fetch(
+            '/api/fake/shared/languages',
+        );
     } else {
-        payload.languages ||= await $fetch(
+        payload.languages ||= languagesCache ||= await $fetch(
             `https://api.github.com/repos/${sharedUrl}/contents/languages.json`,
             {
                 headers: { Accept: 'application/vnd.github.v3.raw' },
@@ -52,9 +57,10 @@ export async function useExternalApiRepository() {
     const fake = useFakeUrl('repository');
 
     if (fake) {
-        payload.repository ||= await $fetch('/api/fake/content');
+        payload.repository ||= repositoryCache ||=
+            await $fetch('/api/fake/content');
     } else {
-        payload.repository ||= await $fetch(
+        payload.repository ||= repositoryCache ||= await $fetch(
             `https://api.github.com/repos/${repositoryName}/branches/${repositoryBranch}`,
         );
     }
