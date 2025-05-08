@@ -56,6 +56,7 @@ onMounted(() => {
                 :class="$style.imageLink"
             >
                 <img
+                    loading="lazy"
                     :src="baseUrlPath(contentAsset(renderData.resolvedSrc))"
                     :class="[
                         invertClass ? $style[`invert-${invertClass}`] : '',
