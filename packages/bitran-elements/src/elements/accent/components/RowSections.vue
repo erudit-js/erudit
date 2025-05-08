@@ -1,11 +1,13 @@
 <script lang="ts" setup>
 import { ref, computed } from 'vue';
-import { Render } from '@bitran-js/renderer-vue';
+import { injectFormatText, Render } from '@bitran-js/renderer-vue';
 
 import PaneView from '../../../shared/PaneView.vue';
 import type { AccentSection } from '../shared';
 
 const props = defineProps<{ sections: AccentSection[] }>();
+
+const pretty = injectFormatText();
 
 const activeSection = ref<AccentSection | undefined>();
 
@@ -39,7 +41,7 @@ const activeContent = computed(() => {
                 ]"
                 @click="selectSection(section)"
             >
-                {{ section.title || section.id }}
+                {{ pretty(section.title || section.id) }}
             </button>
         </div>
 
