@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import type { EruditAds } from '@erudit-js/cog/schema';
 
-import { LazyAdsCustom, LazyAdsYandex } from '#components';
+import { LazyAdsProviderCustom, LazyAdsProviderYandex } from '#components';
 
 const props = defineProps<{ data: EruditAds }>();
 
@@ -9,15 +9,15 @@ const route = useRoute();
 watch(() => route.path, updateAds);
 
 const adsKey = ref(0);
-const AdsComponent = shallowRef<typeof LazyAdsCustom | typeof LazyAdsYandex>();
+const AdsComponent = shallowRef<Component>();
 
 function updateAds() {
     AdsComponent.value = (() => {
         switch (props.data?.provider) {
             case 'yandex':
-                return LazyAdsYandex;
+                return LazyAdsProviderYandex;
             case 'custom':
-                return LazyAdsCustom;
+                return LazyAdsProviderCustom;
         }
 
         return undefined;
@@ -31,5 +31,5 @@ onMounted(() => {
 </script>
 
 <template>
-    <AdsComponent v-if="AdsComponent" :data="data as any" :key="adsKey" />
+    <AdsComponent v-if="AdsComponent" :data :key="adsKey" />
 </template>
