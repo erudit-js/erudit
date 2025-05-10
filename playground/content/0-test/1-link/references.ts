@@ -1,3 +1,5 @@
+import { testSource } from '#content/test/sources';
+
 export default defineContentReferences([
     {
         source: {
@@ -36,5 +38,9 @@ export default defineContentReferences([
                 description: 'Pay attention to the ending',
             },
         ],
+    },
+    {
+        source: testSource,
+        references: [{ title: 'Test reference' }],
     },
 ]);

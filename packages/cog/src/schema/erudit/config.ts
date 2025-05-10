@@ -10,7 +10,7 @@ import type { EruditSite } from './site';
 export interface EruditConfig {
     language?: EruditLanguage;
     debug?: EruditDebug;
-    conentTargets?: string[];
+    contentTargets?: string[];
     ads?: EruditAdsBanners;
     site?: EruditSite;
     seo?: EruditSeo;

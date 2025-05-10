@@ -1,7 +1,7 @@
 import { createJiti } from 'jiti';
 import { ERUDIT_DIR, PROJECT_DIR } from '#erudit/globalPaths';
 
-const jiti = createJiti(ERUDIT_DIR, {
+export const jiti = createJiti(ERUDIT_DIR, {
     // Enable reimporting same files during process in development mode
     fsCache: !import.meta.dev,
     moduleCache: !import.meta.dev,
