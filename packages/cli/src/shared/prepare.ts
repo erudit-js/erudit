@@ -62,6 +62,12 @@ export async function prepare({
         JSON.stringify(
             {
                 extends: './nuxt/.nuxt/tsconfig.json',
+                compilerOptions: {
+                    paths: {
+                        '#project/*': [`${projectPath}/*`],
+                        '#content/*': [`${projectPath}/content/*`],
+                    },
+                },
             },
             null,
             4,

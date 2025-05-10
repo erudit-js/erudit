@@ -18,9 +18,6 @@ export default defineNuxtConfig({
         '@shared': eruditPath('shared'),
         '@app': eruditPath('app'),
         $: eruditPath('app/styles'),
-        //
-        '#project': projectPath(),
-        '#content': projectPath('content'),
     },
     modules: [eruditPath('module'), 'nuxt-my-icons'],
     myicons: {

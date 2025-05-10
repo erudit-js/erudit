@@ -27,14 +27,15 @@
         "chalk": "^5.4.1",
         "chokidar": "^4.0.3",
         "consola": "^3.4.2",
-        "glob": "^11.0.1",
+        "esbuild": "^0.25.4",
+        "glob": "^11.0.2",
         "image-size": "^2.0.2",
         "jiti": "^2.4.2",
         "nuxt": "3.17.2",
         "nuxt-my-icons": "1.1.1",
-        "sass": "^1.86.2",
+        "sass": "^1.87.0",
         "sqlite3": "^5.1.7",
-        "typeorm": "^0.3.22",
+        "typeorm": "^0.3.23",
         "vue": "latest",
         "vue-router": "latest"
     }

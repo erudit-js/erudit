@@ -24,6 +24,7 @@ import {
     type ProblemSeed,
     Randomizer,
 } from '../generator';
+import { prerenderRoutes } from '#imports';
 
 const props = defineProps<{
     node: ElementNode;
@@ -79,18 +80,50 @@ async function regenerateProblem() {
 }
 
 if (hasGenerator) {
-    const loaders = (await import('#erudit/problemGenerators')).loaders;
-    const loader = loaders[props.generatorContentPath! as keyof typeof loaders];
+    try {
+        const generatorRoute = `/api/problem/generator/${props.generatorContentPath}.js`;
+        prerenderRoutes([generatorRoute]);
+        const generatorScript = await $fetch(generatorRoute, {
+            responseType: 'text',
+        });
 
-    if (!loader) {
-        throw new Error(
-            `Problem generator loader not found for path: ${props.generatorContentPath}!`,
+        function toBase64Unicode(str: string) {
+            if (typeof window !== 'undefined' && window.btoa) {
+                return window.btoa(
+                    Array.from(str, (c) => {
+                        const code = c.charCodeAt(0);
+                        return code < 0x80
+                            ? c
+                            : String.fromCharCode(
+                                  0xc0 | (code >> 6),
+                                  0x80 | (code & 0x3f),
+                              );
+                    }).join(''),
+                );
+            } else if (typeof Buffer !== 'undefined') {
+                return Buffer.from(str, 'utf-8').toString('base64');
+            } else {
+                throw new Error('No base64 encoder available!');
+            }
+        }
+
+        const base64 = toBase64Unicode(generatorScript as string);
+        const generatorScriptUrl = `data:text/javascript;base64,${base64}`;
+        const generatorModule = await import(
+            /* @vite-ignore */
+            generatorScriptUrl
+        );
+
+        const moduleDefault = generatorModule.default as ProblemGeneratorData;
+        generatorData.value = moduleDefault;
+        seed.value = moduleDefault.defaultSeed;
+        await regenerateProblem();
+    } catch (error) {
+        console.error(
+            `Error loading problem generator module for path: ${props.generatorContentPath}`,
+            error,
         );
     }
-
-    generatorData.value = (await loader()) as ProblemGeneratorData;
-    seed.value = generatorData.value!.defaultSeed;
-    await regenerateProblem();
 }
 
 function onSeedInput() {

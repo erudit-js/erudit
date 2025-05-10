@@ -291,6 +291,10 @@ function writeCompilerOptionsPaths() {
         const paths = tsconfig.compilerOptions.paths;
 
         Object.keys(paths).forEach((key) => {
+            if (key === '#content/*') {
+                return;
+            }
+
             if (key.startsWith('#content/')) {
                 delete paths[key];
             }
@@ -321,6 +325,10 @@ function writeJitiAliases() {
         const aliases = jiti.options.alias;
 
         Object.keys(aliases).forEach((key) => {
+            if (key === '#content/*') {
+                return;
+            }
+
             if (key.startsWith('#content/')) {
                 delete aliases[key];
             }

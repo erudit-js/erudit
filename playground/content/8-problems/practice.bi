@@ -13,7 +13,7 @@
     attributes:
         - pretty
         - applied
-    generator: lemon
+    generator: generators/lemon
     description: |
         This is the problem description.
 

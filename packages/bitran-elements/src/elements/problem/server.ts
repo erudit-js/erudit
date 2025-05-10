@@ -1,6 +1,9 @@
 import { defineElementTranspiler } from '@bitran-js/transpiler';
 
 import { serverAbsolutizeContentPath } from '@server/repository/contentId';
+import { ERUDIT_SERVER } from '@server/global';
+import { DbFile } from '@server/db/entities/File';
+import { PROJECT_DIR } from '#erudit/globalPaths';
 
 import {
     type ProblemsSchema,
@@ -9,6 +12,34 @@ import {
     problemRenderDataKey,
 } from './shared';
 import { problemsTranspiler, problemTranspiler } from './transpiler';
+import { createError } from '#imports';
+
+export async function getGeneratorFilePath(fullContentPath?: string) {
+    if (!fullContentPath) {
+        throw createError({
+            statusCode: 400,
+            statusMessage: 'Missing path to task generator!',
+        });
+    }
+
+    const dbFile = await ERUDIT_SERVER.DB.manager.findOne(DbFile, {
+        where: [
+            { path: fullContentPath },
+            ...['.ts', '.js', '.gen.ts', '.gen.js'].map((ending) => ({
+                path: `${fullContentPath}${ending}`,
+            })),
+        ],
+    });
+
+    if (!dbFile) {
+        throw createError({
+            statusCode: 404,
+            statusMessage: `Task generator file "${fullContentPath}" not found!`,
+        });
+    }
+
+    return PROJECT_DIR + '/content/' + dbFile.fullPath;
+}
 
 export const problemServerTranspiler = defineElementTranspiler<ProblemSchema>({
     ...problemTranspiler,
@@ -25,6 +56,8 @@ export const problemServerTranspiler = defineElementTranspiler<ProblemSchema>({
                 node.parseData.generatorSrc!,
                 runtime.context.location.path!,
             );
+
+            await getGeneratorFilePath(generatorContentPath);
 
             return {
                 generatorContentPath,
@@ -53,6 +86,8 @@ export const problemsServerTranspiler = defineElementTranspiler<ProblemsSchema>(
                         generatorPath,
                         runtime.context.location.path!,
                     );
+
+                    await getGeneratorFilePath(generatorContentPath);
 
                     storage[key] ||= {
                         type: 'success',
