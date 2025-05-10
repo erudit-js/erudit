@@ -30,8 +30,8 @@ const uid = useId();
 onMounted(() => {
     const theme = useTheme();
 
-    window.yaContextCb.push(() => {
-        Ya.Context.AdvManager.render({
+    window?.yaContextCb?.push(() => {
+        Ya?.Context?.AdvManager?.render({
             blockId: props.data.blockId,
             renderTo: uid,
             darkTheme: theme.binaryTheme.value === 'dark',

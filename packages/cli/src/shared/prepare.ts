@@ -19,7 +19,8 @@ export async function prepare({
     const distDir = `${projectPath}/dist`;
 
     const nodeModules = `${projectPath}/node_modules`;
-    const nodeModulesErudit = `${nodeModules}/erudit`;
+    const nodeModulesErudit =
+        eruditPath === 'erudit' ? `${nodeModules}/erudit` : eruditPath;
 
     if (existsSync(nodeModulesErudit)) {
         consola.start('Resolving aliases in dependencies...');
