@@ -1,4 +1,5 @@
 import type { EruditAdsBanners } from './ads';
+import type { EruditAnalytics } from './analytics';
 import type { EruditBitran } from './bitran';
 import type { EruditDebug } from './debug';
 import type { EruditDependencies } from './dependencies';
@@ -11,6 +12,7 @@ export interface EruditConfig {
     language?: EruditLanguage;
     debug?: EruditDebug;
     contentTargets?: string[];
+    analytics?: EruditAnalytics;
     ads?: EruditAdsBanners;
     site?: EruditSite;
     seo?: EruditSeo;

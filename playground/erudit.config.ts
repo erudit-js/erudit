@@ -32,6 +32,12 @@ export default defineEruditConfig({
         branch: 'main',
         sharedUrl: 'open-math/shared',
     },
+    analytics: {
+        yandex: {
+            verification: '986ee9663b1d366b',
+            metricsId: '70781320',
+        },
+    },
     ads: {
         bottom: {
             provider: 'custom',

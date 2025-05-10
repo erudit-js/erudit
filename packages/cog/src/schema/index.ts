@@ -17,6 +17,7 @@ export * from './erudit/site';
 export * from './erudit/seo';
 export * from './erudit/languages';
 export * from './erudit/ads';
+export * from './erudit/analytics';
 export * from './erudit/config';
 export * from './erudit/repository';
 export * from './erudit/bitran';
