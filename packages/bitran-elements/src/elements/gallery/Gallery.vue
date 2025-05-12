@@ -40,6 +40,7 @@ const currentIndex = ref(0);
                 >
                     <div>
                         <img
+                            loading="lazy"
                             :src="
                                 baseUrlPath(
                                     contentAsset(
