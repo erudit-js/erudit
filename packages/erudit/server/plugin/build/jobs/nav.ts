@@ -171,8 +171,8 @@ async function scanChildNodes(
 
         if (!validNode(childNode)) continue;
 
-        fullIds[id] = nodePath;
-        newIds[id] = nodePath;
+        fullIds[fullId] = nodePath;
+        newIds[fullId] = nodePath;
 
         const scanResult = await scanChildNodes(
             childNode,
@@ -183,8 +183,8 @@ async function scanChildNodes(
             ['book', 'group'].includes(childNode.type) &&
             !scanResult.children
         ) {
-            delete fullIds[id];
-            delete newIds[id];
+            delete fullIds[fullId];
+            delete newIds[fullId];
             for (const childNewId of Object.keys(scanResult.newIds))
                 delete fullIds[childNewId];
             continue;
@@ -192,7 +192,7 @@ async function scanChildNodes(
 
         if (childNode.type === 'book') {
             ERUDIT_SERVER.NAV_BOOKS ||= {};
-            ERUDIT_SERVER.NAV_BOOKS[id] = childNode;
+            ERUDIT_SERVER.NAV_BOOKS[fullId] = childNode;
         }
 
         childNode.children = scanResult.children;

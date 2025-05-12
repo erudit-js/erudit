@@ -22,3 +22,4 @@ export * from './erudit/config';
 export * from './erudit/repository';
 export * from './erudit/bitran';
 export * from './erudit/dependencies';
+export * from './erudit/content';

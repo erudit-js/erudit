@@ -67,16 +67,26 @@ export function useContentPage(contentData: Ref<ContentData>) {
                 if (topicPart !== 'article') title += ` | ${phrase[topicPart]}`;
             }
 
-            if (contentData.value.type !== 'book') {
-                const bookTitle = contentData.value?.bookTitle;
-                title += bookTitle ? ` | ${bookTitle}` : '';
+            // Add book title in the middle section only if not using it as the site title
+            if (
+                contentData.value.type !== 'book' &&
+                contentData.value?.bookTitle &&
+                !eruditConfig.content?.bookSiteTitle
+            ) {
+                title += ` | ${contentData.value.bookTitle}`;
             }
 
-            title +=
-                ' - ' +
-                (eruditConfig.seo?.title ||
-                    eruditConfig.site?.title ||
-                    phrase.site_info_title);
+            // Choose the site title based on configuration
+            const siteTitle =
+                contentData.value.type !== 'book' &&
+                eruditConfig.content?.bookSiteTitle &&
+                contentData.value?.bookTitle
+                    ? contentData.value.bookTitle
+                    : eruditConfig.seo?.title ||
+                      eruditConfig.site?.title ||
+                      phrase.site_info_title;
+
+            title += ' - ' + siteTitle;
 
             seo.title.value = title;
         })();

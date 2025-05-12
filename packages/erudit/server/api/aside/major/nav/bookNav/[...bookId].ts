@@ -1,20 +1,17 @@
-import { ERUDIT_SERVER } from '@server/global';
+import { getNavNode } from '@server/nav/utils';
 import { createBookFrontNav } from '@server/repository/frontNav';
 
 export default defineEventHandler(async (event) => {
     const bookId = getRouterParam(event, 'bookId');
 
-    if (
-        !bookId ||
-        !ERUDIT_SERVER.NAV_BOOKS ||
-        !(bookId in ERUDIT_SERVER.NAV_BOOKS)
-    )
+    if (!bookId) {
         throw createError({
             statusCode: 400,
-            statusText: `Unknown book id "${bookId}"!`,
+            statusText: 'Missing book ID!',
         });
+    }
 
-    const bookNode = ERUDIT_SERVER.NAV_BOOKS[bookId]!;
+    const bookNode = getNavNode(bookId);
 
     return await createBookFrontNav(bookNode);
 });
