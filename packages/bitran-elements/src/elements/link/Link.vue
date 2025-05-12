@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { h } from 'vue';
+import { h, toRaw } from 'vue';
 import {
     useElementParseData,
     useElementRenderData,
@@ -89,8 +89,8 @@ function linkClick(e: Event) {
 
     showPreview({
         type: PreviewRequestType.Link,
-        linkData: node.parseData,
-        linkTarget,
+        linkData: toRaw(node.parseData),
+        linkTarget: toRaw(linkTarget),
     });
 
     doubleClick.startTimeout();
