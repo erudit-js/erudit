@@ -28,7 +28,9 @@ const phrase = await usePhrases('reference_source_featured');
         <div :class="$style.body">
             <div :class="$style.header">
                 <MyIcon :name="typeIcon" :class="$style.headerTypeIcon" />
-                <a :href="source.link" target="_blank">{{ pretty(source.title) }}</a>
+                <a :href="source.link" target="_blank">{{
+                    pretty(source.title)
+                }}</a>
                 <MyIcon
                     v-if="source.featured"
                     name="star"

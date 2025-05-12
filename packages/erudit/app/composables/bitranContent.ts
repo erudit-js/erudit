@@ -8,7 +8,7 @@ import {
     type BitranLocation,
 } from '@erudit-js/cog/schema';
 
-import type { StringBitranContent } from '@erudit/shared/bitran/stringContent';
+import type { EruditBitranContent } from '@server/bitran/content';
 
 import eruditConfig from '#erudit/config';
 
@@ -43,19 +43,23 @@ export async function useBitranContent(
                 nuxtApp.payload.data[payloadKey] ||=
                     {});
 
-            let stringContent: StringBitranContent;
+            let eruditBitranContent: EruditBitranContent;
 
             if (payload.location === locationString) {
-                stringContent = payload;
+                eruditBitranContent = payload;
             } else {
-                stringContent = await $fetch(contentApiRoute, {
+                eruditBitranContent = await $fetch(contentApiRoute, {
                     responseType: 'json',
                 });
+
+                for (const route of eruditBitranContent.routes) {
+                    nuxtApp.runWithContext(() => prerenderRoutes([route]));
+                }
 
                 // Clear the payload and set new data
                 Object.keys(payload).forEach((key) => delete payload[key]);
                 Object.assign(payload, {
-                    ...stringContent,
+                    ...eruditBitranContent,
                     location: locationString,
                 });
             }
@@ -76,12 +80,12 @@ export async function useBitranContent(
             );
 
             const root = await bitranTranspiler.parser.parse(
-                stringContent.biCode,
+                eruditBitranContent.biCode,
             );
 
             content.value = {
                 root,
-                renderDataStorage: stringContent.renderDataStorage,
+                renderDataStorage: eruditBitranContent.renderDataStorage,
             };
 
             return content;

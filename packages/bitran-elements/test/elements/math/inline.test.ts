@@ -98,7 +98,7 @@ describe('tryParseMathString', () => {
         });
     });
 
-    describe('should handle replacements', () => {
+    describe('should prettify math strings before tokenization', () => {
         test.each([
             // No spaces
             ['a-b', 'a – b'],
@@ -108,6 +108,12 @@ describe('tryParseMathString', () => {
             ['a  -  b', 'a – b'],
             ['a  +  b', 'a + b'],
             ['a  =  b', 'a = b'],
+            // Brackets
+            ['n+(k+1)', 'n + (k + 1)'],
+            ['n+[k+1]', 'n + [k + 1]'],
+            // Unary operators
+            ['-a', '–a'],
+            ['+2', '+2'],
         ])('should handle %p', (input, expected) => {
             const result = tryParseMathString(input);
             expect(result?.tokens.map((token) => token.value).join('')).toEqual(

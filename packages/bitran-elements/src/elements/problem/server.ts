@@ -1,7 +1,9 @@
 import { defineElementTranspiler } from '@bitran-js/transpiler';
 
 import { serverAbsolutizeContentPath } from '@server/repository/contentId';
-
+import { ERUDIT_SERVER } from '@server/global';
+import { DbFile } from '@server/db/entities/File';
+import { PROJECT_DIR } from '#erudit/globalPaths';
 import {
     type ProblemsSchema,
     type ProblemSchema,
@@ -9,6 +11,49 @@ import {
     problemRenderDataKey,
 } from './shared';
 import { problemsTranspiler, problemTranspiler } from './transpiler';
+import { createError } from '#imports';
+
+export async function getGeneratorFilePath(fullContentPath?: string) {
+    if (!fullContentPath) {
+        throw createError({
+            statusCode: 400,
+            statusMessage: 'Missing path to task generator!',
+        });
+    }
+
+    const dbFile = await ERUDIT_SERVER.DB.manager.findOne(DbFile, {
+        where: [
+            { path: fullContentPath },
+            ...['.ts', '.js', '.gen.ts', '.gen.js'].map((ending) => ({
+                path: `${fullContentPath}${ending}`,
+            })),
+        ],
+    });
+
+    if (!dbFile) {
+        throw createError({
+            statusCode: 404,
+            statusMessage: `Task generator file "${fullContentPath}" not found!`,
+        });
+    }
+
+    return PROJECT_DIR + '/content/' + dbFile.fullPath;
+}
+
+// Helper function to resolve and validate generator paths
+export async function resolveGeneratorPath(
+    generatorSrc: string,
+    runtimePath: string,
+) {
+    const generatorContentPath = serverAbsolutizeContentPath(
+        generatorSrc,
+        runtimePath,
+    );
+
+    await getGeneratorFilePath(generatorContentPath);
+
+    return generatorContentPath;
+}
 
 export const problemServerTranspiler = defineElementTranspiler<ProblemSchema>({
     ...problemTranspiler,
@@ -21,7 +66,7 @@ export const problemServerTranspiler = defineElementTranspiler<ProblemSchema>({
                 );
             }
 
-            const generatorContentPath = serverAbsolutizeContentPath(
+            const generatorContentPath = await resolveGeneratorPath(
                 node.parseData.generatorSrc!,
                 runtime.context.location.path!,
             );
@@ -49,7 +94,7 @@ export const problemsServerTranspiler = defineElementTranspiler<ProblemsSchema>(
 
                     const key = problemRenderDataKey(generatorPath)!;
 
-                    const generatorContentPath = serverAbsolutizeContentPath(
+                    const generatorContentPath = await resolveGeneratorPath(
                         generatorPath,
                         runtime.context.location.path!,
                     );

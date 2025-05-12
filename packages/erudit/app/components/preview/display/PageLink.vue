@@ -9,7 +9,9 @@ const phrase = await usePhrases('internal_link_warn');
 
 <template>
     <PreviewDisplay :footer="data.footer">
-        <div :class="$style.wrapper">{{ data.description || phrase.internal_link_warn }}</div>
+        <div :class="$style.wrapper">
+            {{ data.description || phrase.internal_link_warn }}
+        </div>
     </PreviewDisplay>
 </template>
 

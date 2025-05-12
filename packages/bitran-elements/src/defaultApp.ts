@@ -113,5 +113,5 @@ export const eruditElements: EruditBitranElements = {
     [todoName]: {
         transpiler: todoTranspiler,
         renderer: todoRenderer,
-    }
+    },
 };

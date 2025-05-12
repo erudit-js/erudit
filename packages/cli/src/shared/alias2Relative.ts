@@ -11,6 +11,13 @@ export async function alias2Relative(baseDir: string, toReplaceDir: string) {
     baseDir = resolvePaths(baseDir);
     toReplaceDir = resolvePaths(toReplaceDir);
 
+    if (baseDir.search('/node_modules/') === -1) {
+        console.log(
+            `Base directory ${baseDir} is not in node_modules. Skipping...`,
+        );
+        return;
+    }
+
     // Check if directories exist
     if (!existsSync(baseDir)) {
         console.log(`Base directory ${baseDir} does not exist. Skipping...`);

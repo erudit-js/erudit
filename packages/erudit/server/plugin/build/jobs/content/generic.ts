@@ -124,7 +124,7 @@ async function addContentItem(navNode: NavNode) {
 
 function getDecoration(navNode: NavNode) {
     if (existsSync(contentItemPath(navNode, 'decoration.svg')))
-        return `/${navNode.path}/decoration.svg`;
+        return `/${navNode.fsPath}/decoration.svg`;
 
     return undefined;
 }

@@ -1,5 +1,7 @@
 import { globSync } from 'glob';
 import chalk from 'chalk';
+import { readFileSync, writeFileSync, existsSync } from 'fs';
+import { join } from 'path';
 import {
     contentTypes,
     topicParts,
@@ -16,10 +18,10 @@ import {
     type RootNavNode,
 } from '@server/nav/node';
 import { ERUDIT_SERVER } from '@server/global';
-import { readFileSync } from 'fs';
+import { jiti } from '@server/importer';
 
 type Ids = Record<string, string>;
-let ids: Ids;
+let fullIds: Ids;
 
 const nodePathRegexp = new RegExp(
     `(?<pos>\\d+)(?<sep>-|\\+)(?<id>[\\w-]+)\\/(?<type>${contentTypes.join('|')})\\..*`,
@@ -30,18 +32,21 @@ const contentFilter = createContentFilter();
 export async function buildNav() {
     debug.start('Building navigation tree...');
 
-    ids = {};
+    fullIds = {};
 
     const rootNode = createRootNode();
     rootNode.children = (await scanChildNodes(rootNode, false)).children;
     ERUDIT_SERVER.NAV = rootNode.children ? rootNode : undefined;
 
-    const nodeCount = Object.values(ids).length;
+    const nodeCount = Object.values(fullIds).length;
 
     if (nodeCount === 0) {
         logger.warn('No content nodes detected! The site will be empty!');
     } else {
         if (ERUDIT_SERVER.CONFIG?.debug?.log) debugPrintNav(rootNode);
+
+        writeCompilerOptionsPaths();
+        writeJitiAliases();
 
         logger.success(
             'Navigation tree built successfully!',
@@ -54,7 +59,7 @@ async function scanChildNodes(
     parent: NavNode | RootNavNode,
     insideBook: boolean,
 ): Promise<{ children: NavNode[] | undefined; newIds: Ids }> {
-    const currentFsPath = isRootNode(parent) ? '' : parent.path + '/';
+    const currentFsPath = isRootNode(parent) ? '' : parent.fsPath + '/';
 
     const nodeFsPaths = globSync(
         `${currentFsPath}*/{${contentTypes.join(',')}}.{ts,js}`,
@@ -98,10 +103,10 @@ async function scanChildNodes(
         // Regular id might not include parent id part if it is skipped
         const id = parentId ? `${parentId}/${pathParts.id}` : pathParts.id;
 
-        if (ids[id]) {
+        if (fullIds[id]) {
             logger.warn(
                 `Nav node ${stress(id)} ID collision!\n\n`,
-                `This ID belongs to ${stress(ids[id], chalk.greenBright)} nav node.\n`,
+                `This ID belongs to ${stress(fullIds[id], chalk.greenBright)} nav node.\n`,
                 `Nav node ${stress(nodePath, chalk.redBright)} tries to use the same ID!\n`,
                 'Skipping nav node which causes collision!',
             );
@@ -157,7 +162,7 @@ async function scanChildNodes(
         const childNode: NavNode = {
             parent,
             type: pathParts.type,
-            path: nodePath,
+            fsPath: nodePath,
             idPart: pathParts.id,
             fullId,
             shortId,
@@ -166,8 +171,8 @@ async function scanChildNodes(
 
         if (!validNode(childNode)) continue;
 
-        ids[id] = nodePath;
-        newIds[id] = nodePath;
+        fullIds[fullId] = nodePath;
+        newIds[fullId] = nodePath;
 
         const scanResult = await scanChildNodes(
             childNode,
@@ -178,16 +183,16 @@ async function scanChildNodes(
             ['book', 'group'].includes(childNode.type) &&
             !scanResult.children
         ) {
-            delete ids[id];
-            delete newIds[id];
+            delete fullIds[fullId];
+            delete newIds[fullId];
             for (const childNewId of Object.keys(scanResult.newIds))
-                delete ids[childNewId];
+                delete fullIds[childNewId];
             continue;
         }
 
         if (childNode.type === 'book') {
             ERUDIT_SERVER.NAV_BOOKS ||= {};
-            ERUDIT_SERVER.NAV_BOOKS[id] = childNode;
+            ERUDIT_SERVER.NAV_BOOKS[fullId] = childNode;
         }
 
         childNode.children = scanResult.children;
@@ -230,7 +235,7 @@ function validNode(node: NavNode): boolean {
         case 'topic':
             const partPaths = globSync(
                 PROJECT_DIR +
-                    `/content/${node.path}` +
+                    `/content/${node.fsPath}` +
                     `/{${topicParts.join(',')}}.bi`,
             );
             if (partPaths.length === 0) return false; // Topic is empty
@@ -239,7 +244,7 @@ function validNode(node: NavNode): boolean {
             if (node.skip) {
                 logger.warn(
                     `Books can't skip their ID part!\n`,
-                    `Skipping ${stress(node.path)} nav node!`,
+                    `Skipping ${stress(node.fsPath)} nav node!`,
                 );
                 return false;
             }
@@ -262,4 +267,79 @@ function debugPrintNav(node: RootNavNode) {
     };
 
     logNode(node, 0);
+}
+
+function writeCompilerOptionsPaths() {
+    const tsconfigPath = `${PROJECT_DIR}/.erudit/tsconfig.json`;
+
+    try {
+        let tsconfig: any = {};
+
+        if (existsSync(tsconfigPath)) {
+            try {
+                tsconfig = JSON.parse(readFileSync(tsconfigPath, 'utf8'));
+            } catch (err) {
+                logger.warn(
+                    `Error parsing ${tsconfigPath}, creating a new one.`,
+                );
+            }
+        }
+
+        tsconfig.compilerOptions = tsconfig.compilerOptions || {};
+        tsconfig.compilerOptions.paths = tsconfig.compilerOptions.paths || {};
+
+        const paths = tsconfig.compilerOptions.paths;
+
+        Object.keys(paths).forEach((key) => {
+            if (key === '#content/*') {
+                return;
+            }
+
+            if (key.startsWith('#content/')) {
+                delete paths[key];
+            }
+        });
+
+        Object.entries(fullIds).forEach(([id, fsPath]) => {
+            const pathKey = `#content/${id}/*`;
+            paths[pathKey] = [`../content/${fsPath}/*`];
+        });
+
+        writeFileSync(tsconfigPath, JSON.stringify(tsconfig, null, 4), 'utf8');
+        logger.success(`Updated tsconfig content paths!`);
+    } catch (_error) {
+        logger.error(`Failed to write compiler paths: ${_error}`);
+    }
+}
+
+function writeJitiAliases() {
+    try {
+        if (!jiti.options) {
+            jiti.options = {};
+        }
+
+        if (!jiti.options.alias) {
+            jiti.options.alias = {};
+        }
+
+        const aliases = jiti.options.alias;
+
+        Object.keys(aliases).forEach((key) => {
+            if (key === '#content/*') {
+                return;
+            }
+
+            if (key.startsWith('#content/')) {
+                delete aliases[key];
+            }
+        });
+
+        Object.entries(fullIds).forEach(([id, fsPath]) => {
+            aliases[`#content/${id}`] = `${PROJECT_DIR}/content/${fsPath}`;
+        });
+
+        logger.success('Updated jiti content aliases!');
+    } catch (_error) {
+        logger.error(`Failed to write jiti aliases: ${_error}`);
+    }
 }

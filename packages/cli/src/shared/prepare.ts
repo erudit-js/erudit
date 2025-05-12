@@ -19,7 +19,8 @@ export async function prepare({
     const distDir = `${projectPath}/dist`;
 
     const nodeModules = `${projectPath}/node_modules`;
-    const nodeModulesErudit = `${nodeModules}/erudit`;
+    const nodeModulesErudit =
+        eruditPath === 'erudit' ? `${nodeModules}/erudit` : eruditPath;
 
     if (existsSync(nodeModulesErudit)) {
         consola.start('Resolving aliases in dependencies...');
@@ -62,6 +63,12 @@ export async function prepare({
         JSON.stringify(
             {
                 extends: './nuxt/.nuxt/tsconfig.json',
+                compilerOptions: {
+                    paths: {
+                        '#project/*': [`${projectPath}/*`],
+                        '#content/*': [`${projectPath}/content/*`],
+                    },
+                },
             },
             null,
             4,

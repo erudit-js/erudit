@@ -29,7 +29,9 @@ async function setupAsideMinorData() {
     const data: AsideMinorData = await (async () => {
         const payloadKeyValue: AsideMinorData | 'news' = (asideMinorPayload[
             dataKey
-        ] ||= await $fetch(`/api/aside/minor/path`, { query: { path: dataKey } }));
+        ] ||= await $fetch(`/api/aside/minor/path`, {
+            query: { path: dataKey },
+        }));
 
         if (payloadKeyValue === 'news') {
             // We do not save news in the payload as it will always have the same content.

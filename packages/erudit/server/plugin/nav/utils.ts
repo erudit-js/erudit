@@ -35,14 +35,18 @@ export function getNavBookIds(mode: 'full' | 'short'): string[] {
 export function getNavBookOf(target: string | NavNode): NavNode | undefined {
     const id = typeof target === 'string' ? target : target.fullId;
 
-    if (!id || !ERUDIT_SERVER.NAV_BOOKS) return undefined;
+    if (!id || !ERUDIT_SERVER.NAV_BOOKS) {
+        return undefined;
+    }
 
     const idParts = id.split('/');
 
     while (idParts.length > 0) {
         const book = ERUDIT_SERVER.NAV_BOOKS[idParts.join('/')];
 
-        if (book) return book;
+        if (book) {
+            return book;
+        }
 
         idParts.pop();
     }

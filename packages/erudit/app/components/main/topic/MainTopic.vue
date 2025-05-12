@@ -74,5 +74,15 @@ onMounted(() => {
         <ContentReferences :references="topicData.generic.references" />
     </ContentSection>
 
-    <AdsBottomBanner v-if="eruditConfig.ads?.bottomBlockId" />
+    <ContentSection v-if="adsAllowed() && eruditConfig.ads?.bottom">
+        <AdsBannerBottom />
+    </ContentSection>
 </template>
+
+<style lang="scss" module>
+.foo {
+    position: relative;
+    width: 100%;
+    height: 300px;
+}
+</style>

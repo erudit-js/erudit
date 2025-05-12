@@ -42,7 +42,7 @@ function hasLatex(content: string): boolean {
 }
 
 // Helper function to create a delay
-const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 async function preloadKatexFonts(): Promise<void> {
     if (!katexPreloadEl.value || fontsLoaded.value) return;
@@ -51,9 +51,13 @@ async function preloadKatexFonts(): Promise<void> {
     const katex = await import('katex');
 
     // Render a simple formula in the invisible container to load fonts
-    katex.default.render('\\sum_{i=1}^n i^2 = \\frac{n(n+1)(2n+1)}{6}', katexPreloadEl.value, {
-        displayMode: true
-    });
+    katex.default.render(
+        '\\sum_{i=1}^n i^2 = \\frac{n(n+1)(2n+1)}{6}',
+        katexPreloadEl.value,
+        {
+            displayMode: true,
+        },
+    );
 
     // Wait a bit for fonts to load
     await delay(200);
@@ -239,7 +243,13 @@ onUnmounted(() => {
         <!-- Invisible element for preloading KaTeX fonts -->
         <div
             ref="katexPreloadEl"
-            style="position: absolute; visibility: hidden; height: 0; width: 0; overflow: hidden;"
+            style="
+                position: absolute;
+                visibility: hidden;
+                height: 0;
+                width: 0;
+                overflow: hidden;
+            "
         ></div>
     </FigureWrapper>
 </template>

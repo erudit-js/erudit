@@ -12,10 +12,6 @@ const siteUrl = useSiteUrl();
 const pageUrl = usePageUrl();
 const baseUrlPath = useBaseUrlPath();
 
-const theme = ref({
-    brand: 'red',
-});
-
 const faviconHref = computed(() => {
     const href = baseUrlPath(favicon.value);
 
@@ -112,7 +108,9 @@ if (import.meta.client) {
     // Welcome
     //
 
-    document.documentElement.before(document.createComment(brandLogotype));
+    const comment = document.createComment(` ${brandLogotype} `);
+    document.insertBefore(comment, document.firstChild);
+
     const emojies = [
         '😂',
         '❤️',
@@ -137,7 +135,7 @@ if (import.meta.client) {
             version +
             ' ' +
             emoji +
-            ' %cBeating heart of modern educational sites!\n\n%cLearn more: https://github.com/Gwynerva/erudit\n ',
+            ' %cBeating heart of modern educational sites!\n\n%cLearn more: https://github.com/erudit-js/erudit\n ',
         `color: transparent; background: linear-gradient(to right, ${brandColors[0]}, ${brandColors[1]}); background-clip: text; -webkit-background-clip: text;`,
         'color: inherit;',
         'font-style: italic; color: #888;',

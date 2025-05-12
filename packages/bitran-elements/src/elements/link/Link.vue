@@ -1,20 +1,13 @@
 <script lang="ts" setup>
-import { h } from 'vue';
+import { h, toRaw } from 'vue';
 import {
     useElementParseData,
     useElementRenderData,
     type ElementProps,
 } from '@bitran-js/renderer-vue';
-import {
-    isContentType,
-    isTopicPart,
-} from '@erudit-js/cog/schema';
+import { isContentType, isTopicPart } from '@erudit-js/cog/schema';
 
-import {
-    useBaseUrlPath,
-    useBitranElementIcon,
-    useFormatText,
-} from '#imports';
+import { useBaseUrlPath, useBitranElementIcon, useFormatText } from '#imports';
 
 import { CONTENT_TYPE_ICON, ICON, TOPIC_PART_ICON } from '@erudit/shared/icons';
 import type { LinkSchema } from './shared';
@@ -96,8 +89,8 @@ function linkClick(e: Event) {
 
     showPreview({
         type: PreviewRequestType.Link,
-        linkData: node.parseData,
-        linkTarget,
+        linkData: toRaw(node.parseData),
+        linkTarget: toRaw(linkTarget),
     });
 
     doubleClick.startTimeout();

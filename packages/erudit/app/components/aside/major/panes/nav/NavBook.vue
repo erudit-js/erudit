@@ -89,7 +89,7 @@ const pharse = await usePhrases('to_index', 'about_book');
 
 .bookActions {
     border-bottom: 1px solid var(--border);
-    padding-bottom: calc(var(--gap)/2);
-    margin-bottom: calc(var(--gap)/2);
+    padding-bottom: calc(var(--gap) / 2);
+    margin-bottom: calc(var(--gap) / 2);
 }
 </style>

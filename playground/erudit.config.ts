@@ -32,9 +32,30 @@ export default defineEruditConfig({
         branch: 'main',
         sharedUrl: 'open-math/shared',
     },
+    analytics: {
+        yandex: {
+            verification: '986ee9663b1d366b',
+            metricsId: '70781320',
+        },
+    },
     ads: {
-        leftBlockId: 'R-A-2185026-3',
-        bottomBlockId: 'R-A-2185026-1',
+        bottom: {
+            provider: 'custom',
+            banners: [
+                {
+                    link: 'https://google.com',
+                    src: 'https://picsum.photos/100/100',
+                },
+                {
+                    link: 'https://youtube.com',
+                    src: 'https://picsum.photos/1000/500',
+                },
+            ],
+        },
+        aside: {
+            provider: 'custom',
+            banners: {},
+        },
     },
     dependencies: {
         ...mathDeps,

@@ -7,13 +7,13 @@
     description: |
         This is the problem description.
 
-@problem
+@problefm
     title: Complete problem
     level: medium
     attributes:
         - pretty
         - applied
-    generator: lemon
+    generator: generators/lemon
     description: |
         This is the problem description.
 
@@ -97,7 +97,7 @@
               Second problem description.
           hints:
               - Hint for the second problem
-        -   generator: lemon
+        -   generator: generators/lemon
             description: |
                 This is the problem description.
 

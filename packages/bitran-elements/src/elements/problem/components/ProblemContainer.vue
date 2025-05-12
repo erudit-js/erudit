@@ -20,7 +20,7 @@ const phrase = await useElementPhrases<ProblemPhrases>();
     <div :class="$style.problemContainer">
         <div :class="$style.info">
             <div :class="$style.top">
-                <div :class="$style.title">{{ pretty(info.title) }}</div>
+                <h2 :class="$style.title">{{ pretty(info.title) }}</h2>
                 <div :class="$style.asideSection">
                     <div
                         v-for="attribute in info.attributes?.sort()"

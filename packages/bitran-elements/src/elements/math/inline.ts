@@ -19,27 +19,15 @@ export interface InlineMathString extends InlineMathBase {
 export type InlineMathData = InlineMathKatex | InlineMathString;
 export type InlineMathToken = { type: 'word' | 'other'; value: string };
 
-// Math string replacements for better typography
-const mathReplacements: [RegExp, string][] = [
-    [/\s*-\s*/g, ' – '], // Hyphen to en dash
-    [/\s*\+\s*/g, ' + '], // Spaces around plus
-    [/\s*=\s*/g, ' = '], // Spaces around equals
-];
-
 /**
  * Apply typographical replacements to improve math rendering
  */
-function applyMathReplacements(tokens: InlineMathToken[]): InlineMathToken[] {
-    return tokens.map((token) => {
-        if (token.type === 'other') {
-            let value = token.value;
-            for (const [pattern, replacement] of mathReplacements) {
-                value = value.replace(pattern, replacement);
-            }
-            return { ...token, value };
-        }
-        return token;
-    });
+function prettifyMathString(mathString: string): string {
+    mathString = mathString
+        .replace(/([\w\(\[\)\]])\s*([-+=])\s*([\w\(\[\)\]])/g, '$1 $2 $3')
+        .replace(/-/g, '–');
+
+    return mathString;
 }
 
 /**
@@ -49,6 +37,8 @@ export function tryParseMathString(
     expression: string,
 ): InlineMathString | undefined {
     if (!expression) return undefined;
+
+    expression = prettifyMathString(expression);
 
     const tokens = (() => {
         const hasComplexSymbols = /[\^\\{}_]/gm.test(expression);
@@ -71,7 +61,7 @@ export function tryParseMathString(
     if (tokens)
         return {
             type: 'string',
-            tokens: applyMathReplacements(tokens),
+            tokens,
         };
 
     return undefined;

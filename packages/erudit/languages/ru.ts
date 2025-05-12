@@ -19,7 +19,7 @@ const russian: EruditPhrases = {
     language: 'Язык',
     other: 'Другое',
     ads_replacer:
-        'Помогите нам улучшать проект.<br><strong>Включите показ рекламы!</strong>',
+        'Помогите улучшать проект.<br><strong>Включите показ рекламы!</strong>',
     theme: 'Тема',
     theme_system: 'Системная',
     theme_light: 'Светлая',

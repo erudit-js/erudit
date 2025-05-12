@@ -1,4 +1,8 @@
-import { BlockNode, type BlocksNode, type DefineElementSchema } from "@bitran-js/core";
+import {
+    BlockNode,
+    type BlocksNode,
+    type DefineElementSchema,
+} from '@bitran-js/core';
 
 export const todoName = 'todo';
 
@@ -9,7 +13,7 @@ export interface TodoParseData {
 
 export type TodoSchema = DefineElementSchema<{
     ParseData: TodoParseData;
-}>
+}>;
 
 export class TodoNode extends BlockNode<TodoSchema> {
     override get children() {

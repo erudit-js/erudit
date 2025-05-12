@@ -13,7 +13,11 @@ function getIcon(contextIcon: string) {
 
 <template>
     <section :class="$style.breadcrumb">
-        <template v-for="contextItem of context.slice(0, -1).filter(item => !item.hidden)">
+        <template
+            v-for="contextItem of context
+                .slice(0, -1)
+                .filter((item) => !item.hidden)"
+        >
             <Link :to="contextItem.href" :class="$style.breadcrumbItem">
                 <MyIcon :name="getIcon(contextItem.icon)" wrapper="span" />
                 {{ contextItem.title }}

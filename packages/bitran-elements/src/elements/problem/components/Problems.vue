@@ -27,7 +27,7 @@ const isProblemActive = (index: number) => {
 // Compute fallback numbers for problems without a label
 const fallbackNumbers = computed(() => {
     let count = 1;
-    return parseData.set.map(problem => {
+    return parseData.set.map((problem) => {
         if (problem.label == null) {
             return count++;
         }

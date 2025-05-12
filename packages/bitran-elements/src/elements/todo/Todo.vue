@@ -1,5 +1,10 @@
 <script lang="ts" setup>
-import { useElementIcon, useElementParseData, Render, type ElementProps } from '@bitran-js/renderer-vue';
+import {
+    useElementIcon,
+    useElementParseData,
+    Render,
+    type ElementProps,
+} from '@bitran-js/renderer-vue';
 
 import { type TodoSchema } from './shared';
 
@@ -27,8 +32,7 @@ const todoIcon = await useElementIcon();
     border: 1px solid light-dark(#c3b66f, #5e511b);
     color: light-dark(#7f701c, #b3a570);
 
-    > header
-    {
+    > header {
         display: flex;
         align-items: center;
         gap: var(--bitran_gap);
