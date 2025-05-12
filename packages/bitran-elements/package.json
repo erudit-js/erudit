@@ -1,7 +1,7 @@
 {
     "name": "@erudit-js/bitran-elements",
     "description": "📝 A collection of Bitran elements for Erudit sites",
-    "version": "3.0.0-dev.17",
+    "version": "3.0.0-dev.18",
     "type": "module",
     "main": "./dist/index.mjs",
     "types": "./dist/index.d.ts",
@@ -19,7 +19,7 @@
         "@bitran-js/core": "1.0.0-dev.13",
         "@bitran-js/renderer-vue": "1.0.0-dev.13",
         "@bitran-js/transpiler": "1.0.0-dev.13",
-        "@erudit-js/cog": "workspace:3.0.0-dev.17",
+        "@erudit-js/cog": "workspace:3.0.0-dev.18",
         "katex": "^0.16.21",
         "sass": "^1.86.0",
         "vue": "^3.5.13",

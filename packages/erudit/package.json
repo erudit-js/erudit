@@ -1,6 +1,6 @@
 {
     "name": "erudit",
-    "version": "3.0.0-dev.17",
+    "version": "3.0.0-dev.18",
     "type": "module",
     "description": "🤓 CMS for perfect educational sites.",
     "license": "MIT",
@@ -15,9 +15,9 @@
         "erudit": "bin/erudit.mjs"
     },
     "peerDependencies": {
-        "@erudit-js/cog": "workspace:3.0.0-dev.17",
-        "@erudit-js/cli": "workspace:3.0.0-dev.17",
-        "@erudit-js/bitran-elements": "workspace:3.0.0-dev.17"
+        "@erudit-js/cog": "workspace:3.0.0-dev.18",
+        "@erudit-js/cli": "workspace:3.0.0-dev.18",
+        "@erudit-js/bitran-elements": "workspace:3.0.0-dev.18"
     },
     "dependencies": {
         "@bitran-js/core": "1.0.0-dev.13",
