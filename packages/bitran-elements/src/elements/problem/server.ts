@@ -41,7 +41,10 @@ export async function getGeneratorFilePath(fullContentPath?: string) {
 }
 
 // Helper function to resolve and validate generator paths
-async function resolveGeneratorPath(generatorSrc: string, runtimePath: string) {
+export async function resolveGeneratorPath(
+    generatorSrc: string,
+    runtimePath: string,
+) {
     const generatorContentPath = serverAbsolutizeContentPath(
         generatorSrc,
         runtimePath,

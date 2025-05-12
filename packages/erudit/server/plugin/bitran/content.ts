@@ -19,6 +19,16 @@ import {
 } from '@erudit-js/cog/schema';
 import { AliasesNode } from '@erudit-js/bitran-elements/aliases/shared';
 import { IncludeNode } from '@erudit-js/bitran-elements/include/shared';
+import {
+    ProblemNode,
+    ProblemsNode,
+} from '@erudit-js/bitran-elements/problem/shared';
+import {
+    prerenderProblem,
+    prerenderProblems,
+} from '@erudit-js/bitran-elements/problem/prerender';
+import { LinkNode } from '@erudit-js/bitran-elements/link/shared';
+import { prerenderLink } from '@erudit-js/bitran-elements/link/prerender';
 
 import { ERUDIT_SERVER } from '@server/global';
 import { DbUnique } from '@server/db/entities/Unique';
@@ -34,6 +44,10 @@ interface RawBitranContent {
     context: BitranContext;
     biCode: string;
 }
+
+export type EruditBitranContent = StringBitranContent & {
+    routes: string[];
+};
 
 export async function getBitranContent(
     location: BitranLocation,
@@ -108,7 +122,7 @@ async function createBitranContent(
     context: BitranContext,
     biCode: string,
     generatePrerenderData: boolean = true,
-): Promise<StringBitranContent> {
+): Promise<EruditBitranContent> {
     const runtime: EruditBitranRuntime = {
         eruditConfig: ERUDIT_SERVER.CONFIG,
         insideInclude: false,
@@ -119,23 +133,57 @@ async function createBitranContent(
 
     const renderDataStorage: RenderDataStorage = {};
 
-    async function makePreRender(node: ElementNode) {
+    const routes: string[] = [];
+    const addRoute = (
+        newRoutes: string | undefined | (string | undefined)[],
+    ) => {
+        if (Array.isArray(newRoutes)) {
+            routes.push(...(newRoutes.filter(Boolean) as string[]));
+        } else if (newRoutes) {
+            routes.push(newRoutes);
+        }
+    };
+
+    async function setNodeRenderData(node: ElementNode) {
         if (generatePrerenderData === false) {
             return;
         }
 
         const transpiler = bitranTranspiler.transpilers[node.name];
-        await createRenderData({
+
+        const renderDataResult = await createRenderData({
             storage: renderDataStorage,
             node,
             extra: runtime,
             generator: transpiler?.renderDataGenerator,
         });
+
+        if (renderDataResult?.type === 'success') {
+            node.renderData = renderDataResult.data;
+        }
+    }
+
+    async function addNodePrerenderRoute(node: ElementNode) {
+        switch (true) {
+            case node instanceof ProblemNode:
+                addRoute(prerenderProblem(node));
+                break;
+            case node instanceof ProblemsNode:
+                addRoute(await prerenderProblems(node, runtime));
+                break;
+            case node instanceof LinkNode:
+                addRoute(prerenderLink(node, runtime));
+                break;
+        }
     }
 
     const root = await bitranTranspiler.parser.parse(biCode, {
         async step(node) {
             switch (true) {
+                case node instanceof BlockErrorNode:
+                case node instanceof InlinerErrorNode:
+                    logParseError(node.name, node.error);
+                    return;
                 case node instanceof AliasesNode:
                     mergeAliases(context.aliases, node.parseData);
                     break;
@@ -143,17 +191,15 @@ async function createBitranContent(
                     const includeNode = await resolveInclude(node, context);
                     await walkDown(includeNode, async (child) => {
                         if (child instanceof ElementNode) {
-                            await makePreRender(child);
+                            await setNodeRenderData(child);
+                            await addNodePrerenderRoute(child);
                         }
                     });
                     break;
-                case node instanceof BlockErrorNode:
-                case node instanceof InlinerErrorNode:
-                    logParseError(node.name, node.error);
-                    return;
             }
 
-            await makePreRender(node);
+            await setNodeRenderData(node);
+            await addNodePrerenderRoute(node);
         },
     });
 
@@ -162,6 +208,7 @@ async function createBitranContent(
     return {
         biCode: finalContent,
         renderDataStorage,
+        routes,
     };
 }
 
