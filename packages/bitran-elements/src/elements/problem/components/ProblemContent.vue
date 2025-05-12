@@ -82,7 +82,6 @@ async function regenerateProblem() {
 if (hasGenerator) {
     try {
         const generatorRoute = `/api/problem/generator/${props.generatorContentPath}.js`;
-        prerenderRoutes([generatorRoute]);
         const generatorScript = await $fetch(generatorRoute, {
             responseType: 'text',
         });

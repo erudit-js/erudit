@@ -4,7 +4,6 @@ import { serverAbsolutizeContentPath } from '@server/repository/contentId';
 import { ERUDIT_SERVER } from '@server/global';
 import { DbFile } from '@server/db/entities/File';
 import { PROJECT_DIR } from '#erudit/globalPaths';
-
 import {
     type ProblemsSchema,
     type ProblemSchema,
@@ -41,6 +40,18 @@ export async function getGeneratorFilePath(fullContentPath?: string) {
     return PROJECT_DIR + '/content/' + dbFile.fullPath;
 }
 
+// Helper function to resolve and validate generator paths
+async function resolveGeneratorPath(generatorSrc: string, runtimePath: string) {
+    const generatorContentPath = serverAbsolutizeContentPath(
+        generatorSrc,
+        runtimePath,
+    );
+
+    await getGeneratorFilePath(generatorContentPath);
+
+    return generatorContentPath;
+}
+
 export const problemServerTranspiler = defineElementTranspiler<ProblemSchema>({
     ...problemTranspiler,
     renderDataGenerator: {
@@ -52,12 +63,10 @@ export const problemServerTranspiler = defineElementTranspiler<ProblemSchema>({
                 );
             }
 
-            const generatorContentPath = serverAbsolutizeContentPath(
+            const generatorContentPath = await resolveGeneratorPath(
                 node.parseData.generatorSrc!,
                 runtime.context.location.path!,
             );
-
-            await getGeneratorFilePath(generatorContentPath);
 
             return {
                 generatorContentPath,
@@ -82,12 +91,10 @@ export const problemsServerTranspiler = defineElementTranspiler<ProblemsSchema>(
 
                     const key = problemRenderDataKey(generatorPath)!;
 
-                    const generatorContentPath = serverAbsolutizeContentPath(
+                    const generatorContentPath = await resolveGeneratorPath(
                         generatorPath,
                         runtime.context.location.path!,
                     );
-
-                    await getGeneratorFilePath(generatorContentPath);
 
                     storage[key] ||= {
                         type: 'success',
