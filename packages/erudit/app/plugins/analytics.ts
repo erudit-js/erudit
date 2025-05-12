@@ -8,6 +8,14 @@ export default defineNuxtPlugin({
                 return;
             }
 
+            if (typeof eruditConfig?.debug?.analytics === 'undefined') {
+                if (import.meta.dev) {
+                    return;
+                }
+            } else if (!Boolean(eruditConfig?.debug?.analytics)) {
+                return;
+            }
+
             if (eruditConfig.analytics.yandex) {
                 const yandex = eruditConfig.analytics.yandex;
 

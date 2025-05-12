@@ -74,7 +74,7 @@ onMounted(() => {
         <ContentReferences :references="topicData.generic.references" />
     </ContentSection>
 
-    <ContentSection v-if="eruditConfig.ads?.bottom">
+    <ContentSection v-if="adsAllowed() && eruditConfig.ads?.bottom">
         <AdsBannerBottom />
     </ContentSection>
 </template>

@@ -5,4 +5,6 @@ export interface EruditDebug {
         repository: boolean;
         languages: boolean;
     }>;
+    ads?: boolean;
+    analytics?: boolean;
 }
