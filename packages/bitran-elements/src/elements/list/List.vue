@@ -103,6 +103,7 @@ const ListComponent = h(parseData.type);
             display: flex;
             flex-direction: column;
             gap: var(--bitran_gap);
+            min-width: 0;
 
             :global(.bitran-blockFloat) {
                 display: none;
