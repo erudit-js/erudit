@@ -1,5 +1,7 @@
 <script lang="ts" setup>
-import type { AsideMinorData } from '@shared/aside/minor';
+import { isTopicPart } from '@erudit-js/cog/schema';
+
+import { type AsideMinorNews, type AsideMinorData } from '@shared/aside/minor';
 import { trailingSlash } from '@erudit/utils/slash';
 import { asideMinorKey } from '@app/scripts/aside/minor/state';
 
@@ -19,7 +21,9 @@ const AsideMinorPane = shallowRef<Component>();
 
 async function setupAsideMinorData() {
     const currentSetupI = ++setupI;
-    const dataKey = trailingSlash(route.path, false);
+    const path = trailingSlash(route.path, false).substring(1);
+    const pathParts = path.split('/');
+
     const payloadKey = 'aside-minor';
     const asideMinorPayload =
         (nuxtApp.static.data[payloadKey] ||=
@@ -27,23 +31,36 @@ async function setupAsideMinorData() {
             {});
 
     const data: AsideMinorData = await (async () => {
-        const payloadKeyValue: AsideMinorData | 'news' = (asideMinorPayload[
-            dataKey
-        ] ||= await $fetch(`/api/aside/minor/path`, {
-            query: { path: dataKey },
-        }));
+        const firstPathPart = pathParts[0];
 
-        if (payloadKeyValue === 'news') {
-            // We do not save news in the payload as it will always have the same content.
-            // So we prerender news once and use the same data for all pages.
-            nuxtApp.runWithContext(() =>
-                prerenderRoutes('/api/aside/minor/news'),
-            );
-            return await $fetch('/api/aside/minor/news');
-        } else return payloadKeyValue;
+        if (isTopicPart(firstPathPart)) {
+            return (asideMinorPayload[path] ||= await $fetch(
+                `/api/aside/minor/topic`,
+                {
+                    query: {
+                        topicPart: firstPathPart,
+                        topicId: pathParts.slice(1).join('/'),
+                    },
+                },
+            ));
+        }
+
+        switch (firstPathPart) {
+            case 'book':
+            case 'group':
+                return (asideMinorPayload[path] ||= await $fetch(
+                    `/api/aside/minor/${pathParts.join('/')}`,
+                ));
+            default:
+                prerenderRoutes(['/api/aside/minor/news']);
+                return await $fetch<AsideMinorNews>(`/api/aside/minor/news`);
+        }
     })();
 
-    if (currentSetupI !== setupI) return; // This data is outdated because new `setupAsideMinorData` was called.
+    if (currentSetupI !== setupI) {
+        // This data is outdated because new `setupAsideMinorData` was called
+        return;
+    }
 
     asideData.value = data;
 

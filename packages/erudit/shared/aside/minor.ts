@@ -1,44 +1,41 @@
-import type { BitranLocation } from '@erudit-js/cog/schema';
+import type { ContentType, TopicPart } from '@erudit-js/cog/schema';
 
-import type { Toc } from '../bitran/toc';
-import type { PreviousNextItem } from '../content/previousNext';
-import type { ContentContributor } from '../contributor';
+import type { Toc } from '@shared/bitran/toc';
+import type { PreviousNext } from '@shared/content/previousNext';
+import type { ContentContributor } from '@shared/contributor';
+
+export type AsideMinorType = ContentType | 'contributor' | 'news';
 
 interface AsideMinorBase {
     type: AsideMinorType;
 }
 
-export type AsideMinorType =
-    | 'topic'
-    | 'group'
-    | 'book'
-    | 'contributor'
-    | 'news';
+export interface AsideMinorContentBase extends AsideMinorBase {
+    type: ContentType;
+    fullContentId: string;
+    shortContentId: string;
+    fsContentDirectory: string;
+    previousNext: PreviousNext;
+    contributors?: ContentContributor[];
+}
 
-export interface AsideMinorTopic extends AsideMinorBase {
+export interface AsideMinorBook extends AsideMinorContentBase {
+    type: 'book';
+}
+
+export interface AsideMinorGroup extends AsideMinorContentBase {
+    type: 'group';
+}
+
+export interface AsideMinorTopic extends AsideMinorContentBase {
     type: 'topic';
-    topicId: string;
-    location: BitranLocation;
-    nav: Partial<{
-        previous: PreviousNextItem;
-        next: PreviousNextItem;
+    toc: Toc;
+    part: TopicPart;
+    partLinks: Partial<{
         article: string;
         summary: string;
         practice: string;
     }>;
-    toc: Toc;
-    contributors?: ContentContributor[];
-    // todos: TodoItem[];
-}
-
-export interface AsideMinorContent extends AsideMinorBase {
-    type: 'group' | 'book';
-    contentId: string;
-    nav: Partial<{
-        previous: PreviousNextItem;
-        next: PreviousNextItem;
-    }>;
-    contributors?: ContentContributor[];
 }
 
 export interface AsideMinorNews extends AsideMinorBase {
@@ -46,6 +43,7 @@ export interface AsideMinorNews extends AsideMinorBase {
 }
 
 export type AsideMinorData =
+    | AsideMinorBook
+    | AsideMinorGroup
     | AsideMinorTopic
-    | AsideMinorContent
     | AsideMinorNews;

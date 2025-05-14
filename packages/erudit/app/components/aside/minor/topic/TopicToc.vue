@@ -1,7 +1,6 @@
 <script lang="ts" setup>
 import { headingName } from '@erudit-js/bitran-elements/heading/shared';
 
-import { stringifyBitranLocation } from '@erudit-js/cog/schema';
 import type { TocItem } from '@erudit/shared/bitran/toc';
 import { topicLocation } from '@app/scripts/aside/minor/topic';
 import { injectAsideData } from '@app/scripts/aside/minor/state';
@@ -172,7 +171,7 @@ onMounted(() => {
         () => {
             disableLiveToc();
 
-            if (!topicData.value.location || !topicLocation.value) return;
+            if (!topicData.value.part || !topicLocation.value) return;
 
             enableLiveToc();
         },

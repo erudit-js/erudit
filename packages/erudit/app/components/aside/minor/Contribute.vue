@@ -1,9 +1,14 @@
 <script lang="ts" setup>
 import eruditConfig from '#erudit/config';
+import { injectAsideData } from '@erudit/app/scripts/aside/minor/state';
+import {
+    type AsideMinorContentBase,
+    type AsideMinorTopic,
+} from '@shared/aside/minor';
 
 import AsideOverlayPane from '../utils/AsideOverlayPane.vue';
 
-const props = defineProps<{ contentId: string }>();
+const asideData = injectAsideData<AsideMinorContentBase>();
 const phrase = await usePhrases(
     'make_contribution',
     'material_improvement',
@@ -22,9 +27,18 @@ const issueLink = computed(() => {
 
 const editPageLink = computed(() => {
     const ghRepository = eruditConfig.repository;
-    return ghRepository
-        ? `https://github.com/${ghRepository.name}/tree/${ghRepository.branch}/content/${props.contentId}`
-        : null;
+
+    if (!ghRepository) {
+        return undefined;
+    }
+
+    let link = `https://github.com/${ghRepository.name}/tree/${ghRepository.branch}/content/${asideData.value.fsContentDirectory}/`;
+
+    if (asideData.value.type === 'topic') {
+        link += `${(<AsideMinorTopic>asideData.value).part}.bi`;
+    }
+
+    return link;
 });
 </script>
 
