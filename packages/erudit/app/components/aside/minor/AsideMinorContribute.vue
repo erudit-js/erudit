@@ -16,6 +16,7 @@ const phrase = await usePhrases(
     'how_to_improve',
     'report_problem',
 );
+
 const paneVisible = defineModel<boolean>('pane');
 
 const issueLink = computed(() => {
@@ -40,10 +41,22 @@ const editPageLink = computed(() => {
 
     return link;
 });
+
+const buttonVisible = computed(() => {
+    return (
+        eruditConfig.content?.howToImproveLink ||
+        issueLink.value ||
+        editPageLink.value
+    );
+});
 </script>
 
 <template>
-    <button :class="$style.contribute" @click="paneVisible = true">
+    <button
+        v-if="buttonVisible"
+        :class="$style.contribute"
+        @click="paneVisible = true"
+    >
         <div :class="$style.icon"><MyIcon name="draw" /></div>
         <div :class="$style.label">{{ phrase.make_contribution }}</div>
     </button>
@@ -51,8 +64,11 @@ const editPageLink = computed(() => {
         <AsideOverlayPane v-if="paneVisible" stick="bottom">
             <div :class="$style.paneBottomActions">
                 <AsideListItem
+                    v-if="eruditConfig.content?.howToImproveLink"
                     icon="circle-help"
                     :main="phrase.how_to_improve"
+                    :link="eruditConfig.content.howToImproveLink"
+                    target="_blank"
                 />
                 <AsideListItem
                     v-if="issueLink"
