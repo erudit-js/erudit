@@ -33,7 +33,7 @@ const editPageLink = computed(() => {
         return undefined;
     }
 
-    let link = `https://github.com/${ghRepository.name}/tree/${ghRepository.branch}/content/${asideData.value.fsContentDirectory}/`;
+    let link = `https://github.com/${ghRepository.name}/edit/${ghRepository.branch}/content/${asideData.value.fsContentDirectory}/`;
 
     if (asideData.value.type === 'topic') {
         link += `${(<AsideMinorTopic>asideData.value).part}.bi`;
