@@ -36,7 +36,7 @@ const inlineMathData = useElementRenderData<InlineMathSchema>();
 
 <style lang="scss" module>
 .inlineMath {
-    color: light-dark(#53687e, #aeb8c7);
+    --katex-color_default: light-dark(#53687e, #aeb8c7);
 }
 
 .stringMath {
