@@ -32,6 +32,7 @@ const MathComponent = h(props.displayMath ? 'div' : 'span', {
     --katex-color_green: light-dark(#519f19, #83c167);
     --katex-color_yellow: light-dark(#c99029, #c1a267);
     --katex-color_red: light-dark(#d73737, #fc6255);
+    --katex-color_default: var(--bitran_text);
 }
 </style>
 
@@ -49,6 +50,7 @@ const MathComponent = h(props.displayMath ? 'div' : 'span', {
         300000: 'green',
         400000: 'yellow',
         500000: 'red',
+        600000: 'default',
     );
 
     @each $katexCode, $cssVarCode in $katexColorMap {
