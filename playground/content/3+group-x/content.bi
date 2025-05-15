@@ -3,6 +3,8 @@
 
 ~ foo article|/topic-a|da
 
+$4$
+
 $\brand{\sqrt[3]{\default{f(x)}}} + A^2$
 
 $$ \brand{\sqrt[3]{\default{f(x)}}} $$

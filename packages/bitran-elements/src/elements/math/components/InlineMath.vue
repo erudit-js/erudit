@@ -46,6 +46,7 @@ const inlineMathData = useElementRenderData<InlineMathSchema>();
         serif;
     line-height: 1.2;
     text-indent: 0;
+    color: var(--katex-color_default);
 
     .word {
         font-family: KaTeX_Math;
