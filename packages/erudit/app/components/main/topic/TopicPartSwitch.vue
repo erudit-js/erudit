@@ -46,6 +46,10 @@ const Link = defineNuxtLink({ prefetch: false });
     width: 100%;
     height: var(--height);
     border-bottom: 2px solid transparent;
+
+    @include bp.below('mobile') {
+        top: 56px;
+    }
 }
 
 .partButton {
