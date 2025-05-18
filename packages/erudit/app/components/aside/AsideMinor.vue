@@ -9,6 +9,7 @@ import {
     LazyAsideMinorNews,
     LazyAsideMinorTopic,
     LazyAsideMinorContent,
+    LazyAsideMinorContributor,
 } from '#components';
 
 let setupI = 0;
@@ -51,6 +52,10 @@ async function setupAsideMinorData() {
                 return (asideMinorPayload[path] ||= await $fetch(
                     `/api/aside/minor/${pathParts.join('/')}`,
                 ));
+            case 'contributor':
+                return (asideMinorPayload[path] ||= await $fetch(
+                    `/api/aside/minor/contributor/${pathParts[1]}`,
+                ));
             default:
                 prerenderRoutes(['/api/aside/minor/news']);
                 return await $fetch<AsideMinorNews>(`/api/aside/minor/news`);
@@ -71,6 +76,8 @@ async function setupAsideMinorData() {
             case 'book':
             case 'group':
                 return LazyAsideMinorContent;
+            case 'contributor':
+                return LazyAsideMinorContributor;
         }
 
         return LazyAsideMinorNews;

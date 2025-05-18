@@ -44,8 +44,9 @@ export function useMajorPane() {
     const route = useRoute();
 
     const activePane = useState<MajorPaneKey>('major-pane', () => {
-        switch (route.path) {
-            case '/members':
+        switch (true) {
+            case route.path.startsWith('/contributors'):
+            case route.path.startsWith('/contributor/'):
                 return 'pages';
             default:
                 return 'index';

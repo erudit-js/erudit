@@ -3,32 +3,29 @@ import PaneContentScroll from '../PaneContentScroll.vue';
 
 const route = useRoute();
 
-const phrase = await usePhrases('main_page', 'members');
+const phrase = await usePhrases('main_page', 'contributors');
 
-const { data: memberCount } = await useAsyncData<number>('members-count', () =>
-    $fetch('/api/contributor/count'),
+const { data: contributorCount } = await useAsyncData<number>(
+    'contributor-count',
+    () => $fetch('/api/contributor/count'),
 );
-
-function linkAttrs(link: string) {
-    return {
-        link,
-        active: route.path === link,
-    };
-}
 </script>
 
 <template>
     <PaneContentScroll>
         <AsideListItem
             icon="house"
-            v-bind="linkAttrs('/')"
+            link="/"
+            :active="route.path === '/'"
             :main="phrase.main_page"
         />
         <AsideListItem
+            v-if="contributorCount"
             icon="users"
-            v-bind="linkAttrs('/members')"
-            :main="phrase.members"
-            :secondary="memberCount!.toString()"
+            link="/contributors"
+            :active="route.path.startsWith('/contributor')"
+            :main="phrase.contributors"
+            :secondary="contributorCount!.toString()"
         />
     </PaneContentScroll>
 </template>

@@ -26,7 +26,18 @@ const english: EruditPhrases = {
     theme_dark: 'Dark',
     content: 'Content',
     main_page: 'Main page',
-    members: 'Members',
+    contributors: 'Contributors',
+    contributors_page_description:
+        'List of people who contributed to the project materials: suggested valuable ideas, made corrections to existing material or wrote their own!',
+    contributors_page_invite: (link) =>
+        `You can also help the project, <a href="${link}" target="_blank">make a contribution</a> and get on this page!`,
+    contributor: 'Contributor',
+    contribution: 'Contribution',
+    contributions_explain: (count) =>
+        `Contributed to ${m(count, 'material', 'materials')}`,
+    contributor_description: (name) =>
+        `Page with information about the contributor "${name}" and his contribution to the project.`,
+    editor: 'Editor',
     add_translation: 'Add translation',
     empty_nav: 'Empty navigation',
     flag_dev: 'Development',
@@ -57,7 +68,6 @@ const english: EruditPhrases = {
     article: 'Article',
     summary: 'Summary',
     practice: 'Practice',
-    contributor: 'Contributor',
     element_id: 'Element ID',
     preview_missing_title: 'Element not found!',
     preview_missing_explain: `Can't find the element with specified ID in this page!<br>Perhaps the element ID is specified incorrectly or the element has been changed/deleted.`,
@@ -68,7 +78,6 @@ const english: EruditPhrases = {
     current_page_hash: 'Current hash',
     expected_page_hash: 'Expected hash',
     empty_toc: 'Empty table of contents...',
-    contributors: 'Contributors',
     no_contributors: 'No contributors...',
     make_contribution: 'Make a contribution',
     material_improvement: 'Material improvement',

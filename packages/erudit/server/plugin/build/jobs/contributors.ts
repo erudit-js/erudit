@@ -60,6 +60,9 @@ async function addContributor(contributorPath: string) {
     dbContributor.contributorId = contributorId;
     dbContributor.avatar = avatarFilename;
     dbContributor.displayName = config.displayName;
+    dbContributor.isEditor = Boolean(config.editor);
+    dbContributor.slogan = config.slogan;
+    dbContributor.links = config.links;
     dbContributor.description = description;
 
     await ERUDIT_SERVER.DB.manager.save(dbContributor);

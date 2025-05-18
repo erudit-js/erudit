@@ -19,8 +19,12 @@ export async function parseClientBitranLocation(clientLocation: string) {
     try {
         const location = parseBitranLocation(clientLocation);
 
-        if (location.path) {
-            location.path = await getFullContentId(location.path);
+        switch (location.type) {
+            case 'article':
+            case 'summary':
+            case 'practice':
+            case 'group':
+                location.path = getFullContentId(location.path!);
         }
 
         return location;

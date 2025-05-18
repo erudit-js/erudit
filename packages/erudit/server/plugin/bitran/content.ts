@@ -39,6 +39,7 @@ import { createBitranTranspiler } from '@server/bitran/transpiler';
 import { logger } from '@server/logger';
 
 import type { StringBitranContent } from '@shared/bitran/stringContent';
+import { DbContributor } from '../db/entities/Contributor';
 
 interface RawBitranContent {
     context: BitranContext;
@@ -72,19 +73,6 @@ export async function getRawBitranContent(
         });
     };
 
-    if (location.unique) {
-        const dbUnique = await ERUDIT_SERVER.DB.manager.findOne(DbUnique, {
-            where: { location: stringifyBitranLocation(location) },
-        });
-
-        if (!dbUnique) throwNotFound();
-
-        return {
-            biCode: dbUnique!.content,
-            context: dbUnique!.context,
-        };
-    }
-
     if (isTopicPart(location.type)) {
         const topicPart = location.type as TopicPart;
 
@@ -112,6 +100,36 @@ export async function getRawBitranContent(
         return {
             biCode: dbGroup!.content!,
             context: { location, aliases: NO_ALIASES() },
+        };
+    }
+
+    if (location.type === 'contributor') {
+        const dbContributor = await ERUDIT_SERVER.DB.manager.findOne(
+            DbContributor,
+            {
+                select: ['description'],
+                where: { contributorId: location.path },
+            },
+        );
+
+        if (!dbContributor) throwNotFound();
+
+        return {
+            biCode: dbContributor!.description!,
+            context: { location, aliases: NO_ALIASES() },
+        };
+    }
+
+    if (location.unique) {
+        const dbUnique = await ERUDIT_SERVER.DB.manager.findOne(DbUnique, {
+            where: { location: stringifyBitranLocation(location) },
+        });
+
+        if (!dbUnique) throwNotFound();
+
+        return {
+            biCode: dbUnique!.content,
+            context: dbUnique!.context,
         };
     }
 

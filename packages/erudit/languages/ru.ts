@@ -26,7 +26,18 @@ const russian: EruditPhrases = {
     theme_dark: 'Темная',
     content: 'Контент',
     main_page: 'Главная страница',
-    members: 'Участники',
+    contributors: 'Авторы',
+    contributors_page_description:
+        'Список людей, которые внесли вклад в материалы проекта: предложили ценные идеи, вносили корректировки в существующий материал или же написали собственный!',
+    contributors_page_invite: (link) =>
+        `Вы тоже можете помочь проекту, <a href="${link}" target="_blank">внести свой вклад</a> и попасть на эту страницу!`,
+    contributor: 'Автор',
+    contribution: 'Вклад',
+    contributions_explain: (count) =>
+        `Вклад в ${m(count, 'материал', 'материала', 'материалов')}`,
+    contributor_description: (name) =>
+        `Страница с информацией о авторе "${name}" и его вкладе в проект.`,
+    editor: 'Редактор',
     add_translation: 'Добавить перевод',
     empty_nav: 'Пустая навигация',
     flag_dev: 'Разработка',
@@ -57,7 +68,6 @@ const russian: EruditPhrases = {
     article: 'Статья',
     summary: 'Конспект',
     practice: 'Задачи',
-    contributor: 'Автор',
     element_id: 'ID элемента',
     preview_missing_title: 'Элемент не найден!',
     preview_missing_explain:
@@ -69,7 +79,6 @@ const russian: EruditPhrases = {
     current_page_hash: 'Текущий хеш',
     expected_page_hash: 'Ожидаемый хеш',
     empty_toc: 'Пустая таблица содержимого...',
-    contributors: 'Авторы',
     no_contributors: 'Авторов нет...',
     make_contribution: 'Внести свой вклад',
     material_improvement: 'Улучшение материала',

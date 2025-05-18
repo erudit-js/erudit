@@ -6,15 +6,12 @@ import {
 } from '@erudit-js/cog/schema';
 
 import eruditConfig from '#erudit/config';
-
 import RenderWrapper from './RenderWrapper.vue';
 
 const props = defineProps<{
-    content: BitranContent;
     context: BitranContext;
 }>();
 
-/* Remove transpiler from Bitran Vue Component at all? It takes RootNode already... */
 const bitranTranspiler = await useBitranTranspiler();
 const bitranRenderers = await useBitranRenderers();
 
@@ -26,13 +23,14 @@ const bitranRenderers = await useBitranRenderers();
     });
 });
 
-const formatText = useFormatText();
+const rawBitranContent = await getBitranContent(props.context.location);
+const root = await bitranTranspiler.parser.parse(rawBitranContent.biCode);
+const bitranContent: BitranContent = {
+    root,
+    renderDataStorage: rawBitranContent.renderDataStorage,
+};
 
-// onMounted(() => {
-//     watch(urlElement, () => {
-//         //console.log('Highlighting product:', urlElement.value);
-//     }, { immediate: true });
-// });
+const formatText = useFormatText();
 
 const isDev = import.meta.dev;
 const isServer = import.meta.server;
@@ -43,7 +41,7 @@ const isServer = import.meta.server;
         :class="$style.eruditBitranContainer"
         :transpiler="bitranTranspiler"
         :renderers="bitranRenderers"
-        :content
+        :content="bitranContent"
         :editMode="false"
         :formatText
         :RenderWrapper

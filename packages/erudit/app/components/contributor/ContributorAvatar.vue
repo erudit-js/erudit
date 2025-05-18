@@ -28,12 +28,12 @@ const hasAvatar = computed(() => !!props.avatar);
 
 <style lang="scss" module>
 .contributorAvatar {
-    $avatarSize: 40px;
+    --_avatarSize: 40px;
     --_avatarBlendColor: var(--brand);
 
     position: relative;
-    width: #{$avatarSize};
-    height: #{$avatarSize};
+    width: var(--_avatarSize);
+    height: var(--_avatarSize);
     border-radius: 50%;
     overflow: hidden;
     background: var(--border);

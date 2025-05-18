@@ -33,17 +33,19 @@ const Link = defineNuxtLink({ prefetch: false });
 .topicPartSwitch {
     --height: 50px;
 
+    position: relative;
+    top: 65px;
+
     display: flex;
     align-items: end;
     justify-content: center;
     gap: var(--gapBig);
     margin: var(--_pMainY) 0;
-    margin-top: var(--gapBig);
+    margin-top: -30px;
 
     width: 100%;
     height: var(--height);
-    background: linear-gradient(to bottom, transparent, var(--bgAside));
-    border-bottom: 2px solid var(--border);
+    border-bottom: 2px solid transparent;
 }
 
 .partButton {

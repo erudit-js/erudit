@@ -1,30 +1,30 @@
 <script lang="ts" setup>
-import { NO_ALIASES, type TopicPart } from '@erudit-js/cog/schema';
+import {
+    NO_ALIASES,
+    type BitranLocation,
+    type TopicPart,
+} from '@erudit-js/cog/schema';
 
 import eruditConfig from '#erudit/config';
 
-import { type ContentTopicData } from '@erudit/shared/content/data/type/topic';
+import { type ContentTopicData } from '@shared/content/data/type/topic';
+import { TOPIC_PART_ICON } from '@shared/icons';
 import { topicLocation } from '@app/scripts/aside/minor/topic';
 
-import ContentDecoration from '../utils/ContentDecoration.vue';
-import ContentTitle from '../utils/ContentTitle.vue';
-import ContentDescription from '../utils/ContentDescription.vue';
+import ContentBreadcrumb from '@app/components/main/content/ContentBreadcrumb.vue';
+import ContentDecoration from '@app/components/main/content/ContentDecoration.vue';
+import ContentPopovers from '@app/components/main/content/ContentPopovers.vue';
+import ContentReferences from '@app/components/main/content/ContentReferences.vue';
+import ContentSection from '@app/components/main/content/ContentSection.vue';
 import TopicPartSwitch from './TopicPartSwitch.vue';
-import Breadcrumb from '../utils/Breadcrumb.vue';
-import ContentPopovers from '../utils/ContentPopovers.vue';
-import ContentReferences from '../utils/ContentReferences.vue';
-import ContentSection from '../utils/ContentSection.vue';
-import { TOPIC_PART_ICON } from '@erudit/shared/icons';
 
-const location = useBitranLocation();
+const location = useBitranLocation() as Ref<BitranLocation>;
 const topicPart = computed(() => location.value?.type as TopicPart);
 
 const topicData = await useContentData<ContentTopicData>();
 await useContentPage(topicData);
 
 const phrase = await usePhrases('article', 'summary', 'practice');
-
-const content = await useBitranContent(location);
 
 onMounted(() => {
     watchEffect(() => {
@@ -40,12 +40,9 @@ onMounted(() => {
         :decoration="topicData.generic.decoration"
     />
 
-    <Breadcrumb
-        v-if="topicData.generic.context?.length > 1"
-        :context="topicData.generic.context"
-    />
+    <ContentBreadcrumb :context="topicData.generic.context" />
 
-    <ContentTitle
+    <MainTitle
         :title="
             topicData.generic?.title ||
             topicData.generic.contentId.split('/').pop()!
@@ -54,7 +51,7 @@ onMounted(() => {
         :hint="phrase[location!.type as TopicPart]"
     />
 
-    <ContentDescription
+    <MainDescription
         v-if="topicData.generic?.description"
         :description="topicData.generic?.description"
     />
@@ -68,7 +65,9 @@ onMounted(() => {
 
     <div style="clear: both"></div>
 
-    <BitranContent :content :context="{ location, aliases: NO_ALIASES() }" />
+    <ContentSection>
+        <BitranContent :context="{ location, aliases: NO_ALIASES() }" />
+    </ContentSection>
 
     <ContentSection v-if="topicData.generic.references">
         <ContentReferences :references="topicData.generic.references" />

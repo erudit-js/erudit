@@ -2,7 +2,7 @@ import type { ContentType, TopicPart } from '@erudit-js/cog/schema';
 
 import type { Toc } from '@shared/bitran/toc';
 import type { PreviousNext } from '@shared/content/previousNext';
-import type { ContentContributor } from '@shared/contributor';
+import type { ContentContributor, Contribution } from '@shared/contributor';
 
 export type AsideMinorType = ContentType | 'contributor' | 'news';
 
@@ -38,6 +38,11 @@ export interface AsideMinorTopic extends AsideMinorContentBase {
     }>;
 }
 
+export interface AsideMinorContributor extends AsideMinorBase {
+    type: 'contributor';
+    contributions: Contribution[];
+}
+
 export interface AsideMinorNews extends AsideMinorBase {
     type: 'news';
 }
@@ -46,4 +51,5 @@ export type AsideMinorData =
     | AsideMinorBook
     | AsideMinorGroup
     | AsideMinorTopic
+    | AsideMinorContributor
     | AsideMinorNews;
