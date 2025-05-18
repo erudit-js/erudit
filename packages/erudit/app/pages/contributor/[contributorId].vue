@@ -1,6 +1,4 @@
 <script lang="ts" setup>
-import { NO_ALIASES } from '@erudit-js/cog/schema';
-
 import eruditConfig from '#erudit/config';
 import { type PageContributor } from '@shared/contributor';
 import ContentSection from '@app/components/main/content/ContentSection.vue';
@@ -130,14 +128,8 @@ useSeoMeta({
         </div>
     </header>
     <ContentSection v-if="contributor.hasDescription">
-        <BitranContent
-            :context="{
-                location: {
-                    type: 'contributor',
-                    path: contributor.contributorId,
-                },
-                aliases: NO_ALIASES(),
-            }"
+        <MainBitranContent
+            :location="{ type: 'contributor', path: contributor.contributorId }"
         />
     </ContentSection>
 </template>

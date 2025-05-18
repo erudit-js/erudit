@@ -1,16 +1,18 @@
 <script lang="ts" setup>
 import { Bitran, type BitranContent } from '@bitran-js/renderer-vue';
-import {
-    setEruditBitranRuntime,
-    type BitranContext,
-} from '@erudit-js/cog/schema';
+import { setEruditBitranRuntime } from '@erudit-js/cog/schema';
 
 import eruditConfig from '#erudit/config';
+import type { RawBitranContent } from '@shared/bitran/content';
 import RenderWrapper from './RenderWrapper.vue';
 
 const props = defineProps<{
-    context: BitranContext;
+    rawContent: RawBitranContent;
 }>();
+
+for (const route of props.rawContent.routes) {
+    prerenderRoutes([route]);
+}
 
 const bitranTranspiler = await useBitranTranspiler();
 const bitranRenderers = await useBitranRenderers();
@@ -19,15 +21,14 @@ const bitranRenderers = await useBitranRenderers();
     setEruditBitranRuntime(item, {
         eruditConfig,
         insideInclude: false,
-        context: props.context,
+        context: props.rawContent.context,
     });
 });
 
-const rawBitranContent = await getBitranContent(props.context.location);
-const root = await bitranTranspiler.parser.parse(rawBitranContent.biCode);
+const root = await bitranTranspiler.parser.parse(props.rawContent.biCode);
 const bitranContent: BitranContent = {
     root,
-    renderDataStorage: rawBitranContent.renderDataStorage,
+    renderDataStorage: props.rawContent.storage,
 };
 
 const formatText = useFormatText();

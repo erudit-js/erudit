@@ -1,9 +1,5 @@
 <script lang="ts" setup>
-import {
-    NO_ALIASES,
-    type BitranLocation,
-    type TopicPart,
-} from '@erudit-js/cog/schema';
+import { type BitranLocation, type TopicPart } from '@erudit-js/cog/schema';
 
 import eruditConfig from '#erudit/config';
 
@@ -66,7 +62,7 @@ onMounted(() => {
     <div style="clear: both"></div>
 
     <ContentSection>
-        <BitranContent :context="{ location, aliases: NO_ALIASES() }" />
+        <MainBitranContent :location />
     </ContentSection>
 
     <ContentSection v-if="topicData.generic.references">

@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { NO_ALIASES, type BitranLocation } from '@erudit-js/cog/schema';
+import { type BitranLocation } from '@erudit-js/cog/schema';
 import eruditConfig from '#erudit/config';
 
 import { type ContentGroupData } from '@shared/content/data/type/group';
@@ -49,7 +49,7 @@ const phrase = await usePhrases('group');
     <hr style="display: none" />
 
     <ContentSection>
-        <BitranContent :context="{ location, aliases: NO_ALIASES() }" />
+        <MainBitranContent :location />
     </ContentSection>
 
     <ContentSection v-if="adsAllowed() && eruditConfig.ads?.bottom">
