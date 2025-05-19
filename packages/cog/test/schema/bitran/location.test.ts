@@ -1,12 +1,12 @@
 import {
     decodeBitranLocation,
     encodeBitranLocation,
+    locationsEqual,
     parseBitranLocation,
     parsePartialBitranLocation,
     stringifyBitranLocation,
     type BitranLocation,
 } from '../../../src/schema/bitran/location';
-import { isContentType } from '../../../src/schema/content/base';
 
 const locations: [BitranLocation, string][] = [
     // Full locations
@@ -197,4 +197,71 @@ describe('decode/encodeBitranLocation', () => {
             testCase,
         ),
     );
+});
+
+describe('locationsEqual', () => {
+    it('should compare two identical location objects as equal', () => {
+        const locationA: BitranLocation = {
+            type: 'article',
+            path: 'foo',
+            unique: 'bar',
+        };
+        const locationB: BitranLocation = {
+            type: 'article',
+            path: 'foo',
+            unique: 'bar',
+        };
+        expect(locationsEqual(locationA, locationB)).toBe(true);
+    });
+
+    it('should compare two different location objects as not equal', () => {
+        const locationA: BitranLocation = {
+            type: 'article',
+            path: 'foo',
+            unique: 'bar',
+        };
+        const locationB: BitranLocation = {
+            type: 'article',
+            path: 'foo',
+            unique: 'baz',
+        };
+        expect(locationsEqual(locationA, locationB)).toBe(false);
+    });
+
+    it('should compare location object and equivalent string as equal', () => {
+        const location: BitranLocation = {
+            type: 'article',
+            path: 'foo',
+            unique: 'bar',
+        };
+        const locationStr = 'article|foo|bar';
+        expect(locationsEqual(location, locationStr)).toBe(true);
+        expect(locationsEqual(locationStr, location)).toBe(true);
+    });
+
+    it('should compare two identical location strings as equal', () => {
+        const locationA = 'article|foo|bar';
+        const locationB = 'article|foo|bar';
+        expect(locationsEqual(locationA, locationB)).toBe(true);
+    });
+
+    it('should compare two different location strings as not equal', () => {
+        const locationA = 'article|foo|bar';
+        const locationB = 'group|foo|bar';
+        expect(locationsEqual(locationA, locationB)).toBe(false);
+    });
+
+    it('should normalize paths when comparing', () => {
+        const locationA: BitranLocation = {
+            type: 'article',
+            path: 'foo/',
+            unique: 'bar',
+        };
+        const locationB: BitranLocation = {
+            type: 'article',
+            path: 'foo',
+            unique: 'bar',
+        };
+        expect(locationsEqual(locationA, locationB)).toBe(true);
+    });
 });
