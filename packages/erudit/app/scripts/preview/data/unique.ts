@@ -1,47 +1,46 @@
 import {
     encodeBitranLocation,
-    type BitranContext,
+    parseBitranLocation,
 } from '@erudit-js/cog/schema';
+
+import type { RawBitranContent } from '@shared/bitran/content';
 
 import { PreviewDataType, type PreviewDataBase } from '../data';
 import type { PreviewFooter } from '../footer';
 import { PreviewRequestType, type PreviewRequest } from '../request';
-import type { StringBitranContent } from '@erudit/shared/bitran/stringContent';
 
 export interface PreviewDataUnique extends PreviewDataBase {
     type: PreviewDataType.Unique;
-    productName: string;
-    bitran: {
-        context: BitranContext;
-        content: StringBitranContent;
-    };
+    elementName: string;
+    title: string;
+    rawBitranContent: RawBitranContent;
     footer: PreviewFooter;
 }
 
 export async function buildUnique(
     request: PreviewRequest,
-): Promise<PreviewDataUnique> {
+): Promise<PreviewDataUnique | undefined> {
     if (request.type !== PreviewRequestType.Link) return;
 
     const { linkTarget } = request;
 
     if (linkTarget.type !== 'unique') return;
 
-    const serverData = (await $fetch(
+    const serverData = await $fetch(
         `/api/preview/unique/${encodeBitranLocation(linkTarget._absoluteStrLocation!)}`,
         { responseType: 'json' },
-    )) as any;
-    const productName = serverData.bitran.productName;
-    const customTitle = serverData.productTitle;
+    );
+    const elementName = serverData.elementName;
+    const customTitle = serverData.title;
 
-    const icon = await useBitranElementIcon(productName);
+    const icon = await useBitranElementIcon(elementName);
 
     const productPhraseName = await (async () => {
-        const elementPhrase = await useBitranElementLanguage(productName);
+        const elementPhrase = await useBitranElementLanguage(elementName);
         try {
             return elementPhrase('_element_title');
         } catch {
-            return productName;
+            return elementName;
         }
     })();
 
@@ -53,15 +52,13 @@ export async function buildUnique(
         ? (secondary ? ' • ' : '') + productPhraseName
         : '';
 
-    const primary = customTitle || productPhraseName || productName;
+    const primary = customTitle || productPhraseName || elementName;
 
     return {
         type: PreviewDataType.Unique,
-        productName,
-        bitran: {
-            context: serverData.bitran.context,
-            content: serverData.bitran.content as any,
-        },
+        elementName: elementName,
+        title: customTitle || productPhraseName,
+        rawBitranContent: serverData.rawBitranContent as RawBitranContent,
         footer: {
             iconSvg: icon,
             primary,

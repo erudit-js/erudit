@@ -1,22 +1,20 @@
 <script lang="ts" setup>
-import { NO_ALIASES } from '@erudit-js/cog/schema';
+import { type BitranLocation } from '@erudit-js/cog/schema';
 import eruditConfig from '#erudit/config';
 
 import { type ContentGroupData } from '@shared/content/data/type/group';
 import { locationIcon } from '@erudit/shared/icons';
-import ContentDecoration from '@app/components/main/utils/ContentDecoration.vue';
-import Breadcrumb from '@app/components/main/utils/Breadcrumb.vue';
-import ContentTitle from '@app/components/main/utils/ContentTitle.vue';
-import ContentDescription from '@app/components/main/utils/ContentDescription.vue';
-import ContentPopovers from '@app/components/main/utils/ContentPopovers.vue';
-import ContentSection from '@app/components/main/utils/ContentSection.vue';
 
-const location = useBitranLocation();
+import ContentBreadcrumb from '@app/components/main/content/ContentBreadcrumb.vue';
+import ContentDecoration from '@app/components/main/content/ContentDecoration.vue';
+import ContentPopovers from '@app/components/main/content/ContentPopovers.vue';
+import ContentSection from '@app/components/main/content/ContentSection.vue';
+
+const location = useBitranLocation() as Ref<BitranLocation>;
 
 const groupData = await useContentData<ContentGroupData>();
 await useContentPage(groupData);
 
-const content = await useBitranContent(location);
 const phrase = await usePhrases('group');
 </script>
 
@@ -26,12 +24,9 @@ const phrase = await usePhrases('group');
         :decoration="groupData.generic.decoration"
     />
 
-    <Breadcrumb
-        v-if="groupData.generic.context?.length > 1"
-        :context="groupData.generic.context"
-    />
+    <ContentBreadcrumb :context="groupData.generic.context" />
 
-    <ContentTitle
+    <MainTitle
         :title="
             groupData.generic?.title ||
             groupData.generic.contentId.split('/').pop()!
@@ -40,7 +35,7 @@ const phrase = await usePhrases('group');
         :hint="phrase.group"
     />
 
-    <ContentDescription
+    <MainDescription
         v-if="groupData.generic?.description"
         :description="groupData.generic?.description"
     />
@@ -54,10 +49,7 @@ const phrase = await usePhrases('group');
     <hr style="display: none" />
 
     <ContentSection>
-        <BitranContent
-            :content
-            :context="{ location, aliases: NO_ALIASES() }"
-        />
+        <MainBitranContent :location />
     </ContentSection>
 
     <ContentSection v-if="adsAllowed() && eruditConfig.ads?.bottom">

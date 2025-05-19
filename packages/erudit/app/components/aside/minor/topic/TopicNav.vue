@@ -10,15 +10,15 @@ const phrase = await usePhrases('article', 'summary', 'practice');
 const topicData = injectAsideData<AsideMinorTopic>();
 
 const currentTopicPart = computed(() => {
-    return topicData.value.location.type as TopicPart;
+    return topicData.value.part as TopicPart;
 });
 </script>
 
 <template>
     <section :class="$style.topicNav">
         <AsideMinorTopLink
-            :title="topicData.nav?.previous?.title"
-            :link="topicData.nav?.previous?.link"
+            :title="topicData.previousNext?.previous?.title"
+            :link="topicData.previousNext?.previous?.link"
             :icon="'arrow-left'"
         />
 
@@ -26,13 +26,13 @@ const currentTopicPart = computed(() => {
             v-for="topicPart of topicParts"
             :title="phrase[topicPart]"
             :icon="TOPIC_PART_ICON[topicPart]"
-            :link="topicData.nav?.[topicPart]"
+            :link="topicData.partLinks?.[topicPart]"
             :active="topicPart === currentTopicPart"
         />
 
         <AsideMinorTopLink
-            :title="topicData.nav?.next?.title"
-            :link="topicData.nav?.next?.link"
+            :title="topicData.previousNext?.next?.title"
+            :link="topicData.previousNext?.next?.link"
             :icon="'arrow-left'"
             class="icon-flip-h"
         />

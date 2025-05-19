@@ -1,20 +1,19 @@
 <script lang="ts" setup>
 import { Bitran, type BitranContent } from '@bitran-js/renderer-vue';
-import {
-    setEruditBitranRuntime,
-    type BitranContext,
-} from '@erudit-js/cog/schema';
+import { setEruditBitranRuntime } from '@erudit-js/cog/schema';
 
 import eruditConfig from '#erudit/config';
-
+import type { RawBitranContent } from '@shared/bitran/content';
 import RenderWrapper from './RenderWrapper.vue';
 
 const props = defineProps<{
-    content: BitranContent;
-    context: BitranContext;
+    rawContent: RawBitranContent;
 }>();
 
-/* Remove transpiler from Bitran Vue Component at all? It takes RootNode already... */
+for (const route of props.rawContent.routes) {
+    prerenderRoutes([route]);
+}
+
 const bitranTranspiler = await useBitranTranspiler();
 const bitranRenderers = await useBitranRenderers();
 
@@ -22,17 +21,17 @@ const bitranRenderers = await useBitranRenderers();
     setEruditBitranRuntime(item, {
         eruditConfig,
         insideInclude: false,
-        context: props.context,
+        context: props.rawContent.context,
     });
 });
 
-const formatText = useFormatText();
+const root = await bitranTranspiler.parser.parse(props.rawContent.biCode);
+const bitranContent: BitranContent = {
+    root,
+    renderDataStorage: props.rawContent.storage,
+};
 
-// onMounted(() => {
-//     watch(urlElement, () => {
-//         //console.log('Highlighting product:', urlElement.value);
-//     }, { immediate: true });
-// });
+const formatText = useFormatText();
 
 const isDev = import.meta.dev;
 const isServer = import.meta.server;
@@ -43,7 +42,7 @@ const isServer = import.meta.server;
         :class="$style.eruditBitranContainer"
         :transpiler="bitranTranspiler"
         :renderers="bitranRenderers"
-        :content
+        :content="bitranContent"
         :editMode="false"
         :formatText
         :RenderWrapper

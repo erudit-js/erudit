@@ -1,10 +1,15 @@
 <script lang="ts" setup>
-defineProps<{ description: string }>();
-const pretty = await useFormatText();
+defineProps<{ description: string; html?: boolean }>();
+const pretty = useFormatText();
 </script>
 
 <template>
-    <section :class="$style.contentDescription">
+    <section
+        v-if="html"
+        :class="$style.contentDescription"
+        v-html="description"
+    ></section>
+    <section v-else :class="$style.contentDescription">
         {{ pretty(description) }}
     </section>
 </template>

@@ -34,37 +34,31 @@ import { ERUDIT_SERVER } from '@server/global';
 import { DbUnique } from '@server/db/entities/Unique';
 import { DbTopic } from '@server/db/entities/Topic';
 import { DbGroup } from '@server/db/entities/Group';
+import { DbContributor } from '@server/db/entities/Contributor';
 import { traverseInclude } from '@server/bitran/elements/include';
 import { createBitranTranspiler } from '@server/bitran/transpiler';
 import { logger } from '@server/logger';
 
-import type { StringBitranContent } from '@shared/bitran/stringContent';
-
-interface RawBitranContent {
-    context: BitranContext;
-    biCode: string;
-}
-
-export type EruditBitranContent = StringBitranContent & {
-    routes: string[];
-};
+import { type RawBitranContent } from '@erudit/shared/bitran/content';
 
 export async function getBitranContent(
     location: BitranLocation,
     generatePrerenderData: boolean = true,
-): Promise<StringBitranContent> {
-    const rawContent = await getRawBitranContent(location);
+): Promise<RawBitranContent> {
+    const { biCode, context } = await retrieveContentFrom(location);
     const bitranContent = await createBitranContent(
-        rawContent.context,
-        rawContent.biCode,
+        context,
+        biCode,
         generatePrerenderData,
     );
     return bitranContent;
 }
 
-export async function getRawBitranContent(
-    location: BitranLocation,
-): Promise<RawBitranContent> {
+//
+// Local
+//
+
+async function retrieveContentFrom(location: BitranLocation) {
     const throwNotFound = () => {
         throw createError({
             statusCode: 404,
@@ -115,6 +109,23 @@ export async function getRawBitranContent(
         };
     }
 
+    if (location.type === 'contributor') {
+        const dbContributor = await ERUDIT_SERVER.DB.manager.findOne(
+            DbContributor,
+            {
+                select: ['description'],
+                where: { contributorId: location.path },
+            },
+        );
+
+        if (!dbContributor) throwNotFound();
+
+        return {
+            biCode: dbContributor!.description!,
+            context: { location, aliases: NO_ALIASES() },
+        };
+    }
+
     return throwNotFound();
 }
 
@@ -122,7 +133,7 @@ async function createBitranContent(
     context: BitranContext,
     biCode: string,
     generatePrerenderData: boolean = true,
-): Promise<EruditBitranContent> {
+): Promise<RawBitranContent> {
     const runtime: EruditBitranRuntime = {
         eruditConfig: ERUDIT_SERVER.CONFIG,
         insideInclude: false,
@@ -207,8 +218,12 @@ async function createBitranContent(
 
     return {
         biCode: finalContent,
-        renderDataStorage,
+        storage: renderDataStorage,
         routes,
+        context: {
+            location: context.location,
+            aliases: context.aliases,
+        },
     };
 }
 

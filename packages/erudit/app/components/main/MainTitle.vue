@@ -6,12 +6,18 @@ defineProps<{ icon: string; title: string; hint?: string }>();
 
 <template>
     <section :class="$style.contentTitle">
-        <MyIcon v-if="isMyIcon(icon)" :name="icon as any" :title="hint" />
+        <MyIcon
+            v-if="isMyIcon(icon)"
+            :name="icon as any"
+            :title="hint"
+            :class="{ [$style.hasHint]: !!hint }"
+        />
         <MyRuntimeIcon
             v-else
             name="content-title-icon"
             :svg="icon"
             :title="hint"
+            :class="{ [$style.hasHint]: !!hint }"
         />
         <h1>{{ title }}</h1>
     </section>
@@ -24,7 +30,7 @@ defineProps<{ icon: string; title: string; hint?: string }>();
     display: flex;
     align-items: center;
     gap: var(--gap);
-    padding: 0 var(--_pMainX);
+    padding: var(--_pMainY) var(--_pMainX);
 
     [my-icon] {
         flex-shrink: 0;
@@ -32,6 +38,9 @@ defineProps<{ icon: string; title: string; hint?: string }>();
         color: var(--textMuted);
         position: relative;
         top: 1px;
+    }
+
+    .hasHint {
         cursor: help;
     }
 

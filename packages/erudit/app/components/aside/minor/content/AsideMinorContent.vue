@@ -1,8 +1,8 @@
 <script lang="ts" setup>
-import type { AsideMinorContent } from '@shared/aside/minor';
+import type { AsideMinorContentBase } from '@shared/aside/minor';
 import { injectAsideData } from '@app/scripts/aside/minor/state';
 
-const contentData = injectAsideData<AsideMinorContent>();
+const contentData = injectAsideData<AsideMinorContentBase>();
 const phrase = await usePhrases('contributors', 'no_contributors');
 const contributePaneVisible = ref(false);
 
@@ -13,8 +13,8 @@ watch(contentData, () => (contributePaneVisible.value = false));
     <AsideMinorPane :class="$style.asideMinorContent">
         <section :class="$style.contentNav">
             <AsideMinorTopLink
-                :title="contentData.nav?.previous?.title"
-                :link="contentData.nav?.previous?.link"
+                :title="contentData.previousNext?.previous?.title"
+                :link="contentData.previousNext?.previous?.link"
                 :icon="'arrow-left'"
             />
 
@@ -24,8 +24,8 @@ watch(contentData, () => (contributePaneVisible.value = false));
             </div>
 
             <AsideMinorTopLink
-                :title="contentData.nav?.next?.title"
-                :link="contentData.nav?.next?.link"
+                :title="contentData.previousNext?.next?.title"
+                :link="contentData.previousNext?.next?.link"
                 :icon="'arrow-left'"
                 class="icon-flip-h"
             />
@@ -39,10 +39,7 @@ watch(contentData, () => (contributePaneVisible.value = false));
         <section v-else :class="$style.noContributors">
             {{ phrase.no_contributors }}
         </section>
-        <AsideMinorContribute
-            :contentId="contentData.contentId"
-            v-model:pane="contributePaneVisible"
-        />
+        <AsideMinorContribute v-model:pane="contributePaneVisible" />
     </AsideMinorPane>
 </template>
 

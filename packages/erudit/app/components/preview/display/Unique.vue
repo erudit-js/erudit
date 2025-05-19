@@ -5,9 +5,6 @@ import type { PreviewDataUnique } from '@app/scripts/preview/data/unique';
 import type { PreviewDisplayProps } from '@app/scripts/preview/display';
 
 const { data } = defineProps<PreviewDisplayProps<PreviewDataUnique>>();
-
-const bitranTranspiler = await useBitranTranspiler();
-const root = await bitranTranspiler.parser.parse(data.bitran.content.biCode);
 </script>
 
 <template>
@@ -15,16 +12,10 @@ const root = await bitranTranspiler.parser.parse(data.bitran.content.biCode);
         <div
             :class="[
                 $style.bitranPreviewContent,
-                data.productName === headingName && $style.heading,
+                data.elementName === headingName && $style.heading,
             ]"
         >
-            <BitranContent
-                :content="{
-                    root,
-                    renderDataStorage: data.bitran.content.renderDataStorage,
-                }"
-                :context="data.bitran.context"
-            />
+            <BitranContent :rawContent="data.rawBitranContent" />
         </div>
     </PreviewDisplay>
 </template>

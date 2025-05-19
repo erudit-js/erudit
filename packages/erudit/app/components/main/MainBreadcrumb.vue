@@ -1,27 +1,20 @@
 <script lang="ts" setup>
-import type { MyIconName } from '#my-icons';
-import type { Context } from '@erudit/shared/content/context';
+import type { BreadcrumbItem } from '@erudit/shared/breadcrumb';
 
-defineProps<{ context: Context }>();
-
-const Link = defineNuxtLink({ prefetch: false });
-
-function getIcon(contextIcon: string) {
-    return contextIcon as MyIconName;
-}
+defineProps<{ items: BreadcrumbItem[] }>();
 </script>
 
 <template>
-    <section :class="$style.breadcrumb">
-        <template
-            v-for="contextItem of context
-                .slice(0, -1)
-                .filter((item) => !item.hidden)"
-        >
-            <Link :to="contextItem.href" :class="$style.breadcrumbItem">
-                <MyIcon :name="getIcon(contextItem.icon)" wrapper="span" />
-                {{ contextItem.title }}
-            </Link>
+    <section v-if="items.length" :class="$style.breadcrumb">
+        <template v-for="item in items">
+            <NuxtLink
+                :to="item.link"
+                :prefetch="false"
+                :class="$style.breadcrumbItem"
+            >
+                <MyIcon :name="item.icon" wrapper="span" />
+                {{ item.title }}
+            </NuxtLink>
             <MyIcon :class="$style.sep" name="angle-right" />
         </template>
     </section>

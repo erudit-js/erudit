@@ -1,9 +1,14 @@
 <script lang="ts" setup>
 import eruditConfig from '#erudit/config';
+import { injectAsideData } from '@erudit/app/scripts/aside/minor/state';
+import {
+    type AsideMinorContentBase,
+    type AsideMinorTopic,
+} from '@shared/aside/minor';
 
 import AsideOverlayPane from '../utils/AsideOverlayPane.vue';
 
-const props = defineProps<{ contentId: string }>();
+const asideData = injectAsideData<AsideMinorContentBase>();
 const phrase = await usePhrases(
     'make_contribution',
     'material_improvement',
@@ -11,6 +16,7 @@ const phrase = await usePhrases(
     'how_to_improve',
     'report_problem',
 );
+
 const paneVisible = defineModel<boolean>('pane');
 
 const issueLink = computed(() => {
@@ -22,14 +28,35 @@ const issueLink = computed(() => {
 
 const editPageLink = computed(() => {
     const ghRepository = eruditConfig.repository;
-    return ghRepository
-        ? `https://github.com/${ghRepository.name}/tree/${ghRepository.branch}/content/${props.contentId}`
-        : null;
+
+    if (!ghRepository) {
+        return undefined;
+    }
+
+    let link = `https://github.com/${ghRepository.name}/edit/${ghRepository.branch}/content/${asideData.value.fsContentDirectory}/`;
+
+    if (asideData.value.type === 'topic') {
+        link += `${(<AsideMinorTopic>asideData.value).part}.bi`;
+    }
+
+    return link;
+});
+
+const buttonVisible = computed(() => {
+    return (
+        eruditConfig.content?.howToImproveLink ||
+        issueLink.value ||
+        editPageLink.value
+    );
 });
 </script>
 
 <template>
-    <button :class="$style.contribute" @click="paneVisible = true">
+    <button
+        v-if="buttonVisible"
+        :class="$style.contribute"
+        @click="paneVisible = true"
+    >
         <div :class="$style.icon"><MyIcon name="draw" /></div>
         <div :class="$style.label">{{ phrase.make_contribution }}</div>
     </button>
@@ -37,8 +64,11 @@ const editPageLink = computed(() => {
         <AsideOverlayPane v-if="paneVisible" stick="bottom">
             <div :class="$style.paneBottomActions">
                 <AsideListItem
+                    v-if="eruditConfig.content?.howToImproveLink"
                     icon="circle-help"
                     :main="phrase.how_to_improve"
+                    :link="eruditConfig.content.howToImproveLink"
+                    target="_blank"
                 />
                 <AsideListItem
                     v-if="issueLink"

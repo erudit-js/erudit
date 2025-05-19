@@ -2,11 +2,9 @@
 import type { ContentBookData } from '@erudit/shared/content/data/type/book';
 import type { MyIconName } from '#my-icons';
 
-import ContentDecoration from '@app/components/main/utils/ContentDecoration.vue';
-import Breadcrumb from '@app/components/main/utils/Breadcrumb.vue';
-import ContentTitle from '@app/components/main/utils/ContentTitle.vue';
-import ContentDescription from '@app/components/main/utils/ContentDescription.vue';
-import ContentPopovers from '@app/components/main/utils/ContentPopovers.vue';
+import ContentBreadcrumb from '@app/components/main/content/ContentBreadcrumb.vue';
+import ContentDecoration from '@app/components/main/content/ContentDecoration.vue';
+import ContentPopovers from '@app/components/main/content/ContentPopovers.vue';
 
 const bookData = await useContentData<ContentBookData>();
 await useContentPage(bookData);
@@ -20,12 +18,9 @@ const phrase = await usePhrases('book');
         :decoration="bookData.generic.decoration"
     />
 
-    <Breadcrumb
-        v-if="bookData.generic.context?.length > 1"
-        :context="bookData.generic.context"
-    />
+    <ContentBreadcrumb :context="bookData.generic.context" />
 
-    <ContentTitle
+    <MainTitle
         :title="
             bookData.generic?.title ||
             bookData.generic.contentId.split('/').pop()!
@@ -34,7 +29,7 @@ const phrase = await usePhrases('book');
         :hint="phrase.book"
     />
 
-    <ContentDescription
+    <MainDescription
         v-if="bookData.generic?.description"
         :description="bookData.generic?.description"
     />

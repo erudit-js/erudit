@@ -9,7 +9,7 @@ interface LanguagePayload {
     strFunctions: Record<string, string>;
 }
 
-const functions: Record<string, Function> = {};
+let functions: Record<string, Function>;
 const functionPhrases: Record<string, Function> = {};
 
 const phraseApiRoute = (phraseId: EruditPhraseId) =>
@@ -42,9 +42,14 @@ export function usePhrases<T extends EruditPhraseId[]>(
 
             if (strPhrase.startsWith('~!~FUNC~!~')) {
                 const strFunction = strPhrase.replace('~!~FUNC~!~', '');
-                functionPhrases[phraseId] ||= new Function(strFunction).bind(
-                    functions,
-                )();
+                functionPhrases[phraseId] ||= new Function(
+                    'funcs',
+                    `
+                    with(funcs) {
+                        ${strFunction}
+                    }
+                `,
+                )(functions);
                 phraseCaller[phraseId] = functionPhrases[phraseId];
             } else {
                 phraseCaller[phraseId] = strPhrase;
@@ -56,10 +61,17 @@ export function usePhrases<T extends EruditPhraseId[]>(
 }
 
 async function prepareFunctions(payload: LanguagePayload) {
-    if (payload?.strFunctions) return;
+    payload.strFunctions ||= await $fetch(functionsApiRoute, {
+        responseType: 'json',
+    });
 
-    payload.strFunctions = await $fetch(functionsApiRoute);
-
-    for (const [funcName, strFunc] of Object.entries(payload.strFunctions))
-        functions[funcName] = new Function(strFunc)();
+    functions ||= (() => {
+        const _functions: Record<string, Function> = {};
+        for (const [funcName, strFunc] of Object.entries(
+            payload.strFunctions,
+        )) {
+            _functions[funcName] = new Function(strFunc)();
+        }
+        return _functions;
+    })();
 }

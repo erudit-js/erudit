@@ -35,6 +35,8 @@ sdf
 
             Paragraph
 
+            $$ A + B + C + D + A + C + D + B $$
+
         - Second item
 
 { #da }

@@ -1,25 +1,19 @@
-import {
-    stringifyBitranLocation,
-    type BitranContext,
-} from '@erudit-js/cog/schema';
+import { stringifyBitranLocation } from '@erudit-js/cog/schema';
 
 import { getLocationContext } from '@server/content/context';
 import { ERUDIT_SERVER } from '@server/global';
 import { DbUnique } from '@server/db/entities/Unique';
-import { getBitranContent } from '@server/bitran/content';
 import { parseClientBitranLocation } from '@server/bitran/location';
+import { getBitranContent } from '@server/bitran/content';
 
 import type { Context } from '@shared/content/context';
-import type { StringBitranContent } from '@erudit/shared/bitran/stringContent';
+import type { RawBitranContent } from '@shared/bitran/content';
 
 interface ReturnType {
     context: Context;
-    productTitle?: string;
-    bitran: {
-        productName: string;
-        context: BitranContext;
-        content: StringBitranContent;
-    };
+    title?: string;
+    elementName: string;
+    rawBitranContent: RawBitranContent;
 }
 
 export default defineEventHandler<Promise<ReturnType>>(async (event) => {
@@ -33,7 +27,7 @@ export default defineEventHandler<Promise<ReturnType>>(async (event) => {
 
     const dbUnique = await (async () => {
         const dbUnique = ERUDIT_SERVER.DB.manager.findOne(DbUnique, {
-            select: ['productName', 'title', 'context'],
+            select: ['title', 'productName'],
             where: { location: stringifyBitranLocation(location) },
         });
 
@@ -45,17 +39,10 @@ export default defineEventHandler<Promise<ReturnType>>(async (event) => {
         return dbUnique as any as DbUnique;
     })();
 
-    const bitran = await (async () => {
-        return {
-            content: await getBitranContent(location),
-            context: dbUnique.context,
-            productName: dbUnique.productName,
-        };
-    })();
-
     return <ReturnType>{
         context,
-        productTitle: dbUnique.title,
-        bitran,
+        title: dbUnique.title,
+        elementName: dbUnique.productName,
+        rawBitranContent: await getBitranContent(location),
     };
 });

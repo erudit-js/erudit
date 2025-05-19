@@ -21,7 +21,14 @@ export interface EruditPhrases {
     theme_dark: string;
     content: string;
     main_page: string;
-    members: string;
+    contributors: string;
+    contributors_page_description: string;
+    contributors_page_invite: (link: string) => string;
+    contributor: string;
+    contribution: string;
+    contributions_explain: (count: number) => string;
+    contributor_description: (name: string) => string;
+    editor: string;
     add_translation: string;
     empty_nav: string;
     flag_dev: string;
@@ -48,7 +55,6 @@ export interface EruditPhrases {
     article: string;
     summary: string;
     practice: string;
-    contributor: string;
     element_id: string;
     preview_missing_title: string;
     preview_missing_explain: string;
@@ -58,7 +64,6 @@ export interface EruditPhrases {
     current_page_hash: string;
     expected_page_hash: string;
     empty_toc: string;
-    contributors: string;
     no_contributors: string;
     make_contribution: string;
     material_improvement: string;

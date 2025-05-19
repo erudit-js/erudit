@@ -5,6 +5,7 @@ export default {
     '\\green': '\\textcolor{##300000}{#1}',
     '\\yellow': '\\textcolor{##400000}{#1}',
     '\\red': '\\textcolor{##500000}{#1}',
+    '\\default': '\\textcolor{##600000}{#1}',
 
     // Set
     '\\set': '\\left\\{#1\\right\\}',

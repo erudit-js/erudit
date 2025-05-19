@@ -1,6 +1,6 @@
 {
     "name": "erudit",
-    "version": "3.0.0-dev.18",
+    "version": "3.0.0-dev.19",
     "type": "module",
     "description": "🤓 CMS for perfect educational sites.",
     "license": "MIT",
@@ -15,9 +15,9 @@
         "erudit": "bin/erudit.mjs"
     },
     "peerDependencies": {
-        "@erudit-js/cog": "workspace:3.0.0-dev.18",
-        "@erudit-js/cli": "workspace:3.0.0-dev.18",
-        "@erudit-js/bitran-elements": "workspace:3.0.0-dev.18"
+        "@erudit-js/cog": "workspace:3.0.0-dev.19",
+        "@erudit-js/cli": "workspace:3.0.0-dev.19",
+        "@erudit-js/bitran-elements": "workspace:3.0.0-dev.19"
     },
     "dependencies": {
         "@bitran-js/core": "1.0.0-dev.13",
@@ -31,7 +31,7 @@
         "glob": "^11.0.2",
         "image-size": "^2.0.2",
         "jiti": "^2.4.2",
-        "nuxt": "3.17.2",
+        "nuxt": "3.17.3",
         "nuxt-my-icons": "1.1.1",
         "sass": "^1.87.0",
         "sqlite3": "^5.1.7",

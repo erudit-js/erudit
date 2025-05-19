@@ -23,7 +23,7 @@
         content: '';
     }
 
-    &:nth-of-type(even) {
+    &:nth-of-type(odd) {
         &::before {
             @include shade;
         }
@@ -32,7 +32,7 @@
         }
     }
 
-    &:nth-of-type(odd) {
+    &:nth-of-type(even) {
         &::before {
             @include simple;
         }

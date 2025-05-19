@@ -17,10 +17,7 @@ watch(topicData, () => (contributePaneVisible.value = false));
         <TopicNav />
         <TopicToc />
         <TopicContributors v-if="topicData.contributors" />
-        <AsideMinorContribute
-            :contentId="topicData.topicId"
-            v-model:pane="contributePaneVisible"
-        />
+        <AsideMinorContribute v-model:pane="contributePaneVisible" />
     </AsideMinorPane>
 </template>
 

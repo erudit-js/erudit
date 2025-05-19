@@ -25,14 +25,6 @@ const MathComponent = h(props.displayMath ? 'div' : 'span', {
 
 <style lang="scss">
 @use 'katex/dist/katex.min.css';
-
-.bitran-component {
-    --katex-color_brand: var(--bitran_colorBrand);
-    --katex-color_blue: light-dark(#0f82ff, #4aa0df);
-    --katex-color_green: light-dark(#519f19, #83c167);
-    --katex-color_yellow: light-dark(#c99029, #c1a267);
-    --katex-color_red: light-dark(#d73737, #fc6255);
-}
 </style>
 
 <style lang="scss" module>
@@ -43,12 +35,22 @@ const MathComponent = h(props.displayMath ? 'div' : 'span', {
     // KaTeX math colors
     //
 
+    --katex-color_brand: var(--bitran_colorBrand);
+    --katex-color_blue: light-dark(#0f82ff, #4aa0df);
+    --katex-color_green: light-dark(#519f19, #83c167);
+    --katex-color_yellow: light-dark(#c99029, #c1a267);
+    --katex-color_red: light-dark(#d73737, #fc6255);
+    --katex-color_default: var(--bitran_text);
+
+    color: var(--katex-color_default);
+
     $katexColorMap: (
         100000: 'brand',
         200000: 'blue',
         300000: 'green',
         400000: 'yellow',
         500000: 'red',
+        600000: 'default',
     );
 
     @each $katexCode, $cssVarCode in $katexColorMap {

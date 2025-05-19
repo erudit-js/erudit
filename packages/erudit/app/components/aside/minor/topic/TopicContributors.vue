@@ -1,9 +1,9 @@
 <script lang="ts" setup>
 import { injectAsideData } from '@app/scripts/aside/minor/state';
 import { type AsideMinorTopic } from '@shared/aside/minor';
+import type { ContentContributor } from '@shared/contributor';
 
 import AsideOverlayPane from '../../utils/AsideOverlayPane.vue';
-import type { ContentContributor } from '@shared/contributor';
 
 const phrase = await usePhrases('contributors');
 const topicData = injectAsideData<AsideMinorTopic>();
@@ -27,9 +27,9 @@ onMounted(() => {
     watch(
         topicData,
         () => {
-            if (previousFullId === topicData.value.topicId) return;
+            if (previousFullId === topicData.value.fullContentId) return;
 
-            previousFullId = topicData.value.topicId;
+            previousFullId = topicData.value.fullContentId;
             showcase.value = [...topicData.value.contributors!]
                 .sort(() => 0.5 - Math.random())
                 .slice(0, counter.value.showcase);
