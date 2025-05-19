@@ -128,6 +128,7 @@ useSeoMeta({
         </div>
     </header>
     <MainBitranContent
+        v-if="contributor.hasDescription"
         :location="{ type: 'contributor', path: contributor.contributorId }"
     />
 </template>
