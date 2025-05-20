@@ -41,7 +41,7 @@ const Link = defineNuxtLink({ prefetch: false });
     justify-content: center;
     gap: var(--gapBig);
     margin: var(--_pMainY) 0;
-    margin-top: -30px;
+    margin-top: -40px;
 
     width: 100%;
     height: var(--height);

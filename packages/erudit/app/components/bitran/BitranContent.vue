@@ -5,6 +5,7 @@ import { setEruditBitranRuntime } from '@erudit-js/cog/schema';
 import eruditConfig from '#erudit/config';
 import type { RawBitranContent } from '@shared/bitran/content';
 import RenderWrapper from './RenderWrapper.vue';
+import { HeadingNode } from '@erudit-js/bitran-elements/heading/shared';
 
 const props = defineProps<{
     rawContent: RawBitranContent;
@@ -17,7 +18,7 @@ for (const route of props.rawContent.routes) {
 const bitranTranspiler = await useBitranTranspiler();
 const bitranRenderers = await useBitranRenderers();
 
-[(bitranTranspiler.parser, bitranTranspiler.stringifier)].forEach((item) => {
+[bitranTranspiler.parser, bitranTranspiler.stringifier].forEach((item) => {
     setEruditBitranRuntime(item, {
         eruditConfig,
         insideInclude: false,

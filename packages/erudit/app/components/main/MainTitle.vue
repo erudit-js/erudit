@@ -30,7 +30,11 @@ defineProps<{ icon: string; title: string; hint?: string }>();
     display: flex;
     align-items: center;
     gap: var(--gap);
-    padding: var(--_pMainY) var(--_pMainX);
+    padding: 0 var(--_pMainX);
+
+    @include bp.below('mobile') {
+        padding: var(--_pMainY) var(--_pMainX);
+    }
 
     [my-icon] {
         flex-shrink: 0;

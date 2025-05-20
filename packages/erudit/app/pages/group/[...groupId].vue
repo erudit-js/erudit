@@ -42,15 +42,9 @@ const phrase = await usePhrases('group');
 
     <ContentPopovers :generic="groupData.generic" />
 
-    <!-- TODO: List of materials in group -->
-
     <div style="clear: both"></div>
 
-    <hr style="display: none" />
-
-    <ContentSection>
-        <MainBitranContent :location />
-    </ContentSection>
+    <MainBitranContent :location />
 
     <ContentSection v-if="adsAllowed() && eruditConfig.ads?.bottom">
         <AdsBannerBottom />

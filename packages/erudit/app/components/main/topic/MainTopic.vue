@@ -61,9 +61,7 @@ onMounted(() => {
 
     <div style="clear: both"></div>
 
-    <ContentSection>
-        <MainBitranContent :location />
-    </ContentSection>
+    <MainBitranContent :location />
 
     <ContentSection v-if="topicData.generic.references">
         <ContentReferences :references="topicData.generic.references" />

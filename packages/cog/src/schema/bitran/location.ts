@@ -195,3 +195,18 @@ export function locationFromPath(routePath: string) {
 
     return undefined;
 }
+
+export function locationsEqual(
+    locationA: BitranLocation | string,
+    locationB: BitranLocation | string,
+): boolean {
+    if (typeof locationA !== 'string') {
+        locationA = stringifyBitranLocation(locationA);
+    }
+
+    if (typeof locationB !== 'string') {
+        locationB = stringifyBitranLocation(locationB);
+    }
+
+    return locationA === locationB;
+}

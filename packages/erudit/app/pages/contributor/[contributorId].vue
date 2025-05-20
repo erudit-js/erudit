@@ -127,11 +127,10 @@ useSeoMeta({
             </div>
         </div>
     </header>
-    <ContentSection v-if="contributor.hasDescription">
-        <MainBitranContent
-            :location="{ type: 'contributor', path: contributor.contributorId }"
-        />
-    </ContentSection>
+    <MainBitranContent
+        v-if="contributor.hasDescription"
+        :location="{ type: 'contributor', path: contributor.contributorId }"
+    />
 </template>
 
 <style lang="scss" module>
