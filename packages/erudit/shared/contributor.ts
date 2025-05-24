@@ -7,6 +7,7 @@ export interface ContentContributor {
 }
 
 export interface Contribution {
+    bookId?: string;
     bookTitle?: string;
     contentType: ContentType;
     contentTitle: string;

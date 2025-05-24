@@ -67,8 +67,14 @@ export async function getContributions(
         const contentId = dbContribution.contentId;
         const contentNavNode = getNavNode(contentId);
 
-        const bookTitle = await (async () => {
-            const bookId = getNavBookOf(contentId)?.fullId;
+        const bookData = await (async () => {
+            const bookNavNode = getNavBookOf(contentId);
+
+            if (!bookNavNode) {
+                return undefined;
+            }
+
+            const bookId = bookNavNode.fullId;
 
             if (!bookId) {
                 return undefined;
@@ -78,14 +84,32 @@ export async function getContributions(
                 return undefined;
             }
 
-            return await getBookTitleFor(bookId);
+            let bookTitle = await getBookTitleFor(bookId);
+
+            let cursor = bookNavNode;
+            while (cursor) {
+                if (cursor.type === 'group') {
+                    bookTitle =
+                        (await getContentTitle(cursor.fullId)) +
+                        ' / ' +
+                        bookTitle;
+                }
+
+                cursor = cursor.parent as any;
+            }
+
+            return {
+                bookId,
+                bookTitle,
+            };
         })();
 
         const contentTitle = await getContentTitle(contentId);
         const contentLink = await getContentLink(contentId);
 
         const contribution: Contribution = {
-            bookTitle: bookTitle,
+            bookId: bookData?.bookId,
+            bookTitle: bookData?.bookTitle,
             contentType: contentNavNode.type,
             contentTitle,
             contentLink,

@@ -8,23 +8,23 @@ import BookContribution from './BookContribution.vue';
 const contributorData = injectAsideData<AsideMinorContributor>();
 const phrase = await usePhrases('contribution');
 
-const bookContributions = (() => {
+const bookIdContributions = (() => {
     const grouped: Record<string, typeof contributorData.value.contributions> =
         {};
 
     contributorData.value.contributions.forEach((contribution) => {
-        const bookTitle = contribution.bookTitle || '';
-        if (!grouped[bookTitle]) {
-            grouped[bookTitle] = [];
+        const bookId = contribution.bookId || '';
+        if (!grouped[bookId]) {
+            grouped[bookId] = [];
         }
-        grouped[bookTitle].push(contribution);
+        grouped[bookId].push(contribution);
     });
 
     return grouped;
 })();
 
-const topLevelContributions = bookContributions[''];
-delete bookContributions[''];
+const topLevelContributions = bookIdContributions[''];
+delete bookIdContributions[''];
 </script>
 
 <template>
@@ -43,8 +43,8 @@ delete bookContributions[''];
                     />
                 </template>
                 <BookContribution
-                    v-for="(contributions, bookTitle) in bookContributions"
-                    :bookTitle
+                    v-for="(contributions, bookId) in bookIdContributions"
+                    :bookTitle="contributions[0]!.bookTitle!"
                     :contributions
                 />
             </TreeContainer>

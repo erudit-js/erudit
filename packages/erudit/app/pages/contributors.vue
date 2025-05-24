@@ -89,7 +89,10 @@ const fullDescription = (() => {
                         }}
                     </div>
                 </div>
-                <div :class="$style.contributions">
+                <div
+                    v-if="contributor.contributions"
+                    :class="$style.contributions"
+                >
                     {{
                         phrase.contributions_explain(contributor.contributions)
                     }}
