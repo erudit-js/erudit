@@ -9,7 +9,9 @@ const props = defineProps<{
     secondary?: string;
 }>();
 
-const vnode = h(props.link ? defineNuxtLink({}) : 'div');
+const vnode = h(
+    props.link ? defineNuxtLink({ trailingSlash: 'append' }) : 'div',
+);
 </script>
 
 <template>

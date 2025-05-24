@@ -1,4 +1,5 @@
 import eruditConfig from '#erudit/config';
+import { trailingSlash } from '@erudit/utils/slash';
 
 export function useBaseUrlPath() {
     const runtimeConfig = useRuntimeConfig();
@@ -18,7 +19,7 @@ export function useSiteUrl() {
     if (!import.meta.dev && eruditConfig.site?.buildUrl)
         return eruditConfig.site.buildUrl + baseUrl.slice(0, -1);
 
-    return url.origin;
+    return trailingSlash(url.origin, true);
 }
 
 export function usePageUrl() {
@@ -28,6 +29,6 @@ export function usePageUrl() {
     return computed(() => {
         if (route.path === '/') return siteUrl;
 
-        return siteUrl + route.path;
+        return trailingSlash(siteUrl + route.path, true);
     });
 }

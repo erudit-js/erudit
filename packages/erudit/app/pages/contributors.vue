@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import eruditConfig from '#erudit/config';
+import { createContributorLink } from '@shared/link';
 
 const { data: contributorList } = await useFetch(`/api/contributor/list`, {
     key: 'contributor-list',
@@ -55,8 +56,8 @@ const fullDescription = (() => {
         :description="fullDescription"
     />
     <section :class="$style.contributors">
-        <NuxtLink
-            :to="`/contributor/${contributor.contributorId}`"
+        <EruditLink
+            :to="createContributorLink(contributor.contributorId)"
             :prefetch="false"
             v-for="(contributor, i) of contributorList"
             :class="$style.contributor"
@@ -98,7 +99,7 @@ const fullDescription = (() => {
                     }}
                 </div>
             </div>
-        </NuxtLink>
+        </EruditLink>
     </section>
 </template>
 

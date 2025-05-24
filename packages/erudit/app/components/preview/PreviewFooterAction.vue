@@ -7,7 +7,7 @@ defineProps<{
     brand?: boolean;
 }>();
 
-const nuxtLink = defineNuxtLink({ prefetch: false });
+const nuxtLink = defineNuxtLink({ prefetch: false, trailingSlash: 'append' });
 </script>
 
 <template>

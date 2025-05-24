@@ -13,8 +13,7 @@ defineProps<{
 </script>
 
 <template>
-    <NuxtLink
-        :prefetch="false"
+    <EruditLink
         :to="link"
         :class="[
             $style.treeItem,
@@ -24,12 +23,17 @@ defineProps<{
         :style="{ ['--_level']: level ?? 0 }"
     >
         <MyIcon v-if="icon" :class="$style.icon" :name="icon" />
-        <MyRuntimeIcon v-else :class="$style.icon" name="tree-item-icon" :svg />
+        <MyRuntimeIcon
+            v-else
+            :class="$style.icon"
+            name="tree-item-icon"
+            :svg="svg!"
+        />
         <div :class="$style.main">{{ label }}</div>
         <div v-if="$slots.default" :class="$style.after">
             <slot></slot>
         </div>
-    </NuxtLink>
+    </EruditLink>
 </template>
 
 <style lang="scss" module>

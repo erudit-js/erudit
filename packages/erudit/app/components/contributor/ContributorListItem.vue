@@ -3,18 +3,17 @@ import { type ContentContributor } from '@shared/contributor';
 import { createContributorLink } from '@shared/link';
 
 defineProps<ContentContributor>();
-
-const Link = defineNuxtLink({ prefetch: false });
 </script>
 
 <template>
-    <Link
+    <EruditLink
+        :prefetch="false"
         :class="$style.contributor"
         :to="createContributorLink(contributorId)"
     >
         <ContributorAvatar :contributorId :avatar />
         <span>{{ displayName || contributorId }}</span>
-    </Link>
+    </EruditLink>
 </template>
 
 <style lang="scss" module>
