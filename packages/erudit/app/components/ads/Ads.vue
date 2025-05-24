@@ -10,8 +10,6 @@ const adsKey = ref(0);
 const AdsComponent = shallowRef<Component>();
 
 function updateAds() {
-    console.log('Ads Updated');
-
     AdsComponent.value = (() => {
         switch (props.data?.provider) {
             case 'yandex':
