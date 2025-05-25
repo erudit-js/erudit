@@ -145,6 +145,8 @@ if (import.meta.client) {
 </script>
 
 <template>
+    <NuxtLoadingIndicator color="var(--brand)" />
+
     <SiteAside :type="AsideType.Major"><AsideMajor /></SiteAside>
     <SiteAside :type="AsideType.Minor"><AsideMinor /></SiteAside>
 
