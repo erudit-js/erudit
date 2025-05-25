@@ -57,9 +57,10 @@ export default defineNuxtConfig({
             crawlLinks: true,
             failOnError: false,
             concurrency: 10,
+            routes: ['/robots.txt', '/sitemap.xml'],
             ignore: [
                 (path: string) => {
-                    const regexps = [/\?element=/gm, /#/gm, /\.json\?/gm];
+                    const regexps = [/#/gm, /\.json\?/gm];
                     const shouldIgnore = regexps.some((re) => re.test(path));
                     return shouldIgnore;
                 },
