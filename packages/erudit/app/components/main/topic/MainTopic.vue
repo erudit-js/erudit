@@ -5,7 +5,6 @@ import eruditConfig from '#erudit/config';
 
 import { type ContentTopicData } from '@shared/content/data/type/topic';
 import { TOPIC_PART_ICON } from '@shared/icons';
-import { topicLocation } from '@app/scripts/aside/minor/topic';
 
 import ContentBreadcrumb from '@app/components/main/content/ContentBreadcrumb.vue';
 import ContentDecoration from '@app/components/main/content/ContentDecoration.vue';
@@ -21,13 +20,6 @@ const topicData = await useContentData<ContentTopicData>();
 await useContentPage(topicData);
 
 const phrase = await usePhrases('article', 'summary', 'practice');
-
-onMounted(() => {
-    watchEffect(() => {
-        // Telling live toc that content is mounted
-        topicLocation.value = location.value;
-    });
-});
 </script>
 
 <template>

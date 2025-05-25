@@ -9,7 +9,9 @@ import TopicContributors from './TopicContributors.vue';
 const topicData = injectAsideData<AsideMinorTopic>();
 const contributePaneVisible = ref(false);
 
-watch(topicData, () => (contributePaneVisible.value = false));
+watch(topicData, () => {
+    contributePaneVisible.value = false;
+});
 </script>
 
 <template>
