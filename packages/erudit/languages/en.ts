@@ -87,7 +87,7 @@ const english: EruditPhrases = {
     references: 'References',
     reference_source_featured: 'Featured source',
     references_description:
-        'List of external sources that were used in writing this material. For a deeper dive into the material, it is recommended to read them in more detail, especially the featured sources, which are marked with an asterisk:',
+        'A list of external sources that were used to write this material. If there is an asterisk next to the title, it is a featured source and is worth reading if you want to delve deeper into the material.',
 };
 
 export default english;
