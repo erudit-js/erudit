@@ -12,6 +12,8 @@ export * from './bitran/runtime';
 
 export * from './contributor';
 
+export * from './cameo';
+
 export * from './erudit/debug';
 export * from './erudit/site';
 export * from './erudit/seo';
@@ -23,3 +25,4 @@ export * from './erudit/repository';
 export * from './erudit/bitran';
 export * from './erudit/dependencies';
 export * from './erudit/content';
+export * from './erudit/donate';

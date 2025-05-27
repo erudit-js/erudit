@@ -46,6 +46,8 @@ const phrase = await usePhrases('article', 'summary', 'practice');
 
     <ContentPopovers :generic="topicData.generic" />
 
+    <MainCameo />
+
     <TopicPartSwitch
         :partLinks="topicData.topicPartLinks"
         :active="topicPart"

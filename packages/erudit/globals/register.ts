@@ -2,6 +2,8 @@ import * as erudit from './erudit';
 import * as contributor from './contributor';
 import * as bitran from './bitran';
 import * as content from './content';
+import * as cameo from './cameo';
+
 import * as asset from '@shared/asset';
 
 export function registerGlobals() {
@@ -11,6 +13,7 @@ export function registerGlobals() {
         ...bitran,
         ...content,
         ...asset,
+        ...cameo,
     })) {
         // @ts-ignore
         globalThis[key] = value;

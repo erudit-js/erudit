@@ -34,7 +34,7 @@ const phrase = await usePhrases('article', 'summary', 'practice');
     --height: 50px;
 
     position: relative;
-    top: 65px;
+    top: 68px;
 
     display: flex;
     align-items: end;
@@ -48,7 +48,7 @@ const phrase = await usePhrases('article', 'summary', 'practice');
     border-bottom: 2px solid transparent;
 
     @include bp.below('mobile') {
-        top: 56px;
+        top: 64px;
     }
 }
 

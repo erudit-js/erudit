@@ -42,6 +42,8 @@ const phrase = await usePhrases('group');
 
     <ContentPopovers :generic="groupData.generic" />
 
+    <MainCameo />
+
     <div style="clear: both"></div>
 
     <MainBitranContent :location />

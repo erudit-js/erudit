@@ -4,6 +4,7 @@ import type { EruditBitran } from './bitran';
 import type { EruditContent } from './content';
 import type { EruditDebug } from './debug';
 import type { EruditDependencies } from './dependencies';
+import type { EruditDonate } from './donate';
 import type { EruditLanguage } from './languages';
 import type { EruditRepository } from './repository';
 import type { EruditSeo } from './seo';
@@ -17,6 +18,7 @@ export interface EruditConfig {
     ads?: EruditAdsBanners;
     site?: EruditSite;
     content?: EruditContent;
+    donate?: EruditDonate;
     seo?: EruditSeo;
     repository?: EruditRepository;
     bitran?: EruditBitran;

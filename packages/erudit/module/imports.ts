@@ -12,6 +12,10 @@ export function setupGlobalImports() {
             name: 'defineContributor',
             from: eruditPath('globals/contributor'),
         },
+        {
+            name: 'defineCameo',
+            from: eruditPath('globals/cameo'),
+        },
         // Bitran
         ...(() => {
             const imports = ['defineAppBitran'];
