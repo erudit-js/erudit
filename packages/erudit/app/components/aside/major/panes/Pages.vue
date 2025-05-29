@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import eruditConfig from '#erudit/config';
 import PaneContentScroll from '../PaneContentScroll.vue';
 
 const route = useRoute();
@@ -26,6 +27,12 @@ const { data: contributorCount } = await useAsyncData<number>(
             :active="route.path.startsWith('/contributor')"
             :main="phrase.contributors"
             :secondary="contributorCount!.toString()"
+        />
+        <AsideListItem
+            v-for="customLink in eruditConfig.customLinks"
+            :link="customLink.href"
+            :main="customLink.label"
+            :icon="customLink.icon || 'link-external'"
         />
     </PaneContentScroll>
 </template>

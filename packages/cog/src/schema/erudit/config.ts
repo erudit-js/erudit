@@ -6,6 +6,7 @@ import type { EruditDebug } from './debug';
 import type { EruditDependencies } from './dependencies';
 import type { EruditDonate } from './donate';
 import type { EruditLanguage } from './languages';
+import type { EruditCustomLinks } from './links';
 import type { EruditRepository } from './repository';
 import type { EruditSeo } from './seo';
 import type { EruditSite } from './site';
@@ -21,6 +22,7 @@ export interface EruditConfig {
     donate?: EruditDonate;
     seo?: EruditSeo;
     repository?: EruditRepository;
+    customLinks?: EruditCustomLinks;
     bitran?: EruditBitran;
     dependencies?: EruditDependencies;
 }
