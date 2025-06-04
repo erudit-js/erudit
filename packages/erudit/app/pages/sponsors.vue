@@ -23,10 +23,10 @@ useEruditHead({
     <MainTitle icon="diamond" :title="phrase.sponsors" />
     <MainDescription :description="phrase.sponsors_description" />
     <MainActionButton
-        v-if="eruditConfig.content?.howToImproveLink"
+        v-if="eruditConfig.sponsors?.addLink"
         icon="diamond"
         :label="phrase.become_sponsor"
-        :link="eruditConfig.content.howToImproveLink"
+        :link="eruditConfig.sponsors?.addLink"
     />
     <MainSection :class="$style.sponsorSection" v-if="sponsors?.tier2?.length">
         <template v-slot:header>
