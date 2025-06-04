@@ -71,7 +71,7 @@ const hasPopovers = computed(() => {
             <ul :class="$style.dependenciesList">
                 <li v-for="(value, key) in generic.dependencies">
                     <MyIcon :name="'arrow-left'" wrapper="span" />
-                    <NuxtLink :prefetch="false" :to="key">{{ value }}</NuxtLink>
+                    <EruditLink :to="key">{{ value }}</EruditLink>
                 </li>
             </ul>
         </ContentPopover>

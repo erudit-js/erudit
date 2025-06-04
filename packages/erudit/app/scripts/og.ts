@@ -1,5 +1,6 @@
 import eruditConfig from '#erudit/config';
 import type { ImageData } from '@erudit/shared/image';
+import { normalizeUrl } from '@erudit/utils/url';
 
 export const defaultOgImage = eruditConfig.seo?.defaultOgImage || {
     src: eruditAsset('og-default.png'),
@@ -13,7 +14,7 @@ export function createOgImageTags(siteUrl: string, data: ImageData | string) {
 
     tags.push({
         name: 'og:image',
-        content: siteUrl + (isImage ? data.src : data),
+        content: normalizeUrl(siteUrl + (isImage ? data.src : data)),
     });
 
     if (isImage) {

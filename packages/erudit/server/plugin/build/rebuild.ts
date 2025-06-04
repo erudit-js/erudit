@@ -13,6 +13,8 @@ const watchTargets: string[] = [
     PROJECT_DIR + '/content',
     // Contributors directory
     PROJECT_DIR + '/contributors',
+    // Sponsors directory
+    PROJECT_DIR + '/sponsors',
 ];
 
 const ignoreTargets: string[] = [];

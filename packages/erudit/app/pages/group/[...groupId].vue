@@ -8,7 +8,6 @@ import { locationIcon } from '@erudit/shared/icons';
 import ContentBreadcrumb from '@app/components/main/content/ContentBreadcrumb.vue';
 import ContentDecoration from '@app/components/main/content/ContentDecoration.vue';
 import ContentPopovers from '@app/components/main/content/ContentPopovers.vue';
-import ContentSection from '@app/components/main/content/ContentSection.vue';
 
 const location = useBitranLocation() as Ref<BitranLocation>;
 
@@ -42,11 +41,13 @@ const phrase = await usePhrases('group');
 
     <ContentPopovers :generic="groupData.generic" />
 
+    <MainCameo />
+
     <div style="clear: both"></div>
 
     <MainBitranContent :location />
 
-    <ContentSection v-if="adsAllowed() && eruditConfig.ads?.bottom">
+    <MainSection v-if="adsAllowed() && eruditConfig.ads?.bottom">
         <AdsBannerBottom />
-    </ContentSection>
+    </MainSection>
 </template>

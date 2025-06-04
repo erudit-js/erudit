@@ -47,6 +47,7 @@ export function useMajorPane() {
         switch (true) {
             case route.path.startsWith('/contributors'):
             case route.path.startsWith('/contributor/'):
+            case route.path === '/sponsors/':
                 return 'pages';
             default:
                 return 'index';

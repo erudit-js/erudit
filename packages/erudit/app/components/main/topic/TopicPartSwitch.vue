@@ -7,13 +7,13 @@ import { TOPIC_PART_ICON } from '@erudit/shared/icons';
 defineProps<{ partLinks: TopicPartLinks; active: TopicPart }>();
 
 const phrase = await usePhrases('article', 'summary', 'practice');
-const Link = defineNuxtLink({ prefetch: false });
 </script>
 
 <template>
     <section :class="$style.topicPartSwitch">
-        <Link
+        <EruditLink
             v-for="topicPart of topicParts"
+            :prefetch="false"
             :to="partLinks[topicPart]"
             :class="[
                 $style.partButton,
@@ -23,7 +23,7 @@ const Link = defineNuxtLink({ prefetch: false });
         >
             <MyIcon :name="TOPIC_PART_ICON[topicPart]" />
             <div :class="$style.label">{{ phrase[topicPart] }}</div>
-        </Link>
+        </EruditLink>
     </section>
 </template>
 
@@ -33,23 +33,18 @@ const Link = defineNuxtLink({ prefetch: false });
 .topicPartSwitch {
     --height: 50px;
 
-    position: relative;
-    top: 65px;
-
     display: flex;
     align-items: end;
     justify-content: center;
     gap: var(--gapBig);
-    margin: var(--_pMainY) 0;
-    margin-top: -40px;
+    margin: var(--_pMainY) 0 0;
+
+    position: relative;
+    top: 2px;
 
     width: 100%;
     height: var(--height);
     border-bottom: 2px solid transparent;
-
-    @include bp.below('mobile') {
-        top: 56px;
-    }
 }
 
 .partButton {

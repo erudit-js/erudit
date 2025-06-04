@@ -14,8 +14,20 @@ export default defineNuxtPlugin({
 
         isPrerendering = true;
 
-        const routesToPrerender = await $fetch<string[]>('/api/prerender');
-        _nuxt.runWithContext(() => prerenderRoutes(routesToPrerender));
+        const routeProviders = [
+            '/api/prerender/language',
+            '/api/prerender/cameos',
+
+            // Assets
+            '/api/prerender/assets/cameo',
+            '/api/prerender/assets/contributor',
+            '/api/prerender/assets/sponsor',
+        ];
+
+        for (const provider of routeProviders) {
+            const routes = await $fetch<string[]>(provider);
+            _nuxt.runWithContext(() => prerenderRoutes(routes));
+        }
 
         alreadyPrerendered = true;
     },

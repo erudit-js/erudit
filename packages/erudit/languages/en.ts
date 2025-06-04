@@ -29,8 +29,9 @@ const english: EruditPhrases = {
     contributors: 'Contributors',
     contributors_page_description:
         'List of people who contributed to the project materials: suggested valuable ideas, made corrections to existing material or wrote their own!',
-    contributors_page_invite: (link) =>
-        `You can also help the project, <a href="${link}" target="_blank">make a contribution</a> and get on this page!`,
+    contributors_page_invite:
+        'You can also help the project, make a contribution and get on this page!',
+    become_contributor: 'Become a contributor',
     contributor: 'Contributor',
     contribution: 'Contribution',
     contributions_explain: (count) =>
@@ -87,7 +88,11 @@ const english: EruditPhrases = {
     references: 'References',
     reference_source_featured: 'Featured source',
     references_description:
-        'List of external sources that were used in writing this material. For a deeper dive into the material, it is recommended to read them in more detail, especially the featured sources, which are marked with an asterisk:',
+        'A list of external sources that were used to write this material. If there is an asterisk next to the title, it is a featured source and is worth reading if you want to delve deeper into the material.',
+    sponsors: 'Sponsors',
+    sponsors_description:
+        'People and organizations that support the project financially. Thanks to them, we can continue to develop the project and improve the quality of materials. If you want to support the project, you can become a sponsor too!',
+    become_sponsor: 'Become a sponsor',
 };
 
 export default english;

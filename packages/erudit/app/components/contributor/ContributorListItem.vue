@@ -3,18 +3,22 @@ import { type ContentContributor } from '@shared/contributor';
 import { createContributorLink } from '@shared/link';
 
 defineProps<ContentContributor>();
-
-const Link = defineNuxtLink({ prefetch: false });
 </script>
 
 <template>
-    <Link
+    <EruditLink
+        :prefetch="false"
         :class="$style.contributor"
         :to="createContributorLink(contributorId)"
     >
-        <ContributorAvatar :contributorId :avatar />
+        <Avatar
+            icon="user"
+            :src="avatar ? `/contributors/${avatar}` : undefined"
+            :class="$style.avatar"
+            :color="stringColor(contributorId)"
+        />
         <span>{{ displayName || contributorId }}</span>
-    </Link>
+    </EruditLink>
 </template>
 
 <style lang="scss" module>
@@ -30,6 +34,10 @@ const Link = defineNuxtLink({ prefetch: false });
 
     &:hover {
         background: var(--bgAccent);
+    }
+
+    .avatar {
+        --avatarSize: 40px;
     }
 }
 </style>

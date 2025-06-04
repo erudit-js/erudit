@@ -4,9 +4,7 @@ import type { EruditAds } from '@erudit-js/cog/schema';
 import { LazyAdsProviderCustom, LazyAdsProviderYandex } from '#components';
 
 const props = defineProps<{ data: EruditAds }>();
-
 const route = useRoute();
-watch(() => route.path, updateAds);
 
 const adsKey = ref(0);
 const AdsComponent = shallowRef<Component>();
@@ -26,7 +24,7 @@ function updateAds() {
 }
 
 onMounted(() => {
-    updateAds();
+    watch(() => route.path, updateAds, { immediate: true });
 });
 </script>
 

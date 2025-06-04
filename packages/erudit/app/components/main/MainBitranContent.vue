@@ -6,7 +6,6 @@ import {
 } from '@erudit-js/cog/schema';
 
 import type { RawBitranContent } from '@shared/bitran/content';
-import ContentSection from '@app/components/main/content/ContentSection.vue';
 
 type MainBitranPayload = RawBitranContent & {
     mainLocation: BitranLocation;
@@ -41,7 +40,16 @@ if (
 </script>
 
 <template>
-    <ContentSection v-if="payloadValue.biCode">
+    <MainSection v-if="payloadValue.biCode" :class="$style.mainBitranContent">
+        <template v-if="$slots.header" v-slot:header>
+            <slot name="header"></slot>
+        </template>
         <BitranContent :rawContent="payloadValue" />
-    </ContentSection>
+    </MainSection>
 </template>
+
+<style lang="scss" module>
+.mainBitranContent {
+    padding-top: var(--_pMainY);
+}
+</style>

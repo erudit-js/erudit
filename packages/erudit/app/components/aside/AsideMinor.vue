@@ -2,7 +2,7 @@
 import { isTopicPart } from '@erudit-js/cog/schema';
 
 import { type AsideMinorNews, type AsideMinorData } from '@shared/aside/minor';
-import { trailingSlash } from '@erudit/utils/slash';
+import { trailingSlash } from '@erudit/utils/url';
 import { asideMinorKey } from '@app/scripts/aside/minor/state';
 
 import {

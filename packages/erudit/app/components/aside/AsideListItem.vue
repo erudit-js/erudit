@@ -1,25 +1,42 @@
 <script lang="ts" setup>
-import type { MyIconName } from '#my-icons';
+import { isMyIcon, type MyIconName } from '#my-icons';
+import { computed } from 'vue';
 
 const props = defineProps<{
     link?: string;
-    icon?: MyIconName;
+    icon?: string;
     main?: string;
     active?: boolean;
     secondary?: string;
 }>();
 
-const vnode = h(props.link ? defineNuxtLink({}) : 'div');
+const isExternalLink = computed(() => {
+    if (!props.link) return false;
+    return (
+        props.link.startsWith('http://') ||
+        props.link.startsWith('https://') ||
+        props.link.startsWith('//')
+    );
+});
+
+const vnode = h(
+    props.link ? defineNuxtLink({ trailingSlash: 'append' }) : 'div',
+);
 </script>
 
 <template>
     <component
         :is="vnode"
         :to="link"
+        :target="isExternalLink ? '_blank' : undefined"
+        :rel="isExternalLink ? 'noopener noreferrer' : undefined"
         :class="[$style.asideListItem, active ? $style.active : '']"
     >
         <slot>
-            <MyIcon v-if="icon" :name="icon" />
+            <template v-if="icon">
+                <MyIcon v-if="isMyIcon(icon)" :name="icon as MyIconName" />
+                <MyRuntimeIcon v-else name="AsideListItem Icon" :svg="icon" />
+            </template>
             <div :class="$style.main">{{ main }}</div>
             <div v-if="secondary" :class="$style.secondary">
                 {{ secondary }}

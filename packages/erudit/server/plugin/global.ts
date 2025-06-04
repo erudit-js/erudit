@@ -3,6 +3,7 @@ import type { EruditConfig } from '@erudit-js/cog/schema';
 
 import type { EruditPhrases } from '@shared/types/language';
 import type { NavNode, RootNavNode } from '@server/nav/node';
+import type { ServerSponsors } from '@server/sponsor';
 
 interface EruditServer {
     BUILD_PROMISE: Promise<void>;
@@ -11,6 +12,7 @@ interface EruditServer {
     DB: DataSource;
     NAV?: RootNavNode;
     NAV_BOOKS?: Record<string, NavNode>;
+    SPONSORS?: ServerSponsors;
 }
 
 export const ERUDIT_SERVER: EruditServer = {} as any;

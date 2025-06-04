@@ -11,6 +11,9 @@ export * from './bitran/config';
 export * from './bitran/runtime';
 
 export * from './contributor';
+export * from './sponsor';
+
+export * from './cameo';
 
 export * from './erudit/debug';
 export * from './erudit/site';

@@ -23,7 +23,7 @@ watch(navState!.value[props.navItem.id]!, onStateUpdate);
 
 <template>
     <div>
-        <NuxtLink
+        <EruditLink
             :to="`/group/${navItem.id}`"
             :class="[
                 $style.header,
@@ -38,7 +38,7 @@ watch(navState!.value[props.navItem.id]!, onStateUpdate);
                 v-if="navItem.flags"
                 :flags="navItem.flags"
             />
-        </NuxtLink>
+        </EruditLink>
         <FNavItem v-for="childItem of navItem.children" :navItem="childItem" />
     </div>
 </template>

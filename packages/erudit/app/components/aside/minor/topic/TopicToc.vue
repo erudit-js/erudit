@@ -2,7 +2,6 @@
 import { headingName } from '@erudit-js/bitran-elements/heading/shared';
 
 import type { TocItem } from '@erudit/shared/bitran/toc';
-import { topicLocation } from '@app/scripts/aside/minor/topic';
 import { injectAsideData } from '@app/scripts/aside/minor/state';
 import type { AsideMinorTopic } from '@shared/aside/minor';
 
@@ -21,9 +20,9 @@ interface RuntimeTocItem extends TocItem {
 type RuntimeToc = RuntimeTocItem[];
 
 const topicData = injectAsideData<AsideMinorTopic>();
-const phrase = await usePhrases('empty_toc');
 const runtimeToc = ref<RuntimeToc>([]);
 const tocStateKey = ref(0);
+const phrase = await usePhrases('empty_toc');
 
 watch(topicData, setupRuntimeToc);
 setupRuntimeToc();
@@ -165,18 +164,18 @@ function intersectionTrigger(entries: IntersectionObserverEntry[]): void {
     }
 }
 
-onMounted(() => {
-    watch(
-        [topicData, topicLocation],
-        () => {
-            disableLiveToc();
-
-            if (!topicData.value.part || !topicLocation.value) return;
-
+watch(
+    () => topicData.value.part,
+    () => {
+        disableLiveToc();
+        nextTick().then(() => {
             enableLiveToc();
-        },
-        { immediate: true },
-    );
+        });
+    },
+);
+
+onMounted(() => {
+    enableLiveToc();
 });
 
 onUnmounted(() => {

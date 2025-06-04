@@ -1,4 +1,4 @@
-import { trailingSlash } from '@erudit/utils/slash';
+import { trailingSlash } from '@erudit/utils/url';
 import type { ContentData } from '@shared/content/data';
 
 export function useContentData<T extends ContentData>() {

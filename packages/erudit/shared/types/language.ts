@@ -23,7 +23,8 @@ export interface EruditPhrases {
     main_page: string;
     contributors: string;
     contributors_page_description: string;
-    contributors_page_invite: (link: string) => string;
+    contributors_page_invite: string;
+    become_contributor: string;
     contributor: string;
     contribution: string;
     contributions_explain: (count: number) => string;
@@ -73,6 +74,10 @@ export interface EruditPhrases {
     references: string;
     reference_source_featured: string;
     references_description: string;
+    // Sponsors
+    sponsors: string;
+    sponsors_description: string;
+    become_sponsor: string;
 }
 
 export type EruditPhraseId = keyof Partial<EruditPhrases>;

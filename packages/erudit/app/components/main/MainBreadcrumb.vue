@@ -7,14 +7,10 @@ defineProps<{ items: BreadcrumbItem[] }>();
 <template>
     <section v-if="items.length" :class="$style.breadcrumb">
         <template v-for="item in items">
-            <NuxtLink
-                :to="item.link"
-                :prefetch="false"
-                :class="$style.breadcrumbItem"
-            >
+            <EruditLink :to="item.link" x :class="$style.breadcrumbItem">
                 <MyIcon :name="item.icon" wrapper="span" />
                 {{ item.title }}
-            </NuxtLink>
+            </EruditLink>
             <MyIcon :class="$style.sep" name="angle-right" />
         </template>
     </section>

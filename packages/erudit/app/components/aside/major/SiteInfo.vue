@@ -29,14 +29,14 @@ const siteInfo = computed<SiteInfo>(() => {
 
 <template>
     <section :class="$style.siteInfo">
-        <NuxtLink v-if="siteInfo.logotype" to="/" :class="$style.logo">
+        <EruditLink v-if="siteInfo.logotype" to="/" :class="$style.logo">
             <img :src="baseUrlPath(siteInfo.logotype)" :alt="siteInfo.title" />
-        </NuxtLink>
+        </EruditLink>
         <div :class="[$style.textInfo, !siteInfo.logotype && $style.noLogo]">
             <h1 :class="$style.title">
-                <NuxtLink to="/">{{
+                <EruditLink to="/">{{
                     siteInfo.title || phrase.site_info_title
-                }}</NuxtLink>
+                }}</EruditLink>
             </h1>
             <div v-if="siteInfo.slogan" :class="$style.description">
                 {{ siteInfo.slogan }}

@@ -2,13 +2,12 @@
 import type { MyIconName } from '#my-icons';
 
 defineProps<{ link?: string; icon: MyIconName; active?: boolean }>();
-
-const Link = defineNuxtLink({ prefetch: false });
 </script>
 
 <template>
-    <Link
+    <EruditLink
         :to="link"
+        :prefetch="false"
         :class="[
             $style.asideMinorTopLink,
             !link && $style.noLink,
@@ -16,7 +15,7 @@ const Link = defineNuxtLink({ prefetch: false });
         ]"
     >
         <MyIcon :name="icon" />
-    </Link>
+    </EruditLink>
 </template>
 
 <style lang="scss" module>

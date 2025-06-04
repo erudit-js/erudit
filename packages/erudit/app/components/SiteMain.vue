@@ -11,9 +11,8 @@
 @use '$/def/bp';
 
 .main {
-    --_pMainBase: var(--gapBig);
-    --_pMainX: var(--_pMainBase);
-    --_pMainY: calc(var(--_pMainBase) / 2);
+    --_pMainX: 30px;
+    --_pMainY: 18px;
 
     position: relative;
     min-height: 100dvh;
@@ -21,7 +20,8 @@
     font-size: 18px;
 
     @include bp.below('mobile') {
-        --_pMainBase: var(--_bitran_asideWidth);
+        --_pMainX: 18px;
+        --_pMainY: 14px;
         font-size: 15px;
     }
 

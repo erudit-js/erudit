@@ -10,7 +10,7 @@ const phrase = await usePhrases('article', 'summary', 'practice');
 const topicData = injectAsideData<AsideMinorTopic>();
 
 const currentTopicPart = computed(() => {
-    return topicData.value.part as TopicPart;
+    return topicData.value.part;
 });
 </script>
 
