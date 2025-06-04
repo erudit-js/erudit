@@ -17,7 +17,11 @@ export default defineNuxtPlugin({
         const routeProviders = [
             '/api/prerender/language',
             '/api/prerender/cameos',
+
+            // Assets
             '/api/prerender/assets/cameo',
+            '/api/prerender/assets/contributor',
+            '/api/prerender/assets/sponsor',
         ];
 
         for (const provider of routeProviders) {

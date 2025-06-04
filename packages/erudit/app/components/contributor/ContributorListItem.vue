@@ -11,7 +11,12 @@ defineProps<ContentContributor>();
         :class="$style.contributor"
         :to="createContributorLink(contributorId)"
     >
-        <ContributorAvatar :contributorId :avatar />
+        <Avatar
+            icon="user"
+            :src="avatar ? `/contributors/${avatar}` : undefined"
+            :class="$style.avatar"
+            :color="stringColor(contributorId)"
+        />
         <span>{{ displayName || contributorId }}</span>
     </EruditLink>
 </template>
@@ -29,6 +34,10 @@ defineProps<ContentContributor>();
 
     &:hover {
         background: var(--bgAccent);
+    }
+
+    .avatar {
+        --avatarSize: 40px;
     }
 }
 </style>

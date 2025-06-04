@@ -1,6 +1,5 @@
 import {
     PUBLIC_CONTENT_ASSET,
-    PUBLIC_CONTRIBUTOR_ASSET,
     PUBLIC_ERUDIT_ASSET,
     PUBLIC_USER_ASSET,
 } from './const';
@@ -86,11 +85,6 @@ export default defineNuxtConfig({
             {
                 baseURL: PUBLIC_CONTENT_ASSET,
                 dir: projectPath('content'),
-                maxAge: 60 * 60 * 24 * 30,
-            },
-            {
-                baseURL: PUBLIC_CONTRIBUTOR_ASSET,
-                dir: projectPath('contributors'),
                 maxAge: 60 * 60 * 24 * 30,
             },
         ],

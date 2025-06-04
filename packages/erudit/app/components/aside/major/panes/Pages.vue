@@ -4,11 +4,15 @@ import PaneContentScroll from '../PaneContentScroll.vue';
 
 const route = useRoute();
 
-const phrase = await usePhrases('main_page', 'contributors');
+const phrase = await usePhrases('main_page', 'contributors', 'sponsors');
 
 const { data: contributorCount } = await useAsyncData<number>(
     'contributor-count',
     () => $fetch('/api/contributor/count'),
+);
+
+const { data: sponsorCount } = await useAsyncData<number>('sponsor-count', () =>
+    $fetch('/api/sponsor/count'),
 );
 </script>
 
@@ -27,6 +31,14 @@ const { data: contributorCount } = await useAsyncData<number>(
             :active="route.path.startsWith('/contributor')"
             :main="phrase.contributors"
             :secondary="contributorCount!.toString()"
+        />
+        <AsideListItem
+            v-if="eruditConfig.sponsors"
+            icon="diamond"
+            link="/sponsors/"
+            :active="route.path === '/sponsors/'"
+            :main="phrase.sponsors"
+            :secondary="sponsorCount ? sponsorCount.toString() : ''"
         />
         <AsideListItem
             v-for="customLink in eruditConfig.customLinks"

@@ -14,13 +14,3 @@ export async function getCameoIds() {
         return [];
     }
 }
-
-export const cameoAvatarExtensions = [
-    'png',
-    'jpg',
-    'jpeg',
-    'gif',
-    'webp',
-    'mp4',
-    'webm',
-] as const;

@@ -1,13 +1,22 @@
 import eruditConfig from '#erudit/config';
-import { trailingSlash } from '@erudit/utils/slash';
+import { trailingSlash, normalizeUrl } from '@erudit/utils/url';
 
 export function useBaseUrlPath() {
     const runtimeConfig = useRuntimeConfig();
+    const baseURL = runtimeConfig.app.baseURL;
+
     return (path: string) => {
-        const baseURL = runtimeConfig.app.baseURL;
-        if (path.startsWith(baseURL)) return path;
-        else if (path.startsWith('/')) return baseURL + path.substring(1);
-        else return path;
+        const normalizedPath = normalizeUrl(path);
+
+        if (normalizedPath.startsWith(baseURL)) {
+            return normalizedPath;
+        }
+
+        if (normalizedPath.startsWith('/')) {
+            return normalizeUrl(baseURL + normalizedPath.substring(1));
+        }
+
+        return normalizedPath;
     };
 }
 
@@ -19,7 +28,7 @@ export function useSiteUrl() {
     if (!import.meta.dev && eruditConfig.site?.buildUrl)
         return eruditConfig.site.buildUrl + baseUrl.slice(0, -1);
 
-    return trailingSlash(url.origin, true);
+    return normalizeUrl(trailingSlash(url.origin, true));
 }
 
 export function usePageUrl() {
@@ -28,7 +37,7 @@ export function usePageUrl() {
 
     return computed(() => {
         if (route.path === '/') return siteUrl;
-
-        return trailingSlash(siteUrl + route.path, true);
+        const fullUrl = siteUrl + route.path;
+        return normalizeUrl(trailingSlash(fullUrl, true));
     });
 }

@@ -1,7 +1,6 @@
 <script lang="ts" setup>
 import eruditConfig from '#erudit/config';
 import { type PageContributor } from '@shared/contributor';
-import ContentSection from '@app/components/main/content/ContentSection.vue';
 
 const route = useRoute();
 const nuxtApp = useNuxtApp();
@@ -96,10 +95,16 @@ useSeoMeta({
         :style="{ ['--contributorColor']: contributorColor }"
     >
         <div style="position: relative">
-            <ContributorAvatar
+            <Avatar
+                icon="user"
+                :src="
+                    contributor.avatar
+                        ? `/contributors/${contributor.avatar}`
+                        : undefined
+                "
                 :class="$style.avatar"
-                :contributorId="contributor.contributorId"
-                :avatar="contributor.avatar"
+                :color="stringColor(contributor.contributorId)"
+                :styling="{ glow: true, border: true }"
             />
             <MyIcon
                 v-if="contributor.isEditor"
@@ -147,8 +152,6 @@ useSeoMeta({
 
     .avatar {
         --_avatarSize: 110px;
-        border: 2px solid var(--bgMain);
-        outline: 2px solid var(--contributorColor);
         box-shadow: 0 0 100px 100px
             color-mix(in srgb, var(--contributorColor), transparent 90%);
     }

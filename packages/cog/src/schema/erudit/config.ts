@@ -1,10 +1,10 @@
+import type { EruditSponsors } from '../sponsor';
 import type { EruditAdsBanners } from './ads';
 import type { EruditAnalytics } from './analytics';
 import type { EruditBitran } from './bitran';
 import type { EruditContent } from './content';
 import type { EruditDebug } from './debug';
 import type { EruditDependencies } from './dependencies';
-import type { EruditDonate } from './donate';
 import type { EruditLanguage } from './languages';
 import type { EruditCustomLinks } from './links';
 import type { EruditRepository } from './repository';
@@ -19,7 +19,7 @@ export interface EruditConfig {
     ads?: EruditAdsBanners;
     site?: EruditSite;
     content?: EruditContent;
-    donate?: EruditDonate;
+    sponsors?: EruditSponsors;
     seo?: EruditSeo;
     repository?: EruditRepository;
     customLinks?: EruditCustomLinks;

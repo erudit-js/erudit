@@ -3,6 +3,7 @@ import * as contributor from './contributor';
 import * as bitran from './bitran';
 import * as content from './content';
 import * as cameo from './cameo';
+import * as sponsor from './sponsor';
 
 import * as asset from '@shared/asset';
 
@@ -14,6 +15,7 @@ export function registerGlobals() {
         ...content,
         ...asset,
         ...cameo,
+        ...sponsor,
     })) {
         // @ts-ignore
         globalThis[key] = value;

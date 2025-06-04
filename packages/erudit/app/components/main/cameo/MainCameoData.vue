@@ -2,8 +2,12 @@
 import { type Cameo } from '@erudit-js/cog/schema';
 
 import eruditConfig from '#erudit/config';
+import { detectStrictFileType } from '@erudit/utils/ext';
 
-const props = defineProps<{ data: Cameo }>();
+const props = defineProps<{
+    data: Cameo;
+    hasMultipleCameos: boolean;
+}>();
 const emit = defineEmits<{
     (e: 'nextCameo'): void;
 }>();
@@ -18,24 +22,7 @@ function getRandomAvatar(data: Cameo) {
     }
 
     const url = avatars[Math.floor(Math.random() * avatars.length)]!;
-    const ext = url.split('.').pop()?.toLowerCase();
-
-    if (!ext) {
-        throw new Error(
-            `Failed to determine cameo avatar type for URL: ${url}`,
-        );
-    }
-
-    const imageExts = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp', 'svg'];
-    const videoExts = ['mp4', 'webm', 'ogg', 'mov', 'avi', 'mkv'];
-    let type: 'image' | 'video';
-
-    if (imageExts.includes(ext)) type = 'image';
-    else if (videoExts.includes(ext)) type = 'video';
-    else
-        throw new Error(
-            `Unsupported cameo avatar type: ${ext} for URL: ${url}`,
-        );
+    let type = detectStrictFileType(url, 'image', 'video');
 
     return { url, type };
 }
@@ -54,19 +41,11 @@ const message =
         :style="{ '--cameoColor': data.color ?? stringColor(data.cameoId) }"
     >
         <a :href="data.link" :class="$style.avatar" target="_blank">
-            <img
-                v-if="avatarType === 'image'"
+            <Avatar
                 :src="avatarSrc"
-                loading="lazy"
+                :color="data.color ?? stringColor(data.cameoId)"
+                :styling="{ glow: true, border: true }"
             />
-            <video
-                v-else-if="avatarType === 'video'"
-                :src="avatarSrc"
-                preload="metadata"
-                autoplay
-                loop
-                muted
-            ></video>
         </a>
         <div :class="$style.info">
             <div :class="$style.triangleBorder">
@@ -74,7 +53,12 @@ const message =
             </div>
             <div :class="$style.message" v-html="message"></div>
             <footer>
-                <span :class="$style.emoji">{{ data.emoji }}</span>
+                <MyRuntimeIcon
+                    v-if="data.icon"
+                    name="cameo-icon"
+                    :svg="data.icon"
+                    :class="$style.icon"
+                />
                 <a :class="$style.name" :href="data.link" target="_blank">
                     {{ data.name }}
                 </a>
@@ -85,13 +69,11 @@ const message =
                 />
                 <span :style="{ flex: 1 }"></span>
                 <span :class="$style.actions">
-                    <EruditLink
-                        v-if="eruditConfig.donate?.enabled"
-                        to="/donate/"
-                    >
+                    <EruditLink v-if="eruditConfig.sponsors" to="/sponsors/">
                         <MyIcon name="cameo-add" />
                     </EruditLink>
                     <MyIcon
+                        v-if="hasMultipleCameos"
                         name="arrow-left"
                         @click="emit('nextCameo')"
                         :style="{ transform: 'scale(-1)' }"
@@ -114,22 +96,11 @@ const message =
         gap: 28px;
     }
 
-    .avatar {
-        width: 60px;
-        aspect-ratio: 1;
-        border-radius: 50%;
-        overflow: hidden;
-        border: 2px solid var(--bgMain);
-        outline: 2px solid var(--cameoColor);
-        box-shadow: 0 0 10px 1px
-            color-mix(in srgb, var(--cameoColor), transparent 50%);
-
-        > * {
-            display: block;
-        }
+    .avatar > * {
+        --avatarSize: 60px;
 
         @include bp.below('mobile') {
-            width: 40px;
+            --avatarSize: 40px;
         }
     }
 
@@ -179,6 +150,10 @@ const message =
             gap: 8px;
             font-size: 0.95em;
             flex-wrap: wrap;
+
+            .icon {
+                color: color-mix(in srgb, var(--text), var(--cameoColor) 80%);
+            }
 
             .name {
                 font-family: 'Noto Sans', sans-serif;

@@ -1,7 +1,7 @@
 export interface Cameo {
     cameoId: string;
     name: string;
-    emoji: string;
+    icon: string;
     messages: string[];
     avatars?: string[];
     color?: string;

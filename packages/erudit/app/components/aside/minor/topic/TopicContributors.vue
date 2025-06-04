@@ -44,11 +44,16 @@ onMounted(() => {
     <section :class="$style.topicContributors" @click="listPaneVisible = true">
         <div :class="$style.showcase">
             <template v-if="showcase">
-                <ContributorAvatar
+                <Avatar
                     v-for="contributor of showcase"
-                    :contributorId="contributor.contributorId"
-                    :avatar="contributor.avatar"
+                    icon="user"
+                    :src="
+                        contributor.avatar
+                            ? `/contributors/${contributor.avatar}`
+                            : undefined
+                    "
                     :class="$style.avatar"
+                    :color="stringColor(contributor.contributorId)"
                 />
             </template>
             <template v-else>
@@ -112,6 +117,7 @@ onMounted(() => {
 
     .avatar,
     .avatarReplacer {
+        --avatarSize: #{$showcaseAvatarSize};
         width: #{$showcaseAvatarSize};
         height: #{$showcaseAvatarSize};
     }

@@ -10,7 +10,6 @@ import ContentBreadcrumb from '@app/components/main/content/ContentBreadcrumb.vu
 import ContentDecoration from '@app/components/main/content/ContentDecoration.vue';
 import ContentPopovers from '@app/components/main/content/ContentPopovers.vue';
 import ContentReferences from '@app/components/main/content/ContentReferences.vue';
-import ContentSection from '@app/components/main/content/ContentSection.vue';
 import TopicPartSwitch from './TopicPartSwitch.vue';
 
 const location = useBitranLocation() as Ref<BitranLocation>;
@@ -48,22 +47,24 @@ const phrase = await usePhrases('article', 'summary', 'practice');
 
     <MainCameo />
 
-    <TopicPartSwitch
-        :partLinks="topicData.topicPartLinks"
-        :active="topicPart"
-    />
-
     <div style="clear: both"></div>
 
-    <MainBitranContent :location />
+    <MainBitranContent :location>
+        <template v-slot:header>
+            <TopicPartSwitch
+                :partLinks="topicData.topicPartLinks"
+                :active="topicPart"
+            />
+        </template>
+    </MainBitranContent>
 
-    <ContentSection v-if="topicData.generic.references">
+    <MainSection v-if="topicData.generic.references">
         <ContentReferences :references="topicData.generic.references" />
-    </ContentSection>
+    </MainSection>
 
-    <ContentSection v-if="adsAllowed() && eruditConfig.ads?.bottom">
+    <MainSection v-if="adsAllowed() && eruditConfig.ads?.bottom">
         <AdsBannerBottom />
-    </ContentSection>
+    </MainSection>
 </template>
 
 <style lang="scss" module>

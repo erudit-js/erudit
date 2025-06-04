@@ -16,6 +16,14 @@ export function setupGlobalImports() {
             name: 'defineCameo',
             from: eruditPath('globals/cameo'),
         },
+        {
+            name: 'defineTier1Sponsor',
+            from: eruditPath('globals/sponsor'),
+        },
+        {
+            name: 'defineTier2Sponsor',
+            from: eruditPath('globals/sponsor'),
+        },
         // Bitran
         ...(() => {
             const imports = ['defineAppBitran'];
@@ -45,12 +53,7 @@ export function setupGlobalImports() {
         },
         // Helper Asset Path Functions
         ...(() => {
-            const imports = [
-                'eruditAsset',
-                'contributorAsset',
-                'contentAsset',
-                'publicAsset',
-            ];
+            const imports = ['eruditAsset', 'contentAsset', 'publicAsset'];
             return imports.map((name) => ({
                 name,
                 from: eruditPath(`shared/asset`),

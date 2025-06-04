@@ -7,6 +7,7 @@ import { setupLanguage } from './jobs/language';
 import { buildContributors } from './jobs/contributors';
 import { buildNav } from './jobs/nav';
 import { buildContent } from './jobs/content/generic';
+import { buildSponsors } from '@server/sponsor/build';
 
 let initial = true;
 
@@ -23,6 +24,7 @@ async function _build() {
     await buildContributors();
     await buildNav();
     await buildContent();
+    await buildSponsors();
 
     logger.success('Build successful!');
 }

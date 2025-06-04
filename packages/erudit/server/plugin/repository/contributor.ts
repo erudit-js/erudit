@@ -62,6 +62,7 @@ export async function getContributions(
     );
 
     const contributions: Contribution[] = [];
+    const existingBookTitles = new Set<string>();
 
     for (const dbContribution of dbContributions) {
         const contentId = dbContribution.contentId;
@@ -89,13 +90,19 @@ export async function getContributions(
             let cursor = bookNavNode;
             while (cursor) {
                 if (cursor.type === 'group') {
-                    bookTitle =
-                        (await getContentTitle(cursor.fullId)) +
-                        ' / ' +
-                        bookTitle;
+                    const groupTitle = await getContentTitle(cursor.fullId);
+                    const newBookTitle = groupTitle + ' / ' + bookTitle;
+
+                    if (bookTitle && existingBookTitles.has(bookTitle)) {
+                        bookTitle = newBookTitle;
+                    }
                 }
 
                 cursor = cursor.parent as any;
+            }
+
+            if (bookTitle) {
+                existingBookTitles.add(bookTitle);
             }
 
             return {

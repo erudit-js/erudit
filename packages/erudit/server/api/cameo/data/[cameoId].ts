@@ -3,7 +3,6 @@ import { type Cameo } from '@erudit-js/cog/schema';
 
 import { PROJECT_DIR } from '@erudit/globalPath';
 import { IMPORT } from '@server/importer';
-import { cameoAvatarExtensions } from '@server/repository/cameo';
 
 export default defineEventHandler<Promise<Cameo>>(async (event) => {
     const cameoId = event.context.params?.cameoId;
@@ -15,14 +14,11 @@ export default defineEventHandler<Promise<Cameo>>(async (event) => {
         });
     }
 
-    const avatarPaths = await glob(
-        `cameos/${cameoId}/avatars/*.{${cameoAvatarExtensions.join(',')}}`,
-        {
-            cwd: PROJECT_DIR,
-            absolute: false,
-            posix: true,
-        },
-    );
+    const avatarPaths = await glob(`cameos/${cameoId}/avatars/*`, {
+        cwd: PROJECT_DIR,
+        absolute: false,
+        posix: true,
+    });
 
     const avatarRoutes = avatarPaths.map((path) => `/asset/${path}`);
 
@@ -42,5 +38,5 @@ export default defineEventHandler<Promise<Cameo>>(async (event) => {
         ...cameoConfig,
         cameoId,
         avatars: avatarRoutes,
-    };
+    } satisfies Cameo;
 });

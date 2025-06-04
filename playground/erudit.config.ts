@@ -12,7 +12,7 @@ export default defineEruditConfig({
     },
     site: {
         buildUrl: 'http://localhost:3000',
-        //baseUrl: '/subfolder/',
+        // baseUrl: '/subfolder/',
         // logotype: publicAsset('logotype.png'),
         title: 'Привет мир',
         slogan: 'Тестовый сайт',
@@ -26,8 +26,17 @@ export default defineEruditConfig({
     // seo: {
     //     title: 'Открытая математика',
     // },
-    donate: {
-        enabled: true,
+    sponsors: {
+        addLink: 'https://google.com',
+        tier1Label: 'Помощники',
+        tier2Label: 'Меценаты',
+        defaultCameoMessages: [
+            'Я поддерживаю Открытую Математику!',
+            'Кто в лес, а кто по математике!',
+        ],
+    },
+    content: {
+        howToImproveLink: 'lol',
     },
     customLinks: [
         {

@@ -12,7 +12,7 @@ import {
     createContributorLink,
     createTopicPartLink,
 } from '@shared/link';
-import { trailingSlash } from '@erudit/utils/slash';
+import { trailingSlash } from '@erudit/utils/url';
 
 export default defineEventHandler(async (event) => {
     setHeader(event, 'Content-Type', 'application/xml');
@@ -42,7 +42,13 @@ ${routes
 });
 
 function staticRoutes() {
-    return ['/', '/contributors/'];
+    const routes = ['/', '/contributors/'];
+
+    if (ERUDIT_SERVER.CONFIG.sponsors) {
+        routes.push('/sponsors/');
+    }
+
+    return routes;
 }
 
 async function topicRoutes() {

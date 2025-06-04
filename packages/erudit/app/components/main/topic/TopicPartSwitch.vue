@@ -33,23 +33,18 @@ const phrase = await usePhrases('article', 'summary', 'practice');
 .topicPartSwitch {
     --height: 50px;
 
-    position: relative;
-    top: 68px;
-
     display: flex;
     align-items: end;
     justify-content: center;
     gap: var(--gapBig);
-    margin: var(--_pMainY) 0;
-    margin-top: -40px;
+    margin: var(--_pMainY) 0 0;
+
+    position: relative;
+    top: 2px;
 
     width: 100%;
     height: var(--height);
     border-bottom: 2px solid transparent;
-
-    @include bp.below('mobile') {
-        top: 64px;
-    }
 }
 
 .partButton {
