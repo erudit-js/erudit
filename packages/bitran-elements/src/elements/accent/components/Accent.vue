@@ -29,7 +29,7 @@ const phrase = await useElementPhrases();
 const resolvedSections = (() => {
     if (parseData.type !== 'complex') return [];
 
-    return parseData.sections.map((section) => {
+    return parseData.sections.map((section: any) => {
         const newSection = { ...section };
 
         const phraseKey = `_section_${newSection.id}`;
@@ -45,7 +45,8 @@ const resolvedSections = (() => {
 const accentColors = Object.keys(renderData.colors).reduce(
     (styles, key) => {
         const colorKey = key as keyof typeof renderData.colors;
-        styles[`--accentColor_${colorKey}`] = renderData.colors[colorKey];
+        styles[`--accentColor_${String(colorKey)}`] =
+            renderData.colors[colorKey];
         return styles;
     },
     {} as Record<string, string>,
@@ -56,9 +57,10 @@ const accentColors = Object.keys(renderData.colors).reduce(
     <div :class="$style.accent" :style="accentColors" data-erudit-accent>
         <header>
             <MyRuntimeIcon name="accent-icon" :svg="accentIcon" />
-            <span>{{
-                pretty(parseData.title || phrase('_element_title'))
-            }}</span>
+            <h2 v-if="parseData.title">{{ pretty(parseData.title) }}</h2>
+            <span v-else>
+                {{ pretty(phrase('_element_title')) }}
+            </span>
         </header>
 
         <main v-if="mainNode" :class="$style.content">
@@ -100,6 +102,13 @@ const accentColors = Object.keys(renderData.colors).reduce(
         font-size: 1.1em;
         font-weight: 600;
         color: var(--accentColor_text);
+
+        h2,
+        span {
+            font-size: inherit;
+            font-weight: inherit;
+            color: inherit;
+        }
 
         [my-icon] {
             flex-shrink: 0;
