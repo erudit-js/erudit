@@ -82,6 +82,11 @@ $$ A^2 + B^2 = C^2 $$
         maxWidth: 300px
         secondary: And my $f(x) = 2$ brother [Anthony](page|article|/test/link)...
 
+@image
+    src: icon.svg
+    maxWidth: 300px
+    caption: SVG Caption
+
 @callout
     title: Винстон Черчиль о Блетчли Парке
     icon: quote
