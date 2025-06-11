@@ -1,3 +1,5 @@
+import { trailingSlash } from '@erudit/utils/url';
+
 import { PreviewDataType, type PreviewDataBase } from '../data';
 import { PreviewRequestType, type PreviewRequest } from '../request';
 import type { PreviewFooter } from '../footer';
@@ -17,7 +19,6 @@ export async function buildPageLink(
 
     if (linkTarget.type !== 'page') return;
 
-    return await $fetch(`/api/preview/page${linkTarget._href}`, {
-        responseType: 'json',
-    });
+    const route = trailingSlash(`/api/preview/page${linkTarget._href}`, false);
+    return await $fetch(route, { responseType: 'json' });
 }
