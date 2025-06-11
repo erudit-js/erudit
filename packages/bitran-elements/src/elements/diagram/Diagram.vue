@@ -316,16 +316,17 @@ onUnmounted(() => {
     }
 
     .label text,
-    .label span {
+    .label span,
+    .katex path {
         fill: var(--text) !important;
         color: var(--text) !important;
     }
 
-    .node rect,
-    .node circle,
-    .node ellipse,
-    .node polygon,
-    .node path {
+    .node > rect,
+    .node > circle,
+    .node > ellipse,
+    .node > polygon,
+    .node > path {
         fill: var(--bgNode) !important;
         stroke: var(--border) !important;
     }
