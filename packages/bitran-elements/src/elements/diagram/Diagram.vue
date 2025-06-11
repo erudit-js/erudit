@@ -394,7 +394,7 @@ onUnmounted(() => {
         .label text,
         .label span,
         .label strong {
-            color: white !important;
+            --text: white !important;
         }
     }
 }

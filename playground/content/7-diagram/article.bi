@@ -50,7 +50,7 @@ $$ A^2 + B^2 = C^2 $$
         arrangement -->|Без повторений| awr["$$ \set{sdf} A_n^k = \frac{\sqrt{D}n!}{(n-k)!} $$"]
         arrangement -->|С повторениями| ar["$$ \bar{A}_n^k = n^k $$"]
 
-        combination -->|Без повторений| cwr["$$ C_n^k = \frac{n!}{(n-k)! \ k!} $$"]
+        combination -->|Без повторений| cwr["$$ C_n^k = \frac{\sqrt{D}n!}{(n-k)! \ k!} $$"]
         combination -->|С повторениями| cr["$$ \bar{C}_n^k = C_{n+k-1}^k $$"]
 
         awr -->|Используются все элементы| permutation[**Перестановка**]:::featured
@@ -58,4 +58,4 @@ $$ A^2 + B^2 = C^2 $$
         permutation -->|Без повторений| pwr["$$ P_n = n! $$"]
         permutation -.->|С повторениями$^*$| pr["$$ P_{n_1, \ \ldots, \ n_k} = \frac{n!}{n_1! \ \ldots \ n_k!} $$"]
 
-        class root,arrangement,combination,permutation fill
+        class root,arrangement,combination,permutation,cwr fill
