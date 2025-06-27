@@ -7,7 +7,7 @@
     description: |
         This is the problem description.
 
-@problefm
+@problem
     title: Complete problem
     level: medium
     attributes:
@@ -33,7 +33,7 @@
         "": |
             This is the default solution.
         Alternative: |
-            This is an alternative solution.
+            This is an alternative solution. Global [link](page|article|/test/link).
 
             {{ foo }}
     answer: |

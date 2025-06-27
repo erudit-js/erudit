@@ -122,10 +122,18 @@ function setupLightbox(svgElement: SVGElement) {
     slide.removeAttribute('width');
     copyCSSVariables(svgElement as any as HTMLElement, slide);
 
+    const overlayWrapper = document.createElement('div');
+    overlayWrapper.className = 'pswp__img-overlay-wrapper';
+    overlayWrapper.setAttribute('style', 'position: relative;');
+    overlayWrapper.innerHTML = `
+        <div class="pswp__img" style="position: absolute; width: 100%; height: 100%; top: 0; left: 0;"></div>
+        ${slide.outerHTML}
+    `;
+
     initLightbox({
         dataSource: [
             {
-                html: slide.outerHTML,
+                html: overlayWrapper.outerHTML,
                 width,
                 height: width * scaleHeightFactor,
             },
@@ -316,16 +324,17 @@ onUnmounted(() => {
     }
 
     .label text,
-    .label span {
+    .label span,
+    .katex path {
         fill: var(--text) !important;
         color: var(--text) !important;
     }
 
-    .node rect,
-    .node circle,
-    .node ellipse,
-    .node polygon,
-    .node path {
+    .node > rect,
+    .node > circle,
+    .node > ellipse,
+    .node > polygon,
+    .node > path {
         fill: var(--bgNode) !important;
         stroke: var(--border) !important;
     }
@@ -385,7 +394,7 @@ onUnmounted(() => {
         .label text,
         .label span,
         .label strong {
-            color: white !important;
+            --text: white !important;
         }
     }
 }

@@ -1,8 +1,6 @@
-import {
-    encodeBitranLocation,
-    parseBitranLocation,
-} from '@erudit-js/cog/schema';
+import { encodeBitranLocation } from '@erudit-js/cog/schema';
 
+import { trailingSlash } from '@erudit/utils/url';
 import type { RawBitranContent } from '@shared/bitran/content';
 
 import { PreviewDataType, type PreviewDataBase } from '../data';
@@ -26,10 +24,12 @@ export async function buildUnique(
 
     if (linkTarget.type !== 'unique') return;
 
-    const serverData = await $fetch(
+    const route = trailingSlash(
         `/api/preview/unique/${encodeBitranLocation(linkTarget._absoluteStrLocation!)}`,
-        { responseType: 'json' },
+        false,
     );
+
+    const serverData = (await $fetch(route, { responseType: 'json' })) as any;
     const elementName = serverData.elementName;
     const customTitle = serverData.title;
 
