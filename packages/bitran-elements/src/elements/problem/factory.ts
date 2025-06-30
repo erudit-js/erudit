@@ -2,6 +2,8 @@ import {
     ObjBlockParseFactory,
     ObjStringifyFactory,
     ParseFactory,
+    Stringifier,
+    StringifyFactory,
     type PlainObject,
 } from '@bitran-js/transpiler';
 
@@ -193,17 +195,25 @@ export async function parseProblemContent(
     return content;
 }
 
-export function problemContentToStrData(content: ProblemContent): PlainObject {
+export async function problemContentToStrData(
+    content: ProblemContent,
+    strFactory: StringifyFactory,
+): Promise<PlainObject> {
+    content.description.blocks;
+
     const result: PlainObject = {
         generator: content.generatorSrc,
-        description: content.description.source,
+        description: await strFactory.stringify(content.description.blocks),
     };
 
     if (content.hints) {
         if (content.hints.length === 1) {
-            result.hint = content.hints[0]!.source;
+            result.hint = await strFactory.stringify(content.hints[0]!.blocks);
         } else {
-            result.hints = content.hints.map((hint) => hint.source);
+            result.hints = [];
+            for (const hint of content.hints) {
+                result.hints.push(await strFactory.stringify(hint.blocks));
+            }
         }
     }
 
@@ -212,22 +222,24 @@ export function problemContentToStrData(content: ProblemContent): PlainObject {
             Object.keys(content.solution).length === 1 &&
             content.solution['']
         ) {
-            result.solution = content.solution[''].source;
+            result.solution = await strFactory.stringify(
+                content.solution[''].blocks,
+            );
         } else {
             result.solution = {};
 
             for (const [key, value] of Object.entries(content.solution)) {
-                result.solution[key] = value.source;
+                result.solution[key] = await strFactory.stringify(value.blocks);
             }
         }
     }
 
     if (content.answer) {
-        result.answer = content.answer.source;
+        result.answer = await strFactory.stringify(content.answer.blocks);
     }
 
     if (content.note) {
-        result.note = content.note.source;
+        result.note = await strFactory.stringify(content.note.blocks);
     }
 
     return result;
@@ -260,7 +272,7 @@ export class ProblemStringifier extends ObjStringifyFactory<ProblemSchema> {
         const { parseData } = this.payload();
         return {
             ...parseData.info,
-            ...problemContentToStrData(parseData),
+            ...(await problemContentToStrData(parseData, this)),
         };
     }
 }
@@ -338,7 +350,7 @@ export class ProblemsStringifier extends ObjStringifyFactory<ProblemsSchema> {
         };
 
         for (const problem of parseData.set) {
-            const problemObj = problemContentToStrData(problem);
+            const problemObj = await problemContentToStrData(problem, this);
 
             if (problem.label !== undefined) {
                 result.set.push({ label: problem.label, ...problemObj });
