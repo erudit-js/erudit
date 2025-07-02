@@ -56,7 +56,7 @@ const pharse = await usePhrases('to_index', 'about_book');
                         <TreeItem
                             icon="book-question"
                             :label="pharse.about_book"
-                            :active="contentRoute?.contentId === book.id"
+                            :active="contentRoute?.type === 'book'"
                             :link="`/book/${book.id}`"
                         />
                     </section>
