@@ -1,4 +1,4 @@
 export const testSource = defineContentSource({
     type: 'book',
-    title: 'Тестовый источник',
+    title: '1 Тестовый источник',
 });

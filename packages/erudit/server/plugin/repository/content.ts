@@ -17,11 +17,11 @@ import type { NavNode } from '../nav/node';
 import { createContentLink, createTopicPartLink } from '@erudit/shared/link';
 import type { PreviousNextItem } from '@erudit/shared/content/previousNext';
 import type { ContentContributor } from '@erudit/shared/contributor';
-import type { ContentGenericData } from '@shared/content/data/base';
+import type { ContentGeneric } from '@shared/content/data/base';
 
 export async function getContentGenericData(
     contentId: string,
-): Promise<ContentGenericData> {
+): Promise<ContentGeneric> {
     const dbContent = await ERUDIT_SERVER.DB.manager.findOne(DbContent, {
         where: { contentId },
     });
@@ -37,7 +37,7 @@ export async function getContentGenericData(
     const decoration = await getContentDecoration(contentId);
     const flags = await getContentFlags(contentId);
 
-    const contentPage: ContentGenericData = {
+    const contentPage: ContentGeneric = {
         contentId,
         type: dbContent.type,
         title: dbContent.title || undefined,

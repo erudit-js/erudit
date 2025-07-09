@@ -49,6 +49,7 @@ const phrase = await usePhrases('reference_source_featured');
             <div v-if="source.comment" :class="$style.comment">
                 {{ pretty(source.comment) }}
             </div>
+            <slot name="after"></slot>
         </div>
     </div>
 </template>

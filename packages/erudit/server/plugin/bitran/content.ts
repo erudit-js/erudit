@@ -95,20 +95,6 @@ async function retrieveContentFrom(location: BitranLocation) {
         };
     }
 
-    if (location.type === 'group') {
-        const dbGroup = await ERUDIT_SERVER.DB.manager.findOne(DbGroup, {
-            select: ['contentId', 'content'],
-            where: { contentId: location.path },
-        });
-
-        if (!dbGroup) throwNotFound();
-
-        return {
-            biCode: dbGroup!.content!,
-            context: { location, aliases: NO_ALIASES() },
-        };
-    }
-
     if (location.type === 'contributor') {
         const dbContributor = await ERUDIT_SERVER.DB.manager.findOne(
             DbContributor,

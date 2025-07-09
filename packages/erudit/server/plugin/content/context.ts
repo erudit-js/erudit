@@ -12,11 +12,8 @@ import { DbContributor } from '@server/db/entities/Contributor';
 import { getFullContentId } from '@server/repository/contentId';
 
 import type { Context } from '@shared/content/context';
-import {
-    createContentLink,
-    createContributorLink,
-    createTopicPartLink,
-} from '@shared/link';
+import { createContributorLink, createTopicPartLink } from '@shared/link';
+import { createContentLink } from '@server/repository/link';
 import { CONTENT_TYPE_ICON, ICON, TOPIC_PART_ICON } from '@erudit/shared/icons';
 
 export async function getContentContext(contentId: string): Promise<Context> {
@@ -35,7 +32,7 @@ export async function getContentContext(contentId: string): Promise<Context> {
                   ? CONTENT_TYPE_ICON[dbContent.type]
                   : '',
             title: dbContent.title || dbContent.contentId,
-            href: createContentLink(dbContent.type, dbContent.contentId),
+            href: await createContentLink(dbContent.contentId),
             hidden: await isSkipId(dbContent.contentId),
         });
     }

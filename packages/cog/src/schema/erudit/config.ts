@@ -1,3 +1,4 @@
+import type { EruditIndex } from './index';
 import type { EruditSponsors } from '../sponsor';
 import type { EruditAdsBanners } from './ads';
 import type { EruditAnalytics } from './analytics';
@@ -18,6 +19,7 @@ export interface EruditConfig {
     analytics?: EruditAnalytics;
     ads?: EruditAdsBanners;
     site?: EruditSite;
+    index?: EruditIndex;
     content?: EruditContent;
     sponsors?: EruditSponsors;
     seo?: EruditSeo;

@@ -41,8 +41,10 @@ This is an [relative link](practice|~/link|practiceParagraph) to sample paragrap
 
 Relative aliased [link](~relativeSampleP).
 
+{ link="Page Links" }
 # Page links
 
+{ link="My Paragraph" }
 Page links target specific pages of current Erudit site.
 
 Context link to [Article](page|article). Global [link](page|article|/test/link). Relative [link](page|article|~/link).\

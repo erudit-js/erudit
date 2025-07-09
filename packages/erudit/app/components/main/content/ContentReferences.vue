@@ -16,11 +16,7 @@ const phrase = await usePhrases('references', 'references_description');
 </script>
 
 <template>
-    <h2 :class="$style.heading">
-        <MyIcon name="link-external" :class="$style.icon" />
-        <span :class="$style.title">{{ phrase.references }}</span>
-        <span :class="$style.count">{{ count }}</span>
-    </h2>
+    <MainSectionTitle icon="link-external" :title="phrase.references" :count />
 
     <p :class="$style.description">{{ phrase.references_description }}</p>
 
@@ -30,28 +26,6 @@ const phrase = await usePhrases('references', 'references_description');
 </template>
 
 <style lang="scss" module>
-.heading {
-    display: flex;
-    align-items: center;
-    gap: var(--gap);
-    padding: var(--_pMainY) var(--_pMainX);
-
-    .icon {
-        font-size: 0.9em;
-        color: var(--textMuted);
-    }
-
-    .count {
-        position: relative;
-        top: 1px;
-        font-weight: 550;
-        font-size: 0.6em;
-        background: color-mix(in srgb, var(--textDimmed), transparent 65%);
-        border-radius: 20px;
-        padding: 2px 10px;
-    }
-}
-
 .description {
     padding: var(--_pMainY) var(--_pMainX);
 }

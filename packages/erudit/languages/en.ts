@@ -66,6 +66,7 @@ const english: EruditPhrases = {
     book: 'Book',
     group: 'Group',
     topic: 'Topic',
+    topics: 'Topics',
     article: 'Article',
     summary: 'Summary',
     practice: 'Practice',
@@ -93,6 +94,11 @@ const english: EruditPhrases = {
     sponsors_description:
         'People and organizations that support the project financially. Thanks to them, we can continue to develop the project and improve the quality of materials. If you want to support the project, you can become a sponsor too!',
     become_sponsor: 'Become a sponsor',
+    toc: 'Table of contents',
+    mentions: (count) => m(count, 'mention', 'mentions'),
+    start_learning: 'Start learning!',
+    x_contributors: (count) => m(count, 'Contributor', 'Contributors'),
+    x_sponsors: (count) => m(count, 'Sponsor', 'Sponsors'),
 };
 
 export default english;

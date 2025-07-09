@@ -10,7 +10,7 @@ import type { Context } from '@shared/content/context';
 import type { PreviousNext } from '@shared/content/previousNext';
 import type { ImageData } from '@shared/image';
 
-export interface ContentGenericData {
+export interface ContentGeneric {
     contentId: string;
     title?: string;
     description?: string;
@@ -28,5 +28,5 @@ export interface ContentGenericData {
 
 export interface ContentBaseData {
     type: ContentType;
-    generic: ContentGenericData;
+    generic: ContentGeneric;
 }

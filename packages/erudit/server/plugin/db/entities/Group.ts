@@ -8,7 +8,4 @@ export class DbGroup {
 
     @Column('varchar')
     type!: GroupType;
-
-    @Column('text', { nullable: true })
-    content?: string;
 }
