@@ -44,6 +44,11 @@
             "import": "./dist/elements/aliases/*.mjs",
             "require": "./dist/elements/aliases/*.mjs"
         },
+        "./blockLink/*": {
+            "types": "./dist/elements/blockLink/*.d.ts",
+            "import": "./dist/elements/blockLink/*.mjs",
+            "require": "./dist/elements/blockLink/*.mjs"
+        },
         "./callout/*": {
             "types": "./dist/elements/callout/*.d.ts",
             "import": "./dist/elements/callout/*.mjs",
@@ -152,6 +157,9 @@
             ],
             "aliases/*": [
                 "./dist/elements/aliases/*.d.ts"
+            ],
+            "blockLink/*": [
+                "./dist/elements/blockLink/*.d.ts"
             ],
             "callout/*": [
                 "./dist/elements/callout/*.d.ts"

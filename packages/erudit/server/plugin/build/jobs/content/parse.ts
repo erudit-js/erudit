@@ -13,7 +13,9 @@ import { DetailsNode } from '@erudit-js/bitran-elements/details/shared';
 import { HeadingNode } from '@erudit-js/bitran-elements/heading/shared';
 import {
     problemName,
+    ProblemNode,
     problemsName,
+    ProblemsNode,
     type ProblemParseData,
     type ProblemsParseData,
 } from '@erudit-js/bitran-elements/problem/shared';
@@ -120,7 +122,13 @@ export async function parseBitranContent(
         dbUnique.location = createUniqueLocation(node);
         dbUnique.content =
             content || (await bitranTranspiler.stringifier.stringify(node));
+
         dbUnique.title = node.parseData?.title || node.meta?.title || null;
+
+        if (node instanceof ProblemNode || node instanceof ProblemsNode) {
+            dbUnique.title = node.parseData.info.title;
+        }
+
         dbUnique.productName = node.name;
         dbUnique.context = context;
 

@@ -33,6 +33,8 @@ import { hrName } from './elements/hr/shared';
 import { hrTranspiler } from './elements/hr/transpiler';
 import { todoName } from './elements/todo/shared';
 import { todoTranspiler } from './elements/todo/transpiler';
+import { blockLinkName } from './elements/blockLink/shared';
+import { blockLinkServerTranspiler } from './elements/blockLink/server';
 
 export const eruditTranspilers: ElementTranspilers = {
     [aliasesName]: aliasesTranspiler,
@@ -40,6 +42,7 @@ export const eruditTranspilers: ElementTranspilers = {
     [headingName]: headingTranspiler,
     [detailsName]: detailsTranspiler,
     [linkName]: linkServerTranspiler,
+    [blockLinkName]: blockLinkServerTranspiler,
     [emphasisName]: emphasisTranspiler,
     [listName]: listTranspiler,
     [imageName]: imageServerTranspiler,

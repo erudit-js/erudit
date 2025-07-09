@@ -97,8 +97,6 @@ function hasBottom(tocItem: ContentTocItem): boolean {
         color: inherit;
         text-decoration: none;
 
-        @include transition(color);
-
         .tocItemIcon {
             color: var(--textMuted);
             margin-right: calc(var(--gap) - 2px);

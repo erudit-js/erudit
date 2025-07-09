@@ -71,6 +71,7 @@
 { text-center font-alt }
 *"И сказал мудрец ВСЕ БУДЕ!"*
 
+{ #complex }
 @problems
     title: Problem Set with shared
     level: medium

@@ -48,6 +48,9 @@ import { hrRenderer } from './elements/hr/renderer';
 import { todoName } from './elements/todo/shared';
 import { todoTranspiler } from './elements/todo/transpiler';
 import { todoRenderer } from './elements/todo/renderer';
+import { blockLinkName } from './elements/blockLink/shared';
+import { blockLinkTranspiler } from './elements/blockLink/transpiler';
+import { blockLinkRenderer } from './elements/blockLink/renderer';
 
 export const eruditElements: EruditBitranElements = {
     [aliasesName]: {
@@ -69,6 +72,10 @@ export const eruditElements: EruditBitranElements = {
     [linkName]: {
         transpiler: linkTranspiler,
         renderer: linkRenderer,
+    },
+    [blockLinkName]: {
+        transpiler: blockLinkTranspiler,
+        renderer: blockLinkRenderer,
     },
     [emphasisName]: {
         transpiler: emphasisTranspiler,
