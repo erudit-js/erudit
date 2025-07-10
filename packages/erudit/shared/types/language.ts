@@ -83,6 +83,7 @@ export interface EruditPhrases {
     start_learning: string;
     x_contributors: (count: number) => string;
     x_sponsors: (count: number) => string;
+    show_all: string;
 }
 
 export type EruditPhraseId = keyof Partial<EruditPhrases>;

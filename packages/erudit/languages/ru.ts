@@ -101,6 +101,7 @@ const russian: EruditPhrases = {
     start_learning: 'Начать изучение!',
     x_contributors: (count: number) => m(count, 'Автор', 'Автора', 'Авторов'),
     x_sponsors: (count: number) => m(count, 'Спонсор', 'Спонсора', 'Спонсоров'),
+    show_all: 'Показать все',
 };
 
 export default russian;

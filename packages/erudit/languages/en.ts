@@ -99,6 +99,7 @@ const english: EruditPhrases = {
     start_learning: 'Start learning!',
     x_contributors: (count) => m(count, 'Contributor', 'Contributors'),
     x_sponsors: (count) => m(count, 'Sponsor', 'Sponsors'),
+    show_all: 'Show all',
 };
 
 export default english;
