@@ -63,7 +63,7 @@ const russian: EruditPhrases = {
     external_link_warn: 'Вы собираетесь перейти на внешний ресурс!',
     internal_link: 'Внутренняя ссылка',
     internal_link_warn: 'Вы собираетесь перейти на внутреннюю страницу сайта!',
-    book: 'Книга',
+    book: 'Учебник',
     group: 'Группа',
     topic: 'Тема',
     topics: 'Темы',

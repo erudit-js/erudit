@@ -63,7 +63,7 @@ const english: EruditPhrases = {
     external_link_warn: 'You are going to visit external resource!',
     internal_link: 'Internal link',
     internal_link_warn: 'You are going to visit internal site page!',
-    book: 'Book',
+    book: 'Textbook',
     group: 'Group',
     topic: 'Topic',
     topics: 'Topics',

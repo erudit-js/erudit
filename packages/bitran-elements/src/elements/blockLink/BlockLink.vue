@@ -85,6 +85,7 @@ const description = parseData.label?.trim() || renderData.locationDescription;
 
 <style lang="scss" module>
 @use '@bitran-js/renderer-vue/scss/utils' as bitranUtils;
+@use '@bitran-js/renderer-vue/scss/bp' as bitranBp;
 
 .blockLink {
     display: flex;
@@ -101,6 +102,10 @@ const description = parseData.label?.trim() || renderData.locationDescription;
         display: flex;
         align-items: center;
         gap: var(--bitran_gap);
+
+        @include bitranBp.below('mobile') {
+            gap: var(--bitran_gapSmall);
+        }
 
         .title {
             font-size: 1.1em;

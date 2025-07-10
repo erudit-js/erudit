@@ -3,12 +3,16 @@ import {
     isContentType,
     isTopicPart,
     parseBitranLocation,
+    parsePartialBitranLocation,
     stringifyBitranLocation,
     type BitranContext,
     type BitranLocationType,
 } from '@erudit-js/cog/schema';
 
-import { createContributorLink } from '@erudit/shared/link';
+import {
+    createContributorLink,
+    createTopicPartLink,
+} from '@erudit/shared/link';
 import { resolveClientContentId } from '@server/repository/contentId';
 import { ERUDIT_SERVER } from '@server/global';
 import { DbContent } from '@server/db/entities/Content';
@@ -30,7 +34,14 @@ async function createLinkForLocation(
     path: string,
     uniqueId?: string,
 ): Promise<string> {
-    if (isContentType(locationType) || isTopicPart(locationType)) {
+    if (isTopicPart(locationType)) {
+        return (
+            createTopicPartLink(locationType, path) +
+            (uniqueId ? '#' + uniqueId : '')
+        );
+    }
+
+    if (isContentType(locationType)) {
         return (await createContentLink(path)) + '#' + uniqueId;
     }
 
@@ -144,7 +155,10 @@ async function createBlockLinkRenderData(
     }
 
     // Unique mode
-    const location = parseBitranLocation(inputLocation);
+    const location = parsePartialBitranLocation(
+        inputLocation,
+        context.location,
+    );
 
     if (isContentType(location.type) || isTopicPart(location.type)) {
         location.path = resolveClientContentId(

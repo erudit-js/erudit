@@ -35,9 +35,12 @@ sdf
 Привет мир, с Вами Джонни!
 И Сегодня мы будем не по детски тусить!
 
-~> article|.|no-meaning
+~> no-meaning
 
-~> article|.|no-meaning
+~> practice|pifagor
+Теорема Пифагора
+
+~> article|no-meaning
 Привет мир!
 
 ~> practice|/problems|complex
