@@ -13,7 +13,7 @@ defineProps<{ links: QuickLinks }>();
 
 .topicQuickLinks {
     padding: var(--_pMainY) var(--_pMainX);
-    --_erudit_quickLink_bg: var(--bgAside);
+    --_erudit_quickLink_bg: var(--bgAside) !important;
 
     @include bp.below('mobile') {
         > ul {
