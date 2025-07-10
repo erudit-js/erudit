@@ -13,7 +13,7 @@ defineProps<{
         <EruditLink
             :prefetch="false"
             :to="link"
-            target="_blank"
+            :target="link.startsWith('/') ? undefined : '_blank'"
             :class="$style.actionButton"
         >
             <MyIcon :name="icon" :class="$style.actionButtonIcon" />
@@ -24,6 +24,8 @@ defineProps<{
 
 <style lang="scss" module>
 .actionButtonSection {
+    position: relative;
+    z-index: 10;
     display: flex;
     justify-content: center;
     align-items: center;

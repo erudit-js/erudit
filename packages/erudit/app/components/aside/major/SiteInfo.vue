@@ -33,11 +33,11 @@ const siteInfo = computed<SiteInfo>(() => {
             <img :src="baseUrlPath(siteInfo.logotype)" :alt="siteInfo.title" />
         </EruditLink>
         <div :class="[$style.textInfo, !siteInfo.logotype && $style.noLogo]">
-            <h1 :class="$style.title">
+            <div :class="$style.title">
                 <EruditLink to="/">{{
                     siteInfo.title || phrase.site_info_title
                 }}</EruditLink>
-            </h1>
+            </div>
             <div v-if="siteInfo.slogan" :class="$style.description">
                 {{ siteInfo.slogan }}
             </div>

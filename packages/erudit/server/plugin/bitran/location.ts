@@ -1,5 +1,6 @@
 import {
     decodeBitranLocation,
+    isContentType,
     parseBitranLocation,
 } from '@erudit-js/cog/schema';
 
@@ -19,12 +20,8 @@ export async function parseClientBitranLocation(clientLocation: string) {
     try {
         const location = parseBitranLocation(clientLocation);
 
-        switch (location.type) {
-            case 'article':
-            case 'summary':
-            case 'practice':
-            case 'group':
-                location.path = getFullContentId(location.path!);
+        if (isContentType(location.type)) {
+            location.path = getFullContentId(location.path!);
         }
 
         return location;

@@ -15,6 +15,8 @@ import { DbHash } from './entities/Hash';
 import { DbTopic } from './entities/Topic';
 import { DbUnique } from './entities/Unique';
 import { DbFile } from './entities/File';
+import { DbQuickLink } from './entities/QuickLink';
+import { DbStat } from './entities/Stat';
 
 export async function setupDatabase() {
     rmSync(PROJECT_DIR + '/.erudit/data.sqlite', { force: true });
@@ -35,6 +37,8 @@ export async function setupDatabase() {
             DbTopic,
             DbUnique,
             DbFile,
+            DbQuickLink,
+            DbStat,
         ],
     });
 

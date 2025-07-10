@@ -43,6 +43,11 @@ const phrase = await usePhrases('article', 'summary', 'practice');
         :description="topicData.generic?.description"
     />
 
+    <MainTopicQuickLinks
+        v-if="topicData.quickLinks.length"
+        :links="topicData.quickLinks"
+    />
+
     <ContentPopovers :generic="topicData.generic" />
 
     <MainCameo />
@@ -66,11 +71,3 @@ const phrase = await usePhrases('article', 'summary', 'practice');
         <AdsBannerBottom />
     </MainSection>
 </template>
-
-<style lang="scss" module>
-.foo {
-    position: relative;
-    width: 100%;
-    height: 300px;
-}
-</style>

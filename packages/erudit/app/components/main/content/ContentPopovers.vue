@@ -1,14 +1,14 @@
 <script lang="ts" setup>
 import type { ContentFlag } from '@erudit-js/cog/schema';
 
-import type { ContentGenericData } from '@shared/content/data/base';
+import type { ContentGeneric } from '@shared/content/data/base';
 
 import ContentPopover from './ContentPopover.vue';
 import type { PopoverData } from '@shared/popover';
 import { type MyIconName } from '#my-icons';
 
 const props = defineProps<{
-    generic: ContentGenericData /* TODO: customPopovers[] */;
+    generic: ContentGeneric /* TODO: customPopovers[] */;
 }>();
 
 const phrase = await usePhrases(
@@ -79,11 +79,18 @@ const hasPopovers = computed(() => {
 </template>
 
 <style lang="scss" module>
+@use '$/def/bp';
+
 .popovers {
     display: flex;
     flex-wrap: wrap;
     gap: var(--gap);
     padding: var(--_pMainY) var(--_pMainX);
+
+    @include bp.below('mobile') {
+        gap: var(--gapSmall);
+        justify-content: center;
+    }
 }
 
 .dependenciesList {

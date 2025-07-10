@@ -1,5 +1,6 @@
 export type EruditBitran = Partial<{
     toc: string[];
+    stat: (string | string[])[];
     //     /**
     //      * TODO!
     //      * Groups of elements that are tracked on site and display on site index and book pages and so on.

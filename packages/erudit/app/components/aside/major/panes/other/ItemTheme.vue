@@ -14,41 +14,36 @@ const themeOptions: Record<string, [MyIconName, string]> = {
     dark: ['moon', phrase.theme_dark],
 };
 
+const clientMode = ref(false);
 const themeItem = ref(themeOptions.auto);
-
-let _cycle = () => {};
+let cycle = () => {};
 
 onMounted(() => {
-    const { cycle, theme } = useTheme();
+    const { cycle: _cycle, theme } = useTheme();
 
-    _cycle = cycle;
+    themeItem.value = themeOptions[theme.value];
 
-    watch(
-        theme,
-        () => {
-            themeItem.value = (() => {
-                switch (theme.value) {
-                    case 'auto':
-                        return themeOptions.auto;
-                    case 'light':
-                        return themeOptions.light;
-                    case 'dark':
-                        return themeOptions.dark;
-                }
-            })();
-        },
-        { immediate: true },
-    );
+    cycle = () => {
+        _cycle();
+        themeItem.value = themeOptions[theme.value];
+    };
+
+    clientMode.value = true;
 });
 </script>
 
 <template>
-    <ClientOnly>
-        <AsideListItem
-            @click="_cycle"
-            :icon="themeItem![0]"
-            :main="phrase.theme"
-            :secondary="themeItem![1]"
-        />
-    </ClientOnly>
+    <AsideListItem
+        v-if="clientMode"
+        :icon="themeItem![0]"
+        :main="phrase.theme"
+        :secondary="themeItem![1]"
+        @click="cycle"
+    />
+    <AsideListItem
+        v-else
+        :icon="themeOptions.auto![0]"
+        :main="phrase.theme"
+        :secondary="themeOptions.auto![1]"
+    />
 </template>

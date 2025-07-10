@@ -203,23 +203,58 @@ async function renderDiagram() {
 }
 
 let observer: IntersectionObserver | null = null;
+let fallbackTimeout: NodeJS.Timeout | null = null;
 
 onMounted(() => {
+    // Create intersection observer with better configuration
     observer = new IntersectionObserver(
         (entries) => {
             const entry = entries[0]!;
-            if (entry.isIntersecting) {
+            if (entry.isIntersecting && !isInViewport.value) {
                 isInViewport.value = true;
                 renderDiagram();
                 observer?.disconnect();
                 observer = null;
+                // Clear fallback timeout since we successfully rendered
+                if (fallbackTimeout) {
+                    clearTimeout(fallbackTimeout);
+                    fallbackTimeout = null;
+                }
             }
         },
-        { threshold: 0.1 },
+        {
+            threshold: 0.1,
+            rootMargin: '50px', // Start loading when element is 50px away from viewport
+        },
     );
 
     if (diagramElement.value) {
         observer.observe(diagramElement.value);
+
+        // Fallback mechanism: if the diagram hasn't rendered after 2 seconds,
+        // check if it's actually visible and render it anyway
+        fallbackTimeout = setTimeout(() => {
+            if (!isInViewport.value && diagramElement.value) {
+                const rect = diagramElement.value.getBoundingClientRect();
+                const windowHeight = window.innerHeight;
+                const windowWidth = window.innerWidth;
+
+                // Check if element is actually visible in viewport
+                const isVisible =
+                    rect.top < windowHeight &&
+                    rect.bottom > 0 &&
+                    rect.left < windowWidth &&
+                    rect.right > 0;
+
+                if (isVisible) {
+                    isInViewport.value = true;
+                    renderDiagram();
+                    observer?.disconnect();
+                    observer = null;
+                }
+            }
+            fallbackTimeout = null;
+        }, 2000);
     }
 });
 
@@ -227,6 +262,10 @@ onUnmounted(() => {
     if (observer) {
         observer.disconnect();
         observer = null;
+    }
+    if (fallbackTimeout) {
+        clearTimeout(fallbackTimeout);
+        fallbackTimeout = null;
     }
 });
 </script>

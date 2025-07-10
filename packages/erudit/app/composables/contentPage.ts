@@ -1,5 +1,6 @@
 import eruditConfig from '#erudit/config';
 
+import { normalizeText } from '@erudit/utils/normalize';
 import { createOgImageTags, defaultOgImage } from '@app/scripts/og';
 import type { ContentData } from '@shared/content/data';
 
@@ -100,18 +101,18 @@ export function useContentPage(contentData: Ref<ContentData>) {
                 contentData.value.generic?.description;
 
             if (customDescription) {
-                seo.description.value = customDescription
-                    .trim()
-                    .replace(/\n/g, ' ');
+                seo.description.value = normalizeText(customDescription);
                 return;
             }
 
             if (contentRoute.value!.type === 'topic') {
                 const phraseFunc =
                     phrase[`seo_${contentRoute.value!.topicPart}_description`];
-                seo.description.value = phraseFunc(
-                    contentData.value.generic?.seo?.title ||
-                        contentData.value.generic.title!,
+                seo.description.value = normalizeText(
+                    phraseFunc(
+                        contentData.value.generic?.seo?.title ||
+                            contentData.value.generic.title!,
+                    ),
                 );
                 return;
             }

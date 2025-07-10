@@ -15,10 +15,16 @@ const pretty = useFormatText();
 </template>
 
 <style lang="scss" module>
+@use '$/def/bp';
+
 .contentDescription {
     padding: var(--_pMainY) var(--_pMainX);
     font-weight: 500;
     font-size: 1.1em;
     color: var(--text);
+
+    @include bp.below('mobile') {
+        text-align: center;
+    }
 }
 </style>

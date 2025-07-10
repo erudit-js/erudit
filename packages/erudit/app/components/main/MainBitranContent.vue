@@ -13,6 +13,7 @@ type MainBitranPayload = RawBitranContent & {
 
 const props = defineProps<{ location: BitranLocation }>();
 
+const route = useRoute();
 const nuxtApp = useNuxtApp();
 const stringLocation = stringifyBitranLocation(props.location);
 
@@ -37,6 +38,18 @@ if (
         mainLocation: props.location,
     });
 }
+
+onMounted(() => {
+    setTimeout(() => {
+        const hash = route.hash;
+        if (hash) {
+            const element = document.querySelector(hash.replace(':', '\\:'));
+            if (element) {
+                element.scrollIntoView({ behavior: 'instant' });
+            }
+        }
+    }, 100);
+});
 </script>
 
 <template>

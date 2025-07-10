@@ -53,6 +53,7 @@ export interface EruditPhrases {
     book: string;
     group: string;
     topic: string;
+    topics: string;
     article: string;
     summary: string;
     practice: string;
@@ -74,10 +75,14 @@ export interface EruditPhrases {
     references: string;
     reference_source_featured: string;
     references_description: string;
-    // Sponsors
     sponsors: string;
     sponsors_description: string;
     become_sponsor: string;
+    toc: string;
+    mentions: (conte: number) => string;
+    start_learning: string;
+    x_contributors: (count: number) => string;
+    x_sponsors: (count: number) => string;
 }
 
 export type EruditPhraseId = keyof Partial<EruditPhrases>;

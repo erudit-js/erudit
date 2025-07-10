@@ -14,7 +14,6 @@ export interface ContentReferenceItem {
 export interface ContentReferenceSource {
     type: 'book' | 'site';
     title: string;
-    id?: string;
     featured?: boolean;
     description?: string;
     link?: string;
