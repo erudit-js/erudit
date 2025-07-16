@@ -54,6 +54,7 @@ const description = parseData.label?.trim() || renderData.locationDescription;
         :to="renderData.link"
         :prefetch="false"
         :class="$style.blockLink"
+        target="_blank"
     >
         <div :class="$style.header">
             <MyIcon
