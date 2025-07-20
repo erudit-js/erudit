@@ -43,11 +43,16 @@ function updateNavState() {
     if (!hashNav.value || !navState.value) return;
 
     let currentFullId: string | undefined;
-
+    let longestMatch = '';
     for (const navItem of Object.values(hashNav.value)) {
         navState.value[navItem.id]!.value = null;
-        if (props.contentId?.startsWith(navItem.id))
+        if (
+            props.contentId?.startsWith(navItem.id) &&
+            navItem.id.length > longestMatch.length
+        ) {
+            longestMatch = navItem.id;
             currentFullId = navItem.fullId;
+        }
     }
 
     if (!currentFullId) return;
