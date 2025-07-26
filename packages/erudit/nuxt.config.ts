@@ -6,9 +6,8 @@ import {
 import { eruditPath, projectPath } from './globalPath';
 
 export default defineNuxtConfig({
-    compatibilityDate: '2025-01-01',
+    compatibilityDate: '2025-07-20',
     devtools: { enabled: true },
-    future: { compatibilityVersion: 4 },
     ssr: true,
     alias: {
         '@erudit': eruditPath(),
@@ -28,6 +27,9 @@ export default defineNuxtConfig({
     typescript: {
         tsConfig: {
             include: [eruditPath('**/*'), projectPath('**/*')],
+            compilerOptions: {
+                types: ['@types/jest'],
+            },
         },
     },
     build: {
@@ -102,6 +104,8 @@ export default defineNuxtConfig({
     vite: {
         optimizeDeps: {
             include: [
+                '@vue/devtools-core',
+                '@vue/devtools-kit',
                 'yaml',
                 'photoswipe',
                 '@floating-ui/vue',

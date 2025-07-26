@@ -13,8 +13,7 @@ it('Should correctly parse and stringify a minimal problem element', async () =>
 @problem
     title: First problem
     level: easy
-    description: |
-        This is the problem description.
+    description: This is the problem description.
 `;
 
     const parsed = await bitran.parser.parse(text);
@@ -46,20 +45,15 @@ it('Should correctly parse and stringify a problem with all properties', async (
         - pretty
         - applied
     generator: path/to/generator.ts
-    description: |
-        This is the problem description.
+    description: This is the problem description.
     hints:
         - This is hint 1
         - This is hint 2
     solution:
-        "": |
-            This is the default solution.
-        Alternative: |
-            This is an alternative solution.
-    answer: |
-        The answer is 42.
-    note: |
-        This is an additional note.
+        "": This is the default solution.
+        Alternative: This is an alternative solution.
+    answer: The answer is 42.
+    note: This is an additional note.
 `;
 
     const parsed = await bitran.parser.parse(text);
@@ -90,21 +84,19 @@ it('Should correctly parse and stringify a problem with all properties', async (
     // Check solutions
     expect(problem.parseData.solution).toBeDefined();
     expect(problem.parseData.solution!['']!.source).toBe(
-        'This is the default solution.\n',
+        'This is the default solution.',
     );
     expect(problem.parseData.solution!['Alternative']!.source).toBe(
-        'This is an alternative solution.\n',
+        'This is an alternative solution.',
     );
 
     // Check answer
     expect(problem.parseData.answer).toBeDefined();
-    expect(problem.parseData.answer!.source).toBe('The answer is 42.\n');
+    expect(problem.parseData.answer!.source).toBe('The answer is 42.');
 
     // Check note
     expect(problem.parseData.note).toBeDefined();
-    expect(problem.parseData.note!.source).toBe(
-        'This is an additional note.\n',
-    );
+    expect(problem.parseData.note!.source).toBe('This is an additional note.');
 
     // Check stringification
     const stringified = await bitran.stringifier.stringify(parsed);
@@ -116,10 +108,8 @@ it('Should correctly parse a problem with string solution', async () => {
 @problem
     title: Problem with string solution
     level: easy
-    description: |
-        This is the problem description.
-    solution: |
-        This is a simple solution.
+    description: This is the problem description.
+    solution: This is a simple solution.
 `;
 
     const parsed = await bitran.parser.parse(text);
@@ -134,7 +124,7 @@ it('Should correctly parse a problem with string solution', async () => {
     // Check solution
     expect(problem.parseData.solution).toBeDefined();
     expect(problem.parseData.solution!['']!.source).toBe(
-        'This is a simple solution.\n',
+        'This is a simple solution.',
     );
 
     // Check stringification
@@ -147,10 +137,8 @@ it('Should correctly parse a problem with hint property', async () => {
 @problem
     title: Problem with hint property
     level: easy
-    description: |
-        This is the problem description.
-    hint: |
-        This is a single hint.
+    description: This is the problem description.
+    hint: This is a single hint.
 `;
 
     const parsed = await bitran.parser.parse(text);
@@ -165,9 +153,7 @@ it('Should correctly parse a problem with hint property', async () => {
     // Check hint converted to hints array
     expect(problem.parseData.hints).toBeDefined();
     expect(problem.parseData.hints!.length).toBe(1);
-    expect(problem.parseData.hints![0]!.source).toBe(
-        'This is a single hint.\n',
-    );
+    expect(problem.parseData.hints![0]!.source).toBe('This is a single hint.');
 
     // Check stringification uses hint property for single hints
     const stringified = await bitran.stringifier.stringify(parsed);
@@ -179,8 +165,7 @@ it('Should reject problem element with both hint and hints properties', async ()
 @problem
     title: Problem with both hint and hints
     level: easy
-    description: |
-        This is the problem description.
+    description: This is the problem description.
     hint: This is a single hint.
     hints:
         - This is another hint

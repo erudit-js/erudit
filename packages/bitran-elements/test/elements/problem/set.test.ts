@@ -17,10 +17,8 @@ it('Should correctly parse and stringify a minimal problems set element', async 
     title: Problem Set 1
     level: easy
     set:
-        - description: |
-              This is the first problem.
-        - description: |
-              This is the second problem.
+        - description: This is the first problem.
+        - description: This is the second problem.
 `;
 
     const parsed = await bitran.parser.parse(text);
@@ -61,12 +59,9 @@ it('Should correctly parse and stringify a problems set with shared content', as
 
         Really is.
     set:
-        - description: |
-              First problem description.
-          answer: |
-              First answer.
-        - description: |
-              Second problem description.
+        - description: First problem description.
+          answer: First answer.
+        - description: Second problem description.
           hints:
               - Hint for the second problem
               - Second hint
@@ -96,11 +91,11 @@ it('Should correctly parse and stringify a problems set with shared content', as
         'First problem description.',
     );
     expect(problems.parseData.set[0]!.answer).toBeDefined();
-    expect(problems.parseData.set[0]!.answer!.source).toBe('First answer.\n');
+    expect(problems.parseData.set[0]!.answer!.source).toBe('First answer.');
 
     // Check second problem
     expect(problems.parseData.set[1]!.description.source).toContain(
-        'Second problem description.\n',
+        'Second problem description.',
     );
     expect(problems.parseData.set[1]!.hints).toBeDefined();
     expect(problems.parseData.set[1]!.hints!.length).toBe(2);
@@ -122,25 +117,18 @@ it('Should correctly parse and stringify a problems set with complex content', a
         - applied
     set:
         - generator: path/to/generator.ts
-          description: |
-              First complex problem.
+          description: First complex problem.
           hints:
               - Hint 1
               - Hint 2
           solution:
-              Method 1: |
-                  Solution using first method.
-              Method 2: |
-                  Solution using second method.
-          answer: |
-              The answer is 42.
-          note: |
-              Additional note about this problem.
+              Method 1: Solution using first method.
+              Method 2: Solution using second method.
+          answer: The answer is 42.
+          note: Additional note about this problem.
         - generator: path/to/generator.ts
-          description: |
-              Second complex problem.
-          solution: |
-              Single solution approach.
+          description: Second complex problem.
+          solution: Single solution approach.
 `;
 
     const parsed = await bitran.parser.parse(text);
@@ -165,14 +153,14 @@ it('Should correctly parse and stringify a problems set with complex content', a
     expect(firstProblem.hints!.length).toBe(2);
     expect(firstProblem.solution).toBeDefined();
     expect(firstProblem.solution!['Method 1']!.source).toBe(
-        'Solution using first method.\n',
+        'Solution using first method.',
     );
     expect(firstProblem.solution!['Method 2']!.source).toBe(
-        'Solution using second method.\n',
+        'Solution using second method.',
     );
-    expect(firstProblem.answer!.source).toBe('The answer is 42.\n');
+    expect(firstProblem.answer!.source).toBe('The answer is 42.');
     expect(firstProblem.note!.source).toBe(
-        'Additional note about this problem.\n',
+        'Additional note about this problem.',
     );
 
     // Check second problem
@@ -183,7 +171,7 @@ it('Should correctly parse and stringify a problems set with complex content', a
     expect(secondProblem.generatorSrc).toBe('path/to/generator.ts');
     expect(secondProblem.solution).toBeDefined();
     expect(secondProblem.solution!['']!.source).toBe(
-        'Single solution approach.\n',
+        'Single solution approach.',
     );
 
     // Check stringification
@@ -198,13 +186,10 @@ it('Should correctly parse and stringify problems with labels', async () => {
     level: medium
     set:
         - label: Problem A
-          description: |
-              This is problem A.
+          description: This is problem A.
         - label: Problem B
-          description: |
-              This is problem B.
-          hint: |
-              Here's a hint for problem B.
+          description: This is problem B.
+          hint: Here's a hint for problem B.
 `;
 
     const parsed = await bitran.parser.parse(text);
@@ -228,7 +213,7 @@ it('Should correctly parse and stringify problems with labels', async () => {
         'This is problem B.',
     );
     expect(problems.parseData.set[1]!.hints![0]!.source).toBe(
-        "Here's a hint for problem B.\n",
+        "Here's a hint for problem B.",
     );
 
     // Check stringification

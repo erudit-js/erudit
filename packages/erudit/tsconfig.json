@@ -1,8 +1,23 @@
 {
-    "extends": "../../playground/.erudit/nuxt/.nuxt/tsconfig.json",
+    "files": [],
+    "references": [
+        {
+            "path": "../../playground/.erudit/nuxt/.nuxt/tsconfig.app.json"
+        },
+        {
+            "path": "../../playground/.erudit/nuxt/.nuxt/tsconfig.server.json"
+        },
+        {
+            "path": "../../playground/.erudit/nuxt/.nuxt/tsconfig.shared.json"
+        },
+        {
+            "path": "../../playground/.erudit/nuxt/.nuxt/tsconfig.node.json"
+        }
+    ],
     "compilerOptions": {
         "experimentalDecorators": true,
         "emitDecoratorMetadata": true,
-        "types": ["@types/jest"]
+        "composite": true,
+        "noEmit": true
     }
 }

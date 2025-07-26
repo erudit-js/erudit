@@ -1,7 +1,7 @@
 import {
     toAbsoluteContentPath,
     resolveContentPath,
-} from '@erudit/shared/bitran/contentId';
+} from '../shared/bitran/contentId';
 
 describe('resolveContentPath', () => {
     it('should handle empty paths', () => {

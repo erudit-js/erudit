@@ -21,8 +21,8 @@
         "play:preview": "bun erudit preview playground"
     },
     "devDependencies": {
-        "@types/jest": "^29.5.14",
-        "@types/node": "^22.16.2",
+        "@types/jest": "^30.0.0",
+        "@types/node": "^22.16.5",
         "prettier": "^3.6.2",
         "typescript": "^5.8.3"
     }
