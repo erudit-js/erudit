@@ -1,6 +1,6 @@
-import type { ElementStat } from '@shared/stat';
-import type { ContentToc } from '@shared/content/toc';
-import type { ContentSourceUsageSet } from '@shared/content/reference';
+import type { ElementStat } from '../../stat';
+import type { ContentToc } from '../toc';
+import type { ContentSourceUsageSet } from '../reference';
 
 export interface ContentGroupLike {
     contentToc: ContentToc;

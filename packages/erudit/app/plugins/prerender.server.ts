@@ -2,10 +2,11 @@ let alreadyPrerendered = false;
 let isPrerendering = false;
 
 export default defineNuxtPlugin({
-    name: 'erudit-prerender',
-    async setup(_nuxt) {
+    name: 'erudit-prerender-routes',
+    async setup(nuxt) {
         if (import.meta.dev) {
-            return; // Server is available so no need to prerender in dev mode
+            // Server is available so no need to prerender anything
+            return;
         }
 
         if (alreadyPrerendered || isPrerendering) {
@@ -14,21 +15,21 @@ export default defineNuxtPlugin({
 
         isPrerendering = true;
 
-        const routeProviders = [
-            '/api/prerender/language',
-            '/api/prerender/cameos',
+        const routes = ['/robots.txt', '/search.json.gz'];
 
-            // Assets
-            '/api/prerender/assets/cameo',
-            '/api/prerender/assets/contributor',
-            '/api/prerender/assets/sponsor',
+        const routeProviders = [
+            '/api/prerender/contributors',
+            '/api/prerender/language',
         ];
 
         for (const provider of routeProviders) {
-            const routes = await $fetch<string[]>(provider);
-            _nuxt.runWithContext(() => prerenderRoutes(routes));
+            const fetchedRoutes = await $fetch<string[]>(provider);
+            routes.push(...fetchedRoutes);
         }
 
+        nuxt.runWithContext(() => prerenderRoutes(routes));
+
         alreadyPrerendered = true;
+        isPrerendering = false;
     },
 });

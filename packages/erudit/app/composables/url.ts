@@ -1,43 +1,22 @@
-import eruditConfig from '#erudit/config';
-import { trailingSlash, normalizeUrl } from '@erudit/utils/url';
+export function withBaseUrl(path: string): string {
+    if (path.startsWith('/')) {
+        const baseUrl = ERUDIT.config.project.baseUrl;
+        return `${baseUrl}${path.slice(1)}`;
+    }
 
-export function useBaseUrlPath() {
-    const runtimeConfig = useRuntimeConfig();
-    const baseURL = runtimeConfig.app.baseURL;
-
-    return (path: string) => {
-        const normalizedPath = normalizeUrl(path);
-
-        if (normalizedPath.startsWith(baseURL)) {
-            return normalizedPath;
-        }
-
-        if (normalizedPath.startsWith('/')) {
-            return normalizeUrl(baseURL + normalizedPath.substring(1));
-        }
-
-        return normalizedPath;
-    };
+    return path;
 }
 
-export function useSiteUrl() {
-    const runtimeConfig = useRuntimeConfig();
-    const baseUrl = runtimeConfig.app.baseURL;
-    const url = useRequestURL();
+export function withFullUrl(path?: string): string {
+    if (import.meta.server) {
+        throw createError({
+            statusCode: 500,
+            statusMessage: `Full URLs can't be created on the server side!`,
+        });
+    }
 
-    if (!import.meta.dev && eruditConfig.site?.buildUrl)
-        return eruditConfig.site.buildUrl + baseUrl.slice(0, -1);
+    const fullOrigin = location.origin + withBaseUrl('/');
+    const _path = slasher(path || '', { leading: false });
 
-    return normalizeUrl(trailingSlash(url.origin, true));
-}
-
-export function usePageUrl() {
-    const siteUrl = useSiteUrl();
-    const route = useRoute();
-
-    return computed(() => {
-        if (route.path === '/') return siteUrl;
-        const fullUrl = siteUrl + route.path;
-        return normalizeUrl(trailingSlash(fullUrl, true));
-    });
+    return fullOrigin + _path;
 }

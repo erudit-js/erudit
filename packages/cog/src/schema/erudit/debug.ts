@@ -3,7 +3,6 @@ export interface EruditDebug {
     slowTransition?: boolean;
     fakeApi?: Partial<{
         repository: boolean;
-        languages: boolean;
     }>;
     ads?: boolean;
     analytics?: boolean;

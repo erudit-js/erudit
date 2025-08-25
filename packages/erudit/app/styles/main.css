@@ -1,0 +1,119 @@
+/* Noto Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&family=Noto+Serif:ital,wght@0,100..900;1,100..900&display=swap');
+/* Tailwind CSS */
+@import 'tailwindcss' source('../..');
+
+@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
+
+@theme {
+    --breakpoint-*: initial;
+    --breakpoint-micro: 500px;
+    --breakpoint-aside1: 1000px;
+    --breakpoint-aside2: 1400px;
+
+    --default-transition-timing-function: cubic-bezier(0, 0, 0.5, 1);
+    --default-transition-duration: calc(200ms * var(--duration-multiplier));
+
+    --spacing-normal: calc(4 * var(--spacing));
+    --spacing-big: calc(1.5 * var(--spacing-normal));
+    --spacing-small: calc(0.5 * var(--spacing-normal));
+
+    --w-aside: 300px;
+    --w-max-main: 1024px;
+    --w-max-content: calc(1024px + 2 * 300px);
+
+    --h-min-aside-item: 60px;
+
+    --color-brand: light-dark(#00b886, #00dcb5);
+    --color-bg-root: light-dark(#ebebeb, #171717);
+    --color-bg-aside: light-dark(#f7f7f7, #1d1d1d);
+    --color-bg-main: light-dark(#ffffff, #212121);
+    --color-text: light-dark(#373737, #b9b9b9);
+    --color-text-deep: light-dark(#232323, #e1e1e1);
+    --color-text-muted: light-dark(#696969, #7f7f7f);
+    --color-text-dimmed: light-dark(#969696, #616161);
+    --color-text-disabled: light-dark(#b9b9b9, #4f4f4f);
+    --color-scrollbar: light-dark(#bfbfbf, #494949);
+    --color-invert: light-dark(white, black);
+    --color-border: light-dark(var(--color-neutral-300), #323232);
+}
+
+@theme inline {
+    --font-sans: 'Noto Sans';
+    --font-serif: 'Noto Serif';
+}
+
+@layer base {
+    :root {
+        background: var(--color-bg-root);
+        color: var(--color-text);
+        font-size: 18px;
+
+        @apply transition-[background];
+    }
+
+    :root[data-theme='light'] {
+        color-scheme: light;
+    }
+
+    :root[data-theme='dark'] {
+        color-scheme: dark;
+    }
+
+    ::selection {
+        background: color-mix(in srgb, var(--color-brand), transparent 65%);
+    }
+
+    :focus-visible {
+        outline: 2px solid var(--color-brand);
+        border-radius: 3px;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6,
+    strong {
+        color: var(--color-text-deep);
+    }
+}
+
+@custom-variant hocus (&:hover, &:focus);
+
+@utility text-nice-underline {
+    @apply transition-[text-decoration-color];
+
+    text-decoration: underline;
+    text-decoration-color: transparent;
+
+    &:hover {
+        text-decoration-color: currentColor;
+    }
+}
+
+@utility nice-scrollbars {
+    -webkit-overflow-scrolling: auto;
+
+    &::-webkit-scrollbar {
+        -webkit-appearance: none;
+        height: 5px;
+        width: 5px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background: var(--color-scrollbar);
+        &:hover {
+            background: color-mix(
+                in srgb,
+                var(--color-scrollbar),
+                var(--color-invert) 15%
+            );
+        }
+    }
+
+    &::-webkit-scrollbar-corner {
+        background: var(--color-border);
+    }
+}

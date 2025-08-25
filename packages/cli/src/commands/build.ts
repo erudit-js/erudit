@@ -21,6 +21,17 @@ export const build = defineCommand({
         ...projectPathArg,
         ...eruditPathArg,
         ...contentTargetsArg,
+        prerender: {
+            required: false,
+            type: 'boolean',
+            default: false,
+            description: '(Nuxt Build Flag) Prerender routes',
+        },
+        preset: {
+            required: false,
+            type: 'string',
+            description: '(Nuxt Build Flag) Nitro preset to use for building',
+        },
     },
     async run({ args }) {
         logCommand('build');
@@ -36,7 +47,11 @@ export const build = defineCommand({
             contentTargets: args.target,
         });
 
+        const restParams =
+            (args.prerender ? '--prerender' : '') +
+            (args.preset ? ` --preset ${args.preset}` : '');
+
         consola.start('Starting Nuxt build...');
-        await spawnNuxt('build', projectPath);
+        await spawnNuxt('build', projectPath, restParams);
     },
 });

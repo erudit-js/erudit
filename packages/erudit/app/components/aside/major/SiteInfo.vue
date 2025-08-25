@@ -1,85 +1,62 @@
 <script lang="ts" setup>
-import eruditConfig from '#erudit/config';
+const siteInfo = ERUDIT.config.project.siteInfo;
 
-const baseUrlPath = useBaseUrlPath();
+const fetchPhrases: LanguagePhraseKey[] = [];
 
-const phrase = await usePhrases('site_info_title', 'site_info_slogan');
-
-interface SiteInfo {
-    title: string;
-    slogan?: string;
-    logotype?: string;
+if (!siteInfo.title) {
+    fetchPhrases.push('erudit');
 }
 
-const siteInfo = computed<SiteInfo>(() => {
-    if (!eruditConfig.site)
-        return {
-            logotype: eruditAsset('logotype.svg'),
-            title: phrase.site_info_title,
-            slogan: phrase.site_info_slogan,
-        };
+if (!siteInfo.slogan) {
+    fetchPhrases.push('modern_textbook');
+}
 
-    return {
-        logotype: eruditConfig.site?.logotype || eruditAsset('logotype.svg'),
-        title: eruditConfig.site?.title || phrase.site_info_title,
-        slogan: eruditConfig.site?.slogan || phrase.site_info_slogan,
-    };
-});
+const phrase = await usePhrases(...fetchPhrases);
+
+const title = siteInfo.title || phrase.erudit;
+const slogan = siteInfo.slogan || phrase.modern_textbook;
+
+const logotype = (() => {
+    if (siteInfo.logotype === false) {
+        return false;
+    }
+
+    if (!siteInfo.logotype) {
+        return eruditPublic('logotype.svg');
+    }
+
+    return String(siteInfo.logotype);
+})();
 </script>
 
 <template>
-    <section :class="$style.siteInfo">
-        <EruditLink v-if="siteInfo.logotype" to="/" :class="$style.logo">
-            <img :src="baseUrlPath(siteInfo.logotype)" :alt="siteInfo.title" />
+    <section
+        :class="[
+            'p-normal pb-small',
+            'mx-auto',
+            'flex',
+            {
+                'gap-normal items-center': siteInfo.brandLayout === 'row',
+                'gap-small flex-col': siteInfo.brandLayout === 'column',
+                'text-center':
+                    siteInfo.brandLayout === 'column' ||
+                    siteInfo.logotype === false,
+            },
+        ]"
+    >
+        <EruditLink v-if="logotype !== false" to="/">
+            <img :src="withBaseUrl(logotype)" alt="Site logotype" />
         </EruditLink>
-        <div :class="[$style.textInfo, !siteInfo.logotype && $style.noLogo]">
-            <div :class="$style.title">
-                <EruditLink to="/">{{
-                    siteInfo.title || phrase.site_info_title
-                }}</EruditLink>
+        <div>
+            <div>
+                <EruditLink
+                    class="text-nice-underline text-lg font-bold"
+                    to="/"
+                >
+                    {{ title }}
+                </EruditLink>
             </div>
-            <div v-if="siteInfo.slogan" :class="$style.description">
-                {{ siteInfo.slogan }}
-            </div>
+            <div class="text-text-muted text-sm">{{ slogan }}</div>
         </div>
     </section>
 </template>
-
-<style lang="scss" module>
-.siteInfo {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: var(--gap);
-    padding: var(--gap);
-    padding-bottom: var(--gapSmall);
-}
-
-.logo {
-    width: 50px;
-    height: 50px;
-}
-
-.textInfo {
-    display: flex;
-    flex-direction: column;
-
-    &.noLogo {
-        text-align: center;
-    }
-
-    .title {
-        font-weight: bold;
-        font-size: 1.25em;
-        color: var(--text);
-
-        a {
-            @include hoverLink;
-        }
-    }
-
-    .description {
-        color: var(--textMuted);
-    }
-}
-</style>

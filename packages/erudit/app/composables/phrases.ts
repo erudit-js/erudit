@@ -1,77 +1,126 @@
-type PhraseCaller<T extends EruditPhraseId[]> = {
-    [K in T[number]]: EruditPhrases[K];
+type PayloadLanguage = {
+    phrases: Partial<Record<LanguagePhraseKey, PayloadLanguagePhraseValue>>;
+    functions?: Record<string, string>;
 };
 
-const payloadKey = 'language';
+type PhraseCaller<T extends readonly LanguagePhraseKey[]> = {
+    [K in T[number]]: LanguagePhrases[K];
+};
 
-interface LanguagePayload {
-    strPhrases: Partial<Record<EruditPhraseId, string>>;
-    strFunctions: Record<string, string>;
-}
+const initialPayloadLanguage = {
+    phrases: {},
+    functions: undefined,
+};
 
-let functions: Record<string, Function>;
-const functionPhrases: Record<string, Function> = {};
+//
+// "functions" and "phrases" exist both on server and client side
+// On server side they serve as module-cache
+// On client side they act as singletons for whole Nuxt App
+// This is okay because language can't be changed after server initialization
+//
 
-const phraseApiRoute = (phraseId: EruditPhraseId) =>
-    `/api/language/phrase/${phraseId}`;
-const functionsApiRoute = '/api/language/functions';
+let functions: Record<string, Function> | undefined = undefined;
+const phrases: Partial<LanguagePhrases> = {};
 
-export function usePhrases<T extends EruditPhraseId[]>(
-    ...phraseIds: T
+export function usePhrases<const T extends readonly LanguagePhraseKey[]>(
+    ...phraseKeys: T
 ): Promise<PhraseCaller<T>> {
-    const nuxt = useNuxtApp();
-    const payload: LanguagePayload =
-        (nuxt.static.data[payloadKey] ||=
-        nuxt.payload.data[payloadKey] ||=
-            {});
+    const nuxtApp = useNuxtApp();
+    const payloadKey = 'raw-language';
+    const payloadLanguage: PayloadLanguage =
+        (nuxtApp.static.data[payloadKey] ||=
+        nuxtApp.payload.data[payloadKey] ||=
+            initialPayloadLanguage);
 
-    const prepareFunctionsPromise = prepareFunctions(payload);
+    const ensureFunctionsInPayload = async () => {
+        if (payloadLanguage.functions) {
+            return;
+        }
 
-    return (async () => {
-        await prepareFunctionsPromise;
+        const strFunctions = await $fetch<Record<string, string>>(
+            '/api/language/functions',
+        );
 
-        payload.strPhrases ||= {};
-        const phraseCaller: any = {};
+        payloadLanguage.functions = strFunctions;
+    };
 
-        for (const phraseId of phraseIds) {
-            const apiRoute = phraseApiRoute(phraseId);
-            const strPhrase = (payload.strPhrases[phraseId] ||= (await $fetch(
-                apiRoute,
-                { responseType: 'text' },
-            )) as string);
+    const restoreFunctionsFromPayload = async () => {
+        if (functions) {
+            return;
+        }
 
-            if (strPhrase.startsWith('~!~FUNC~!~')) {
-                const strFunction = strPhrase.replace('~!~FUNC~!~', '');
-                functionPhrases[phraseId] ||= new Function(
-                    'funcs',
-                    `
-                    with(funcs) {
-                        ${strFunction}
-                    }
-                `,
-                )(functions);
-                phraseCaller[phraseId] = functionPhrases[phraseId];
-            } else {
-                phraseCaller[phraseId] = strPhrase;
+        functions = {};
+        for (const [funcName, funcBody] of Object.entries(
+            payloadLanguage.functions!,
+        )) {
+            functions[funcName] = new Function('return ' + funcBody)();
+        }
+    };
+
+    const processPhrase = async (phraseKey: LanguagePhraseKey) => {
+        const phraseInPayload = payloadLanguage.phrases[phraseKey];
+        const phraseRestored = phrases[phraseKey];
+
+        let payloadPhraseValue: PayloadLanguagePhraseValue;
+
+        if (phraseInPayload) {
+            payloadPhraseValue = phraseInPayload;
+        } else {
+            try {
+                payloadPhraseValue = await $fetch<PayloadLanguagePhraseValue>(
+                    `/api/language/phrase/${phraseKey}`,
+                    {
+                        responseType: 'json',
+                    },
+                );
+
+                payloadLanguage.phrases[phraseKey] = payloadPhraseValue;
+            } catch {
+                throw createError({
+                    statusCode: 503,
+                    statusMessage: 'Service Unavailable',
+                    message: `Failed to fetch phrase "${phraseKey}"!`,
+                });
             }
         }
 
-        return phraseCaller as PhraseCaller<T>;
-    })();
-}
-
-async function prepareFunctions(payload: LanguagePayload) {
-    payload.strFunctions ||= await $fetch(functionsApiRoute, {
-        responseType: 'json',
-    });
-
-    functions ||= (() => {
-        const _functions: Record<string, Function> = {};
-        for (const [funcName, strFunc] of Object.entries(
-            payload.strFunctions,
-        )) {
-            _functions[funcName] = new Function(strFunc)();
+        if (payloadPhraseValue.type === 'missing') {
+            throw createError({
+                statusCode: 404,
+                statusMessage: 'Unknown phrase!',
+                message: `There is no phrase with key "${phraseKey}"!`,
+            });
         }
-        return _functions;
-    })();
+
+        if (phraseRestored) {
+            return;
+        }
+
+        switch (payloadPhraseValue.type) {
+            case 'string':
+                phrases[phraseKey] = payloadPhraseValue.value as any;
+                break;
+            case 'function':
+                phrases[phraseKey] = new Function(
+                    'funcs',
+                    `
+                            with (funcs) {
+                                return ${payloadPhraseValue.value};
+                            }
+                        `,
+                )(functions!);
+                break;
+        }
+    };
+
+    return Promise.resolve()
+        .then(ensureFunctionsInPayload)
+        .then(restoreFunctionsFromPayload)
+        .then(() =>
+            phraseKeys.reduce<Promise<void>>(
+                (p, key) => p.then(() => processPhrase(key)),
+                Promise.resolve(),
+            ),
+        )
+        .then(() => phrases as PhraseCaller<T>);
 }

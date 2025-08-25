@@ -1,50 +1,71 @@
-const themes = ['auto', 'light', 'dark'] as const;
+const binaryThemes = ['light', 'dark'] as const;
+const themePreferences = [...binaryThemes, 'system'] as const;
+const localStorageKey = 'theme';
 
-export type Theme = (typeof themes)[number];
-export type BinaryTheme = 'light' | 'dark';
+export type BinaryTheme = (typeof binaryThemes)[number];
+export type ThemePreference = (typeof themePreferences)[number];
 
-const _theme = ref<Theme>();
-
-export function useTheme() {
+export const useTheme = () => {
     if (import.meta.server) {
-        throw new Error(`Calling 'useTheme' on server side is prohibited!`);
+        throw createError({
+            statusCode: 500,
+            statusMessage: 'Theme composable is not available on server side!',
+        });
     }
 
-    function setTheme(newTheme: Theme) {
-        localStorage.setItem('theme', newTheme);
-        _theme.value = newTheme;
-    }
-
-    const localStorageTheme = localStorage.getItem('theme');
-
-    if (themes.includes(localStorageTheme as any)) {
-        setTheme(localStorageTheme as Theme);
-    } else {
-        console.warn(
-            `Failed to get correct theme value from Local Storage!\nRetrieved "${localStorageTheme}"!`,
-        );
-        setTheme('auto');
-    }
-
-    const theme = computed<Theme>(() => _theme.value!);
-
-    const binaryTheme = computed<BinaryTheme>(() => {
-        return theme.value === 'auto'
-            ? window.matchMedia('(prefers-color-scheme: dark)').matches
-                ? 'dark'
-                : 'light'
-            : theme.value;
-    });
-
-    const cycle = () => {
-        const newTheme =
-            themes[(themes.indexOf(theme.value) + 1) % themes.length]!;
-        setTheme(newTheme);
-    };
+    const preference = useState(
+        'theme-preference',
+        () => localStorage.getItem(localStorageKey) as ThemePreference,
+    );
 
     return {
-        theme,
-        binaryTheme,
-        cycle,
+        themePref: preference,
+        binaryTheme: computed(() => pref2binary(preference.value)),
+        setTheme: (newPref: ThemePreference) => {
+            localStorage.setItem(localStorageKey, newPref);
+            preference.value = newPref;
+        },
+        cycleTheme: () => {
+            const current = preference.value;
+            const next =
+                themePreferences[
+                    (themePreferences.indexOf(current) + 1) %
+                        themePreferences.length
+                ]!;
+            localStorage.setItem(localStorageKey, next);
+            preference.value = next;
+        },
     };
+};
+
+export const useThemeWatcher = () => {
+    onMounted(() => {
+        const { themePref, binaryTheme } = useTheme();
+
+        watch(binaryTheme, (newValue) => {
+            document.documentElement.setAttribute('data-theme', newValue);
+        });
+
+        window
+            .matchMedia('(prefers-color-scheme: dark)')
+            .addEventListener('change', (event) => {
+                const newValue = event.matches ? 'dark' : 'light';
+                if (themePref.value === 'system') {
+                    document.documentElement.setAttribute(
+                        'data-theme',
+                        newValue,
+                    );
+                }
+            });
+    });
+};
+
+function pref2binary(pref: ThemePreference): BinaryTheme {
+    if (binaryThemes.includes(pref as BinaryTheme)) {
+        return pref as BinaryTheme;
+    }
+
+    return window.matchMedia('(prefers-color-scheme: dark)').matches
+        ? 'dark'
+        : 'light';
 }

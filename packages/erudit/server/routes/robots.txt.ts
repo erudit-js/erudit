@@ -1,4 +1,4 @@
-export default defineEventHandler((event) => {
+export default defineEventHandler(async (event) => {
     setHeader(event, 'Content-Type', 'text/plain');
     const robots = `
 User-agent: *

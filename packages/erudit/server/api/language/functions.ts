@@ -1,12 +1,11 @@
-import { ERUDIT_SERVER } from '@server/global';
-
-export default defineEventHandler(() => {
+export default defineEventHandler(async () => {
     const strFunctions: Record<string, string> = {};
 
-    for (const [key, func] of Object.entries(
-        ERUDIT_SERVER.LANGUAGE?.functions || {},
-    ))
-        strFunctions[key] = 'return ' + func.toString();
+    for (const [funcName, funcStr] of Object.entries(
+        ERUDIT.language.functions,
+    )) {
+        strFunctions[funcName] = funcStr.toString();
+    }
 
     return strFunctions;
 });

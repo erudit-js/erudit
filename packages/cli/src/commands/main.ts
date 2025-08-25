@@ -7,9 +7,9 @@ import { version } from '../../package.json';
 import { init } from './init';
 import { prepare } from './prepare';
 import { dev } from './dev';
-import { generate } from './generate';
-import { preview } from './preview';
 import { build } from './build';
+import { preview } from './preview';
+import { launch } from './launch';
 
 export const main = defineCommand({
     meta: {
@@ -22,8 +22,8 @@ export const main = defineCommand({
         prepare,
         dev,
         build,
-        generate,
         preview,
+        launch,
     },
     setup() {
         console.log(brandColorLogotype);

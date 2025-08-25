@@ -1,3 +1,20 @@
 {
-    "extends": "./.erudit/tsconfig.json"
+    "files": [],
+    "references": [
+        {
+            "path": "E:/code/erudit-js/erudit/playground/.erudit/tsconfig.erudit.json"
+        },
+        {
+            "path": "E:/code/erudit-js/erudit/playground/.erudit/tsconfig.nuxt.app.json"
+        },
+        {
+            "path": "E:/code/erudit-js/erudit/playground/.erudit/tsconfig.nuxt.server.json"
+        },
+        {
+            "path": "E:/code/erudit-js/erudit/playground/.erudit/tsconfig.nuxt.shared.json"
+        },
+        {
+            "path": "E:/code/erudit-js/erudit/playground/.erudit/tsconfig.nuxt.node.json"
+        }
+    ]
 }

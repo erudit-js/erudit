@@ -1,19 +1,10 @@
 <template>
-    <Transition name="EruditTransitionFade">
+    <Transition
+        enter-active-class="transition-[opacity]"
+        leave-active-class="transition-[opacity]"
+        enter-from-class="opacity-0"
+        leave-to-class="opacity-0"
+    >
         <slot></slot>
     </Transition>
 </template>
-
-<style lang="scss">
-.EruditTransitionFade {
-    &-enter-active,
-    &-leave-active {
-        transition: opacity var(--transitionSpeed) var(--transitionFunction);
-    }
-
-    &-enter-from,
-    &-leave-to {
-        opacity: 0;
-    }
-}
-</style>

@@ -1,36 +1,29 @@
-import {
-    PUBLIC_CONTENT_ASSET,
-    PUBLIC_ERUDIT_ASSET,
-    PUBLIC_USER_ASSET,
-} from './const';
-import { eruditPath, projectPath } from './globalPath';
+import tailwindcss from '@tailwindcss/vite';
+import { dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
+const currentDir = dirname(fileURLToPath(import.meta.url));
+
+/**
+ * This is context-unaware or "static" Nuxt configuration.
+ * The only thing that works here are aliases.
+ * If you need to use context (e.g. paths to package/project or Erudit project config), use `./modules/erudit/setup/nuxtConfig.ts` file.
+ */
 export default defineNuxtConfig({
     compatibilityDate: '2025-07-20',
     devtools: { enabled: true },
-    ssr: true,
-    alias: {
-        '@erudit': eruditPath(),
-        '@module': eruditPath('module'),
-        '@server': eruditPath('server/plugin'),
-        '@shared': eruditPath('shared'),
-        '@app': eruditPath('app'),
-        $: eruditPath('app/styles'),
-    },
-    modules: [eruditPath('module'), 'nuxt-my-icons'],
-    myicons: {
-        iconsDir: eruditPath('app/assets/icons'),
-    },
-    features: {
-        inlineStyles: false,
-    },
+    $meta: { name: 'erudit' },
+    modules: [currentDir + '/modules/erudit', 'nuxt-my-icons'],
+    css: ['@erudit/app/styles/main.css'],
     typescript: {
         tsConfig: {
-            include: [eruditPath('**/*'), projectPath('**/*')],
             compilerOptions: {
                 types: ['@types/jest'],
             },
         },
+    },
+    myicons: {
+        iconsDir: '@erudit/app/assets/icons',
     },
     build: {
         transpile: [
@@ -40,68 +33,45 @@ export default defineNuxtConfig({
             '@erudit-js/bitran-elements',
         ],
     },
-    ignore: [
-        // Content assets
-        ...[
-            '**/{book,group,topic}.{js,ts}',
-            '**/{article,summary,practice,content}.bi',
-        ].map((pattern) => projectPath(`content/${pattern}`)),
-        // Contributors assets
-        ...['*/contributor.{js,ts}', '*/description.bi'].map((pattern) =>
-            projectPath(`contributors/${pattern}`),
-        ),
-    ],
+    plugins: ['@erudit/app/plugins/appSetup'],
     nitro: {
-        preset: 'github-pages',
-        plugins: [eruditPath('server/plugin')],
-        prerender: {
-            crawlLinks: true,
-            failOnError: false,
-            concurrency: 10,
-            routes: ['/robots.txt', '/sitemap.xml'],
-            ignore: [
-                (path: string) => {
-                    const regexps = [/#/gm, /\.json\?/gm];
-                    const shouldIgnore = regexps.some((re) => re.test(path));
-                    return shouldIgnore;
-                },
-            ],
-        },
-        output: {
-            publicDir: projectPath('dist'),
+        plugins: ['@erudit/server'],
+        esbuild: {
+            options: {
+                charset: 'utf8',
+            },
         },
         externals: {
             inline: [/bitran-elements/],
         },
-        publicAssets: [
-            {
-                baseURL: PUBLIC_ERUDIT_ASSET,
-                dir: eruditPath('app/public'),
-                maxAge: 60 * 60 * 24 * 30,
-            },
-            {
-                baseURL: PUBLIC_USER_ASSET,
-                dir: projectPath('public'),
-                maxAge: 60 * 60 * 24 * 30,
-            },
-            {
-                baseURL: PUBLIC_CONTENT_ASSET,
-                dir: projectPath('content'),
-                maxAge: 60 * 60 * 24 * 30,
-            },
-        ],
-        esbuild: {
-            options: {
-                charset: 'utf8',
-                tsconfigRaw: {
-                    compilerOptions: {
-                        experimentalDecorators: true, // Make TypeORM work with Nuxt,
-                    },
-                },
-            },
-        },
     },
     vite: {
+        plugins: [
+            tailwindcss(),
+            {
+                // Remove when this is fixed: https://github.com/tailwindlabs/tailwindcss/discussions/16119
+                apply: 'build',
+                name: 'vite-plugin-ignore-sourcemap-warnings',
+                configResolved(config) {
+                    const originalOnWarn = config.build.rollupOptions.onwarn;
+                    config.build.rollupOptions.onwarn = (warning, warn) => {
+                        if (
+                            warning.code === 'SOURCEMAP_BROKEN' &&
+                            warning.plugin ===
+                                '@tailwindcss/vite:generate:build'
+                        ) {
+                            return;
+                        }
+
+                        if (originalOnWarn) {
+                            originalOnWarn(warning, warn);
+                        } else {
+                            warn(warning);
+                        }
+                    };
+                },
+            },
+        ],
         optimizeDeps: {
             include: [
                 '@vue/devtools-core',
@@ -109,6 +79,8 @@ export default defineNuxtConfig({
                 'yaml',
                 'photoswipe',
                 '@floating-ui/vue',
+                'perfect-debounce',
+                'flexsearch',
                 '@bitran-js/core',
                 '@bitran-js/transpiler',
                 '@bitran-js/renderer-vue',
@@ -117,14 +89,6 @@ export default defineNuxtConfig({
         },
         server: {
             fs: { strict: false },
-        },
-        css: {
-            preprocessorOptions: {
-                scss: {
-                    api: 'modern-compiler',
-                    additionalData: `@use '$/utils' as *;`,
-                },
-            },
         },
     },
 });

@@ -1,8 +1,8 @@
 import type { ContentType, TopicPart } from '@erudit-js/cog/schema';
 
-import type { Toc } from '@shared/bitran/toc';
-import type { PreviousNext } from '@shared/content/previousNext';
-import type { ContentContributor, Contribution } from '@shared/contributor';
+import type { Toc } from '../bitran/toc';
+import type { PreviousNext } from '../content/previousNext';
+import type { ContentContributor, Contribution } from '../contributor';
 
 export type AsideMinorType = ContentType | 'contributor' | 'news';
 

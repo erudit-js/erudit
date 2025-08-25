@@ -1,7 +1,7 @@
 import type { TopicPart } from '@erudit-js/cog/schema';
-import type { QuickLinks } from '@erudit/shared/quickLink';
+import type { QuickLinks } from '../../../quickLink';
 
-import type { ContentBaseData } from '@shared/content/data/base';
+import type { ContentBaseData } from '../base';
 
 export type TopicPartLinks = Partial<Record<TopicPart, string>>;
 

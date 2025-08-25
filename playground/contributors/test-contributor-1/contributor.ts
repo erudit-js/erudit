@@ -1,5 +1,5 @@
 export default defineContributor({
-    displayName: 'Peter Radko',
+    displayName: 'Пётр Радько',
     slogan: 'Гениями не рождаются — ими становятся!',
     editor: true,
     links: {

@@ -9,7 +9,7 @@ import { resolvePath } from '../shared/path';
 export const preview = defineCommand({
     meta: {
         name: 'Preview',
-        description: 'Preview created static Erudit site',
+        description: 'Preview builded static Erudit site',
     },
     args: {
         project: {
@@ -27,11 +27,11 @@ export const preview = defineCommand({
             chalk.greenBright(projectPath),
         );
 
-        const distPath = `${projectPath}/dist`;
+        const distPath = `${projectPath}/.output/public`;
 
         if (!existsSync(distPath))
             throw new Error(
-                `No 'dist' folder found! Did you run 'erudit build'?`,
+                `No ".output/public" folder found! Did you run 'erudit build'?`,
             );
 
         spawn('npx http-server . -p 3000', {

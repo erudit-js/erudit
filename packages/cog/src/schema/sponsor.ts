@@ -2,14 +2,13 @@ export interface EruditSponsors {
     addLink: string;
     tier1Label: string;
     tier2Label: string;
-    defaultCameoMessages: string[];
+    defaultCameoMessages?: string[];
 }
 
 export type SponsorTier = 'tier1' | 'tier2';
 
 interface BaseSponsor {
     tier: SponsorTier;
-    sponsorId: string;
     name: string;
     icon?: string;
     avatar?: string;
@@ -18,15 +17,21 @@ interface BaseSponsor {
     link?: string;
 }
 
-export interface Tier1Sponsor extends BaseSponsor {
+export interface SponsorTier1 extends BaseSponsor {
     tier: 'tier1';
 }
 
-export interface Tier2Sponsor extends BaseSponsor {
+export interface SponsorTier2 extends BaseSponsor {
     tier: 'tier2';
-    messages?: string[];
+    quotes?: string[];
 }
 
-export type Sponsor = Tier1Sponsor | Tier2Sponsor;
+export type Sponsor = SponsorTier1 | SponsorTier2;
 
-export type SponsorConfig<T extends Sponsor> = Omit<T, 'sponsorId' | 'avatar'>;
+export interface ResolvedSponsorData {
+    sponsorId: string;
+    avatarExtension?: string;
+}
+
+export type ResolvedSponsor<T extends SponsorTier1 | SponsorTier2> = T &
+    ResolvedSponsorData;

@@ -6,9 +6,9 @@ import type {
     TopicPart,
 } from '@erudit-js/cog/schema';
 
-import type { Context } from '@shared/content/context';
-import type { PreviousNext } from '@shared/content/previousNext';
-import type { ImageData } from '@shared/image';
+import type { Context } from '../context';
+import type { PreviousNext } from '../previousNext';
+import type { ImageData } from '../../image';
 
 export interface ContentGeneric {
     contentId: string;

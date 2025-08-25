@@ -1,7 +1,5 @@
-import { existsSync, mkdirSync, rmSync, write, writeFileSync } from 'node:fs';
 import { consola } from 'consola';
-
-import { alias2Relative } from './alias2Relative';
+import { existsSync, mkdirSync, rmSync, writeFileSync } from 'node:fs';
 
 interface PrepareData {
     projectPath: string;
@@ -16,21 +14,7 @@ export async function prepare({
     contentTargets,
 }: PrepareData) {
     const eruditBuildDir = `${projectPath}/.erudit`;
-    const distDir = `${projectPath}/dist`;
-
-    const nodeModules = `${projectPath}/node_modules`;
-    const nodeModulesErudit =
-        eruditPath === 'erudit' ? `${nodeModules}/erudit` : eruditPath;
-
-    if (existsSync(nodeModulesErudit)) {
-        consola.start('Resolving aliases in dependencies...');
-        await alias2Relative(nodeModulesErudit, nodeModulesErudit);
-        await alias2Relative(
-            nodeModulesErudit,
-            nodeModules + '/@erudit-js/bitran-elements',
-        );
-        consola.success('Resolved aliases in dependencies!');
-    }
+    const distDir = `${projectPath}/.output`;
 
     consola.start('Cleaning up...');
 
@@ -49,31 +33,82 @@ export async function prepare({
         `${eruditBuildDir}/nuxt/nuxt.config.ts`,
         `
         export default {
-            compatibilityDate: '2025-01-01',
+            compatibilityDate: '2025-07-20',
             extends: ['${eruditPath}'],
-            future: {
-                compatibilityVersion: 4,
-            },
         }
-    `,
+        `,
     );
 
+    ['app', 'server', 'shared', 'node'].forEach((name) => {
+        writeFileSync(
+            `${eruditBuildDir}/tsconfig.nuxt.${name}.json`,
+            JSON.stringify(
+                { extends: [`./nuxt/.nuxt/tsconfig.${name}.json`] },
+                null,
+                4,
+            ),
+        );
+    });
+
+    mkdirSync(`${eruditBuildDir}/types`, { recursive: true });
+
     writeFileSync(
-        `${eruditBuildDir}/tsconfig.json`,
+        `${eruditBuildDir}/tsconfig.erudit.json`,
         JSON.stringify(
             {
-                extends: './nuxt/.nuxt/tsconfig.json',
                 compilerOptions: {
                     paths: {
                         '#project/*': [`${projectPath}/*`],
                         '#content/*': [`${projectPath}/content/*`],
                     },
+                    forceConsistentCasingInFileNames: true,
+                    strict: true,
+                    noEmit: true,
+                    skipLibCheck: true,
+                    target: 'ESNext',
+                    module: 'ESNext',
+                    moduleResolution: 'Bundler',
+                    allowJs: true,
+                    resolveJsonModule: true,
+                    allowSyntheticDefaultImports: true,
                 },
+                include: [`${projectPath}/**/*`, `${eruditBuildDir}/**/*`],
+                exclude: [`${eruditBuildDir}/nuxt/**/*`],
             },
             null,
             4,
         ),
     );
+
+    if (!existsSync(`${projectPath}/tsconfig.json`)) {
+        writeFileSync(
+            `${projectPath}/tsconfig.json`,
+            JSON.stringify(
+                {
+                    files: [],
+                    references: [
+                        {
+                            path: `${eruditBuildDir}/tsconfig.erudit.json`,
+                        },
+                        {
+                            path: `${eruditBuildDir}/tsconfig.nuxt.app.json`,
+                        },
+                        {
+                            path: `${eruditBuildDir}/tsconfig.nuxt.server.json`,
+                        },
+                        {
+                            path: `${eruditBuildDir}/tsconfig.nuxt.shared.json`,
+                        },
+                        {
+                            path: `${eruditBuildDir}/tsconfig.nuxt.node.json`,
+                        },
+                    ],
+                },
+                null,
+                4,
+            ),
+        );
+    }
 
     await prepareContentTargets(eruditBuildDir, contentTargets);
 

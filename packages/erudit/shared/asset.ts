@@ -2,7 +2,7 @@ import {
     PUBLIC_CONTENT_ASSET,
     PUBLIC_ERUDIT_ASSET,
     PUBLIC_USER_ASSET,
-} from '@erudit/const';
+} from '../const';
 
 export function eruditAsset(path: string) {
     return PUBLIC_ERUDIT_ASSET + path;

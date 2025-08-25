@@ -17,13 +17,17 @@
         "play": "bun erudit dev playground --eruditPath=./packages/erudit",
         "play:prepare": "bun erudit prepare playground",
         "play:build": "bun erudit build playground",
-        "play:generate": "bun erudit generate playground",
+        "play:generate": "bun erudit build playground --prerender",
+        "play:launch": "bun erudit launch playground",
         "play:preview": "bun erudit preview playground"
     },
     "devDependencies": {
         "@types/jest": "^30.0.0",
-        "@types/node": "^22.16.5",
+        "@types/node": "^24.3.0",
         "prettier": "^3.6.2",
-        "typescript": "^5.8.3"
+        "typescript": "^5.9.2"
+    },
+    "dependencies": {
+        "prettier-plugin-tailwindcss": "^0.6.14"
     }
 }
