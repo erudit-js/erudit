@@ -12,7 +12,7 @@ export const repository = {
 
 export type EruditServerRepository = typeof repository;
 
-export async function setupEruditRepository() {
+export async function setupServerRepository() {
     ERUDIT.repository = repository;
     ERUDIT.log.success('Repository setup complete!');
 }

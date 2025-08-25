@@ -1,4 +1,5 @@
 import type { EruditServerConfig } from './config';
+import { EruditServerContentNav } from './content/nav/types';
 import type { EruditServerDatabase } from './db/types';
 import type { EruditServerImporter } from './importer';
 import type { EruditServerLanguage } from './language/types';
@@ -12,5 +13,6 @@ export const ERUDIT: {
     language: EruditServerLanguage;
     db: EruditServerDatabase;
     repository: EruditServerRepository;
+    contentNav: EruditServerContentNav;
     import: EruditServerImporter;
 } = {} as any;

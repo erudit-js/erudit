@@ -5,12 +5,14 @@ import { debounce } from 'perfect-debounce';
 // Builders
 import { buildContributors } from './contributors/build';
 import { buildSponsors } from './sponsors/build';
+import { buildContentNav } from './content/nav/build';
 
 export async function buildServerErudit() {
     ERUDIT.buildPromise = (async () => {
         ERUDIT.log.start('Building...');
         await buildContributors();
         await buildSponsors();
+        await buildContentNav();
         ERUDIT.log.success(chalk.green('Build Complete!'));
     })();
 }
@@ -28,8 +30,17 @@ export async function setupServerProjectWatcher() {
         paths.project + '/sponsors',
     ];
 
+    await watcher?.close();
+
     watcher ||= chokidar.watch(watchTargets, {
         ignoreInitial: true,
+        usePolling: true,
+        interval: 300,
+        depth: 99,
+        awaitWriteFinish: {
+            stabilityThreshold: 200,
+            pollInterval: 50,
+        },
     });
 
     const changedPaths = new Set<string>();
@@ -66,7 +77,5 @@ export async function setupServerProjectWatcher() {
 }
 
 export async function closeServerProjectWatcher() {
-    if (watcher) {
-        await watcher.close();
-    }
+    await watcher?.close();
 }

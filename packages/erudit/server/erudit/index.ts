@@ -9,9 +9,9 @@ import { setupServerLogger } from './logger';
 import { setupServerRuntimeConfig } from './config';
 import { setupServerLanguage } from './language/setup';
 import { setupServerDatabase } from './db/setup';
-import { closeServerDatabase } from './db/close';
 import { setupServerImporter } from './importer';
-import { setupEruditRepository } from './repository';
+import { setupServerRepository } from './repository';
+import { setupServerContentNav } from './content/nav/setup';
 
 let serverSetupPromise: Promise<void>;
 
@@ -36,12 +36,12 @@ async function setupServer() {
     await setupServerProjectWatcher();
     await setupServerLanguage();
     await setupServerDatabase();
-    await setupEruditRepository();
+    await setupServerRepository();
+    await setupServerContentNav();
     ERUDIT.log.success(chalk.green('Setup Complete!'));
     await buildServerErudit();
 }
 
 async function closeServer() {
-    await closeServerDatabase();
     await closeServerProjectWatcher();
 }

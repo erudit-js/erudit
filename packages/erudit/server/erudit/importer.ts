@@ -2,8 +2,10 @@ import { createJiti, type Jiti } from 'jiti';
 
 export type EruditServerImporter = Jiti['import'];
 
+export let jiti: Jiti;
+
 export async function setupServerImporter() {
-    const jiti = createJiti(ERUDIT.config.paths.project, {
+    jiti = createJiti(ERUDIT.config.paths.project, {
         fsCache: false,
         moduleCache: false,
     });
