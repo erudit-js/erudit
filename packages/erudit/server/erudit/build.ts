@@ -6,6 +6,7 @@ import { debounce } from 'perfect-debounce';
 import { buildContributors } from './contributors/build';
 import { buildSponsors } from './sponsors/build';
 import { buildContentNav } from './content/nav/build';
+import { parseContent } from './content/parse';
 
 export async function buildServerErudit() {
     ERUDIT.buildPromise = (async () => {
@@ -13,6 +14,7 @@ export async function buildServerErudit() {
         await buildContributors();
         await buildSponsors();
         await buildContentNav();
+        await parseContent();
         ERUDIT.log.success(chalk.green('Build Complete!'));
     })();
 }

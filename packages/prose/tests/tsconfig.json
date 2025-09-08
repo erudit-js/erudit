@@ -1,0 +1,10 @@
+{
+    "extends": "../tsconfig.json",
+    "compilerOptions": {
+        "jsxImportSource": "src",
+        "paths": {
+            "src/*": ["../src/*"]
+        }
+    },
+    "include": ["**/*"]
+}

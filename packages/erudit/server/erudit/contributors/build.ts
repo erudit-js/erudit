@@ -1,5 +1,5 @@
-import type { ContributorConfig } from '@erudit-js/cog/schema';
 import { readdirSync, readFileSync, writeFileSync } from 'node:fs';
+import type { ContributorConfig } from '@erudit-js/cog/schema';
 
 export async function buildContributors() {
     ERUDIT.log.debug.start('Building contributors...');
@@ -28,7 +28,7 @@ export async function buildContributors() {
         `
             export {};
             declare global {
-                export type ContributorId = ${contributorIds.map((id) => `'${id}'`).join(' | ')};
+                export type RuntimeContributor = ${contributorIds.map((id) => `'${id}'`).join(' | ')};
             }
         `,
     );

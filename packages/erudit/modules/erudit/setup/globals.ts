@@ -26,10 +26,6 @@ export async function registerModuleGlobals() {
 export async function registerAppGlobals(runtimeConfig: EruditRuntimeConfig) {
     addImports([
         {
-            name: 'defineAppBitran',
-            from: `${runtimeConfig.paths.module}/globals/bitranConfigs`,
-        },
-        {
             name: 'ERUDIT',
             from: `${runtimeConfig.paths.app}/plugins/appSetup/global`,
         },
@@ -48,18 +44,6 @@ export async function registerServerGlobals(
     runtimeConfig: EruditRuntimeConfig,
 ) {
     addServerImports([
-        {
-            name: 'defineServerBitran',
-            from: `${runtimeConfig.paths.module}/globals/bitranConfigs`,
-        },
-        {
-            name: 'defineContributor',
-            from: `${runtimeConfig.paths.module}/globals/contributor`,
-        },
-        {
-            name: 'defineSponsor',
-            from: `${runtimeConfig.paths.module}/globals/sponsor`,
-        },
         {
             name: 'ERUDIT',
             from: `${runtimeConfig.paths.server}/global`,
@@ -103,14 +87,6 @@ export async function registerGlobalContentTypes(
             from: `${runtimeConfig.paths.module}/globals/public`,
         },
         {
-            name: 'defineAppBitran',
-            from: `${runtimeConfig.paths.module}/globals/bitranConfigs`,
-        },
-        {
-            name: 'defineServerBitran',
-            from: `${runtimeConfig.paths.module}/globals/bitranConfigs`,
-        },
-        {
             name: 'defineContributor',
             from: `${runtimeConfig.paths.module}/globals/contributor`,
         },
@@ -136,4 +112,34 @@ export async function registerGlobalContentTypes(
         `${runtimeConfig.paths.build}/types/erudit.d.ts`,
         erudit_d_ts,
     );
+
+    writeFileSync(
+        `${runtimeConfig.paths.build}/types/augmentedConfigs.d.ts`,
+        runtimeAugmentations(),
+    );
+}
+
+//
+// Runtime Type Augmentations
+//
+
+// TODO: Find a more nice way to do this!
+
+function runtimeAugmentations() {
+    return `
+import type { ContentConfigBook } from '@erudit-js/cog/schema';
+
+type RuntimeContentConfigBook = ContentConfigBook & {
+    contributors?: RuntimeContributor[];
+    dependencies?: RuntimeContentId[];
+}
+
+declare global {
+    function defineBook(book: RuntimeContentConfigBook) {
+        return book;
+    }
+}
+
+export {}
+    `;
 }

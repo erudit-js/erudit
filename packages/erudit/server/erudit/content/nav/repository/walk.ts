@@ -1,4 +1,4 @@
-import { ContentNavNode } from '../types';
+import type { ContentNavNode } from '../types';
 
 export enum WalkStop {
     NoDeeper,
@@ -32,7 +32,7 @@ export async function walk(
     }
 
     if (!from) {
-        for (const root of ERUDIT.contentNav.rootNodes) {
+        for (const root of ERUDIT.contentNav.id2Root.values()) {
             if (await _walk(root)) {
                 break;
             }
@@ -41,4 +41,21 @@ export async function walk(
     }
 
     await _walk(from);
+}
+
+export async function walkUp(
+    step: (node: ContentNavNode) => Promise<void | false> | void | false,
+    from: ContentNavNode,
+) {
+    let cursor: ContentNavNode | undefined = from;
+
+    while (cursor) {
+        const result = await step(cursor);
+
+        if (result === false) {
+            return;
+        }
+
+        cursor = cursor.parent;
+    }
 }

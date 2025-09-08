@@ -17,12 +17,9 @@
     "peerDependencies": {
         "@erudit-js/cog": "workspace:3.0.0-dev.23",
         "@erudit-js/cli": "workspace:3.0.0-dev.23",
-        "@erudit-js/bitran-elements": "workspace:3.0.0-dev.23"
+        "@erudit-js/prose": "workspace:3.0.0-dev.23"
     },
     "dependencies": {
-        "@bitran-js/core": "1.0.0-dev.13",
-        "@bitran-js/renderer-vue": "1.0.0-dev.13",
-        "@bitran-js/transpiler": "1.0.0-dev.13",
         "@floating-ui/vue": "^1.1.7",
         "@tailwindcss/vite": "^4.1.12",
         "better-sqlite3": "^12.2.0",
@@ -37,7 +34,7 @@
         "glob": "^11.0.3",
         "image-size": "^2.0.2",
         "jiti": "^2.5.1",
-        "nuxt": "4.0.3",
+        "nuxt": "4.1.1",
         "nuxt-my-icons": "1.2.2",
         "perfect-debounce": "^1.0.0",
         "tailwindcss": "^4.1.12",

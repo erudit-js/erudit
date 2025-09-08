@@ -44,8 +44,8 @@ h4.h {
 
 // Dirty hack to add extra space before the heading
 :global(.bitran-blockContainer:not(:first-of-type)):has(
-        :global(> .bitran-block > .bitran-blockMain) > .h
-    ) {
+    :global(> .bitran-block > .bitran-blockMain) > .h
+) {
     margin-top: calc(var(--bitran_gapBlocks) * 1.25);
 }
 </style>

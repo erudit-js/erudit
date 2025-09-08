@@ -50,23 +50,13 @@ onMounted(() => {
     onWake();
 });
 
-let stopInsertingUrlQuery: WatchHandle;
-
 onActivated(() => {
     insertUrlQuery(urlParamQuery.value);
     onWake();
-
-    stopInsertingUrlQuery = watch(
-        () => route.path,
-        () => {
-            insertUrlQuery(urlParamQuery.value);
-        },
-    );
 });
 
 onDeactivated(() => {
     insertUrlQuery(undefined);
-    stopInsertingUrlQuery?.();
 });
 
 const phrase = await usePhrases('search_the_site');

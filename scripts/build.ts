@@ -2,7 +2,7 @@ import { execSync } from 'node:child_process';
 
 console.log('🏗️ Starting sequential build process...');
 
-const packages = ['cog', 'cli', 'bitran-elements'];
+const packages = ['cog', 'cli', 'prose'];
 
 for (const pkg of packages) {
     try {

@@ -1,0 +1,13 @@
+{
+    "compilerOptions": {
+        "target": "esnext",
+        "module": "ESNext",
+        "moduleResolution": "bundler",
+        "strict": true,
+        "verbatimModuleSyntax": true,
+        "jsx": "react-jsx",
+        "jsxImportSource": "./src",
+        "types": ["vite/client"]
+    },
+    "include": ["./src/**/*"]
+}

@@ -1,6 +1,5 @@
 import type {
     EruditCustomLinks,
-    EruditDependencies,
     EruditLanguage,
     EruditRepository,
     EruditSiteBrandLayout,
@@ -19,7 +18,7 @@ export interface EruditRuntimeConfigPaths {
 export interface EruditRuntimeConfig {
     paths: EruditRuntimeConfigPaths;
     project: {
-        dependencies: EruditDependencies;
+        elements: string[];
     };
 }
 

@@ -1,3 +1,3 @@
-import type { ContentConfig } from './base';
+import type { ContentConfig } from './type';
 
-export interface TopicConfig extends Partial<ContentConfig> {}
+export type ContentConfigTopic = ContentConfig;

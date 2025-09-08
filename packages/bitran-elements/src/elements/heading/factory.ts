@@ -38,9 +38,7 @@ export class HeadingParser extends BlockParseFactory<HeadingSchema> {
 
         if (!validLevels.includes(this.level))
             throw new Error(
-                `Invalid heading level: ${
-                    this.level
-                }! Available levels: ${validLevels.join(', ')}.`,
+                `Invalid heading level: ${this.level}! Available levels: ${validLevels.join(', ')}.`,
             );
 
         if (!this.title) throw new Error('Heading title must not be empty!');

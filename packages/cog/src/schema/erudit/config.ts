@@ -7,12 +7,12 @@ import type { EruditAnalytics } from './analytics';
 import type { EruditBitran } from './bitran';
 import type { EruditContent } from './content';
 import type { EruditDebug } from './debug';
-import type { EruditDependencies } from './dependencies';
 import type { EruditCustomLinks } from './links';
 import type { EruditRepository } from './repository';
 import type { EruditSeo } from './seo';
 import type { EruditSite } from './site';
 import type { EruditLanguage } from './language';
+import type { EruditElements } from './elements';
 
 export interface EruditConfig {
     language?: EruditLanguage;
@@ -28,7 +28,7 @@ export interface EruditConfig {
     repository?: EruditRepository;
     customLinks?: EruditCustomLinks;
     bitran?: EruditBitran;
-    dependencies?: EruditDependencies;
+    elements?: EruditElements;
     /**
      * Erudit uses Nuxt under the hood.
      * Use this to alter Nuxt configuration.

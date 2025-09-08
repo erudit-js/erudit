@@ -9,6 +9,14 @@ export function isContentType(type: any): type is ContentType {
     return Object.values(ContentType).includes(type);
 }
 
+export type ContentConfig = Partial<{
+    title: string;
+    navTitle: string;
+    description: string;
+    contributors?: string[];
+    dependencies?: string[];
+}>;
+
 // export const contentTypes = ['book', 'group', 'topic'] as const;
 // export const topicParts = ['article', 'summary', 'practice'] as const;
 // export const contentFlags = ['dev', 'advanced', 'secondary'] as const;

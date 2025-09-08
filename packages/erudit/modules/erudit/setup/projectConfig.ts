@@ -48,7 +48,7 @@ async function transferConfigData(
     publicRuntimeConfig: EruditPublicRuntimeConfig,
 ) {
     runtimeConfig.project = {
-        dependencies: projectConfig.dependencies || {},
+        elements: projectConfig.elements || [],
     };
 
     publicRuntimeConfig.project = {

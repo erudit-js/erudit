@@ -1,0 +1,1 @@
+export type EruditElements = string[];

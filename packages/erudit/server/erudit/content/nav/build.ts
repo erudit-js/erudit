@@ -3,34 +3,42 @@ import chalk from 'chalk';
 import { readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { ContentType } from '@erudit-js/cog/schema';
 
-import { ContentNavNode } from './types';
 import { jiti } from '@erudit/server/importer';
-
-type ContentNavMap = Map<string, ContentNavNode>;
+import type { ContentNavNode, ContentNavMap } from './types';
 
 export async function buildContentNav() {
     ERUDIT.log.debug.start('Building content navigation...');
 
-    ERUDIT.contentNav.rootNodes = [];
+    ERUDIT.contentNav.id2Node = new Map();
+    ERUDIT.contentNav.id2Root = new Map();
+    ERUDIT.contentNav.id2Books = new Map();
+    ERUDIT.contentNav.short2Full = new Map();
 
     const cwd = ERUDIT.config.paths.project + '/content';
     const contentDirectories = globSync('**/*/', {
         cwd,
         posix: true,
+    }).sort((a, b) => {
+        if (a === b) return 0;
+        if (a.startsWith(b)) return 1;
+        if (b.startsWith(a)) return -1;
+        return a.localeCompare(b);
     });
 
-    const id2Node: ContentNavMap = new Map();
-
     //
-    // Creating discrete nodes with no parent/children
+    // Creating standalone nodes with no parent/children
     //
 
-    ERUDIT.log.debug.start(`Creating discrete content navigation nodes...`);
+    ERUDIT.log.debug.start(`Creating standalone content navigation nodes...`);
 
     for (const dir of contentDirectories) {
-        const node = await createDiscreteContentNavNode(cwd, dir);
+        const node = await createStandaloneContentNavNode(cwd, dir);
         if (node) {
-            id2Node.set(node.fullId, node);
+            ERUDIT.contentNav.id2Node.set(node.fullId, node);
+            ERUDIT.contentNav.short2Full.set(node.shortId, node.fullId);
+            if (node.type === ContentType.Book) {
+                ERUDIT.contentNav.id2Books.set(node.fullId, node);
+            }
         }
     }
 
@@ -40,13 +48,13 @@ export async function buildContentNav() {
 
     ERUDIT.log.debug.start(`Creating parent-child relationships...`);
 
-    for (const node of id2Node.values()) {
+    for (const node of ERUDIT.contentNav.id2Node.values()) {
         const parentFullId = node.fullId.includes('/')
             ? node.fullId.slice(0, node.fullId.lastIndexOf('/'))
             : undefined;
 
         if (parentFullId) {
-            const parentNode = id2Node.get(parentFullId);
+            const parentNode = ERUDIT.contentNav.id2Node.get(parentFullId);
             if (parentNode) {
                 node.parent = parentNode;
                 (parentNode.children ||= []).push(node);
@@ -54,7 +62,7 @@ export async function buildContentNav() {
         }
 
         if (!node.parent) {
-            ERUDIT.contentNav.rootNodes.push(node);
+            ERUDIT.contentNav.id2Root.set(node.fullId, node);
         }
     }
 
@@ -70,23 +78,42 @@ export async function buildContentNav() {
         bookCantSkipValidator(),
     ];
 
-    for (const node of id2Node.values()) {
+    for (const node of ERUDIT.contentNav.id2Node.values()) {
         for (const validator of validators) {
-            validator.step(node, id2Node);
+            validator.step(node, ERUDIT.contentNav.id2Node);
         }
     }
 
-    const toRemoveIds = validators.flatMap((v) => v.getRemoveIds());
+    const toRemoveIds = new Set(validators.flatMap((v) => v.getRemoveIds()));
+    if (toRemoveIds.size) {
+        for (const id of toRemoveIds) {
+            const node = ERUDIT.contentNav.id2Node.get(id);
+            if (!node) continue;
 
-    for (const id of toRemoveIds) {
-        const node = id2Node.get(id);
-        if (node) {
-            id2Node.delete(id);
-            if (node.parent) {
-                node.parent.children = node.parent.children?.filter(
+            ERUDIT.contentNav.id2Node.delete(id);
+            ERUDIT.contentNav.short2Full.delete(node.shortId);
+            ERUDIT.contentNav.id2Books.delete(id);
+            ERUDIT.contentNav.id2Root.delete(id);
+
+            if (node.parent?.children) {
+                node.parent.children = node.parent.children.filter(
                     (child) => child !== node,
                 );
+                if (!node.parent.children.length) {
+                    node.parent.children = undefined;
+                }
             }
+
+            if (node.children) {
+                for (const child of node.children) {
+                    if (!toRemoveIds.has(child.fullId)) {
+                        child.parent = undefined;
+                    }
+                }
+                node.children = undefined;
+            }
+
+            node.parent = undefined;
         }
     }
 
@@ -95,20 +122,21 @@ export async function buildContentNav() {
     //
 
     ERUDIT.log.debug.start(`Augmenting types and import aliases...`);
-    augmentTypesAndJiti(id2Node);
+    augmentTypesAndJiti(ERUDIT.contentNav.id2Node);
+    createRuntimeTypes();
 
-    const stats = id2Node.size
-        ? getContentNavStats(id2Node)
-        : chalk.gray('empty nav');
+    const stats = ERUDIT.contentNav.id2Node.size
+        ? getContentNavStats(ERUDIT.contentNav.id2Node)
+        : chalk.gray('empty');
 
     ERUDIT.log.success(`Content navigation built successfully! (${stats})`);
 }
 
 /**
  * Analizes given directory and creates corresponding ContentNavNode if possible.
- * The node is discrete and has no parent/children properties.
+ * The node is standalone and has no parent/children properties.
  */
-async function createDiscreteContentNavNode(
+async function createStandaloneContentNavNode(
     cwd: string,
     relPath: string,
 ): Promise<ContentNavNode | undefined> {
@@ -151,10 +179,14 @@ async function createDiscreteContentNavNode(
  * }
  * ```
  */
-function parseContentPath(
-    relPath: string,
-):
-    | { fullId: string; shortId: string; position: number; skip: boolean }
+function parseContentPath(relPath: string):
+    | {
+          idPart: string;
+          fullId: string;
+          shortId: string;
+          position: number;
+          skip: boolean;
+      }
     | undefined {
     const parts = relPath.split('/');
 
@@ -162,6 +194,7 @@ function parseContentPath(
         return;
     }
 
+    let idPart = '';
     let fullId = '';
     let shortId = '';
     let position!: number;
@@ -177,7 +210,7 @@ function parseContentPath(
 
         const typeDelimiter = part.charAt(typeDelimiterPos);
         skip = typeDelimiter === '+';
-        const idPart = part.slice(typeDelimiterPos + 1);
+        idPart = part.slice(typeDelimiterPos + 1);
         if (!idPart) return;
 
         fullId += `/${idPart}`;
@@ -192,6 +225,7 @@ function parseContentPath(
     shortId = shortId.slice(1);
 
     return {
+        idPart,
         fullId,
         shortId,
         position,
@@ -238,9 +272,7 @@ function getContentNavStats(id2Node: ContentNavMap) {
     const push = (label: string, visible: number, hidden: number) => {
         if (visible + hidden === 0) return;
         parts.push(
-            `${label} ${ERUDIT.log.stress(visible)}${
-                hidden ? chalk.gray('|' + String(hidden)) : ''
-            }`,
+            `${label} ${ERUDIT.log.stress(visible)}${hidden ? chalk.gray('|' + String(hidden)) : ''}`,
         );
     };
 
@@ -280,6 +312,30 @@ function augmentTypesAndJiti(id2Node: ContentNavMap) {
     }
 
     writeFileSync(tsconfigPath, JSON.stringify(tsconfig, null, 4));
+}
+
+function createRuntimeTypes() {
+    let union = '';
+
+    for (const navNode of ERUDIT.contentNav.id2Node.values()) {
+        let unionPart = `'${navNode.fullId}'`;
+
+        if (navNode.shortId && navNode.shortId !== navNode.fullId) {
+            unionPart += ' | ' + `'${navNode.shortId}'`;
+        }
+
+        union += (union ? ' | ' : '') + unionPart;
+    }
+
+    writeFileSync(
+        ERUDIT.config.paths.build + '/types/contentIds.ts',
+        `
+            export {};
+            declare global {
+                export type RuntimeContentId = ${union};
+            }
+        `,
+    );
 }
 
 //

@@ -2,7 +2,10 @@ import * as repository from './repository';
 
 export async function setupServerContentNav() {
     ERUDIT.contentNav = {
-        nodes: [],
+        id2Node: new Map(),
+        id2Books: new Map(),
+        id2Root: new Map(),
+        short2Full: new Map(),
         ...repository,
     };
 

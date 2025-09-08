@@ -10,7 +10,7 @@ export type PayloadLanguagePhraseValue =
 
 export type LanguagePhrases = Phrases<{
     language_code: string;
-    language_title: string;
+    language_name: string;
     erudit: string;
     modern_textbook: string;
     content_nav: string;

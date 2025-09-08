@@ -40,6 +40,6 @@
         "@bitran-js/transpiler": "1.0.0-dev.13"
     },
     "devDependencies": {
-        "unbuild": "^3.5.0"
+        "unbuild": "^3.6.1"
     }
 }

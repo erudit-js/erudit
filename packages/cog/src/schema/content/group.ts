@@ -1,7 +1,5 @@
-import type { ContentConfig } from './base';
+import type { ContentConfig } from './type';
 
-export type GroupType = 'separator' | 'folder';
-
-export interface GroupConfig extends Partial<ContentConfig> {
-    type: GroupType;
-}
+export type ContentGroupType = 'separator' | 'folder';
+export type ContentConfigGroup = ContentConfig &
+    Partial<{ type: ContentGroupType }>;

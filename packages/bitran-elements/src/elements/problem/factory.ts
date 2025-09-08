@@ -29,9 +29,7 @@ export function parseProblemInfo(obj: PlainObject): ProblemInfo {
 
     if (!isProblemLevel(obj.level)) {
         throw new Error(
-            `Problem element "level" property must be one of: ${problemLevels.join(
-                ', ',
-            )}!`,
+            `Problem element "level" property must be one of: ${problemLevels.join(', ')}!`,
         );
     }
 

@@ -1,6 +1,6 @@
 const ru: LanguagePhrases = {
     language_code: 'ru',
-    language_title: 'Русский',
+    language_name: 'Русский',
     erudit: 'Erudit',
     modern_textbook: 'Современный учебник',
     content_nav: 'Оглавление',

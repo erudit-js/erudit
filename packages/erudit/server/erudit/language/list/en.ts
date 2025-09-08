@@ -1,6 +1,6 @@
 const en: LanguagePhrases = {
     language_code: 'en',
-    language_title: 'English',
+    language_name: 'English',
     erudit: 'Erudit',
     modern_textbook: 'Modern textbook',
     content_nav: 'Content navigation',

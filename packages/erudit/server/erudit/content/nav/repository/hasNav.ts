@@ -1,3 +1,3 @@
 export function hasNav(): boolean {
-    return ERUDIT.contentNav.rootNodes.length > 0;
+    return ERUDIT.contentNav.id2Node.size > 0;
 }

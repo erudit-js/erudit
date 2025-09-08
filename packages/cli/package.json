@@ -34,6 +34,6 @@
         "consola": "^3.4.0"
     },
     "devDependencies": {
-        "unbuild": "^3.3.1"
+        "unbuild": "^3.6.1"
     }
 }

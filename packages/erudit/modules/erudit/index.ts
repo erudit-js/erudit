@@ -9,7 +9,6 @@ import { setupEruditFullRestart } from './setup/fullRestart';
 import { setupEruditAliases } from './setup/aliases';
 import { addEruditProjectConfigToRuntime } from './setup/projectConfig';
 import { setupEruditPublicAssets } from './setup/publicAssets';
-import { setupEruditBitranTemplates } from './setup/bitranTemplates';
 import { setupEruditCustomBaseUrl } from './setup/baseUrl';
 import { optimizeTranspileEruditDependencies } from './setup/optimizeTranspile';
 import { setupEruditNuxtConfig } from './setup/nuxtConfig';
@@ -19,6 +18,7 @@ import {
     registerModuleGlobals,
     registerServerGlobals,
 } from './setup/globals';
+import { setupEruditElements } from './setup/elements';
 
 export default defineNuxtModule({
     meta: { name: 'Erudit', configKey: 'erudit', version },
@@ -40,8 +40,8 @@ export default defineNuxtModule({
             eruditPublicRuntimeConfig,
         );
         await setupEruditPublicAssets(nuxt, eruditRuntimeConfig);
-        await setupEruditBitranTemplates(nuxt, eruditRuntimeConfig);
         await setupEruditCustomBaseUrl(nuxt, eruditPublicRuntimeConfig);
+        await setupEruditElements(nuxt, eruditRuntimeConfig);
         await optimizeTranspileEruditDependencies(nuxt, eruditRuntimeConfig);
         await setupEruditNuxtConfig(
             nuxt,

@@ -22,7 +22,7 @@
         "@erudit-js/cog": "workspace:3.0.0-dev.23",
         "katex": "^0.16.21",
         "sass": "^1.86.0",
-        "vue": "^3.5.13",
+        "vue": "latest",
         "image-size": "^2.0.2",
         "photoswipe": "^5.4.4",
         "mermaid": "^11.6.0",

@@ -1,0 +1,53 @@
+{
+    "type": "module",
+    "name": "@erudit-js/prose",
+    "version": "3.0.0-dev.23",
+    "description": "📝 JSX prose subsystem for Erudit sites",
+    "main": "./dist/index.mjs",
+    "types": "./dist/index.d.ts",
+    "exports": {
+        ".": {
+            "import": "./dist/index.mjs",
+            "types": "./dist/index.d.ts"
+        },
+        "./global": {
+            "import": "./dist/global/index.mjs",
+            "types": "./dist/global/index.d.ts"
+        },
+        "./server": {
+            "import": "./dist/server/index.mjs",
+            "types": "./dist/server/index.d.ts"
+        },
+        "./app": {
+            "import": "./dist/app/index.mjs",
+            "types": "./dist/app/index.d.ts"
+        },
+        "./elements/*": {
+            "import": "./dist/elements/*.mjs",
+            "types": "./dist/elements/*.d.ts"
+        },
+        "./jsx-runtime": {
+            "import": "./dist/jsx-runtime.mjs",
+            "types": "./dist/jsx-runtime.d.ts"
+        },
+        "./jsx-dev-runtime": {
+            "import": "./dist/jsx-dev-runtime.mjs",
+            "types": "./dist/jsx-dev-runtime.d.ts"
+        }
+    },
+    "files": [
+        "dist"
+    ],
+    "scripts": {
+        "build": "unbuild",
+        "test": "vitest run",
+        "test:watch": "vitest"
+    },
+    "peerDependencies": {
+        "vue": "latest"
+    },
+    "devDependencies": {
+        "unbuild": "^3.6.1",
+        "vitest": "^3.2.4"
+    }
+}
