@@ -1,4 +1,4 @@
-import { type ProseElementAny } from '../element';
+import type { ElementSchemaAny } from '../schema';
 import { resolveElementComponent, type ElementComponentRaw } from './component';
 import type { ElementIconRaw } from './icon';
 import { resolveElementIcon } from './icon';
@@ -8,15 +8,15 @@ export * from './component';
 export * from './icon';
 export * from './language';
 
-export function defineAppElement<TElement extends ProseElementAny>(definition: {
-    type: TElement['type'];
-    name: TElement['name'];
+export function defineAppElement<TSchema extends ElementSchemaAny>(definition: {
+    type: TSchema['Type'];
+    name: TSchema['Name'];
     icon?: ElementIconRaw;
     component: ElementComponentRaw;
     languages: ElementLanguagesRaw<any>;
     createStorageData?: (
-        element: TElement,
-    ) => Promise<TElement['storageData']> | TElement['storageData'];
+        element: TSchema,
+    ) => Promise<TSchema['Storage']> | TSchema['Storage'];
 }) {
     return {
         type: definition.type,

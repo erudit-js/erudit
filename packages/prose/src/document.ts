@@ -1,54 +1,85 @@
-import { Blocks, type ProseBlocks } from './default';
-import { isTagElement, type ProseTag } from './tag';
+import { Blocks, type BlocksSchema } from './default/blocks';
+import type { JsxElement } from './element';
 import { ProseError } from './error';
-import { defineRef, type ProseRef, type TagsToRefs } from './ref';
-import type { ProseElementAny } from './element';
+import type { ElementSchemaAny } from './schema';
+import type { ElementTagAny } from './tag';
+import {
+    defineUnique,
+    type ElementUnique,
+    type ElementUniqueAny,
+} from './unique';
 
-export type ProseDocument<TRefs extends Record<string, any>> = {
-    refs: TRefs;
-    content: ProseBlocks;
+type TagsToUniques<TTags extends Record<string, ElementTagAny>> = {
+    [K in keyof TTags]: ElementUnique<TTags[K]>;
 };
 
-export function defineDocument<
-    TRefDefs extends Record<string, ProseTag>,
->(definition: {
+export type Document<TUniques extends Record<string, ElementUniqueAny>> = {
     url: string;
-    content: (args: { docRefs: TagsToRefs<TRefDefs> }) => ProseElementAny;
-    refs?: TRefDefs;
-}): ProseDocument<TagsToRefs<TRefDefs>> {
-    const refDefinitions = definition.refs || ({} as TRefDefs);
+    uniques: TUniques;
+    content: JsxElement<BlocksSchema>;
+};
+
+export type DocumentAny = Document<Record<string, ElementUniqueAny>>;
+
+export function createProseDocument<
+    TUniqueDefs extends Record<string, ElementTagAny>,
+>(definition: {
+    /** The location of document. Normally you pass `import.meta.url` here. */
+    url: string;
+    /** Important and/or reusable elements. */
+    uniques?: TUniqueDefs;
+    content: (args: {
+        uniques: TagsToUniques<TUniqueDefs>;
+    }) => JsxElement<ElementSchemaAny>;
+}): Document<TagsToUniques<TUniqueDefs>> {
+    const url = normalizeUrl(definition.url);
+
+    const uniqueDefs = definition.uniques || ({} as TUniqueDefs);
     const contentFn = definition.content;
 
-    const docRefs = {} as TagsToRefs<TRefDefs>;
-    for (const [key, tag] of Object.entries(refDefinitions)) {
-        (docRefs as any)[key] = defineRef({
+    const docUniques = {} as TagsToUniques<TUniqueDefs>;
+    for (const [key, tag] of Object.entries(uniqueDefs)) {
+        (docUniques as any)[key] = defineUnique({
             tag,
             slug: key,
-            url: definition.url,
+            url,
         });
     }
 
-    const content = contentFn({ docRefs: docRefs });
+    const content = contentFn({ uniques: docUniques });
 
-    if (!isTagElement(content, Blocks)) {
+    if (!Blocks.isTagElement(content)) {
         throw new ProseError(
             `Document content function must return a <${Blocks.name}> element!`,
         );
     }
 
-    for (const ref of Object.values(docRefs)) {
-        const typedRef = ref as ProseRef;
-        const assignedElement = typedRef.element;
+    for (const unique of Object.values(docUniques)) {
+        const typedUnique = unique as ElementUniqueAny;
+        const assignedElement = typedUnique.element;
 
         if (!assignedElement) {
             throw new ProseError(
-                `Reference "${typedRef.slug}" was not assigned a value in the content function!`,
+                `Unique "${typedUnique.slug}" was not assigned in the content function!`,
             );
         }
     }
 
     return {
-        refs: docRefs,
+        url,
+        uniques: docUniques,
         content,
     };
+}
+
+function normalizeUrl(url: string) {
+    let filePath = url;
+
+    // Convert import.meta.url to file path
+    filePath = url.startsWith('file:///') ? url.slice(8) : url;
+
+    // Remove .jsx/.tsx extensions
+    filePath = filePath.replace(/\.(jsx|tsx)$/, '');
+
+    return filePath;
 }

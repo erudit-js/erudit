@@ -30,6 +30,7 @@ export default defineNitroPlugin((nitro) => {
 
 async function setupServer() {
     await new Promise((resolve) => setTimeout(resolve, 300));
+    await import('#erudit/prose/tags');
     await setupServerRuntimeConfig();
     await setupServerLogger();
     await setupServerImporter();

@@ -1,16 +1,9 @@
-import { eq } from 'drizzle-orm';
 import { ContentConfigBook, ContentType } from '@erudit-js/cog/schema';
 
 import { ContentParser } from '..';
 import type { ContentNavNode } from '../../nav/types';
 
 export const booksParser: ContentParser = async () => {
-    const contentTable = ERUDIT.db.schema.content;
-
-    await ERUDIT.db
-        .delete(contentTable)
-        .where(eq(contentTable.type, ContentType.Book));
-
     return {
         step: async (navNode: ContentNavNode) => {
             let bookModule: ContentConfigBook | undefined;
@@ -21,17 +14,24 @@ export const booksParser: ContentParser = async () => {
                         '/content/' +
                         navNode.contentRelPath +
                         '/book',
-                    { default: true },
+                    { default: true, try: true },
                 );
-            } catch {}
+            } catch (error) {
+                throw 'Error importing book module: ' + error;
+            }
 
-            await ERUDIT.db.insert(ERUDIT.db.schema.content).values({
-                fullId: navNode.fullId,
-                type: ContentType.Book,
-                title: bookModule?.title || navNode.fullId.split('/').pop()!,
-                navTitle: bookModule?.navTitle,
-                description: bookModule?.description,
-            });
+            try {
+                await ERUDIT.db.insert(ERUDIT.db.schema.content).values({
+                    fullId: navNode.fullId,
+                    type: ContentType.Book,
+                    title:
+                        bookModule?.title || navNode.fullId.split('/').pop()!,
+                    navTitle: bookModule?.navTitle,
+                    description: bookModule?.description,
+                });
+            } catch (error) {
+                throw 'Error inserting book content: ' + error;
+            }
         },
     };
 };

@@ -1,13 +1,9 @@
 import { describe, it, expect } from 'vitest';
 
-import {
-    Li,
-    Ol,
-    Ul,
-    type ProseList,
-    type ProseListItem,
-} from 'src/elements/list/element.global';
-import { ProseElementType } from 'src/element';
+import { type ListSchema, type ListItemSchema } from 'src/elements/list/schema';
+import { Ul, Ol, Li } from 'src/elements/list/tags';
+import { ElementType } from 'src/type';
+import type { JsxElement } from 'src/element';
 
 describe('List', () => {
     describe('Li', () => {
@@ -18,9 +14,9 @@ describe('List', () => {
                 </Li>
             );
 
-            expect(listItem.type).toBe(ProseElementType.Block);
+            expect(listItem.type).toBe(ElementType.Block);
             expect(listItem.name).toBe('listItem');
-            expect(listItem.data).toHaveLength(1);
+            expect(listItem.children).toHaveLength(1);
         });
 
         it('should create a list item with multiple children', () => {
@@ -31,10 +27,11 @@ describe('List', () => {
                 </Li>
             );
 
-            expect(listItem.data).toHaveLength(2);
+            expect(listItem.children).toHaveLength(2);
         });
 
         it('should throw error when no children provided', () => {
+            // @ts-expect-error Empty children
             expect(() => <Li></Li>).toThrow(
                 '<Li> requires at least one child element!',
             );
@@ -49,12 +46,12 @@ describe('List', () => {
                         <p>Item 1</p>
                     </Li>
                 </Ul>
-            ) as ProseList;
+            ) as JsxElement<ListSchema>;
 
-            expect(list.type).toBe(ProseElementType.Block);
+            expect(list.type).toBe(ElementType.Block);
             expect(list.name).toBe('list');
-            expect((list.data as any).type).toBe('ul');
-            expect((list.data as any).items).toHaveLength(1);
+            expect((list.data as any).type).toBe('unordered');
+            expect(list.children).toHaveLength(1);
         });
 
         it('should create an unordered list with multiple items', () => {
@@ -70,9 +67,9 @@ describe('List', () => {
                         <p>Item 3</p>
                     </Li>
                 </Ul>
-            ) as ProseList;
+            ) as JsxElement<ListSchema>;
 
-            expect((list.data as any).items).toHaveLength(3);
+            expect(list.children).toHaveLength(3);
         });
 
         it('should throw error when no children provided', () => {
@@ -86,7 +83,9 @@ describe('List', () => {
                 <Ul>
                     <p>Invalid child</p>
                 </Ul>
-            )).toThrow('<Ul> can only have <Li> children!');
+            )).toThrow(
+                '<Ul> only accepts <Li> child elements, but received <p>!',
+            );
         });
     });
 
@@ -98,13 +97,13 @@ describe('List', () => {
                         <p>Item 1</p>
                     </Li>
                 </Ol>
-            ) as ProseList;
+            ) as JsxElement<ListSchema>;
 
-            expect(list.type).toBe(ProseElementType.Block);
+            expect(list.type).toBe(ElementType.Block);
             expect(list.name).toBe('list');
-            expect((list.data as any).type).toBe('ol');
+            expect((list.data as any).type).toBe('ordered');
             expect((list.data as any).start).toBe(1);
-            expect((list.data as any).items).toHaveLength(1);
+            expect(list.children).toHaveLength(1);
         });
 
         it('should create an ordered list with start value of 0', () => {
@@ -114,10 +113,10 @@ describe('List', () => {
                         <p>Item 1</p>
                     </Li>
                 </Ol>
-            ) as ProseList;
+            ) as JsxElement<ListSchema>;
 
             expect((list.data as any).start).toBe(0);
-            expect((list.data as any).items).toHaveLength(1);
+            expect(list.children).toHaveLength(1);
         });
 
         it('should create an ordered list with custom start value', () => {
@@ -130,10 +129,10 @@ describe('List', () => {
                         <p>Item 2</p>
                     </Li>
                 </Ol>
-            ) as ProseList;
+            ) as JsxElement<ListSchema>;
 
             expect((list.data as any).start).toBe(5);
-            expect((list.data as any).items).toHaveLength(2);
+            expect(list.children).toHaveLength(2);
         });
 
         it('should create an ordered list with multiple items', () => {
@@ -147,9 +146,9 @@ describe('List', () => {
                         <p>With multiple paragraphs</p>
                     </Li>
                 </Ol>
-            ) as ProseList;
+            ) as JsxElement<ListSchema>;
 
-            expect((list.data as any).items).toHaveLength(2);
+            expect(list.children).toHaveLength(2);
             expect((list.data as any).start).toBe(3);
         });
 
@@ -164,7 +163,9 @@ describe('List', () => {
                 <Ol>
                     <p>Invalid child</p>
                 </Ol>
-            )).toThrow('<Ol> can only have <Li> children!');
+            )).toThrow(
+                '<Ol> only accepts <Li> child elements, but received <p>!',
+            );
         });
 
         it('should validate start prop is a non-negative whole integer', () => {
@@ -191,7 +192,7 @@ describe('List', () => {
                     </Li>
                 </Ol>
             )).toThrow(
-                '<Ol> start prop must be a non-negative whole integer, got: -1',
+                '<Ol> start prop must be a non-negative integer, but received "-1"!',
             );
 
             expect(() => (
@@ -201,7 +202,7 @@ describe('List', () => {
                     </Li>
                 </Ol>
             )).toThrow(
-                '<Ol> start prop must be a non-negative whole integer, got: -5',
+                '<Ol> start prop must be a non-negative integer, but received "-5"!',
             );
 
             expect(() => (
@@ -211,7 +212,7 @@ describe('List', () => {
                     </Li>
                 </Ol>
             )).toThrow(
-                '<Ol> start prop must be a non-negative whole integer, got: 1.5',
+                '<Ol> start prop must be a non-negative integer, but received "1.5"!',
             );
 
             expect(() => (
@@ -221,7 +222,7 @@ describe('List', () => {
                     </Li>
                 </Ol>
             )).toThrow(
-                '<Ol> start prop must be a non-negative whole integer, got: -2.7',
+                '<Ol> start prop must be a non-negative integer, but received "-2.7"!',
             );
 
             expect(() => (
@@ -231,7 +232,7 @@ describe('List', () => {
                     </Li>
                 </Ol>
             )).toThrow(
-                '<Ol> start prop must be a non-negative whole integer, got: abc',
+                '<Ol> start prop must be a non-negative integer, but received "abc"!',
             );
         });
     });
@@ -255,11 +256,12 @@ describe('List', () => {
                         <p>Another top level item</p>
                     </Li>
                 </Ul>
-            ) as ProseList;
+            ) as JsxElement<ListSchema>;
 
-            expect((nestedList.data as any).items).toHaveLength(2);
+            expect(nestedList.children as any).toHaveLength(2);
             expect(
-                ((nestedList.data as any).items[0] as ProseListItem).data,
+                ((nestedList.children as any)[0] as JsxElement<ListItemSchema>)
+                    .children,
             ).toHaveLength(2);
         });
     });

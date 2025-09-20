@@ -10,17 +10,13 @@
             "import": "./dist/index.mjs",
             "types": "./dist/index.d.ts"
         },
-        "./global": {
-            "import": "./dist/global/index.mjs",
-            "types": "./dist/global/index.d.ts"
-        },
-        "./server": {
-            "import": "./dist/server/index.mjs",
-            "types": "./dist/server/index.d.ts"
-        },
         "./app": {
             "import": "./dist/app/index.mjs",
             "types": "./dist/app/index.d.ts"
+        },
+        "./default/*": {
+            "import": "./dist/default/*.mjs",
+            "types": "./dist/default/*.d.ts"
         },
         "./elements/*": {
             "import": "./dist/elements/*.mjs",

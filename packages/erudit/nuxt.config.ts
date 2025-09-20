@@ -26,12 +26,7 @@ export default defineNuxtConfig({
         iconsDir: '@erudit/app/assets/icons',
     },
     build: {
-        transpile: [
-            'yaml',
-            'photoswipe',
-            '@bitran-js/renderer-vue',
-            '@erudit-js/bitran-elements',
-        ],
+        transpile: ['yaml', 'photoswipe'],
     },
     plugins: ['@erudit/app/plugins/appSetup'],
     nitro: {
@@ -41,8 +36,16 @@ export default defineNuxtConfig({
                 charset: 'utf8',
             },
         },
-        externals: {
-            inline: [/bitran-elements/],
+        // @see https://github.com/nitrojs/nitro/issues/3565
+        //
+        // externals: {
+        //     trace: true,
+        //     traceInclude: ['@erudit-js/prose'],
+        // },
+        rollupConfig: {
+            external(source) {
+                return source.includes('erudit-js/prose');
+            },
         },
     },
     vite: {
@@ -81,10 +84,6 @@ export default defineNuxtConfig({
                 '@floating-ui/vue',
                 'perfect-debounce',
                 'flexsearch',
-                '@bitran-js/core',
-                '@bitran-js/transpiler',
-                '@bitran-js/renderer-vue',
-                '@erudit-js/bitran-elements',
             ],
         },
         server: {

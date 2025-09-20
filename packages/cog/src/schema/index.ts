@@ -2,6 +2,7 @@ export * from './content/type';
 export * from './content/topic';
 export * from './content/group';
 export * from './content/book';
+export * from './content/page';
 
 // export * from './content/reference';
 // export * from './bitran/location';

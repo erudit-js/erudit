@@ -1,23 +1,16 @@
-import { Blocks, defineDocument, defineRefs, Paragraph, Text } from 'jsprose';
-
-const refs = defineRefs({
+export default createProseDocument({
     url: import.meta.url,
-    defs: {
-        tPifagor: Paragraph,
+    uniques: {
+        myP: Paragraph,
+        myOl: Ul,
     },
-});
-
-export const article = defineDocument({
-    refs,
-    content: ({ tPifagor }) => (
-        <Blocks>
-            <Paragraph $ref={tPifagor}>Это тестовый параграф</Paragraph>
-
-            <Paragraph>
-                Еще один параграф с <Text>текстом</Text>!
-            </Paragraph>
-
-            {tPifagor}
-        </Blocks>
+    content: ({ uniques }) => (
+        <blocks>
+            <h1>Название моей замечательной статьи!</h1>
+            <p $={uniques.myP}>Lol1 Fun boy</p>
+            <Ul $={uniques.myOl}>
+                <Li>Fobar</Li>
+            </Ul>
+        </blocks>
     ),
 });

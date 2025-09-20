@@ -234,7 +234,8 @@ function parseContentPath(relPath: string):
 }
 
 function hasJsTsModuleKey(obj: Object, modulename: string) {
-    return `${modulename}.js` in obj || `${modulename}.ts` in obj;
+    const extensions = ['.js', '.jsx', '.ts', '.tsx'];
+    return extensions.some((ext) => `${modulename}${ext}` in obj);
 }
 
 function getContentNavStats(id2Node: ContentNavMap) {

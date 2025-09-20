@@ -14,6 +14,17 @@
         "erudit-cli": "bin/erudit.mjs",
         "erudit": "bin/erudit.mjs"
     },
+    "exports": {
+        ".": {
+            "import": "./nuxt.config.ts"
+        },
+        "./prose": {
+            "import": "./proxy/prose.ts"
+        },
+        "./prose/app": {
+            "import": "./proxy/prose.app.ts"
+        }
+    },
     "peerDependencies": {
         "@erudit-js/cog": "workspace:3.0.0-dev.23",
         "@erudit-js/cli": "workspace:3.0.0-dev.23",

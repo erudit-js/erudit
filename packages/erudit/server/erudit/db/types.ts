@@ -1,10 +1,10 @@
 import { LibSQLDatabase } from 'drizzle-orm/libsql';
-import type { Client } from '@libsql/client';
+import type { Database } from 'better-sqlite3';
 
 import type * as schema from './schema';
 
 export type EruditServerDatabase = LibSQLDatabase<typeof schema> & {
     path: string;
-    connection: Client;
+    connection: Database;
     schema: typeof schema;
 };

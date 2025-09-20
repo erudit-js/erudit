@@ -6,8 +6,11 @@
         "strict": true,
         "verbatimModuleSyntax": true,
         "jsx": "react-jsx",
-        "jsxImportSource": "./src",
-        "types": ["vite/client"]
+        "jsxImportSource": "src",
+        "types": ["vite/client"],
+        "paths": {
+            "src/*": ["./src/*"]
+        }
     },
-    "include": ["./src/**/*"]
+    "include": ["./src/**/*", "./tests/**/*"]
 }

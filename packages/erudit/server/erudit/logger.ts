@@ -64,9 +64,11 @@ function createLogger(tag: string): Logger {
             );
         },
         error(message: any) {
+            console.log();
             console.log(
                 `${formattedTag} ${chalk.bgRed.whiteBright(' ERROR ')} ${message}`,
             );
+            console.log();
         },
         stress(message: any) {
             return chalk.cyanBright(message);

@@ -1,6 +1,7 @@
 import { defineBuildConfig } from 'unbuild';
 
 export default defineBuildConfig({
+    declaration: true,
     entries: [
         {
             builder: 'mkdist',
@@ -11,5 +12,4 @@ export default defineBuildConfig({
             },
         },
     ],
-    declaration: true,
 });

@@ -4,66 +4,68 @@
 // All this has to be done in runtime or with other tools, like eslint.
 // @see https://github.com/microsoft/TypeScript/issues/21699
 
-import {
-    _children,
-    createProseElement,
-    ProseElementType,
-    type ProseElementAny,
-} from './element';
-import type { ProseText } from './default';
-import { isRef, refToElement, type ProseRef } from './ref';
+import type { TextSchema } from './default/text';
+import type { JsxElement } from './element';
 import { ProseError } from './error';
+import { hash } from './hash';
+import type { ElementSchemaAny } from './schema';
+import type { ElementTagAny } from './tag';
+import { ElementType } from './type';
+import { isUnique, type ElementUnique } from './unique';
 
 type ConstructRawChildren<Types extends readonly any[]> =
     | Types[number]
     | { [K in keyof Types]: Types[K][] }[number]
     | Types[number][];
 
-export type ProseChildrenRaw =
-    | ConstructRawChildren<[string, ProseElementAny, ProseRef]>
+export type RawChildren =
+    | ConstructRawChildren<
+          [string, JsxElement<ElementSchemaAny>, ElementUnique<ElementTagAny>]
+      >
     | undefined;
 
-export type ProseNormalizedChildren = ProseElementAny[] | undefined;
+export type NormalizedChildren = JsxElement<ElementSchemaAny>[] | undefined;
 
 export function normalizeChildren(
     props: {
-        children?: ProseChildrenRaw;
+        children?: RawChildren;
     },
-    step?: (child: ProseElementAny) => void,
-): ProseNormalizedChildren {
+    step?: (child: JsxElement<ElementSchemaAny>) => void,
+): NormalizedChildren {
     if (props.children) {
         const children = Array.isArray(props.children)
             ? props.children
             : [props.children];
 
         const normalizedChildren = children.map((child) => {
-            let normalizedChild: ProseElementAny;
+            let normalizedChild: JsxElement<ElementSchemaAny>;
 
             // Intercept strings
             if (typeof child === 'string') {
-                normalizedChild = createProseElement<ProseText>({
-                    type: ProseElementType.Inliner,
+                normalizedChild = <JsxElement<TextSchema>>{
+                    type: ElementType.Inliner,
                     name: 'text',
+                    tagName: 'text',
+                    hash: hash(child, 12),
                     data: child,
-                    [_children]: undefined,
-                });
+                };
             }
-            // Intercept refs
-            else if (isRef(child)) {
-                const element = refToElement(child);
+            // Intercept uniques
+            else if (isUnique(child)) {
+                const element = child.element;
                 if (!element) {
                     throw new ProseError(
-                        `Unable to unwrap undefined JSProse reference "${child.slug}"!`,
+                        `Unable to unwrap undefined unique "${child.slug}"!`,
                     );
                 }
-                normalizedChild = element;
+                normalizedChild = cloneNode(element as any);
             }
-            // Already a ProseElement
+            // Already a NodeElement
             else {
-                normalizedChild = child;
+                normalizedChild = cloneNode(child);
             }
 
-            step && step(normalizedChild);
+            step?.(normalizedChild);
 
             return normalizedChild;
         });
@@ -74,4 +76,10 @@ export function normalizeChildren(
     }
 
     return undefined;
+}
+
+function cloneNode<TSchema extends ElementSchemaAny>(
+    node: JsxElement<TSchema>,
+): JsxElement<TSchema> {
+    return structuredClone(node);
 }

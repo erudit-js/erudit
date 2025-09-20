@@ -8,6 +8,8 @@ import { buildSponsors } from './sponsors/build';
 import { buildContentNav } from './content/nav/build';
 import { parseContent } from './content/parse';
 
+export type EruditServerChangedFiles = Set<string>;
+
 export async function buildServerErudit() {
     ERUDIT.buildPromise = (async () => {
         ERUDIT.log.start('Building...');
@@ -17,6 +19,8 @@ export async function buildServerErudit() {
         await parseContent();
         ERUDIT.log.success(chalk.green('Build Complete!'));
     })();
+
+    await ERUDIT.buildPromise;
 }
 
 let pendingRebuild = false;
@@ -45,13 +49,12 @@ export async function setupServerProjectWatcher() {
         },
     });
 
-    const changedPaths = new Set<string>();
+    ERUDIT.changedFiles = new Set<string>();
 
     const tryRebuildErudit = debounce(async () => {
         pendingRebuild = true;
         await ERUDIT.buildPromise;
-        const files = Array.from(changedPaths);
-        changedPaths.clear();
+        const files = Array.from(ERUDIT.changedFiles);
         console.log();
         ERUDIT.log.warn(
             `${chalk.yellow('Rebuilding due to file change(s):')}\n\n` +
@@ -61,16 +64,19 @@ export async function setupServerProjectWatcher() {
         );
         console.log();
         await buildServerErudit();
+        ERUDIT.changedFiles.clear();
         pendingRebuild = false;
     }, 300);
 
     watcher.on('all', (event, filePath) => {
+        filePath = filePath.replaceAll('\\', '/');
+
         if (pendingRebuild) {
             return;
         }
 
         if (filePath.trim()) {
-            changedPaths.add(String(filePath));
+            ERUDIT.changedFiles.add(String(filePath));
             tryRebuildErudit();
         }
     });

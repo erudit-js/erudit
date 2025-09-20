@@ -94,6 +94,10 @@ export async function registerGlobalContentTypes(
             name: 'defineSponsor',
             from: `${runtimeConfig.paths.module}/globals/sponsor`,
         },
+        {
+            name: 'createProseDocument',
+            from: `${runtimeConfig.paths.module}/globals/prose`,
+        },
     ]);
 
     //
@@ -123,20 +127,43 @@ export async function registerGlobalContentTypes(
 // Runtime Type Augmentations
 //
 
-// TODO: Find a more nice way to do this!
-
 function runtimeAugmentations() {
     return `
-import type { ContentConfigBook } from '@erudit-js/cog/schema';
+import type {
+    ContentConfigBook,
+    ContentConfigTopic,
+    ContentConfigPage,
+    ContentConfigGroup,
+} from '@erudit-js/cog/schema';
 
-type RuntimeContentConfigBook = ContentConfigBook & {
+type DefineRuntimeContentConfig<T> = T & {
     contributors?: RuntimeContributor[];
     dependencies?: RuntimeContentId[];
 }
 
+type RuntimeContentConfigBook = DefineRuntimeContentConfig<ContentConfigBook>;
+
+type RuntimeContentConfigTopic = DefineRuntimeContentConfig<ContentConfigTopic>;
+
+type RuntimeContentConfigPage = DefineRuntimeContentConfig<ContentConfigPage>;
+
+type RuntimeContentConfigGroup = DefineRuntimeContentConfig<ContentConfigGroup>;
+
 declare global {
     function defineBook(book: RuntimeContentConfigBook) {
         return book;
+    }
+
+    function defineTopic(topic: RuntimeContentConfigTopic) {
+        return topic;
+    }
+
+    function definePage(page: RuntimeContentConfigPage) {
+        return page;
+    }
+
+    function defineGroup(group: RuntimeContentConfigGroup) {
+        return group;
     }
 }
 

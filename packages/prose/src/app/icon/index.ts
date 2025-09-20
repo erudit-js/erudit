@@ -1,14 +1,14 @@
-import { ProseElementType } from '../../element';
+import { ElementType } from '../../type';
 
 export type ElementIconRaw = () => Promise<{ default: string }>;
 export type ElementIcon = () => Promise<string>;
 
 export function resolveElementIcon(
-    type: ProseElementType,
+    type: ElementType,
     iconModule?: ElementIconRaw,
 ) {
     iconModule ??=
-        type === ProseElementType.Block
+        type === ElementType.Block
             ? () => import('../icons/block.svg?raw')
             : () => import('../icons/inline.svg?raw');
 

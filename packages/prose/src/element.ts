@@ -1,47 +1,51 @@
-export const _children = Symbol('ProseChildren');
+import type { ElementSchemaAny } from './schema';
 
-export enum ProseElementType {
-    Block = 'block',
-    Inliner = 'inliner',
+type ConstructElementKind<TSchema extends ElementSchemaAny, TProperties> = {
+    type: TSchema['Type'];
+    name: TSchema['Name'];
+    data: TSchema['Data'];
+    children: TSchema['Children'] extends ElementSchemaAny[]
+        ? ConstructElementKind<TSchema['Children'][number], TProperties>[]
+        : undefined;
+} & TProperties;
+
+export type JsxElement<
+    TSchema extends ElementSchemaAny,
+    TTagName extends string = string,
+> = ConstructElementKind<
+    TSchema,
+    {
+        hash: string;
+        tagName: TTagName;
+        slug: string | undefined;
+        uniqueId: string | undefined;
+        /* Snipped data? */
+    }
+>;
+
+export type ParsedElement<TSchema extends ElementSchemaAny> =
+    ConstructElementKind<
+        TSchema,
+        {
+            uniqueId: string | undefined;
+            domId: string | undefined;
+        }
+    >;
+
+export type ResolvedElement<TSchema extends ElementSchemaAny> =
+    ConstructElementKind<
+        TSchema,
+        {
+            storageKey: string | undefined;
+            storageData: TSchema['Storage'] | undefined;
+            uid: string | undefined;
+        }
+    >;
+
+export function isBlockElement(element: any): boolean {
+    return element && element?.type === 'block';
 }
 
-export type ProseElement<
-    TType extends ProseElementType,
-    TName extends string,
-    TData extends any = undefined,
-    TStorageData extends any = undefined,
-> = {
-    readonly type: TType;
-    readonly name: TName;
-    readonly data: TData;
-    readonly storageData?: TStorageData;
-    readonly [_children]: ProseElementAny[] | undefined;
-};
-
-export type ProseBlock<
-    TName extends string,
-    TData extends any = undefined,
-> = ProseElement<ProseElementType.Block, TName, TData>;
-
-export type ProseInliner<
-    TName extends string,
-    TData extends any = undefined,
-> = ProseElement<ProseElementType.Inliner, TName, TData>;
-
-export type ProseElementAny = ProseElement<ProseElementType, string, unknown>;
-export type ProseBlockAny = ProseBlock<string, unknown>;
-export type ProseInlinerAny = ProseInliner<string, unknown>;
-
-export function createProseElement<TElement extends ProseElementAny>(
-    element: TElement,
-): TElement {
-    return element;
-}
-
-export function isBlock(element: any): element is ProseBlockAny {
-    return element && element.type === ProseElementType.Block;
-}
-
-export function isInliner(element: any): element is ProseInlinerAny {
-    return element && element.type === ProseElementType.Inliner;
+export function isInlinerElement(element: any): boolean {
+    return element && element?.type === 'inliner';
 }

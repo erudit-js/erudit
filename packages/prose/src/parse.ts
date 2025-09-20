@@ -1,0 +1,109 @@
+import type { ProseContext } from './context';
+import { Blocks, type BlocksSchema } from './default/blocks';
+import { Inliners } from './default/inliners';
+import { isTextElement } from './default/text';
+import type { JsxElement, ParsedElement } from './element';
+import type { ElementSchemaAny } from './schema';
+import { slugify } from './slugify';
+
+export interface ParsedJsxContent {
+    parsedTree: ParsedElement<BlocksSchema>;
+    uniques: Record<string, ParsedElement<ElementSchemaAny>>;
+}
+
+export async function parseJsxContent(argObj: {
+    content: JsxElement<BlocksSchema>;
+    context: ProseContext;
+}): Promise<ParsedJsxContent> {
+    const { content, context } = argObj;
+    const ids = new Map<string, undefined>();
+    const uniques: Record<string, ParsedElement<ElementSchemaAny>> = {};
+
+    async function parseElement<TSchema extends ElementSchemaAny>(
+        jsxElement: JsxElement<TSchema>,
+    ): Promise<ParsedElement<TSchema>> {
+        await tryTitleToSlug(jsxElement, context);
+
+        let transformedChildren: ParsedElement<any>[] | undefined = undefined;
+        if (jsxElement.children) {
+            transformedChildren = [];
+            for (const child of jsxElement.children) {
+                if (child) {
+                    const transformedChild = await parseElement(child);
+                    transformedChildren.push(transformedChild);
+                }
+            }
+        }
+
+        const parsedElement: ParsedElement<TSchema> = {
+            uniqueId: jsxElement.uniqueId,
+            domId: createDomId(ids, jsxElement),
+            type: jsxElement.type,
+            name: jsxElement.name,
+            data: jsxElement.data,
+            children: transformedChildren as any,
+        };
+
+        if (jsxElement.uniqueId) {
+            uniques[jsxElement.uniqueId] = parsedElement;
+        }
+
+        return parsedElement;
+    }
+
+    return {
+        parsedTree: await parseElement(content),
+        uniques,
+        // Searches
+        // etc...
+    };
+}
+
+/**
+ * If JSX element has a `data.title` field (headings, accent blocks, problems, etc), use it to create
+ * a slug that allows to understand the content of the element from its URL. This is useful for SEO and accessibility.
+ */
+async function tryTitleToSlug(
+    jsxElement: JsxElement<ElementSchemaAny>,
+    context: ProseContext,
+) {
+    if (jsxElement.data?.title) {
+        jsxElement.slug ||= await slugify(
+            jsxElement.data.title,
+            context.language,
+        );
+    }
+}
+
+/**
+ * Creates a document-level unique identifier for JSX element using slug if possible.
+ */
+function createDomId(
+    ids: Map<string, undefined>,
+    jsxElement: JsxElement<ElementSchemaAny>,
+): string | undefined {
+    if (isTextElement(jsxElement)) {
+        return undefined;
+    }
+
+    const ignoreTags = [Blocks, Inliners]; // TODO: allow elements to define for themselves if they want to be ignored
+
+    for (const tag of ignoreTags) {
+        if (tag.isTagElement(jsxElement)) {
+            return undefined;
+        }
+    }
+
+    let baseId = jsxElement.slug ?? jsxElement.name + '-' + jsxElement.hash;
+    let dedupe = 0;
+    let domId = baseId;
+
+    while (ids.has(domId)) {
+        dedupe++;
+        domId = `${baseId}-${dedupe}`;
+    }
+
+    ids.set(domId, undefined);
+
+    return domId;
+}

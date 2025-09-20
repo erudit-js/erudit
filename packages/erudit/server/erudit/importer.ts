@@ -3,6 +3,10 @@ import { createJiti, type Jiti } from 'jiti';
 import { defineContributor } from '@erudit/module/globals/contributor';
 import { defineSponsor } from '@erudit/module/globals/sponsor';
 import { defineBook } from '@erudit/module/globals/book';
+import { defineTopic } from '@erudit/module/globals/topic';
+import { definePage } from '@erudit/module/globals/page';
+import { defineGroup } from '@erudit/module/globals/group';
+import { createProseDocument } from '@erudit/module/globals/prose';
 
 export type EruditServerImporter = Jiti['import'];
 
@@ -14,7 +18,7 @@ export async function setupServerImporter() {
         moduleCache: false,
         jsx: {
             runtime: 'automatic',
-            importSource: 'jsprose/dsl',
+            importSource: '@erudit-js/prose',
         },
     });
 
@@ -24,6 +28,10 @@ export async function setupServerImporter() {
         defineContributor,
         defineSponsor,
         defineBook,
+        defineTopic,
+        definePage,
+        defineGroup,
+        createProseDocument,
     });
 
     ERUDIT.log.success('Importer setup complete!');
