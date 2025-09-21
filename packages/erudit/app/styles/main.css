@@ -78,6 +78,10 @@
     strong {
         color: var(--color-text-deep);
     }
+
+    [my-icon] {
+        width: calc(1em + 1px);
+    }
 }
 
 @custom-variant hocus (&:hover, &:focus);

@@ -1,7 +1,6 @@
 import type { ProseContext } from './context';
-import { Blocks, type BlocksSchema } from './default/blocks';
-import { Inliners } from './default/inliners';
-import { isTextElement } from './default/text';
+import { type BlocksSchema } from './default/blocks';
+import { headingName } from './default/heading';
 import type { JsxElement, ParsedElement } from './element';
 import type { ElementSchemaAny } from './schema';
 import { slugify } from './slugify';
@@ -9,6 +8,7 @@ import { slugify } from './slugify';
 export interface ParsedJsxContent {
     parsedTree: ParsedElement<BlocksSchema>;
     uniques: Record<string, ParsedElement<ElementSchemaAny>>;
+    snippets: JsxElement<ElementSchemaAny>[];
 }
 
 export async function parseJsxContent(argObj: {
@@ -18,6 +18,7 @@ export async function parseJsxContent(argObj: {
     const { content, context } = argObj;
     const ids = new Map<string, undefined>();
     const uniques: Record<string, ParsedElement<ElementSchemaAny>> = {};
+    const snippets: JsxElement<ElementSchemaAny>[] = [];
 
     async function parseElement<TSchema extends ElementSchemaAny>(
         jsxElement: JsxElement<TSchema>,
@@ -44,8 +45,20 @@ export async function parseJsxContent(argObj: {
             children: transformedChildren as any,
         };
 
+        if (!parsedElement.uniqueId) {
+            delete parsedElement.uniqueId;
+        }
+
+        if (!parsedElement.domId) {
+            delete parsedElement.domId;
+        }
+
         if (jsxElement.uniqueId) {
             uniques[jsxElement.uniqueId] = parsedElement;
+        }
+
+        if (jsxElement.snippet) {
+            snippets.push(jsxElement);
         }
 
         return parsedElement;
@@ -54,8 +67,7 @@ export async function parseJsxContent(argObj: {
     return {
         parsedTree: await parseElement(content),
         uniques,
-        // Searches
-        // etc...
+        snippets,
     };
 }
 
@@ -82,16 +94,8 @@ function createDomId(
     ids: Map<string, undefined>,
     jsxElement: JsxElement<ElementSchemaAny>,
 ): string | undefined {
-    if (isTextElement(jsxElement)) {
+    if (!jsxElement.linkable) {
         return undefined;
-    }
-
-    const ignoreTags = [Blocks, Inliners]; // TODO: allow elements to define for themselves if they want to be ignored
-
-    for (const tag of ignoreTags) {
-        if (tag.isTagElement(jsxElement)) {
-            return undefined;
-        }
     }
 
     let baseId = jsxElement.slug ?? jsxElement.name + '-' + jsxElement.hash;

@@ -1,27 +1,25 @@
 import { isBlockElement, type JsxElement } from '../../element';
 import { ProseError } from '../../error';
-import { PropsMode } from '../../props';
 import type { ElementSchema, InlinerSchemaAny } from '../../schema';
 import { defineTag } from '../../tag';
 import { ElementType } from '../../type';
 
 export const paragraphName = 'paragraph';
 
-export type ParagraphSchema = ElementSchema<
-    ElementType.Block,
-    typeof paragraphName,
-    undefined,
-    undefined,
-    InlinerSchemaAny[]
->;
+export type ParagraphSchema = ElementSchema<{
+    Type: ElementType.Block;
+    Name: typeof paragraphName;
+    Linkable: true;
+    Data: undefined;
+    Storage: undefined;
+    Children: InlinerSchemaAny[];
+}>;
 
-export const Paragraph = defineTag(
-    'p',
-    PropsMode.Default,
-)<ParagraphSchema, never>({
+export const Paragraph = defineTag('p')<ParagraphSchema>({
     type: ElementType.Block,
     name: paragraphName,
-    dataChildren({ tagName, children }) {
+    linkable: true,
+    fillElement({ tagName, children }) {
         if (!children) {
             throw new ProseError(
                 `<${tagName}> requires at least one child element!`,

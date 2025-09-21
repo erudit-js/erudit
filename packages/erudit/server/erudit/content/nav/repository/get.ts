@@ -1,15 +1,23 @@
 import type { ContentNavNode } from '../types';
 
-export function getNode(fullOrShortId: string): ContentNavNode | undefined {
-    const fullNode = ERUDIT.contentNav.id2Node.get(fullOrShortId);
+export function getNode(fullOrShortId: string): ContentNavNode {
+    let foundNode: ContentNavNode | undefined =
+        ERUDIT.contentNav.id2Node.get(fullOrShortId);
 
-    if (fullNode) {
-        return fullNode;
+    if (foundNode) {
+        return foundNode;
     }
 
     const fullId = ERUDIT.contentNav.short2Full.get(fullOrShortId);
-
     if (fullId) {
-        return ERUDIT.contentNav.id2Node.get(fullId);
+        foundNode = ERUDIT.contentNav.id2Node.get(fullId);
+        if (foundNode) {
+            return foundNode;
+        }
     }
+
+    throw createError({
+        statusCode: 404,
+        statusMessage: `Content nav node not found: "${fullOrShortId}"!`,
+    });
 }

@@ -1,41 +1,28 @@
 import type { RawChildren } from './children';
 import type { ElementSchemaAny } from './schema';
-import type { ElementTag, ElementTagAny } from './tag';
+import type { JsxPropsSnippet } from './snippet';
+import type { ElementTagAny } from './tag';
 import type { ElementUnique } from './unique';
 
-export type JsxSnippet = {
-    title?: string;
-    description?: string;
-    quick?: true;
-    search?: true | { synonyms?: string[] };
+export type JsxUniversalProps = {
+    children?: RawChildren;
 };
 
-export interface JsxGlobalProps<TTag extends ElementTagAny> {
-    children?: RawChildren;
-    /**
-     * Mark this element as important and unique:
+export type JsxLinkableProps<TTag extends ElementTagAny> = {
+    /** Mark this element as important and unique:
      * - Easy reuse
      * - Reference in links
      * - Nice readable ID
      */
     $?: ElementUnique<TTag>;
     /** Short element information used in search and quick links. */
-    $snippet?: JsxSnippet;
-}
+    $snippet?: JsxPropsSnippet;
+};
 
-export enum PropsMode {
-    Default,
-    Mixed,
-    Custom,
-}
-
-export type ModeProps<
+export type JsxTagProps<
     TSchema extends ElementSchemaAny,
-    TTagName extends string,
-    TMode extends PropsMode,
-    TCustomProps extends Record<string, any>,
-> = TMode extends PropsMode.Default
-    ? JsxGlobalProps<ElementTag<TSchema, TTagName, any>>
-    : TMode extends PropsMode.Mixed
-      ? JsxGlobalProps<ElementTag<TSchema, TTagName, any>> & TCustomProps
-      : TCustomProps;
+    TTag extends ElementTagAny,
+> = JsxUniversalProps &
+    (TSchema['Linkable'] extends true ? JsxLinkableProps<TTag> : {});
+
+export type JsxAllProps = JsxUniversalProps & JsxLinkableProps<ElementTagAny>;

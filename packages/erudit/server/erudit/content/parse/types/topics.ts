@@ -1,4 +1,3 @@
-import chalk from 'chalk';
 import {
     ContentConfigTopic,
     ContentType,
@@ -12,6 +11,8 @@ import {
 
 import { ContentParser } from '..';
 import type { ContentNavNode } from '../../nav/types';
+import { documentUrlMismatch, wrapError } from '../utils/error';
+import { insertUniques } from '../utils/element';
 
 export const topicsParser: ContentParser = async () => {
     return {
@@ -40,13 +41,9 @@ export const topicsParser: ContentParser = async () => {
                     }
 
                     if (proseDocument.url !== proseDocumentPath) {
-                        throw (
-                            `Document url mismatch for ${topicPart} in ${ERUDIT.log.stress(navNode.contentRelPath)}:\n` +
-                            `Expected: ${proseDocumentPath}\n` +
-                            `Actual: ${proseDocument.url}\n` +
-                            chalk.yellow(
-                                'Make sure you use "meta.import.url" for "url" property in your JSX documents!',
-                            )
+                        throw documentUrlMismatch(
+                            proseDocument.url,
+                            proseDocumentPath,
                         );
                     }
 
@@ -62,7 +59,10 @@ export const topicsParser: ContentParser = async () => {
                         }),
                     );
                 } catch (error) {
-                    throw `Failed to import/parse topic ${topicPart} from : ${error}`;
+                    throw wrapError(
+                        error,
+                        `Failed to import/parse ${topicPart}!`,
+                    );
                 }
             }
 
@@ -73,6 +73,14 @@ export const topicsParser: ContentParser = async () => {
                     )} has no article, no summary and no practice!`,
                 );
                 return;
+            }
+
+            for (const [part, parsed] of parsedParts) {
+                await insertUniques(
+                    navNode.fullId,
+                    part,
+                    Object.values(parsed.uniques),
+                );
             }
 
             let topicModule: ContentConfigTopic | undefined;
@@ -86,7 +94,7 @@ export const topicsParser: ContentParser = async () => {
                     { default: true, try: true },
                 );
             } catch (error) {
-                throw 'Error importing topic module for: ' + error;
+                throw wrapError(error, 'Error importing topic module!');
             }
 
             if (!topicModule) {
@@ -113,7 +121,7 @@ export const topicsParser: ContentParser = async () => {
                     description: topicModule?.description,
                 });
             } catch (error) {
-                throw 'Error inserting topic content for: ' + error;
+                throw wrapError(error, 'Error inserting topic content!');
             }
         },
     };

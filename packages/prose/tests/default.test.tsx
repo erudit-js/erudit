@@ -21,13 +21,15 @@ const myDoc = createProseDocument({
     ),
 });
 
-console.log(
-    JSON.stringify(
-        await parseJsxContent({
-            content: myDoc.content,
-            context: { language: 'ru' },
-        }),
-        null,
-        2,
-    ),
-);
+//console.log(JSON.stringify(myDoc.content, null, 2));
+
+// console.log(
+//     JSON.stringify(
+//         await parseJsxContent({
+//             content: myDoc.content,
+//             context: { language: 'ru' },
+//         }),
+//         null,
+//         2,
+//     ),
+// );

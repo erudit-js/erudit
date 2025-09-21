@@ -1,28 +1,29 @@
 import type { RawChildren } from '../children';
 import { isBlockElement, type JsxElement } from '../element';
 import { ProseError } from '../error';
-import { PropsMode } from '../props';
-import type { ElementSchema } from '../schema';
+import type { ElementSchema, InlinerSchemaAny } from '../schema';
 import { defineTag } from '../tag';
 import { ElementType } from '../type';
 
 export const inlinersName = 'inliners';
 
-export type InlinersSchema = ElementSchema<
-    ElementType.Inliner,
-    typeof inlinersName,
-    undefined,
-    undefined,
-    InlinersSchema[]
->;
+export type InlinersSchema = ElementSchema<{
+    Type: ElementType.Inliner;
+    Name: typeof inlinersName;
+    Linkable: false;
+    Data: undefined;
+    Storage: undefined;
+    Children: InlinerSchemaAny[];
+}>;
 
-export const Inliners = defineTag(
-    inlinersName,
-    PropsMode.Custom,
-)<InlinersSchema, { children: RawChildren }>({
+export const Inliners = defineTag(inlinersName)<
+    InlinersSchema,
+    { children: RawChildren }
+>({
     type: ElementType.Inliner,
     name: inlinersName,
-    dataChildren({ tagName, children }) {
+    linkable: false,
+    fillElement({ tagName, children }) {
         if (!children) {
             throw new ProseError(
                 `<${tagName}> requires at least one child element!`,
@@ -31,7 +32,7 @@ export const Inliners = defineTag(
 
         return {
             data: undefined,
-            children: children as JsxElement<InlinersSchema>[],
+            children: children as JsxElement<InlinerSchemaAny>[],
         };
     },
     childStep({ tagName, child }) {

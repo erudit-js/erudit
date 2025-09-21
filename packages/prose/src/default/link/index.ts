@@ -1,6 +1,5 @@
 import type { Document } from '../../document';
 import { ProseError } from '../../error';
-import { PropsMode } from '../../props';
 import type { ElementSchema } from '../../schema';
 import { defineTag } from '../../tag';
 import { ElementType } from '../../type';
@@ -15,26 +14,26 @@ export enum LinkType {
 
 export const linkName = 'link';
 
-export type LinkSchema = ElementSchema<
-    ElementType.Inliner,
-    typeof linkName,
-    | { type: LinkType.Unknown; href: string }
-    | { type: LinkType.Unique; targetUniqueId: string }
-    | { type: LinkType.Document; targetDocumentUrl: string },
-    { resolvedHref: string },
-    undefined
->;
+export type LinkSchema = ElementSchema<{
+    Type: ElementType.Inliner;
+    Name: typeof linkName;
+    Linkable: false;
+    Data:
+        | { type: LinkType.Unknown; href: string }
+        | { type: LinkType.Unique; targetUniqueId: string }
+        | { type: LinkType.Document; targetDocumentUrl: string };
+    Storage: { resolvedHref: string };
+    Children: undefined;
+}>;
 
-export const Link = defineTag(
-    'a',
-    PropsMode.Custom,
-)<
+export const Link = defineTag('a')<
     LinkSchema,
     { to: ElementUniqueAny | Document<any> | string; children: string }
 >({
     type: ElementType.Inliner,
     name: linkName,
-    dataChildren({ tagName, children, props: { to } }) {
+    linkable: false,
+    fillElement({ tagName, children, props: { to } }) {
         if (!children) {
             throw new ProseError(
                 `<${tagName}> requires exactly one child element!`,

@@ -1,5 +1,4 @@
 import { ProseError } from '../../error';
-import { PropsMode } from '../../props';
 import type { ElementSchema } from '../../schema';
 import { defineTag } from '../../tag';
 import { ElementType } from '../../type';
@@ -7,26 +6,25 @@ import { isTextElement } from '../text';
 
 export const headingName = 'heading';
 
-export type HeadingSchema = ElementSchema<
-    ElementType.Block,
-    typeof headingName,
-    { level: 1 | 2 | 3; title: string },
-    undefined,
-    undefined
->;
+export type HeadingSchema = ElementSchema<{
+    Type: ElementType.Block;
+    Name: typeof headingName;
+    Linkable: true;
+    Data: { level: 1 | 2 | 3; title: string };
+    Storage: undefined;
+    Children: undefined;
+}>;
 
 export const H1 = createHeadingTag('h1', 1);
 export const H2 = createHeadingTag('h2', 2);
 export const H3 = createHeadingTag('h3', 3);
 
 function createHeadingTag(tagName: string, level: 1 | 2 | 3) {
-    return defineTag(
-        tagName,
-        PropsMode.Mixed,
-    )<HeadingSchema, { children: string }>({
+    return defineTag(tagName)<HeadingSchema, { children: string }>({
         type: ElementType.Block,
         name: headingName,
-        dataChildren({ tagName, children }) {
+        linkable: true,
+        fillElement({ tagName, children }) {
             if (!children) {
                 throw new ProseError(
                     `<${tagName}> requires exactly one text child element!`,

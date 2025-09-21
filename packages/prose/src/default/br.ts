@@ -1,26 +1,24 @@
 import { ProseError } from '../error';
-import { PropsMode } from '../props';
 import type { ElementSchema } from '../schema';
 import { defineTag } from '../tag';
 import { ElementType } from '../type';
 
 export const brName = 'br';
 
-export type BrSchema = ElementSchema<
-    ElementType.Inliner,
-    typeof brName,
-    undefined,
-    undefined,
-    undefined
->;
+export type BrSchema = ElementSchema<{
+    Type: ElementType.Inliner;
+    Name: typeof brName;
+    Linkable: false;
+    Data: undefined;
+    Storage: undefined;
+    Children: undefined;
+}>;
 
-export const Br = defineTag(
-    brName,
-    PropsMode.Custom,
-)<BrSchema, { children?: undefined }>({
+export const Br = defineTag(brName)<BrSchema, { children?: undefined }>({
     type: ElementType.Inliner,
     name: brName,
-    dataChildren() {
+    linkable: false,
+    fillElement() {
         return {
             data: undefined,
             children: undefined,

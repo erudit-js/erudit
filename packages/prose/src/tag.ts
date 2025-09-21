@@ -2,8 +2,9 @@ import { normalizeChildren, type NormalizedChildren } from './children';
 import type { JsxElement } from './element';
 import { ProseError } from './error';
 import { hash } from './hash';
-import { PropsMode, type JsxGlobalProps, type ModeProps } from './props';
+import { type JsxAllProps, type JsxTagProps } from './props';
 import type { ElementSchemaAny } from './schema';
+import type { JsxElementSnippet } from './snippet';
 import { ElementType } from './type';
 
 export const ElementTagSymbol = Symbol('ElementTag');
@@ -24,24 +25,24 @@ export function isTag(tag: any): tag is ElementTagAny {
     return tag && ElementTagSymbol in tag;
 }
 
-export function defineTag<
-    TTagName extends string,
-    TPropsMode extends PropsMode,
->(tagName: TTagName, _mode: TPropsMode) {
+export function defineTag<TTagName extends string>(tagName: TTagName) {
+    type TagSelf<TSchema extends ElementSchemaAny> = ElementTag<
+        TSchema,
+        TTagName,
+        any
+    >;
+
     function finalizeTag<
         TSchema extends ElementSchemaAny,
-        TProps extends TPropsMode extends PropsMode.Default
-            ? never
-            : TPropsMode extends PropsMode.Mixed
-              ? Partial<JsxGlobalProps<any>> &
-                    Omit<Record<string, any>, keyof JsxGlobalProps<any>>
-              : Record<string, any>,
+        TProps extends JsxTagProps<TSchema, TagSelf<TSchema>> &
+            Record<string, any> = JsxTagProps<TSchema, TagSelf<TSchema>>,
     >(definition: {
         type: TSchema['Type'];
         name: TSchema['Name'];
-        dataChildren(args: {
+        linkable: TSchema['Linkable'];
+        fillElement(args: {
             tagName: TTagName;
-            props: ModeProps<TSchema, TTagName, TPropsMode, TProps>;
+            props: TProps;
             children: NormalizedChildren;
         }): {
             data: TSchema['Data'];
@@ -56,11 +57,13 @@ export function defineTag<
     }): ElementTag<
         TSchema,
         TTagName,
-        ModeProps<TSchema, TTagName, TPropsMode, TProps>
+        JsxTagProps<TSchema, TagSelf<TSchema>> & TProps
     > {
         const tag = (
-            props: ModeProps<TSchema, TTagName, TPropsMode, TProps>,
+            props: JsxTagProps<TSchema, TagSelf<TSchema>> & TProps,
         ) => {
+            const allProps = props as JsxAllProps;
+
             const normalizedChildren = normalizeChildren(props, (child) => {
                 if (
                     definition.type === ElementType.Inliner &&
@@ -74,26 +77,35 @@ export function defineTag<
                 definition.childStep?.({ tagName, child });
             });
 
-            const { data, children } = definition.dataChildren({
+            const { data, children } = definition.fillElement({
                 tagName,
                 props,
                 children: normalizedChildren,
             });
 
-            const element: JsxElement<TSchema, TTagName> = {
+            const element = (<JsxElement<TSchema, TTagName>>{
                 type: definition.type,
                 name: definition.name,
                 tagName,
                 hash: hashElement(data, children),
-                uniqueId: undefined,
-                slug: props.$?.slug,
+                slug: allProps.$?.slug,
                 data,
                 children: children as any,
-            };
+            }) as JsxElement<TSchema, TTagName>;
 
-            if (props.$) {
-                element.uniqueId = props.$.id;
-                props.$.element = element;
+            if (definition.linkable) {
+                element.linkable = true;
+            }
+
+            const snippet = tryCreateSnippet(allProps, element);
+            if (snippet) {
+                element.snippet = snippet;
+            }
+
+            if (allProps.$) {
+                element.uniqueId = allProps.$.id;
+                // @ts-expect-error Bypass readonly
+                allProps.$.element = element;
             }
 
             return element;
@@ -124,4 +136,40 @@ function hashElement(data: any, children: JsxElement<any>[] | undefined) {
         : '<no-children>';
 
     return hash(strData + childrenHashes, 12);
+}
+
+function tryCreateSnippet(
+    props: JsxAllProps,
+    element: JsxElement<ElementSchemaAny>,
+): JsxElementSnippet | undefined {
+    if (!props.$snippet) {
+        return undefined;
+    }
+
+    if (!props.$snippet.quick && !props.$snippet.search) {
+        throw new ProseError(
+            `Unable to create unused snippet for <${element.tagName}>: "quick" or "search" must be true!`,
+        );
+    }
+
+    let rawTitle = props.$snippet?.title || element.data?.title;
+
+    if (!rawTitle) {
+        throw new ProseError(
+            `Unable to get snipped title for <${element.tagName}>!`,
+        );
+    }
+
+    const title = String(rawTitle);
+
+    return {
+        title,
+        description: props.$snippet?.description || element.data?.description,
+        quick: Boolean(props.$snippet?.quick),
+        search: Boolean(props.$snippet?.search),
+        synonyms:
+            typeof props.$snippet?.search === 'object'
+                ? props.$snippet?.search.synonyms
+                : undefined,
+    };
 }

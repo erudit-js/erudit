@@ -2,6 +2,7 @@ import { ContentConfigBook, ContentType } from '@erudit-js/cog/schema';
 
 import { ContentParser } from '..';
 import type { ContentNavNode } from '../../nav/types';
+import { wrapError } from '../utils/error';
 
 export const booksParser: ContentParser = async () => {
     return {
@@ -17,7 +18,7 @@ export const booksParser: ContentParser = async () => {
                     { default: true, try: true },
                 );
             } catch (error) {
-                throw 'Error importing book module: ' + error;
+                throw wrapError(error, 'Error importing book module!');
             }
 
             try {
@@ -30,7 +31,7 @@ export const booksParser: ContentParser = async () => {
                     description: bookModule?.description,
                 });
             } catch (error) {
-                throw 'Error inserting book content: ' + error;
+                throw wrapError(error, 'Error inserting book content!');
             }
         },
     };

@@ -1,3 +1,5 @@
+import { getContentLink } from './content/repository/contentLink';
+import { getTopicParts } from './content/repository/topicParts';
 import { countContributors } from './contributors/repository/count';
 import { countSponsors } from './sponsors/repository/count';
 
@@ -7,6 +9,10 @@ export const repository = {
     },
     sponsors: {
         count: countSponsors,
+    },
+    content: {
+        topicParts: getTopicParts,
+        link: getContentLink,
     },
 } as const;
 

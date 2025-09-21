@@ -1,6 +1,8 @@
 import { ContentConfigGroup, ContentType } from '@erudit-js/cog/schema';
+
 import { ContentParser } from '..';
 import type { ContentNavNode } from '../../nav/types';
+import { wrapError } from '../utils/error';
 
 export const groupsParser: ContentParser = async () => {
     return {
@@ -16,7 +18,7 @@ export const groupsParser: ContentParser = async () => {
                     { default: true, try: true },
                 );
             } catch (error) {
-                throw 'Error importing group module for: ' + error;
+                throw wrapError(error, 'Error importing group module!');
             }
 
             try {
@@ -34,7 +36,7 @@ export const groupsParser: ContentParser = async () => {
                     separator: groupModule?.type === 'separator',
                 });
             } catch (error) {
-                throw 'Error inserting group content: ' + error;
+                throw wrapError(error, 'Error inserting group content!');
             }
         },
     };

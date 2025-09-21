@@ -1,5 +1,3 @@
-import { SearchEntryCategory } from '#layers/erudit/shared/types/search';
-
 export const searchCategoryContributors: SearchEntryCategory = {
     id: 'contributors',
     priority: 100,

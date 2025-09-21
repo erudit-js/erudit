@@ -4,3 +4,4 @@ export { topics } from './topics';
 export { uniques } from './uniques';
 export { pages } from './pages';
 export { groups } from './groups';
+export { snippets } from './snippets';

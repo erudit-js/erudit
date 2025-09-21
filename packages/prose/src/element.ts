@@ -1,4 +1,9 @@
-import type { ElementSchemaAny } from './schema';
+import type {
+    BlockSchemaAny,
+    ElementSchemaAny,
+    InlinerSchemaAny,
+} from './schema';
+import type { JsxElementSnippet } from './snippet';
 
 type ConstructElementKind<TSchema extends ElementSchemaAny, TProperties> = {
     type: TSchema['Type'];
@@ -18,8 +23,9 @@ export type JsxElement<
         hash: string;
         tagName: TTagName;
         slug: string | undefined;
+        linkable: true | undefined;
         uniqueId: string | undefined;
-        /* Snipped data? */
+        snippet: JsxElementSnippet | undefined;
     }
 >;
 
@@ -42,10 +48,14 @@ export type ResolvedElement<TSchema extends ElementSchemaAny> =
         }
     >;
 
-export function isBlockElement(element: any): boolean {
+export function isBlockElement(
+    element: any,
+): element is JsxElement<BlockSchemaAny> {
     return element && element?.type === 'block';
 }
 
-export function isInlinerElement(element: any): boolean {
+export function isInlinerElement(
+    element: any,
+): element is JsxElement<InlinerSchemaAny> {
     return element && element?.type === 'inliner';
 }

@@ -4,6 +4,8 @@ import { DocumentAny, parseJsxContent } from '@erudit-js/prose';
 
 import { ContentParser } from '..';
 import type { ContentNavNode } from '../../nav/types';
+import { documentUrlMismatch, wrapError } from '../utils/error';
+import { insertUniques } from '../utils/element';
 
 export const pagesParser: ContentParser = async () => {
     return {
@@ -22,8 +24,8 @@ export const pagesParser: ContentParser = async () => {
                 pageModule = await ERUDIT.import(pageModulePath, {
                     try: true,
                 });
-            } catch (err) {
-                throw `Failed to import page module: ${err}`;
+            } catch (error) {
+                throw wrapError(error, `Failed to import page module!`);
             }
 
             if (!pageModule) {
@@ -35,13 +37,9 @@ export const pagesParser: ContentParser = async () => {
             }
 
             if (pageModule.document.url !== pageModulePath) {
-                throw (
-                    `Document url mismatch for page in ${ERUDIT.log.stress(navNode.contentRelPath)}:\n` +
-                    `Expected: ${pageModulePath}\n` +
-                    `Actual: ${pageModule.document.url}\n` +
-                    chalk.yellow(
-                        'Make sure you use "meta.import.url" for "url" property in your JSX documents!',
-                    )
+                throw documentUrlMismatch(
+                    pageModule.document.url,
+                    pageModulePath,
                 );
             }
 
@@ -51,6 +49,12 @@ export const pagesParser: ContentParser = async () => {
                     language: ERUDIT.config.public.project.language.current,
                 },
             });
+
+            await insertUniques(
+                navNode.fullId,
+                undefined,
+                Object.values(parsedContent.uniques),
+            );
 
             try {
                 await ERUDIT.db.insert(ERUDIT.db.schema.pages).values({
@@ -68,7 +72,7 @@ export const pagesParser: ContentParser = async () => {
                     description: pageModule.default?.description,
                 });
             } catch (error) {
-                throw 'Error inserting page content for: ' + error;
+                throw wrapError(error, 'Error inserting page content!');
             }
         },
     };

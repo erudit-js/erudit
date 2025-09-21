@@ -3,9 +3,13 @@ import { Document, Encoder } from 'flexsearch';
 
 import { encoderAugments } from '@erudit/shared/search/encoders';
 import { searchIndexContributors } from '@erudit/server/contributors/search';
+import { searchIndexContentTypes } from '@erudit/server/content/search';
 
 export default defineEventHandler(async () => {
-    const entryLists: SearchEntriesList[] = [await searchIndexContributors()];
+    const entryLists: SearchEntriesList[] = [
+        await searchIndexContributors(),
+        ...(await searchIndexContentTypes()),
+    ];
 
     const documentDescriptor = {
         id: 'id',

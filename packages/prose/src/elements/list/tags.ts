@@ -1,7 +1,6 @@
+import type { RawChildren } from 'src/children';
 import type { JsxElement } from '../../element';
-import type { RawChildren } from '../../children';
 import { ProseError } from '../../error';
-import { PropsMode } from '../../props';
 import type { ElementSchemaAny } from '../../schema';
 import { defineTag } from '../../tag';
 import { ElementType } from '../../type';
@@ -16,13 +15,11 @@ import {
 // List Item
 //
 
-export const Li = defineTag(
-    'Li',
-    PropsMode.Custom,
-)<ListItemSchema, { children: RawChildren }>({
+export const Li = defineTag('Li')<ListItemSchema, { children: RawChildren }>({
     type: ElementType.Block,
     name: listItemName,
-    dataChildren({ children, tagName }) {
+    linkable: false,
+    fillElement({ children, tagName }) {
         if (!children || children.length === 0) {
             throw new ProseError(
                 `<${tagName}> requires at least one child element!`,
@@ -46,13 +43,11 @@ export const Li = defineTag(
 // List
 //
 
-export const Ol = defineTag(
-    'Ol',
-    PropsMode.Mixed,
-)<ListSchema, { start?: number }>({
+export const Ol = defineTag('Ol')<ListSchema, { start?: number }>({
     type: ElementType.Block,
     name: listName,
-    dataChildren({ children, tagName, props }) {
+    linkable: true,
+    fillElement({ children, tagName, props }) {
         if (!children) {
             throw new ProseError(
                 `<${tagName}> requires at least one <Li> child element!`,
@@ -81,13 +76,11 @@ export const Ol = defineTag(
     childStep: validateLi,
 });
 
-export const Ul = defineTag(
-    'Ul',
-    PropsMode.Default,
-)<ListSchema, never>({
+export const Ul = defineTag('Ul')<ListSchema>({
     type: ElementType.Block,
     name: listName,
-    dataChildren({ children, tagName }) {
+    linkable: true,
+    fillElement({ children, tagName }) {
         if (!children) {
             throw new ProseError(
                 `<${tagName}> requires at least one <Li> child element!`,

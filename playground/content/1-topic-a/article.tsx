@@ -7,9 +7,12 @@ export default createProseDocument({
     content: ({ uniques }) => (
         <blocks>
             <h1>Название моей замечательной статьи!</h1>
+            {/*
+             *Это комментарий внутри статьи!
+             */}
             <p $={uniques.myP}>Lol1 Fun boy</p>
             <Ul $={uniques.myOl}>
-                <Li>Fobar</Li>
+                <Li>sdf</Li>
             </Ul>
         </blocks>
     ),

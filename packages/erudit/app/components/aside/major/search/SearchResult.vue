@@ -7,6 +7,14 @@ const icon: MaybeMyIconName = (() => {
     switch (result.category) {
         case 'contributors':
             return 'user';
+        case 'book':
+            return 'book-outline';
+        case 'page':
+            return 'lines';
+        case 'topic':
+            return 'lines-array';
+        case 'group':
+            return 'folder-open';
         default:
             return '__missing';
     }
@@ -29,7 +37,7 @@ const icon: MaybeMyIconName = (() => {
                 <div>
                     <div
                         v-if="result.description"
-                        class="text-text-dimmed pt-small"
+                        class="text-text-dimmed pt-small text-xs"
                     >
                         {{ result.description }}
                     </div>
@@ -46,8 +54,9 @@ const icon: MaybeMyIconName = (() => {
                     </div>
                     <div
                         v-if="result.location"
-                        class="text-text-dimmed pt-small text-xs italic"
+                        class="text-text-dimmed pt-small gap-small flex items-center text-xs italic"
                     >
+                        <MyIcon name="arrow/up-to-right" />
                         {{ result.location }}
                     </div>
                 </div>

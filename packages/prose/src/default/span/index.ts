@@ -1,27 +1,25 @@
 import { isBlockElement, type JsxElement } from '../../element';
 import { ProseError } from '../../error';
-import { PropsMode } from '../../props';
 import type { ElementSchema, InlinerSchemaAny } from '../../schema';
 import { defineTag } from '../../tag';
 import { ElementType } from '../../type';
 
 export const spanName = 'span';
 
-export type SpanSchema = ElementSchema<
-    ElementType.Inliner,
-    typeof spanName,
-    undefined,
-    undefined,
-    InlinerSchemaAny[]
->;
+export type SpanSchema = ElementSchema<{
+    Type: ElementType.Inliner;
+    Name: typeof spanName;
+    Linkable: true;
+    Data: undefined;
+    Storage: undefined;
+    Children: InlinerSchemaAny[];
+}>;
 
-export const Span = defineTag(
-    spanName,
-    PropsMode.Default,
-)<SpanSchema, never>({
+export const Span = defineTag(spanName)<SpanSchema>({
     type: ElementType.Inliner,
     name: spanName,
-    dataChildren({ tagName, children }) {
+    linkable: true,
+    fillElement({ tagName, children }) {
         if (!children) {
             throw new ProseError(
                 `<${tagName}> requires at least one child element!`,
