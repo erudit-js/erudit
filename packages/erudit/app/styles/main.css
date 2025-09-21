@@ -80,6 +80,7 @@
     }
 
     [my-icon] {
+        height: calc(1em + 1px);
         width: calc(1em + 1px);
     }
 }
@@ -102,12 +103,15 @@
 
     &::-webkit-scrollbar {
         -webkit-appearance: none;
-        height: 5px;
-        width: 5px;
+        height: 7px;
+        width: 7px;
     }
 
     &::-webkit-scrollbar-thumb {
         background: var(--color-scrollbar);
+        border-radius: 15px;
+        border: 1.5px solid transparent;
+        background-clip: content-box;
         &:hover {
             background: color-mix(
                 in srgb,

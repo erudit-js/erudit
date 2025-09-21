@@ -1,4 +1,3 @@
-import type { RawChildren } from '../children';
 import { isInlinerElement, type JsxElement } from '../element';
 import { ProseError } from '../error';
 import type { BlockSchemaAny, ElementSchema } from '../schema';
@@ -20,17 +19,14 @@ export const Blocks = defineTag(blocksName)<BlocksSchema>({
     type: ElementType.Block,
     name: blocksName,
     linkable: false,
-    fillElement({ tagName, children }) {
+    initElement({ tagName, element, children }) {
         if (!children) {
             throw new ProseError(
                 `<${tagName}> requires at least one child element!`,
             );
         }
 
-        return {
-            data: undefined,
-            children: children as JsxElement<BlockSchemaAny>[],
-        };
+        element.children = children as JsxElement<BlockSchemaAny>[];
     },
     childStep({ tagName, child }) {
         if (isInlinerElement(child)) {

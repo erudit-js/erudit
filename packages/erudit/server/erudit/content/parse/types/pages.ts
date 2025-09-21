@@ -1,11 +1,10 @@
-import chalk from 'chalk';
 import { ContentConfigPage, ContentType } from '@erudit-js/cog/schema';
 import { DocumentAny, parseJsxContent } from '@erudit-js/prose';
 
 import { ContentParser } from '..';
 import type { ContentNavNode } from '../../nav/types';
 import { documentUrlMismatch, wrapError } from '../utils/error';
-import { insertUniques } from '../utils/element';
+import { insertSnippets, insertUniques } from '../utils/element';
 
 export const pagesParser: ContentParser = async () => {
     return {
@@ -54,6 +53,12 @@ export const pagesParser: ContentParser = async () => {
                 navNode.fullId,
                 undefined,
                 Object.values(parsedContent.uniques),
+            );
+
+            await insertSnippets(
+                navNode.fullId,
+                undefined,
+                parsedContent.snippets,
             );
 
             try {

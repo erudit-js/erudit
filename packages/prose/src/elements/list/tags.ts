@@ -1,4 +1,4 @@
-import type { RawChildren } from 'src/children';
+import type { RawChildren } from '../../children';
 import type { JsxElement } from '../../element';
 import { ProseError } from '../../error';
 import type { ElementSchemaAny } from '../../schema';
@@ -19,7 +19,7 @@ export const Li = defineTag('Li')<ListItemSchema, { children: RawChildren }>({
     type: ElementType.Block,
     name: listItemName,
     linkable: false,
-    fillElement({ children, tagName }) {
+    initElement({ children, element, tagName }) {
         if (!children || children.length === 0) {
             throw new ProseError(
                 `<${tagName}> requires at least one child element!`,
@@ -35,7 +35,8 @@ export const Li = defineTag('Li')<ListItemSchema, { children: RawChildren }>({
             }
         }
 
-        return { data: firstChildType, children };
+        element.data = firstChildType;
+        element.children = children as JsxElement<ElementSchemaAny>[];
     },
 });
 
@@ -47,7 +48,7 @@ export const Ol = defineTag('Ol')<ListSchema, { start?: number }>({
     type: ElementType.Block,
     name: listName,
     linkable: true,
-    fillElement({ children, tagName, props }) {
+    initElement({ children, element, tagName, props }) {
         if (!children) {
             throw new ProseError(
                 `<${tagName}> requires at least one <Li> child element!`,
@@ -65,13 +66,12 @@ export const Ol = defineTag('Ol')<ListSchema, { start?: number }>({
             startValue = start;
         }
 
-        return {
-            data: {
-                type: 'ordered',
-                start: startValue,
-            },
-            children: children as JsxElement<ListItemSchema>[],
+        element.data = {
+            type: 'ordered',
+            start: startValue,
         };
+
+        element.children = children as JsxElement<ListItemSchema>[];
     },
     childStep: validateLi,
 });
@@ -80,17 +80,15 @@ export const Ul = defineTag('Ul')<ListSchema>({
     type: ElementType.Block,
     name: listName,
     linkable: true,
-    fillElement({ children, tagName }) {
+    initElement({ children, element, tagName }) {
         if (!children) {
             throw new ProseError(
                 `<${tagName}> requires at least one <Li> child element!`,
             );
         }
 
-        return {
-            data: { type: 'unordered' },
-            children: children as JsxElement<ListItemSchema>[],
-        };
+        element.data = { type: 'unordered' };
+        element.children = children as JsxElement<ListItemSchema>[];
     },
     childStep: validateLi,
 });

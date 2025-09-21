@@ -1,6 +1,7 @@
 import { writeFileSync } from 'node:fs';
+import { existsSync } from 'node:fs';
 import type { Nuxt } from '@nuxt/schema';
-import { addTemplate } from 'nuxt/kit';
+import { addTemplate, resolvePath } from 'nuxt/kit';
 import type { GlobalElementDefinition } from '@erudit-js/prose';
 
 import type { EruditRuntimeConfig } from '../../../shared/types/runtimeConfig';
@@ -126,6 +127,7 @@ export async function setupEruditElements(
 
     createGlobalTagTypes(runtimeConfig);
     createTagsTemplate(nuxt, runtimeConfig);
+    await createAppElementsTemplate(nuxt, runtimeConfig);
 
     moduleLogger.info(
         `Registered ${registeredElements} prose elements and ${registeredTags.size} tags${
@@ -189,6 +191,78 @@ function createTagsTemplate(nuxt: Nuxt, runtimeConfig: EruditRuntimeConfig) {
             const { imports, assignments } =
                 buildTagImportsAndAssignments(registeredTags);
             return `${imports}\n\n${assignments}\n\nexport {};`;
+        },
+    });
+
+    const alias = (nuxt.options.alias ||= {});
+    alias[templateBase] =
+        runtimeConfig.paths.build + `/nuxt/.nuxt/${templateBase}.ts`;
+}
+
+async function createAppElementsTemplate(
+    nuxt: Nuxt,
+    runtimeConfig: EruditRuntimeConfig,
+) {
+    const templateBase = '#erudit/prose/app-elements';
+
+    addTemplate({
+        filename: templateBase + '.ts',
+        write: true,
+        async getContents() {
+            const defaultImports = [
+                { name: 'link', path: '@erudit-js/prose/default/link/app' },
+                {
+                    name: 'paragraph',
+                    path: '@erudit-js/prose/default/paragraph/app',
+                },
+                {
+                    name: 'heading',
+                    path: '@erudit-js/prose/default/heading/app',
+                },
+                { name: 'span', path: '@erudit-js/prose/default/span/app' },
+            ];
+
+            let imports = defaultImports
+                .map((i) => `import ${i.name} from '${i.path}';`)
+                .join('\n');
+
+            const appElementVars = defaultImports.map((i) => i.name);
+
+            if (runtimeConfig.project.elements?.length) {
+                for (
+                    let idx = 0;
+                    idx < runtimeConfig.project.elements.length;
+                    idx++
+                ) {
+                    let elementPath = runtimeConfig.project.elements[idx];
+                    let importPath = elementPath + '.app';
+                    let resolvedPath = importPath;
+                    if (importPath.startsWith('./')) {
+                        resolvedPath = importPath.replace(
+                            './',
+                            runtimeConfig.paths.project + '/',
+                        );
+                    }
+                    let absPath: string;
+                    try {
+                        absPath = await resolvePath(resolvedPath);
+                    } catch (e) {
+                        absPath = '';
+                    }
+                    if (!absPath || !existsSync(absPath)) {
+                        continue;
+                    }
+                    imports += `\nimport appElements${idx} from '${importPath}';`;
+                    appElementVars.push(`appElements${idx}`);
+                }
+            }
+
+            return `
+${imports}
+
+export default Object.fromEntries([
+    ${appElementVars.join(',\n    ')}
+].map(appElement => [appElement.name, appElement]));`;
         },
     });
 

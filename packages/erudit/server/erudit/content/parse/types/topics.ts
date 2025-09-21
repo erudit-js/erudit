@@ -12,7 +12,7 @@ import {
 import { ContentParser } from '..';
 import type { ContentNavNode } from '../../nav/types';
 import { documentUrlMismatch, wrapError } from '../utils/error';
-import { insertUniques } from '../utils/element';
+import { insertSnippets, insertUniques } from '../utils/element';
 
 export const topicsParser: ContentParser = async () => {
     return {
@@ -81,6 +81,8 @@ export const topicsParser: ContentParser = async () => {
                     part,
                     Object.values(parsed.uniques),
                 );
+
+                await insertSnippets(navNode.fullId, part, parsed.snippets);
             }
 
             let topicModule: ContentConfigTopic | undefined;

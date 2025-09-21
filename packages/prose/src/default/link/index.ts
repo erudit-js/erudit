@@ -33,7 +33,7 @@ export const Link = defineTag('a')<
     type: ElementType.Inliner,
     name: linkName,
     linkable: false,
-    fillElement({ tagName, children, props: { to } }) {
+    initElement({ tagName, element, children, props: { to } }) {
         if (!children) {
             throw new ProseError(
                 `<${tagName}> requires exactly one child element!`,
@@ -73,9 +73,6 @@ export const Link = defineTag('a')<
             };
         }
 
-        return {
-            data,
-            children: undefined,
-        };
+        element.data = data;
     },
 });

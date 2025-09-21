@@ -1,6 +1,6 @@
 import { defineAppElement } from '../../app';
 import { ElementType } from '../../type';
-import { listName, type ListSchema } from './element.global';
+import { listName, type ListSchema } from './schema';
 
 export default defineAppElement<ListSchema>({
     type: ElementType.Block,

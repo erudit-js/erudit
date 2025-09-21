@@ -1,16 +1,6 @@
 import { eq } from 'drizzle-orm';
 import { ContentType } from '@erudit-js/cog/schema';
-
-export const searchContentTypeCategories = Object.values(ContentType).reduce(
-    (acc, contentType) => ({
-        ...acc,
-        [contentType]: {
-            id: contentType,
-            priority: 200,
-        } as SearchEntryCategory,
-    }),
-    {} as Record<ContentType, SearchEntryCategory>,
-);
+import { headingName } from '@erudit-js/prose/default/heading/index';
 
 export async function searchIndexContentTypes(): Promise<SearchEntriesList[]> {
     const entryLists: SearchEntriesList[] = [];
@@ -27,7 +17,10 @@ export async function searchIndexContentTypes(): Promise<SearchEntriesList[]> {
         });
 
         entryLists.push({
-            category: searchContentTypeCategories[contentType],
+            category: {
+                id: contentType,
+                priority: 200,
+            },
             entries: await Promise.all(
                 dbContentItems.map(async (dbContentItem) => {
                     const bookTitle: string | undefined = await (async () => {
@@ -68,4 +61,68 @@ export async function searchIndexContentTypes(): Promise<SearchEntriesList[]> {
     }
 
     return entryLists;
+}
+
+export async function searchIndexSnippets(): Promise<SearchEntriesList[]> {
+    const entryLists: Map<string, SearchEntriesList> = new Map();
+
+    const dbSnippets = await ERUDIT.db.query.snippets.findMany({
+        where: eq(ERUDIT.db.schema.snippets.search, true),
+    });
+
+    for (const dbSnippet of dbSnippets) {
+        if (!entryLists.has(dbSnippet.elementName)) {
+            entryLists.set(dbSnippet.elementName, {
+                category: {
+                    id: 'element:' + dbSnippet.elementName,
+                    priority: dbSnippet.elementName === headingName ? 325 : 350,
+                },
+                entries: [],
+            });
+        }
+
+        const navNode = ERUDIT.contentNav.getNode(dbSnippet.contentFullId);
+        let link: string;
+
+        const locationTitle = await (async () => {
+            const dbContentItem = await ERUDIT.db.query.content.findFirst({
+                columns: { title: true },
+                where: eq(
+                    ERUDIT.db.schema.content.fullId,
+                    dbSnippet.contentFullId,
+                ),
+            });
+
+            return dbContentItem?.title;
+        })();
+
+        switch (navNode.type) {
+            case ContentType.Page:
+                link = PAGES[navNode.type](navNode.shortId, dbSnippet.domId);
+                break;
+            case ContentType.Topic:
+                link = PAGES[navNode.type](
+                    dbSnippet.topicPart!,
+                    navNode.shortId,
+                    dbSnippet.domId,
+                );
+                break;
+            default:
+                throw createError({
+                    statusCode: 500,
+                    statusMessage: `Cannot create search snippet link for content type "${navNode.type}"!`,
+                });
+        }
+
+        entryLists.get(dbSnippet.elementName)!.entries.push({
+            category: 'element:' + dbSnippet.elementName,
+            title: dbSnippet.title,
+            description: dbSnippet.description || undefined,
+            link,
+            location: locationTitle,
+            synonyms: dbSnippet.synonyms || undefined,
+        });
+    }
+
+    return Array.from(entryLists.values());
 }

@@ -58,6 +58,30 @@ describe('Heading', () => {
         });
     });
 
+    describe('Snippet Data', () => {
+        it('should precreate snippet data with search=true and title', () => {
+            const heading = (
+                <h1>Snippet Heading</h1>
+            ) as JsxElement<HeadingSchema>;
+
+            expect(heading.snippet).toBeDefined();
+            expect(heading.snippet!.search).toBe(true);
+            expect(heading.snippet!.title).toBe('Snippet Heading');
+        });
+
+        it('should use $snippet.title prop if provided', () => {
+            const heading = (
+                <h2 $snippet={{ title: 'Custom Snippet Title' }}>
+                    Actual Heading
+                </h2>
+            ) as JsxElement<HeadingSchema>;
+
+            expect(heading.snippet).toBeDefined();
+            expect(heading.snippet!.search).toBe(true);
+            expect(heading.snippet!.title).toBe('Custom Snippet Title');
+        });
+    });
+
     describe('Error Validation', () => {
         it('should throw error when h1 has no children', () => {
             // @ts-expect-error Empty children

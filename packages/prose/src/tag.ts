@@ -4,7 +4,7 @@ import { ProseError } from './error';
 import { hash } from './hash';
 import { type JsxAllProps, type JsxTagProps } from './props';
 import type { ElementSchemaAny } from './schema';
-import type { JsxElementSnippet } from './snippet';
+import type { JsxSnippet } from './snippet';
 import { ElementType } from './type';
 
 export const ElementTagSymbol = Symbol('ElementTag');
@@ -40,16 +40,12 @@ export function defineTag<TTagName extends string>(tagName: TTagName) {
         type: TSchema['Type'];
         name: TSchema['Name'];
         linkable: TSchema['Linkable'];
-        fillElement(args: {
+        initElement: (args: {
             tagName: TTagName;
-            props: TProps;
+            element: JsxElement<TSchema, TTagName>;
+            props: JsxTagProps<TSchema, TagSelf<TSchema>> & TProps;
             children: NormalizedChildren;
-        }): {
-            data: TSchema['Data'];
-            children: TSchema['Children'] extends readonly ElementSchemaAny[]
-                ? JsxElement<TSchema['Children'][number]>[]
-                : undefined;
-        };
+        }) => void;
         childStep?: (args: {
             tagName: TTagName;
             child: JsxElement<ElementSchemaAny>;
@@ -77,29 +73,15 @@ export function defineTag<TTagName extends string>(tagName: TTagName) {
                 definition.childStep?.({ tagName, child });
             });
 
-            const { data, children } = definition.fillElement({
-                tagName,
-                props,
-                children: normalizedChildren,
-            });
-
-            const element = (<JsxElement<TSchema, TTagName>>{
+            const element = <JsxElement<TSchema, TTagName>>{
                 type: definition.type,
                 name: definition.name,
                 tagName,
-                hash: hashElement(data, children),
                 slug: allProps.$?.slug,
-                data,
-                children: children as any,
-            }) as JsxElement<TSchema, TTagName>;
+            };
 
             if (definition.linkable) {
                 element.linkable = true;
-            }
-
-            const snippet = tryCreateSnippet(allProps, element);
-            if (snippet) {
-                element.snippet = snippet;
             }
 
             if (allProps.$) {
@@ -107,6 +89,20 @@ export function defineTag<TTagName extends string>(tagName: TTagName) {
                 // @ts-expect-error Bypass readonly
                 allProps.$.element = element;
             }
+
+            definition.initElement({
+                tagName,
+                element,
+                props,
+                children: normalizedChildren,
+            });
+
+            const snippet = tryCreateSnippet(allProps, element);
+            if (snippet) {
+                element.snippet = snippet;
+            }
+
+            element.hash = hashElement(element.data, normalizedChildren);
 
             return element;
         };
@@ -141,18 +137,22 @@ function hashElement(data: any, children: JsxElement<any>[] | undefined) {
 function tryCreateSnippet(
     props: JsxAllProps,
     element: JsxElement<ElementSchemaAny>,
-): JsxElementSnippet | undefined {
-    if (!props.$snippet) {
+): JsxSnippet | undefined {
+    if (!props.$snippet && !element.snippet) {
         return undefined;
     }
 
-    if (!props.$snippet.quick && !props.$snippet.search) {
+    const rawSearch = element.snippet?.search ?? props.$snippet?.search;
+    const rawQuick = element.snippet?.quick ?? props.$snippet?.quick;
+
+    if (rawSearch === undefined && rawQuick === undefined) {
         throw new ProseError(
-            `Unable to create unused snippet for <${element.tagName}>: "quick" or "search" must be true!`,
+            `Unable to create unused snippet for <${element.tagName}>: "quick" or "search" must be defined!`,
         );
     }
 
-    let rawTitle = props.$snippet?.title || element.data?.title;
+    let rawTitle =
+        element.snippet?.title || props.$snippet?.title || element.data?.title;
 
     if (!rawTitle) {
         throw new ProseError(
@@ -162,14 +162,22 @@ function tryCreateSnippet(
 
     const title = String(rawTitle);
 
+    const description =
+        element.snippet?.description ||
+        props.$snippet?.description ||
+        element.data?.description;
+
+    const synonyms =
+        element.snippet?.synonyms ||
+        (typeof props.$snippet?.search === 'object' && props.$snippet?.search
+            ? props.$snippet?.search.synonyms
+            : undefined);
+
     return {
         title,
-        description: props.$snippet?.description || element.data?.description,
-        quick: Boolean(props.$snippet?.quick),
-        search: Boolean(props.$snippet?.search),
-        synonyms:
-            typeof props.$snippet?.search === 'object'
-                ? props.$snippet?.search.synonyms
-                : undefined,
+        description,
+        quick: Boolean(rawQuick),
+        search: Boolean(rawSearch),
+        synonyms,
     };
 }

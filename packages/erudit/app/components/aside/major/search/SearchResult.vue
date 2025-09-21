@@ -1,9 +1,22 @@
 <script lang="ts" setup>
+import { getElementIcon } from '#layers/erudit/app/composables/appElements';
 import type { MaybeMyIconName } from '#my-icons';
 
 const { result } = defineProps<{ result: SearchEntry }>();
 
-const icon: MaybeMyIconName = (() => {
+const getIconForResult = async (
+    result: SearchEntry,
+): Promise<MaybeMyIconName> => {
+    if (result.category?.startsWith('element:')) {
+        const elementName = result.category.slice('element:'.length);
+        try {
+            await new Promise((resolve) => setTimeout(resolve, 2000));
+            return await getElementIcon(elementName);
+        } catch {
+            return '__missing';
+        }
+    }
+
     switch (result.category) {
         case 'contributors':
             return 'user';
@@ -18,7 +31,16 @@ const icon: MaybeMyIconName = (() => {
         default:
             return '__missing';
     }
-})();
+};
+
+const iconKey = ref(0);
+const icon = ref<MaybeMyIconName>(loadingSvg);
+
+watchEffect(async () => {
+    icon.value = loadingSvg;
+    icon.value = await getIconForResult(result);
+    iconKey.value += 1;
+});
 </script>
 
 <template>
@@ -28,10 +50,15 @@ const icon: MaybeMyIconName = (() => {
                 class="p-normal text-text-muted hocus:text-text text-sm transition-[color]"
             >
                 <div class="gap-normal flex">
-                    <MaybeMyIcon
-                        :name="icon"
-                        class="relative top-[3px] shrink-0"
-                    />
+                    <div class="relative h-[1em] w-[1em]">
+                        <TransitionFade>
+                            <MaybeMyIcon
+                                :name="icon"
+                                :key="iconKey"
+                                class="absolute top-[3px] left-0"
+                            />
+                        </TransitionFade>
+                    </div>
                     <div>{{ result.title }}</div>
                 </div>
                 <div>

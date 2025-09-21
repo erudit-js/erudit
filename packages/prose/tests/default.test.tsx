@@ -21,7 +21,7 @@ const myDoc = createProseDocument({
     ),
 });
 
-//console.log(JSON.stringify(myDoc.content, null, 2));
+console.log(JSON.stringify(myDoc.content, null, 2));
 
 // console.log(
 //     JSON.stringify(

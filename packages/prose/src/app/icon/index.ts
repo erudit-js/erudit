@@ -9,8 +9,8 @@ export function resolveElementIcon(
 ) {
     iconModule ??=
         type === ElementType.Block
-            ? () => import('../icons/block.svg?raw')
-            : () => import('../icons/inline.svg?raw');
+            ? () => import('./block.svg?raw')
+            : () => import('./inliner.svg?raw');
 
     return async () => (await iconModule()).default;
 }

@@ -3,14 +3,17 @@ import type {
     ElementSchemaAny,
     InlinerSchemaAny,
 } from './schema';
-import type { JsxElementSnippet } from './snippet';
+import type { JsxSnippet } from './snippet';
 
 type ConstructElementKind<TSchema extends ElementSchemaAny, TProperties> = {
     type: TSchema['Type'];
     name: TSchema['Name'];
     data: TSchema['Data'];
     children: TSchema['Children'] extends ElementSchemaAny[]
-        ? ConstructElementKind<TSchema['Children'][number], TProperties>[]
+        ? ConstructElementKind<
+              TSchema['Children'][number],
+              Omit<TProperties, 'tagName'> & { tagName: string }
+          >[]
         : undefined;
 } & TProperties;
 
@@ -25,7 +28,7 @@ export type JsxElement<
         slug: string | undefined;
         linkable: true | undefined;
         uniqueId: string | undefined;
-        snippet: JsxElementSnippet | undefined;
+        snippet: JsxSnippet | undefined;
     }
 >;
 

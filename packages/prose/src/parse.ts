@@ -1,14 +1,14 @@
 import type { ProseContext } from './context';
 import { type BlocksSchema } from './default/blocks';
-import { headingName } from './default/heading';
 import type { JsxElement, ParsedElement } from './element';
 import type { ElementSchemaAny } from './schema';
 import { slugify } from './slugify';
+import type { ParsedSnippet } from './snippet';
 
 export interface ParsedJsxContent {
     parsedTree: ParsedElement<BlocksSchema>;
     uniques: Record<string, ParsedElement<ElementSchemaAny>>;
-    snippets: JsxElement<ElementSchemaAny>[];
+    snippets: ParsedSnippet[];
 }
 
 export async function parseJsxContent(argObj: {
@@ -18,7 +18,7 @@ export async function parseJsxContent(argObj: {
     const { content, context } = argObj;
     const ids = new Map<string, undefined>();
     const uniques: Record<string, ParsedElement<ElementSchemaAny>> = {};
-    const snippets: JsxElement<ElementSchemaAny>[] = [];
+    const snippets: ParsedSnippet[] = [];
 
     async function parseElement<TSchema extends ElementSchemaAny>(
         jsxElement: JsxElement<TSchema>,
@@ -58,7 +58,12 @@ export async function parseJsxContent(argObj: {
         }
 
         if (jsxElement.snippet) {
-            snippets.push(jsxElement);
+            snippets.push({
+                ...jsxElement.snippet,
+                tagName: jsxElement.tagName,
+                elementName: jsxElement.name,
+                domId: parsedElement.domId!,
+            });
         }
 
         return parsedElement;

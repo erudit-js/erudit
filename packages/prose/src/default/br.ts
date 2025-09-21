@@ -18,12 +18,7 @@ export const Br = defineTag(brName)<BrSchema, { children?: undefined }>({
     type: ElementType.Inliner,
     name: brName,
     linkable: false,
-    fillElement() {
-        return {
-            data: undefined,
-            children: undefined,
-        };
-    },
+    initElement() {},
     childStep({ tagName, child }) {
         throw new ProseError(
             `<${tagName}> cannot have children, but detected <${child.tagName}>!`,

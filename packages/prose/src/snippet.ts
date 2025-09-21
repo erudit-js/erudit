@@ -1,4 +1,4 @@
-export type JsxElementSnippet = {
+export type JsxSnippet = {
     title: string;
     description?: string;
     quick: boolean;
@@ -11,4 +11,14 @@ export type JsxPropsSnippet = {
     description?: string;
     quick?: true;
     search?: true | { synonyms?: string[] };
+};
+
+//
+//
+//
+
+export type ParsedSnippet = JsxSnippet & {
+    tagName: string;
+    elementName: string;
+    domId: string;
 };

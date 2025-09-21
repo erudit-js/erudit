@@ -1,3 +1,4 @@
+import type { JsxSnippet } from 'src/snippet';
 import { ProseError } from '../../error';
 import type { ElementSchema } from '../../schema';
 import { defineTag } from '../../tag';
@@ -24,7 +25,7 @@ function createHeadingTag(tagName: string, level: 1 | 2 | 3) {
         type: ElementType.Block,
         name: headingName,
         linkable: true,
-        fillElement({ tagName, children }) {
+        initElement({ tagName, element, props, children }) {
             if (!children) {
                 throw new ProseError(
                     `<${tagName}> requires exactly one text child element!`,
@@ -47,14 +48,18 @@ function createHeadingTag(tagName: string, level: 1 | 2 | 3) {
                 );
             }
 
-            if (!child.data) {
+            const title = child.data.trim();
+
+            if (!title) {
                 throw new ProseError(`<${tagName}> element cannot be empty!`);
             }
 
-            return {
-                data: { level, title: child.data },
-                children: undefined,
-            };
+            element.data = { level, title };
+
+            element.snippet = {
+                search: true,
+                title: props.$snippet?.title || title,
+            } as JsxSnippet;
         },
     });
 }

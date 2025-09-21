@@ -19,17 +19,14 @@ export const Paragraph = defineTag('p')<ParagraphSchema>({
     type: ElementType.Block,
     name: paragraphName,
     linkable: true,
-    fillElement({ tagName, children }) {
+    initElement({ tagName, element, children }) {
         if (!children) {
             throw new ProseError(
                 `<${tagName}> requires at least one child element!`,
             );
         }
 
-        return {
-            data: undefined,
-            children: children as JsxElement<InlinerSchemaAny>[],
-        };
+        element.children = children as JsxElement<InlinerSchemaAny>[];
     },
     childStep({ tagName, child }) {
         if (isBlockElement(child)) {
