@@ -1,8 +1,4 @@
-import {
-    ContentConfigTopic,
-    ContentType,
-    TopicPart,
-} from '@erudit-js/cog/schema';
+import { ContentConfigTopic, TopicPart } from '@erudit-js/cog/schema';
 import {
     DocumentAny,
     ParsedJsxContent,
@@ -13,6 +9,7 @@ import { ContentParser } from '..';
 import type { ContentNavNode } from '../../nav/types';
 import { documentUrlMismatch, wrapError } from '../utils/error';
 import { insertSnippets, insertUniques } from '../utils/element';
+import { insertContentConfig } from '../utils/contentConfig';
 
 export const topicsParser: ContentParser = async () => {
     return {
@@ -66,15 +63,6 @@ export const topicsParser: ContentParser = async () => {
                 }
             }
 
-            if (parsedParts.size === 0) {
-                ERUDIT.log.warn(
-                    `Topic ${ERUDIT.log.stress(
-                        navNode.fullId,
-                    )} has no article, no summary and no practice!`,
-                );
-                return;
-            }
-
             for (const [part, parsed] of parsedParts) {
                 await insertUniques(
                     navNode.fullId,
@@ -85,7 +73,7 @@ export const topicsParser: ContentParser = async () => {
                 await insertSnippets(navNode.fullId, part, parsed.snippets);
             }
 
-            let topicModule: ContentConfigTopic | undefined;
+            let topicModule: { default: ContentConfigTopic } | undefined;
 
             try {
                 topicModule = await ERUDIT.import(
@@ -93,14 +81,10 @@ export const topicsParser: ContentParser = async () => {
                         '/content/' +
                         navNode.contentRelPath +
                         '/topic',
-                    { default: true, try: true },
+                    { try: true },
                 );
             } catch (error) {
                 throw wrapError(error, 'Error importing topic module!');
-            }
-
-            if (!topicModule) {
-                return;
             }
 
             try {
@@ -114,14 +98,7 @@ export const topicsParser: ContentParser = async () => {
                         ?.parsedTree,
                 });
 
-                await ERUDIT.db.insert(ERUDIT.db.schema.content).values({
-                    fullId: navNode.fullId,
-                    type: ContentType.Topic,
-                    title:
-                        topicModule?.title || navNode.fullId.split('/').pop()!,
-                    navTitle: topicModule?.navTitle,
-                    description: topicModule?.description,
-                });
+                await insertContentConfig(navNode, topicModule?.default);
             } catch (error) {
                 throw wrapError(error, 'Error inserting topic content!');
             }

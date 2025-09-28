@@ -1,5 +1,4 @@
 <script lang="ts" setup>
-import type { WatchHandle } from 'vue';
 import { debounce } from 'perfect-debounce';
 
 const emit = defineEmits<{
@@ -36,8 +35,7 @@ function initFromUrlParam() {
 }
 
 function insertUrlQuery(q: string | undefined) {
-    const path = route.path.endsWith('/') ? route.path : route.path + '/';
-    router.replace({ path, query: { ...route.query, q } });
+    router.replace({ ...route, query: { ...route.query, q } });
 }
 
 watch(normalizedQuery, () => {

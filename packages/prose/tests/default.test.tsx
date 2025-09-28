@@ -9,17 +9,16 @@ const myDoc = createProseDocument({
         myP: Paragraph,
         myH: H1,
     },
-    content: ({ uniques }) => (
-        <blocks>
-            <h1 $={uniques.myH}>Привет мир!</h1>
-            {uniques.myP}
-            <p $={uniques.myP}>My P</p>
-            <p>Доблаеб?</p>
-            <p>Доблаеб?</p>
-            {uniques.myH}
-        </blocks>
-    ),
-});
+})(({ uniques }) => (
+    <blocks>
+        <h1 $={uniques.myH}>Привет мир!</h1>
+        {uniques.myP}
+        <p $={uniques.myP}>My P</p>
+        <p>Доблаеб?</p>
+        <p>Доблаеб?</p>
+        {uniques.myH}
+    </blocks>
+));
 
 console.log(JSON.stringify(myDoc.content, null, 2));
 

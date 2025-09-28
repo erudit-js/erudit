@@ -22,6 +22,22 @@ const ru: LanguagePhrases = {
     searching_more: 'Ищем еще...',
     no_results: 'Ничего не найдено',
     no_more_results: 'Больше результатов нет',
+    no_content: 'Нет контента',
+    to_index: 'К оглавлению',
+    about_textbook: 'Об учебнике',
+    flag_title_dev: 'Разработка',
+    flag_hint_dev:
+        'Этот материал не завершен, может содержать ошибки и измениться в будущем! Используйте с осторожностью!',
+    flag_title_advanced: 'Профиль',
+    flag_hint_advanced:
+        'Этот материал предназначен для учеников с хорошим уровнем понимания предмета. Информация здесь не предназначена для новичков!',
+    flag_title_secondary: 'Дополнение',
+    flag_hint_secondary:
+        'Это материал для тех, кто хочет глубже погрузиться предмет и получить дополнительные знания и контекст.',
+    ads_replacer:
+        'Помогите улучшить проект.<br><strong style="color: inherit;">Включите показ рекламы!</strong>',
+    direct_link: 'Прямая ссылка',
+    direct_link_explain: 'Вы собираетесь открыть прямую ссылку:',
 
     // _language_title: 'Русский',
     // _language_code: 'ru',

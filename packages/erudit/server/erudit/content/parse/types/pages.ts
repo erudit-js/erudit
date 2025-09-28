@@ -1,10 +1,11 @@
-import { ContentConfigPage, ContentType } from '@erudit-js/cog/schema';
+import { ContentConfigPage } from '@erudit-js/cog/schema';
 import { DocumentAny, parseJsxContent } from '@erudit-js/prose';
 
 import { ContentParser } from '..';
 import type { ContentNavNode } from '../../nav/types';
 import { documentUrlMismatch, wrapError } from '../utils/error';
 import { insertSnippets, insertUniques } from '../utils/element';
+import { insertContentConfig } from '../utils/contentConfig';
 
 export const pagesParser: ContentParser = async () => {
     return {
@@ -20,9 +21,7 @@ export const pagesParser: ContentParser = async () => {
                 '/page';
 
             try {
-                pageModule = await ERUDIT.import(pageModulePath, {
-                    try: true,
-                });
+                pageModule = await ERUDIT.import(pageModulePath, { try: true });
             } catch (error) {
                 throw wrapError(error, `Failed to import page module!`);
             }
@@ -67,15 +66,7 @@ export const pagesParser: ContentParser = async () => {
                     parsedTree: parsedContent.parsedTree,
                 });
 
-                await ERUDIT.db.insert(ERUDIT.db.schema.content).values({
-                    fullId: navNode.fullId,
-                    type: ContentType.Page,
-                    title:
-                        pageModule.default?.title ||
-                        navNode.fullId.split('/').pop()!,
-                    navTitle: pageModule.default?.navTitle,
-                    description: pageModule.default?.description,
-                });
+                await insertContentConfig(navNode, pageModule.default);
             } catch (error) {
                 throw wrapError(error, 'Error inserting page content!');
             }

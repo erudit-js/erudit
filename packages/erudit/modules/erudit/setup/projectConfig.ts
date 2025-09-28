@@ -55,6 +55,7 @@ async function transferConfigData(
         language: projectConfig.language || { current: 'en' },
         baseUrl: projectConfig.site?.baseUrl || '/',
         debug: {
+            ads: projectConfig.debug?.ads ?? false,
             log: projectConfig.debug?.log ?? false,
             slowTransition: projectConfig.debug?.slowTransition ?? false,
             fakeApi: {
@@ -95,5 +96,6 @@ async function transferConfigData(
         })(),
         customLinks: projectConfig.customLinks,
         sponsors: projectConfig.sponsors,
+        ads: projectConfig.ads,
     };
 }

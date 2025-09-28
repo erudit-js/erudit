@@ -22,6 +22,22 @@ const en: LanguagePhrases = {
     searching_more: 'Searching more...',
     no_results: 'No results found',
     no_more_results: 'No more results',
+    no_content: 'No content',
+    to_index: 'To index',
+    about_textbook: 'About textbook',
+    flag_title_dev: 'Development',
+    flag_hint_dev:
+        'This material is not complete, may contain error and will change in the future! Use with caution!',
+    flag_title_advanced: 'Advanced',
+    flag_hint_advanced:
+        'This material is for learners with a high level of knowledge. It contains information that is not suitable for beginners!',
+    flag_title_secondary: 'Additional',
+    flag_hint_secondary:
+        'This is an optional material is for learners who want to dive deeper and gain additional knowledge and context.',
+    ads_replacer:
+        'We help you. Help us back.<br><strong style="color: inherit;">Disable your ads blocker!</strong>',
+    direct_link: 'Direct link',
+    direct_link_explain: 'You are about to open a direct link:',
 
     // _language_title: 'English',
     // _language_code: 'en',

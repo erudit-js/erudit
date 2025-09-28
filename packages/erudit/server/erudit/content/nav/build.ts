@@ -1,5 +1,5 @@
-import { globSync } from 'glob';
 import chalk from 'chalk';
+import { globSync } from 'glob';
 import { readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { ContentType } from '@erudit-js/cog/schema';
 
@@ -76,44 +76,46 @@ export async function buildContentNav() {
         duplicateIdValidator(),
         subsetValidator(),
         bookCantSkipValidator(),
+        bookInsideBookValidator(),
+        topicsWithoutPartsValidator(),
+        emptyGroupsBooksValidator(),
     ];
 
-    for (const node of ERUDIT.contentNav.id2Node.values()) {
-        for (const validator of validators) {
+    for (const validator of validators) {
+        for (const node of ERUDIT.contentNav.id2Node.values()) {
             validator.step(node, ERUDIT.contentNav.id2Node);
         }
-    }
+        const toRemoveIds = new Set(validator.getRemoveIds());
+        if (toRemoveIds.size) {
+            for (const id of toRemoveIds) {
+                const node = ERUDIT.contentNav.id2Node.get(id);
+                if (!node) continue;
 
-    const toRemoveIds = new Set(validators.flatMap((v) => v.getRemoveIds()));
-    if (toRemoveIds.size) {
-        for (const id of toRemoveIds) {
-            const node = ERUDIT.contentNav.id2Node.get(id);
-            if (!node) continue;
+                ERUDIT.contentNav.id2Node.delete(id);
+                ERUDIT.contentNav.short2Full.delete(node.shortId);
+                ERUDIT.contentNav.id2Books.delete(id);
+                ERUDIT.contentNav.id2Root.delete(id);
 
-            ERUDIT.contentNav.id2Node.delete(id);
-            ERUDIT.contentNav.short2Full.delete(node.shortId);
-            ERUDIT.contentNav.id2Books.delete(id);
-            ERUDIT.contentNav.id2Root.delete(id);
-
-            if (node.parent?.children) {
-                node.parent.children = node.parent.children.filter(
-                    (child) => child !== node,
-                );
-                if (!node.parent.children.length) {
-                    node.parent.children = undefined;
-                }
-            }
-
-            if (node.children) {
-                for (const child of node.children) {
-                    if (!toRemoveIds.has(child.fullId)) {
-                        child.parent = undefined;
+                if (node.parent?.children) {
+                    node.parent.children = node.parent.children.filter(
+                        (child) => child !== node,
+                    );
+                    if (!node.parent.children.length) {
+                        node.parent.children = undefined;
                     }
                 }
-                node.children = undefined;
-            }
 
-            node.parent = undefined;
+                if (node.children) {
+                    for (const child of node.children) {
+                        if (!toRemoveIds.has(child.fullId)) {
+                            child.parent = undefined;
+                        }
+                    }
+                    node.children = undefined;
+                }
+
+                node.parent = undefined;
+            }
         }
     }
 
@@ -200,7 +202,8 @@ function parseContentPath(relPath: string):
     let position!: number;
     let skip!: boolean;
 
-    for (const part of parts) {
+    for (let i = 0; i < parts.length; i++) {
+        const part = parts[i];
         const typeDelimiterPos = part.search(/[+-]/);
         if (typeDelimiterPos <= 0) return;
 
@@ -214,7 +217,8 @@ function parseContentPath(relPath: string):
         if (!idPart) return;
 
         fullId += `/${idPart}`;
-        if (!skip) {
+
+        if (!skip || i === parts.length - 1) {
             shortId += `/${idPart}`;
         }
 
@@ -391,15 +395,6 @@ Only groups and books can have children!
                 );
                 wrongSubsetIds.push(navNode.fullId);
             }
-            if (isGroupLike && !hasChildren) {
-                ERUDIT.log.warn(
-                    `
-Groups and books should have at least one child!
--> ${chalk.yellow(navNode.fullId)}
-                    `.trim(),
-                );
-                wrongSubsetIds.push(navNode.fullId);
-            }
         },
         getRemoveIds() {
             return wrongSubsetIds;
@@ -423,6 +418,92 @@ Books can not be skipped!
         },
         getRemoveIds() {
             return wrongBookIds;
+        },
+    };
+};
+
+const topicsWithoutPartsValidator: ContentNavValidator = () => {
+    const topicWithoutPartsIds: string[] = [];
+    return {
+        step(navNode) {
+            if (navNode.type === ContentType.Topic) {
+                const files = readdirSync(
+                    ERUDIT.config.paths.project +
+                        '/content/' +
+                        navNode.contentRelPath,
+                );
+                const hasPart = files.some((file) =>
+                    /^(article|summary|practice)\.(jsx|tsx)$/.test(file),
+                );
+                if (!hasPart) {
+                    ERUDIT.log.warn(
+                        `Topic ${ERUDIT.log.stress(navNode.fullId)} does not have article, summary, or practice (.jsx/.tsx) file!`.trim(),
+                    );
+                    topicWithoutPartsIds.push(navNode.fullId);
+                }
+            }
+        },
+        getRemoveIds() {
+            return topicWithoutPartsIds;
+        },
+    };
+};
+
+const bookInsideBookValidator: ContentNavValidator = () => {
+    const subsequentBookIds: string[] = [];
+    return {
+        step(navNode) {
+            if (navNode.type === ContentType.Book) {
+                let parent: ContentNavNode | undefined = navNode.parent;
+                while (parent) {
+                    if (parent.type === ContentType.Book) {
+                        subsequentBookIds.push(navNode.fullId);
+                        break;
+                    }
+                    parent = parent.parent;
+                }
+            }
+        },
+        getRemoveIds() {
+            return subsequentBookIds;
+        },
+    };
+};
+
+const emptyGroupsBooksValidator: ContentNavValidator = () => {
+    const emptyGroupBookIds: string[] = [];
+    return {
+        step(navNode) {
+            const isGroupOrBook =
+                navNode.type === ContentType.Group ||
+                navNode.type === ContentType.Book;
+
+            if (!isGroupOrBook) return;
+
+            function hasTopicOrPage(node: ContentNavNode): boolean {
+                if (
+                    node.type === ContentType.Topic ||
+                    node.type === ContentType.Page
+                ) {
+                    return true;
+                }
+                if (!node.children) return false;
+                return node.children.some((child) => hasTopicOrPage(child));
+            }
+
+            if (!hasTopicOrPage(navNode)) {
+                const prettyType =
+                    navNode.type.charAt(0).toUpperCase() +
+                    navNode.type.slice(1);
+
+                ERUDIT.log.warn(
+                    `${prettyType} ${ERUDIT.log.stress(navNode.fullId)} does not have any topic or page descendants!`,
+                );
+                emptyGroupBookIds.push(navNode.fullId);
+            }
+        },
+        getRemoveIds() {
+            return emptyGroupBookIds;
         },
     };
 };

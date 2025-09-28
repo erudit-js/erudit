@@ -19,9 +19,10 @@ export const useAsideState = () => {
 
 export const useCanShowAsideSwitches = () => {
     const asideState = useAsideState();
+    const { previewState } = usePreview();
     return computed(() => {
         const noOpenedAsides = !asideState.value.opened;
         const scrolledUp = asideState.value.scrolledUp;
-        return noOpenedAsides && scrolledUp;
+        return noOpenedAsides && scrolledUp && !previewState.value.opened;
     });
 };

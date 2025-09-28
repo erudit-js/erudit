@@ -5,6 +5,7 @@ export default defineEruditConfig({
     debug: {
         log: true,
         slowTransition: true,
+        ads: true,
         // fakeApi: {
         //     repository: false,
         // },
@@ -98,21 +99,40 @@ export default defineEruditConfig({
     },
     ads: {
         bottom: {
-            provider: 'custom',
-            banners: [
-                {
-                    link: 'https://google.com',
-                    src: 'https://picsum.photos/100/100',
-                },
-                {
-                    link: 'https://youtube.com',
-                    src: 'https://picsum.photos/1000/500',
-                },
-            ],
+            provider: 'replacer',
+            // provider: 'custom',
+            // banners: [
+            //     {
+            //         link: 'https://google.com',
+            //         src: 'https://picsum.photos/100/100',
+            //     },
+            //     {
+            //         link: 'https://youtube.com',
+            //         src: 'https://picsum.photos/1000/1000',
+            //     },
+            // ],
         },
         aside: {
-            provider: 'custom',
-            banners: {},
+            provider: 'replacer',
+            // provider: 'custom',
+            // banners: {
+            //     mobile: [
+            //         {
+            //             src: projectPublic('logotype.png'),
+            //             link: 'https://google.com',
+            //         },
+            //     ],
+            //     full: [
+            //         {
+            //             src: projectPublic('ava.jpg'),
+            //             link: 'https://google.com',
+            //         },
+            //         {
+            //             src: 'https://picsum.photos/300/600',
+            //             link: 'https://youtube.com',
+            //         },
+            //     ],
+            // },
         },
     },
     bitran: {

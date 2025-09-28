@@ -3,5 +3,6 @@
         <AsideMajorSiteInfo />
         <AsideMajorPaneSwitcher />
         <AsideMajorPaneHolder />
+        <AdsBannerAside v-if="adsAsideAllowed()" />
     </div>
 </template>

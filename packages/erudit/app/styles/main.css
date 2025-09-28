@@ -11,6 +11,8 @@
     --breakpoint-aside1: 1000px;
     --breakpoint-aside2: 1400px;
 
+    --text-tiny: 0.695rem;
+
     --default-transition-timing-function: cubic-bezier(0, 0, 0.5, 1);
     --default-transition-duration: calc(200ms * var(--duration-multiplier));
 
@@ -28,6 +30,7 @@
     --color-bg-root: light-dark(#ebebeb, #171717);
     --color-bg-aside: light-dark(#f7f7f7, #1d1d1d);
     --color-bg-main: light-dark(#ffffff, #212121);
+    --color-bg-accent: light-dark(#e6e6e6, #2b2b2b);
     --color-text: light-dark(#373737, #b9b9b9);
     --color-text-deep: light-dark(#232323, #e1e1e1);
     --color-text-muted: light-dark(#696969, #7f7f7f);
@@ -36,6 +39,19 @@
     --color-scrollbar: light-dark(#bfbfbf, #494949);
     --color-invert: light-dark(white, black);
     --color-border: light-dark(var(--color-neutral-300), #323232);
+
+    --animate-opacity-blink: opacity-blink 0.5s ease-out;
+    @keyframes opacity-blink {
+        0% {
+            opacity: 0;
+        }
+        50% {
+            opacity: 0.8;
+        }
+        100% {
+            opacity: 0;
+        }
+    }
 }
 
 @theme inline {
@@ -45,10 +61,12 @@
 
 @layer base {
     :root {
+        --_pMainX: var(--spacing-normal);
+        --_pMainY: var(--spacing-small);
         background: var(--color-bg-root);
         color: var(--color-text);
         font-size: 18px;
-
+        interpolate-size: allow-keywords;
         @apply transition-[background];
     }
 
@@ -78,10 +96,12 @@
     strong {
         color: var(--color-text-deep);
     }
+}
 
-    [my-icon] {
-        height: calc(1em + 1px);
-        width: calc(1em + 1px);
+@variant micro {
+    :root {
+        --_pMainX: var(--spacing-big);
+        --_pMainY: var(--spacing-normal);
     }
 }
 

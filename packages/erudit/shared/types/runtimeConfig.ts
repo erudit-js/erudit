@@ -1,4 +1,5 @@
 import type {
+    EruditAdsBanners,
     EruditCustomLinks,
     EruditLanguage,
     EruditRepository,
@@ -36,6 +37,7 @@ export interface EruditPublicRuntimeConfig {
         debug: {
             log: boolean;
             slowTransition: boolean;
+            ads: boolean;
             fakeApi: {
                 repository: boolean;
             };
@@ -46,5 +48,6 @@ export interface EruditPublicRuntimeConfig {
         };
         customLinks?: EruditCustomLinks;
         sponsors?: EruditSponsors;
+        ads?: EruditAdsBanners;
     };
 }

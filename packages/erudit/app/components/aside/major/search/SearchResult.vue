@@ -1,46 +1,48 @@
 <script lang="ts" setup>
-import { getElementIcon } from '#layers/erudit/app/composables/appElements';
-import type { MaybeMyIconName } from '#my-icons';
+import type { MaybeMyIconName, MyIconName } from '#my-icons';
+import { isContentType } from '@erudit-js/cog/schema';
 
 const { result } = defineProps<{ result: SearchEntry }>();
 
-const getIconForResult = async (
-    result: SearchEntry,
-): Promise<MaybeMyIconName> => {
-    if (result.category?.startsWith('element:')) {
-        const elementName = result.category.slice('element:'.length);
-        try {
-            await new Promise((resolve) => setTimeout(resolve, 2000));
-            return await getElementIcon(elementName);
-        } catch {
-            return '__missing';
-        }
+const ELEMENT_PREFIX = 'element:';
+const isElementCategory = result.category?.startsWith(ELEMENT_PREFIX);
+
+const immediateIcon: MaybeMyIconName = (() => {
+    if (isElementCategory) {
+        return loadingSvg;
+    }
+
+    if (isContentType(result.category)) {
+        return ICONS[result.category];
     }
 
     switch (result.category) {
         case 'contributors':
             return 'user';
-        case 'book':
-            return 'book-outline';
-        case 'page':
-            return 'lines';
-        case 'topic':
-            return 'lines-array';
-        case 'group':
-            return 'folder-open';
         default:
             return '__missing';
     }
-};
+})();
 
 const iconKey = ref(0);
-const icon = ref<MaybeMyIconName>(loadingSvg);
+const icon = ref<MaybeMyIconName>(immediateIcon);
 
-watchEffect(async () => {
-    icon.value = loadingSvg;
-    icon.value = await getIconForResult(result);
+watch(icon, () => {
     iconKey.value += 1;
 });
+
+async function requestElementIcon(elementName: string) {
+    try {
+        icon.value = await getElementIcon(elementName);
+    } catch {
+        icon.value = '__missing' satisfies MyIconName;
+    }
+}
+
+if (isElementCategory) {
+    const elementName = result.category!.slice(ELEMENT_PREFIX.length);
+    requestElementIcon(elementName);
+}
 </script>
 
 <template>
@@ -55,7 +57,7 @@ watchEffect(async () => {
                             <MaybeMyIcon
                                 :name="icon"
                                 :key="iconKey"
-                                class="absolute top-[3px] left-0"
+                                class="absolute top-[2px] left-0"
                             />
                         </TransitionFade>
                     </div>

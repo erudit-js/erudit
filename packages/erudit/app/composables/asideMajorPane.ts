@@ -1,3 +1,12 @@
+export const asideMajorContentNavGlobalKey = 'aside-major-contentNav-global';
+export const asideMajorPagesKey = 'aside-major-pages';
+
+export const asideMajorContentNavSymbol = Symbol() as InjectionKey<{
+    shortContentId: ComputedRef<string | undefined>;
+    shortBookId: ComputedRef<string | undefined>;
+    showBookNav: Ref<boolean>;
+}>;
+
 export enum AsideMajorPane {
     ContentNav = 'content-nav',
     Pages = 'pages',

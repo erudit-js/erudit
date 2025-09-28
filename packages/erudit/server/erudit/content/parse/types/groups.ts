@@ -1,13 +1,14 @@
-import { ContentConfigGroup, ContentType } from '@erudit-js/cog/schema';
+import { ContentConfigGroup } from '@erudit-js/cog/schema';
 
 import { ContentParser } from '..';
 import type { ContentNavNode } from '../../nav/types';
 import { wrapError } from '../utils/error';
+import { insertContentConfig } from '../utils/contentConfig';
 
 export const groupsParser: ContentParser = async () => {
     return {
         step: async (navNode: ContentNavNode) => {
-            let groupModule: ContentConfigGroup | undefined;
+            let groupModule: { default: ContentConfigGroup } | undefined;
 
             try {
                 groupModule = await ERUDIT.import(
@@ -15,25 +16,18 @@ export const groupsParser: ContentParser = async () => {
                         '/content/' +
                         navNode.contentRelPath +
                         '/group',
-                    { default: true, try: true },
+                    { try: true },
                 );
             } catch (error) {
                 throw wrapError(error, 'Error importing group module!');
             }
 
             try {
-                await ERUDIT.db.insert(ERUDIT.db.schema.content).values({
-                    fullId: navNode.fullId,
-                    type: ContentType.Group,
-                    title:
-                        groupModule?.title || navNode.fullId.split('/').pop()!,
-                    navTitle: groupModule?.navTitle,
-                    description: groupModule?.description,
-                });
+                await insertContentConfig(navNode, groupModule?.default);
 
                 await ERUDIT.db.insert(ERUDIT.db.schema.groups).values({
                     fullId: navNode.fullId,
-                    separator: groupModule?.type === 'separator',
+                    separator: groupModule?.default.type === 'separator',
                 });
             } catch (error) {
                 throw wrapError(error, 'Error inserting group content!');

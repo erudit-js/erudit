@@ -81,7 +81,9 @@ export async function searchIndexSnippets(): Promise<SearchEntriesList[]> {
             });
         }
 
-        const navNode = ERUDIT.contentNav.getNode(dbSnippet.contentFullId);
+        const navNode = ERUDIT.contentNav.getNodeOrThrow(
+            dbSnippet.contentFullId,
+        );
         let link: string;
 
         const locationTitle = await (async () => {

@@ -8,7 +8,7 @@ export type ThemePreference = (typeof themePreferences)[number];
 export const useTheme = () => {
     if (import.meta.server) {
         throw createError({
-            statusCode: 500,
+            statusCode: 400,
             statusMessage: 'Theme composable is not available on server side!',
         });
     }

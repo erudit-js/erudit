@@ -18,7 +18,7 @@ const isExternalLink = computed(() => {
 <template>
     <EruditLink
         :class="[
-            'border-border block min-h-(--h-min-aside-item) border-b bg-transparent text-sm transition-[background,color]',
+            'border-border block min-h-(--h-min-aside-item) border-b bg-transparent text-sm transition-[background,color,border]',
             hoverable &&
                 'hocus:bg-neutral-800/8 hocus:dark:bg-neutral-400/8 cursor-pointer',
             active

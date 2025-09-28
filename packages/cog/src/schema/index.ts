@@ -1,4 +1,4 @@
-export * from './content/type';
+export * from './content/config';
 export * from './content/topic';
 export * from './content/group';
 export * from './content/book';

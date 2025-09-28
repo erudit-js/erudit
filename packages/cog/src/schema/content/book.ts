@@ -1,3 +1,3 @@
-import type { ContentConfig } from './type';
+import type { ContentConfig } from './config';
 
 export type ContentConfigBook = ContentConfig;

@@ -10,7 +10,6 @@ import { pagesParser } from './types/pages';
 import { topicsParser } from './types/topics';
 import chalk from 'chalk';
 import { ContentContextError } from './utils/error';
-import { table } from 'console';
 
 export type ContentParser = () => Promise<{
     step: (navNode: ContentNavNode) => Promise<void>;
@@ -87,6 +86,14 @@ export async function parseContent() {
         try {
             await createdParsers.get(node.type)!.step(node);
         } catch (error) {
+            const errorLocation =
+                'Content Location: ' +
+                chalk.redBright(
+                    ERUDIT.config.paths.project +
+                        '/content/' +
+                        node.contentRelPath,
+                );
+
             if (error instanceof ContentContextError) {
                 ERUDIT.log.error(
                     'Error parsing ' +
@@ -96,19 +103,12 @@ export async function parseContent() {
                         ': ' +
                         error.getFullMessage() +
                         '\n' +
-                        'Content Location: ' +
-                        chalk.redBright(
-                            ERUDIT.config.paths.project +
-                                '/content/' +
-                                node.contentRelPath,
-                        ) +
+                        errorLocation +
                         '\n' +
                         error.getOriginalStack() || 'No stack trace available',
                 );
             } else {
-                ERUDIT.log.error(
-                    'Error must be an instance of ContextualError!',
-                );
+                ERUDIT.log.error(error + '\n' + errorLocation);
             }
         }
     }

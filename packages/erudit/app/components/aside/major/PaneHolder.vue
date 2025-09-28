@@ -44,9 +44,16 @@ onMounted(() => {
     }
 });
 
+// Prefetch global content nav
+await useFetch('/api/aside/major/frontNav/global', {
+    key: asideMajorContentNavGlobalKey,
+    deep: false,
+    responseType: 'json',
+});
+
 // Prefetch pages data
 await useFetch('/api/aside/major/pages', {
-    key: 'aside-major-pages',
+    key: asideMajorPagesKey,
     deep: false,
     responseType: 'json',
 });
@@ -68,6 +75,12 @@ await usePhrases(
     'searching_more',
     'no_results',
     'no_more_results',
+    'no_content',
+    'to_index',
+    'about_textbook',
+    'flag_title_dev',
+    'flag_title_advanced',
+    'flag_title_secondary',
 );
 </script>
 

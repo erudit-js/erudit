@@ -1,4 +1,4 @@
-type AdsProvider = 'yandex' | 'custom';
+type AdsProvider = 'replacer' | 'yandex' | 'custom';
 
 interface AdsBase {
     provider: AdsProvider;
@@ -13,6 +13,10 @@ export interface CustomAdsItem {
 //
 //
 
+export interface EruditAdsReplacer extends AdsBase {
+    provider: 'replacer';
+}
+
 export interface EruditAdsYandex extends AdsBase {
     provider: 'yandex';
     blockId: string;
@@ -23,13 +27,14 @@ export interface EruditAdsCustom extends AdsBase {
     banners: CustomAdsItem[];
 }
 
-export type EruditAds = EruditAdsYandex | EruditAdsCustom;
+export type EruditAds = EruditAdsReplacer | EruditAdsYandex | EruditAdsCustom;
 
 //
 //
 //
 
 export type EruditAdsAsideBanner =
+    | EruditAdsReplacer
     | EruditAdsYandex
     | {
           provider: 'custom';
@@ -39,7 +44,10 @@ export type EruditAdsAsideBanner =
           };
       };
 
-export type EruditAdsBottomBanner = EruditAdsYandex | EruditAdsCustom;
+export type EruditAdsBottomBanner =
+    | EruditAdsReplacer
+    | EruditAdsYandex
+    | EruditAdsCustom;
 
 export interface EruditAdsBanners {
     aside?: EruditAdsAsideBanner;

@@ -1,13 +1,14 @@
-import { ContentConfigBook, ContentType } from '@erudit-js/cog/schema';
+import { ContentConfigBook } from '@erudit-js/cog/schema';
 
 import { ContentParser } from '..';
 import type { ContentNavNode } from '../../nav/types';
 import { wrapError } from '../utils/error';
+import { insertContentConfig } from '../utils/contentConfig';
 
 export const booksParser: ContentParser = async () => {
     return {
         step: async (navNode: ContentNavNode) => {
-            let bookModule: ContentConfigBook | undefined;
+            let bookModule: { default: ContentConfigBook } | undefined;
 
             try {
                 bookModule = await ERUDIT.import(
@@ -15,21 +16,14 @@ export const booksParser: ContentParser = async () => {
                         '/content/' +
                         navNode.contentRelPath +
                         '/book',
-                    { default: true, try: true },
+                    { try: true },
                 );
             } catch (error) {
                 throw wrapError(error, 'Error importing book module!');
             }
 
             try {
-                await ERUDIT.db.insert(ERUDIT.db.schema.content).values({
-                    fullId: navNode.fullId,
-                    type: ContentType.Book,
-                    title:
-                        bookModule?.title || navNode.fullId.split('/').pop()!,
-                    navTitle: bookModule?.navTitle,
-                    description: bookModule?.description,
-                });
+                await insertContentConfig(navNode, bookModule?.default);
             } catch (error) {
                 throw wrapError(error, 'Error inserting book content!');
             }

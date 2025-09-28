@@ -28,14 +28,9 @@ export function createProseDocument<
     url: string;
     /** Important and/or reusable elements. */
     uniques?: TUniqueDefs;
-    content: (args: {
-        uniques: TagsToUniques<TUniqueDefs>;
-    }) => JsxElement<ElementSchemaAny>;
-}): Document<TagsToUniques<TUniqueDefs>> {
+}) {
     const url = normalizeUrl(definition.url);
-
     const uniqueDefs = definition.uniques || ({} as TUniqueDefs);
-    const contentFn = definition.content;
 
     const docUniques = {} as TagsToUniques<TUniqueDefs>;
     for (const [key, tag] of Object.entries(uniqueDefs)) {
@@ -46,29 +41,35 @@ export function createProseDocument<
         });
     }
 
-    const content = contentFn({ uniques: docUniques });
+    return (
+        contentFn: (args: {
+            uniques: TagsToUniques<TUniqueDefs>;
+        }) => JsxElement<ElementSchemaAny>,
+    ): Document<TagsToUniques<TUniqueDefs>> => {
+        const content = contentFn({ uniques: docUniques });
 
-    if (!Blocks.isTagElement(content)) {
-        throw new ProseError(
-            `Document content function must return a <${Blocks.name}> element!`,
-        );
-    }
-
-    for (const unique of Object.values(docUniques)) {
-        const typedUnique = unique as ElementUniqueAny;
-        const assignedElement = typedUnique.element;
-
-        if (!assignedElement) {
+        if (!Blocks.isTagElement(content)) {
             throw new ProseError(
-                `Unique "${typedUnique.slug}" was not assigned in the content function!`,
+                `Document content function must return a <${Blocks.name}> element!`,
             );
         }
-    }
 
-    return {
-        url,
-        uniques: docUniques,
-        content,
+        for (const unique of Object.values(docUniques)) {
+            const typedUnique = unique as ElementUniqueAny;
+            const assignedElement = typedUnique.element;
+
+            if (!assignedElement) {
+                throw new ProseError(
+                    `Unique "${typedUnique.slug}" was not assigned in the content function!`,
+                );
+            }
+        }
+
+        return {
+            url,
+            uniques: docUniques,
+            content,
+        };
     };
 }
 

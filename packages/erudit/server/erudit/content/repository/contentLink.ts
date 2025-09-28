@@ -3,7 +3,7 @@ import { ContentType } from '@erudit-js/cog/schema';
 import { getTopicParts } from './topicParts';
 
 export async function getContentLink(fullId: string): Promise<string> {
-    const navNode = ERUDIT.contentNav.getNode(fullId);
+    const navNode = ERUDIT.contentNav.getNodeOrThrow(fullId);
 
     switch (navNode.type) {
         case ContentType.Book:

@@ -4,7 +4,7 @@ const routePath = useRoutePath();
 const customLinks = ERUDIT.config.project.customLinks;
 
 const { data: pagesData } =
-    useNuxtData<AsideMajorPagesData>('aside-major-pages');
+    useNuxtData<AsideMajorPagesData>(asideMajorPagesKey);
 
 const activeState = computed(() => {
     return {

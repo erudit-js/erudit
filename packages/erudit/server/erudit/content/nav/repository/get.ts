@@ -1,6 +1,6 @@
 import type { ContentNavNode } from '../types';
 
-export function getNode(fullOrShortId: string): ContentNavNode {
+export function getNode(fullOrShortId: string): ContentNavNode | undefined {
     let foundNode: ContentNavNode | undefined =
         ERUDIT.contentNav.id2Node.get(fullOrShortId);
 
@@ -16,8 +16,18 @@ export function getNode(fullOrShortId: string): ContentNavNode {
         }
     }
 
-    throw createError({
-        statusCode: 404,
-        statusMessage: `Content nav node not found: "${fullOrShortId}"!`,
-    });
+    return undefined;
+}
+
+export function getNodeOrThrow(fullOrShortId: string): ContentNavNode {
+    const foundNode = getNode(fullOrShortId);
+
+    if (!foundNode) {
+        throw createError({
+            statusCode: 404,
+            statusMessage: `Content nav node not found: "${fullOrShortId}"!`,
+        });
+    }
+
+    return foundNode;
 }
