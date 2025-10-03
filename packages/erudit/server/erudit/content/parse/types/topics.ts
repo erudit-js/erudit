@@ -90,12 +90,9 @@ export const topicsParser: ContentParser = async () => {
             try {
                 await ERUDIT.db.insert(ERUDIT.db.schema.topics).values({
                     fullId: navNode.fullId,
-                    parsedArticle: parsedParts.get(TopicPart.Article)
-                        ?.parsedTree,
-                    parsedSummary: parsedParts.get(TopicPart.Summary)
-                        ?.parsedTree,
-                    parsedPractice: parsedParts.get(TopicPart.Practice)
-                        ?.parsedTree,
+                    article: parsedParts.get(TopicPart.Article)?.parsedTree,
+                    summary: parsedParts.get(TopicPart.Summary)?.parsedTree,
+                    practice: parsedParts.get(TopicPart.Practice)?.parsedTree,
                 });
 
                 await insertContentConfig(navNode, topicModule?.default);

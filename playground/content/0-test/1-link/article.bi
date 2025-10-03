@@ -6,7 +6,7 @@ Some of links target me!
 
 # Unique links
 
-Unique links target specific bitran products.
+Unique links target specific products.
 
 ## Scope: Current part
 

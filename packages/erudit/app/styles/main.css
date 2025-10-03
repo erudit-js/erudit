@@ -1,7 +1,9 @@
 /* Noto Fonts */
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&family=Noto+Serif:ital,wght@0,100..900;1,100..900&display=swap');
 /* Tailwind CSS */
-@import 'tailwindcss' source('../..');
+@import 'tailwindcss' source(none);
+@source '../..';
+@source '../../../prose/src/app/front';
 
 @custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
 
@@ -61,7 +63,7 @@
 
 @layer base {
     :root {
-        --_pMainX: var(--spacing-normal);
+        --_pMainX: 18px;
         --_pMainY: var(--spacing-small);
         background: var(--color-bg-root);
         color: var(--color-text);
@@ -100,7 +102,7 @@
 
 @variant micro {
     :root {
-        --_pMainX: var(--spacing-big);
+        --_pMainX: 34px;
         --_pMainY: var(--spacing-normal);
     }
 }

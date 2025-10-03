@@ -1,17 +1,22 @@
 <script lang="ts" setup>
 import type { MaybeMyIconName } from '#my-icons';
+import EruditLink from '../EruditLink';
 
-defineProps<{
+const { external } = defineProps<{
     icon: MaybeMyIconName;
     link?: string;
     state?: 'brand' | 'disabled';
+    external?: boolean;
 }>();
+
+const LinkComponent = external ? h('a') : EruditLink;
 </script>
 
 <template>
-    <a
+    <component
+        :is="LinkComponent"
         tabindex="0"
-        :href="link"
+        :to="link"
         target="_blank"
         :class="{
             'p-small micro:text-[18px] cursor-pointer rounded bg-transparent text-[14px] transition-[background,color,opacity]': true,
@@ -21,5 +26,5 @@ defineProps<{
         }"
     >
         <MaybeMyIcon :name="icon" />
-    </a>
+    </component>
 </template>

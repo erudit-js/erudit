@@ -18,7 +18,7 @@ export type PreviewRequestDirectLink = {
 export type PreviewRequestContentPage = {
     type: PreviewType.ContentPage;
     shortId: string;
-    topicPart?: TopicPart;
+    typeOrPart?: ContentType | TopicPart;
 };
 
 export type PreviewRequestUnique = {

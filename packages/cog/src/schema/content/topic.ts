@@ -1,4 +1,4 @@
-import type { ContentConfig } from './config';
+import type { ContentConfig } from './base';
 
 export enum TopicPart {
     Article = 'article',

@@ -6,6 +6,7 @@ defineProps<{
     main: string;
     secondary?: string;
     link?: string;
+    external?: boolean;
 }>();
 
 const { closePreview, hasPreviousRequest, setPreviousPreview } = usePreview();
@@ -25,7 +26,7 @@ const { closePreview, hasPreviousRequest, setPreviousPreview } = usePreview();
             />
             <div class="flex flex-1 flex-col justify-center overflow-hidden">
                 <div
-                    class="micro:text-sm overflow-hidden text-xs font-semibold text-nowrap overflow-ellipsis"
+                    class="micro:text-sm overflow-hidden text-xs font-bold text-nowrap overflow-ellipsis"
                 >
                     {{ main }}
                 </div>
@@ -42,12 +43,18 @@ const { closePreview, hasPreviousRequest, setPreviousPreview } = usePreview();
                 <PreviewScreenButton
                     :class="hasPreviousRequest ? '' : 'opacity-0'"
                     icon="arrow/left"
+                    :external="true"
                     @click="setPreviousPreview"
                 />
-                <PreviewScreenButton icon="cross" @click="closePreview" />
+                <PreviewScreenButton
+                    icon="cross"
+                    @click="closePreview"
+                    :external="true"
+                />
                 <PreviewScreenButton
                     icon="arrow/outward"
                     :link
+                    :external
                     :state="link ? 'brand' : 'disabled'"
                 />
             </div>

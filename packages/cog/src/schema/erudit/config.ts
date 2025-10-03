@@ -4,7 +4,6 @@ import type { EruditIndex } from './index';
 import type { EruditSponsors } from '../sponsor';
 import type { EruditAdsBanners } from './ads';
 import type { EruditAnalytics } from './analytics';
-import type { EruditBitran } from './bitran';
 import type { EruditContent } from './content';
 import type { EruditDebug } from './debug';
 import type { EruditCustomLinks } from './links';
@@ -27,7 +26,6 @@ export interface EruditConfig {
     seo?: EruditSeo;
     repository?: EruditRepository;
     customLinks?: EruditCustomLinks;
-    bitran?: EruditBitran;
     elements?: EruditElements;
     /**
      * Erudit uses Nuxt under the hood.

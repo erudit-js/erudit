@@ -1,3 +1,5 @@
+import type { ContentType, TopicPart } from '@erudit-js/cog/schema';
+
 import type { Document } from '../../document';
 import { ProseError } from '../../error';
 import type { ElementSchema } from '../../schema';
@@ -7,9 +9,59 @@ import { isUnique, type ElementUniqueAny } from '../../unique';
 import { isTextElement } from '../text';
 
 export enum LinkType {
-    Unknown = 'unknown',
+    Direct = 'direct',
     Unique = 'unique',
     Document = 'document',
+}
+
+export interface LinkDataBase {
+    text: string;
+}
+
+export interface LinkDataDirect extends LinkDataBase {
+    type: LinkType.Direct;
+    href: string;
+}
+
+export interface LinkDataUnique extends LinkDataBase {
+    type: LinkType.Unique;
+    targetUniqueId: string;
+}
+
+export interface LinkDataDocument extends LinkDataBase {
+    type: LinkType.Document;
+    targetDocumentUrl: string;
+}
+
+export type LinkData = LinkDataDirect | LinkDataUnique | LinkDataDocument;
+
+export type LinkStorageUnique = {
+    type: LinkType.Unique;
+    href: string;
+    elementName: string;
+    title: string;
+    documentTypeOrPart: ContentType | TopicPart;
+    documentTitle: string;
+};
+
+export type LinkStorageDocument = {
+    type: LinkType.Document;
+    href: string;
+    typeOrPart: ContentType | TopicPart;
+    title: string;
+};
+
+export type LinkStorage = LinkStorageUnique | LinkStorageDocument | undefined;
+
+export function createLinkStorageKey(data: LinkData): string | undefined {
+    switch (data.type) {
+        case LinkType.Direct:
+            return undefined;
+        case LinkType.Unique:
+            return 'link:' + data.type + ':' + data.targetUniqueId;
+        case LinkType.Document:
+            return 'link:' + data.type + ':' + data.targetDocumentUrl;
+    }
 }
 
 export const linkName = 'link';
@@ -18,11 +70,8 @@ export type LinkSchema = ElementSchema<{
     Type: ElementType.Inliner;
     Name: typeof linkName;
     Linkable: false;
-    Data:
-        | { type: LinkType.Unknown; href: string }
-        | { type: LinkType.Unique; targetUniqueId: string }
-        | { type: LinkType.Document; targetDocumentUrl: string };
-    Storage: { resolvedHref: string };
+    Data: LinkData;
+    Storage: LinkStorage;
     Children: undefined;
 }>;
 
@@ -63,16 +112,22 @@ export const Link = defineTag('a')<
         let data: LinkSchema['Data'];
 
         if (typeof to === 'string') {
-            data = { type: LinkType.Unknown, href: to };
+            data = { type: LinkType.Direct, href: to, text: child.data };
         } else if (isUnique(to)) {
-            data = { type: LinkType.Unique, targetUniqueId: to.id };
+            data = {
+                type: LinkType.Unique,
+                targetUniqueId: to.id,
+                text: child.data,
+            };
         } else {
             data = {
                 type: LinkType.Document,
                 targetDocumentUrl: to.url,
+                text: child.data,
             };
         }
 
         element.data = data;
+        element.storageKey = createLinkStorageKey(data);
     },
 });

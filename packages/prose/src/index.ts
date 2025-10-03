@@ -12,4 +12,5 @@ export * from './type';
 export * from './unique';
 export * from './walk';
 export * from './snippet';
-export * from './global';
+export * from './globalElement';
+export * from './storage';

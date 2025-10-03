@@ -20,7 +20,7 @@ export default createProseDocument({
                 description: 'Описание Петра',
             }}
         >
-            Это мой параграф
+            Это мой параграф!
         </p>
         <Ul $={uniques.myOl}>
             <Li>sdf</Li>

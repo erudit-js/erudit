@@ -4,9 +4,9 @@ import { TopicPart } from '@erudit-js/cog/schema';
 export async function getTopicParts(fullId: string): Promise<TopicPart[]> {
     const dbResult = await ERUDIT.db
         .select({
-            hasArticle: sql<boolean>`(${ERUDIT.db.schema.topics.parsedArticle} IS NOT NULL)`,
-            hasSummary: sql<boolean>`(${ERUDIT.db.schema.topics.parsedSummary} IS NOT NULL)`,
-            hasPractice: sql<boolean>`(${ERUDIT.db.schema.topics.parsedPractice} IS NOT NULL)`,
+            hasArticle: sql<boolean>`(${ERUDIT.db.schema.topics.article} IS NOT NULL)`,
+            hasSummary: sql<boolean>`(${ERUDIT.db.schema.topics.summary} IS NOT NULL)`,
+            hasPractice: sql<boolean>`(${ERUDIT.db.schema.topics.practice} IS NOT NULL)`,
         })
         .from(ERUDIT.db.schema.topics)
         .where(eq(ERUDIT.db.schema.topics.fullId, fullId));

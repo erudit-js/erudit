@@ -37,7 +37,7 @@ npm erudit dev|build|write|generate|preview
 
 - `packages/cog` — Erudit types, schemas, tools
 - `packages/cli` — CLI for running, building and previewing Erudit projects
-- `packages/bitran-elements` — collection of default and pluggable Bitran elements
+- `packages/prose` — custom JSX DSL with collection of default and pluggable elements
 - `packages/erudit` — Erudit app in form of Nuxt Layer
 
 ## Local Development

@@ -1,5 +1,3 @@
-import { diagramDeps, mathDeps } from '@erudit-js/bitran-elements';
-
 export default defineEruditConfig({
     //contentTargets: ['test', 'zet'],
     debug: {
@@ -134,9 +132,6 @@ export default defineEruditConfig({
             //     ],
             // },
         },
-    },
-    bitran: {
-        stat: ['paragraph', ['math', 'link']],
     },
     elements: [
         '@erudit-js/prose/elements/list/list', // Use proxy here? Will have to proxy erudit/prose/elements/* somehow...

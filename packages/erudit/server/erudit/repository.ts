@@ -1,6 +1,9 @@
+import { getContentBreadcrumbs } from './content/repository/breadcrumbs';
 import { getContentLink } from './content/repository/contentLink';
+
 import { getTopicParts } from './content/repository/topicParts';
 import { countContributors } from './contributors/repository/count';
+import { resolveProse } from './prose/repository/resolveProse';
 import { countSponsors } from './sponsors/repository/count';
 
 export const repository = {
@@ -13,6 +16,10 @@ export const repository = {
     content: {
         topicParts: getTopicParts,
         link: getContentLink,
+        breadcrumbs: getContentBreadcrumbs,
+    },
+    prose: {
+        resolve: resolveProse,
     },
 } as const;
 

@@ -14,7 +14,7 @@ export let jiti: Jiti;
 
 export async function setupServerImporter() {
     jiti = createJiti(ERUDIT.config.paths.project, {
-        fsCache: true,
+        fsCache: false,
         moduleCache: false,
         jsx: {
             runtime: 'automatic',

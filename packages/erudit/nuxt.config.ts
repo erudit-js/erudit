@@ -26,7 +26,7 @@ export default defineNuxtConfig({
         iconsDir: '@erudit/app/assets/icons',
     },
     build: {
-        transpile: ['yaml', 'photoswipe'],
+        transpile: ['photoswipe'],
     },
     plugins: ['@erudit/app/plugins/appSetup'],
     nitro: {
@@ -34,6 +34,13 @@ export default defineNuxtConfig({
         esbuild: {
             options: {
                 charset: 'utf8',
+            },
+        },
+        typescript: {
+            tsConfig: {
+                compilerOptions: {
+                    verbatimModuleSyntax: true,
+                },
             },
         },
         // @see https://github.com/nitrojs/nitro/issues/3565
@@ -44,7 +51,13 @@ export default defineNuxtConfig({
         // },
         rollupConfig: {
             external(source) {
-                return source.includes('erudit-js/prose');
+                const ignore = ['erudit-js/prose', 'jiti'];
+
+                for (const ignoreItem of ignore) {
+                    if (source.includes(ignoreItem)) {
+                        return true;
+                    }
+                }
             },
         },
     },
@@ -79,7 +92,6 @@ export default defineNuxtConfig({
             include: [
                 '@vue/devtools-core',
                 '@vue/devtools-kit',
-                'yaml',
                 'photoswipe',
                 '@floating-ui/vue',
                 'perfect-debounce',

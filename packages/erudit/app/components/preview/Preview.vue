@@ -61,6 +61,18 @@ function resizePreview() {
         previewElement.value!.setAttribute('style', `height: ${newHeight}px`);
     }
 }
+
+// Prefetch phrases
+await usePhrases(
+    'book',
+    'page',
+    'group',
+    'topic',
+    'article',
+    'summary',
+    'practice',
+    'preview_content_page_description',
+);
 </script>
 
 <template>
@@ -79,7 +91,7 @@ function resizePreview() {
                 ]"
             >
                 <div ref="previewScreen" class="max-h-[inherit]">
-                    <TransitionFade>
+                    <TransitionFade mode="out-in">
                         <Suspense :timeout="0" @resolve="delayedResize">
                             <CurrentScreen
                                 v-if="CurrentScreen"

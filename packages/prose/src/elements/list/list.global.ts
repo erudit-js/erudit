@@ -1,4 +1,4 @@
-import { defineGlobalElement } from '../../global';
+import { defineGlobalElement } from '../../globalElement';
 import { listName, type ListSchema } from './schema';
 import { Ol, Ul } from './tags';
 

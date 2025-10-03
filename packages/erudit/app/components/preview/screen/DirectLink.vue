@@ -5,7 +5,12 @@ const phrase = await usePhrases('direct_link', 'direct_link_explain');
 </script>
 
 <template>
-    <PreviewScreen icon="link" :main="phrase.direct_link" :link="request.href">
+    <PreviewScreen
+        icon="link"
+        :main="phrase.direct_link"
+        :link="request.href"
+        :external="true"
+    >
         <div class="p-normal micro:text-base text-sm">
             <div>{{ phrase.direct_link_explain }}</div>
             <div class="mt-small font-mono break-words underline">

@@ -35,15 +35,17 @@
         "dist"
     ],
     "scripts": {
-        "build": "unbuild",
+        "build": "bun mkdist -d --loaders=js",
+        "dev": "bun run dev.ts",
         "test": "vitest run",
         "test:watch": "vitest"
     },
     "peerDependencies": {
-        "vue": "latest"
+        "vue": "latest",
+        "@erudit-js/cog": "workspace:3.0.0-dev.23"
     },
     "devDependencies": {
-        "unbuild": "^3.6.1",
-        "vitest": "^3.2.4"
+        "vitest": "^3.2.4",
+        "mkdist": "^2.4.1"
     }
 }

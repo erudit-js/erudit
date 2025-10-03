@@ -38,6 +38,15 @@ const ru: LanguagePhrases = {
         'Помогите улучшить проект.<br><strong style="color: inherit;">Включите показ рекламы!</strong>',
     direct_link: 'Прямая ссылка',
     direct_link_explain: 'Вы собираетесь открыть прямую ссылку:',
+    book: 'Учебник',
+    group: 'Группа',
+    topic: 'Тема',
+    article: 'Статья',
+    summary: 'Конспект',
+    practice: 'Задачи',
+    page: 'Страница',
+    preview_content_page_description:
+        'Вы собираетесь перейти на страницу контента:',
 
     // _language_title: 'Русский',
     // _language_code: 'ru',

@@ -1,4 +1,6 @@
-import appElements from '#erudit/prose/app-elements';
+import { default as _appElements } from '#erudit/prose/app-elements';
+
+export const appElements = _appElements;
 
 export async function getElementIcon(elementName: string) {
     const appElement = getAppElement(elementName);

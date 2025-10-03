@@ -22,7 +22,6 @@ export async function setupEruditFullRestart(
         paths.package + '/shared',
         paths.package + '/nuxt.config.ts',
         ...globSync(paths.project + '/erudit.config.{js,ts}'),
-        ...globSync(paths.project + '/bitran.{app,server}.{js,ts}'),
     ];
 
     const watcher = chokidar.watch(watchTargets, {

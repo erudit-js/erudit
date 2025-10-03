@@ -2,38 +2,53 @@ import { writeFileSync } from 'node:fs';
 import { existsSync } from 'node:fs';
 import type { Nuxt } from '@nuxt/schema';
 import { addTemplate, resolvePath } from 'nuxt/kit';
+
 import type { GlobalElementDefinition } from '@erudit-js/prose';
+import { paragraphName } from '@erudit-js/prose/default/paragraph/index';
+import { headingName } from '@erudit-js/prose/default/heading/index';
+import { spanName } from '@erudit-js/prose/default/span/index';
 
 import type { EruditRuntimeConfig } from '../../../shared/types/runtimeConfig';
 import { moduleLogger } from '../logger';
 
-const BUILTIN_TAGS = [
-    {
-        name: 'Paragraph',
-        module: '@erudit-js/prose/default/paragraph/index',
-        exportName: 'Paragraph',
+type BuiltinElement = {
+    appDefinition: string;
+    tags?: Record<string, string>;
+};
+
+type BuiltinElements = Record<string, BuiltinElement>;
+
+const BUILTIN_ELEMENTS: BuiltinElements = {
+    [paragraphName]: {
+        appDefinition: '@erudit-js/prose/default/paragraph/app',
+        tags: { Paragraph: '@erudit-js/prose/default/paragraph/index' },
     },
-    {
-        name: 'H1',
-        module: '@erudit-js/prose/default/heading/index',
-        exportName: 'H1',
+    [headingName]: {
+        appDefinition: '@erudit-js/prose/default/heading/app',
+        tags: {
+            H1: '@erudit-js/prose/default/heading/index',
+            H2: '@erudit-js/prose/default/heading/index',
+            H3: '@erudit-js/prose/default/heading/index',
+        },
     },
-    {
-        name: 'H2',
-        module: '@erudit-js/prose/default/heading/index',
-        exportName: 'H2',
+    [spanName]: {
+        appDefinition: '@erudit-js/prose/default/span/app',
+        tags: { Span: '@erudit-js/prose/default/span/index' },
     },
-    {
-        name: 'H3',
-        module: '@erudit-js/prose/default/heading/index',
-        exportName: 'H3',
-    },
-    {
-        name: 'Span',
-        module: '@erudit-js/prose/default/span/index',
-        exportName: 'Span',
-    },
-] as const;
+};
+
+const BUILTIN_TAGS = Object.values(BUILTIN_ELEMENTS).flatMap((element) =>
+    Object.entries(element.tags ?? {}).map(([tagName, modulePath]) => ({
+        name: tagName,
+        module: modulePath,
+        exportName: tagName,
+    })),
+);
+
+const BUILTIN_APP_IMPORTS = Object.values(BUILTIN_ELEMENTS).map((el) => {
+    const parts = el.appDefinition.split('/');
+    return { name: parts[parts.length - 2]!, path: el.appDefinition };
+});
 
 let registeredElements = 0;
 let registeredTags: Map<string, string> = new Map();
@@ -115,10 +130,28 @@ export async function setupEruditElements(
                 await import(elementImportPath)
             ).default;
 
+            const importedName =
+                (globalElement as any)?.name &&
+                typeof (globalElement as any).name === 'string'
+                    ? (globalElement as any).name
+                    : undefined;
+
+            if (importedName && importedName in BUILTIN_ELEMENTS) {
+                throw new Error(
+                    `Built-in element "${importedName}" cannot be overridden by "${elementPath}".`,
+                );
+            }
+
             registerElementDependencies(nuxt, globalElement);
             registerElementTags(globalElement, elementImportPath);
             registeredElements++;
         } catch (error) {
+            if (
+                error instanceof Error &&
+                error.message.startsWith('Built-in element')
+            ) {
+                throw error;
+            }
             moduleLogger.warn(
                 `Failed to register prose elements: ${elementPath}\n\n${error}`,
             );
@@ -128,6 +161,7 @@ export async function setupEruditElements(
     createGlobalTagTypes(runtimeConfig);
     createTagsTemplate(nuxt, runtimeConfig);
     await createAppElementsTemplate(nuxt, runtimeConfig);
+    await createGlobalElementsTemplate(nuxt, runtimeConfig);
 
     moduleLogger.info(
         `Registered ${registeredElements} prose elements and ${registeredTags.size} tags${
@@ -199,34 +233,33 @@ function createTagsTemplate(nuxt: Nuxt, runtimeConfig: EruditRuntimeConfig) {
         runtimeConfig.paths.build + `/nuxt/.nuxt/${templateBase}.ts`;
 }
 
-async function createAppElementsTemplate(
+async function createElementsTemplate(
     nuxt: Nuxt,
     runtimeConfig: EruditRuntimeConfig,
+    options: {
+        templateBase: string;
+        variantSuffix: string;
+        defaultImports: { name: string; path: string }[];
+    },
 ) {
-    const templateBase = '#erudit/prose/app-elements';
+    const { templateBase, variantSuffix, defaultImports } = options;
 
     addTemplate({
         filename: templateBase + '.ts',
         write: true,
         async getContents() {
-            const defaultImports = [
-                { name: 'link', path: '@erudit-js/prose/default/link/app' },
-                {
-                    name: 'paragraph',
-                    path: '@erudit-js/prose/default/paragraph/app',
-                },
-                {
-                    name: 'heading',
-                    path: '@erudit-js/prose/default/heading/app',
-                },
-                { name: 'span', path: '@erudit-js/prose/default/span/app' },
-            ];
-
             let imports = defaultImports
                 .map((i) => `import ${i.name} from '${i.path}';`)
                 .join('\n');
 
-            const appElementVars = defaultImports.map((i) => i.name);
+            imports =
+                options.variantSuffix === 'global'
+                    ? "import type { GlobalElementDefinitions } from '@erudit-js/prose';\n" +
+                      imports
+                    : "import type { AppElementDefinitions } from '@erudit-js/prose/app';\n" +
+                      imports;
+
+            const elementVars = defaultImports.map((i) => i.name);
 
             if (runtimeConfig.project.elements?.length) {
                 for (
@@ -234,8 +267,8 @@ async function createAppElementsTemplate(
                     idx < runtimeConfig.project.elements.length;
                     idx++
                 ) {
-                    let elementPath = runtimeConfig.project.elements[idx];
-                    let importPath = elementPath + '.app';
+                    let basePath = runtimeConfig.project.elements[idx];
+                    let importPath = basePath + '.' + variantSuffix;
                     let resolvedPath = importPath;
                     if (importPath.startsWith('./')) {
                         resolvedPath = importPath.replace(
@@ -246,27 +279,50 @@ async function createAppElementsTemplate(
                     let absPath: string;
                     try {
                         absPath = await resolvePath(resolvedPath);
-                    } catch (e) {
+                    } catch {
                         absPath = '';
                     }
-                    if (!absPath || !existsSync(absPath)) {
-                        continue;
-                    }
-                    imports += `\nimport appElements${idx} from '${importPath}';`;
-                    appElementVars.push(`appElements${idx}`);
+                    if (!absPath || !existsSync(absPath)) continue;
+                    imports += `\nimport ${variantSuffix}_elements_${idx} from '${absPath}';`;
+                    elementVars.push(`${variantSuffix}_elements_${idx}`);
                 }
             }
 
             return `
+
 ${imports}
 
-export default Object.fromEntries([
-    ${appElementVars.join(',\n    ')}
-].map(appElement => [appElement.name, appElement]));`;
+const elements: ${options.variantSuffix === 'global' ? 'GlobalElementDefinitions' : 'AppElementDefinitions'} = Object.fromEntries([
+    ${elementVars.join(',\n    ')}
+].map(e => [e.name, e]));
+
+export default elements;`;
         },
     });
 
     const alias = (nuxt.options.alias ||= {});
     alias[templateBase] =
         runtimeConfig.paths.build + `/nuxt/.nuxt/${templateBase}.ts`;
+}
+
+async function createAppElementsTemplate(
+    nuxt: Nuxt,
+    runtimeConfig: EruditRuntimeConfig,
+) {
+    return createElementsTemplate(nuxt, runtimeConfig, {
+        templateBase: '#erudit/prose/app-elements',
+        variantSuffix: 'app',
+        defaultImports: [...BUILTIN_APP_IMPORTS],
+    });
+}
+
+async function createGlobalElementsTemplate(
+    nuxt: Nuxt,
+    runtimeConfig: EruditRuntimeConfig,
+) {
+    return createElementsTemplate(nuxt, runtimeConfig, {
+        templateBase: '#erudit/prose/global-elements',
+        variantSuffix: 'global',
+        defaultImports: [],
+    });
 }

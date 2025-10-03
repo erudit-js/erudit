@@ -41,6 +41,7 @@ export async function parseJsxContent(argObj: {
             domId: createDomId(ids, jsxElement),
             type: jsxElement.type,
             name: jsxElement.name,
+            storageKey: jsxElement.storageKey,
             data: jsxElement.data,
             children: transformedChildren as any,
         };

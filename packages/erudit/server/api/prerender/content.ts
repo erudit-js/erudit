@@ -16,7 +16,7 @@ export default defineEventHandler(async () => {
                 routes.push(PAGES.topic(part, navNode.shortId));
                 // Preview
                 routes.push(
-                    `/api/preview/contentPage/${navNode.shortId}...${part}`,
+                    `/api/preview/contentPage/${createContentPath(part, navNode.shortId)}`,
                 );
             }
 
@@ -27,7 +27,7 @@ export default defineEventHandler(async () => {
         routes.push(await ERUDIT.repository.content.link(navNode.fullId));
         // Preview
         routes.push(
-            `/api/preview/contentPage/${navNode.shortId}...${navNode.type}`,
+            `/api/preview/contentPage/${createContentPath(navNode.type, navNode.shortId)}`,
         );
     }
 

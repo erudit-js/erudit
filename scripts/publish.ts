@@ -6,7 +6,7 @@ import { argv } from 'node:process';
 const packagesDir = join(__dirname, '../packages');
 const packages = readdirSync(packagesDir);
 
-const orderedPackages = ['cog', 'cli', 'bitran-elements', 'erudit'];
+const orderedPackages = ['cog', 'cli', 'prose', 'erudit'];
 const otherPackages = packages.filter((pkg) => !orderedPackages.includes(pkg));
 const allPackages = [...orderedPackages, ...otherPackages];
 

@@ -8,6 +8,7 @@ import type { JsxSnippet } from './snippet';
 type ConstructElementKind<TSchema extends ElementSchemaAny, TProperties> = {
     type: TSchema['Type'];
     name: TSchema['Name'];
+    storageKey: string | undefined;
     data: TSchema['Data'];
     children: TSchema['Children'] extends ElementSchemaAny[]
         ? ConstructElementKind<
@@ -38,16 +39,6 @@ export type ParsedElement<TSchema extends ElementSchemaAny> =
         {
             uniqueId: string | undefined;
             domId: string | undefined;
-        }
-    >;
-
-export type ResolvedElement<TSchema extends ElementSchemaAny> =
-    ConstructElementKind<
-        TSchema,
-        {
-            storageKey: string | undefined;
-            storageData: TSchema['Storage'] | undefined;
-            uid: string | undefined;
         }
     >;
 

@@ -44,6 +44,14 @@ export type LanguagePhrases = Phrases<{
     ads_replacer: string;
     direct_link: string;
     direct_link_explain: string;
+    book: string;
+    group: string;
+    topic: string;
+    article: string;
+    summary: string;
+    practice: string;
+    page: string;
+    preview_content_page_description: string;
 
     // _language_title: string;
     // _language_code: string;

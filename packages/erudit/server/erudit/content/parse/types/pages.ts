@@ -63,7 +63,7 @@ export const pagesParser: ContentParser = async () => {
             try {
                 await ERUDIT.db.insert(ERUDIT.db.schema.pages).values({
                     fullId: navNode.fullId,
-                    parsedTree: parsedContent.parsedTree,
+                    blocks: parsedContent.parsedTree,
                 });
 
                 await insertContentConfig(navNode, pageModule.default);

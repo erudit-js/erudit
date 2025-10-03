@@ -31,13 +31,8 @@
         "prepack": "bun unbuild"
     },
     "dependencies": {
-        "@nuxt/schema": "^4.0.3",
+        "@nuxt/schema": "^4.1.2",
         "gradient-string": "^3.0.0"
-    },
-    "peerDependencies": {
-        "@bitran-js/core": "1.0.0-dev.13",
-        "@bitran-js/renderer-vue": "1.0.0-dev.13",
-        "@bitran-js/transpiler": "1.0.0-dev.13"
     },
     "devDependencies": {
         "unbuild": "^3.6.1"
