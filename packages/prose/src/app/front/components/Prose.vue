@@ -23,7 +23,8 @@ provide(proseContextSymbol, {
 <template>
     <section
         :class="[
-            'micro:[--proseAsideWidth:20px] [--proseAsideWidth:12px] [--proseGap:none]',
+            `micro:[--proseAsideWidth:20px] [--proseAsideWidth:12px]
+            [--proseGap:none]`,
             '',
         ]"
     >

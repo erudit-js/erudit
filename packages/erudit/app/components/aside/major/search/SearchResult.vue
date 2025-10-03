@@ -49,7 +49,8 @@ if (isElementCategory) {
     <li>
         <AsideListItem :to="result.link">
             <div
-                class="p-normal text-text-muted hocus:text-text text-sm transition-[color]"
+                class="p-normal text-text-muted hocus:text-text text-sm
+                    transition-[color]"
             >
                 <div class="gap-normal flex">
                     <div class="relative h-[1em] w-[1em]">
@@ -76,14 +77,16 @@ if (isElementCategory) {
                     >
                         <span
                             v-for="synonym in result.synonyms"
-                            class="text-text-dimmed rounded bg-neutral-200 px-[5px] py-[3px] dark:bg-neutral-800"
+                            class="text-text-dimmed rounded bg-neutral-200
+                                px-[5px] py-[3px] dark:bg-neutral-800"
                         >
                             {{ synonym }}
                         </span>
                     </div>
                     <div
                         v-if="result.location"
-                        class="text-text-dimmed pt-small gap-small flex items-center text-xs italic"
+                        class="text-text-dimmed pt-small gap-small flex
+                            items-center text-xs italic"
                     >
                         <MyIcon name="arrow/up-to-right" />
                         {{ result.location }}

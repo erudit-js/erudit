@@ -78,15 +78,20 @@ await usePhrases(
 <template>
     <div class="sticky top-0 z-100">
         <div
-            class="pointer-events-none absolute top-0 right-0 left-0 h-dvh touch-none"
+            class="pointer-events-none absolute top-0 right-0 left-0 h-dvh
+                touch-none"
         >
             <div
                 ref="preview"
                 :class="[
-                    'border-border bg-bg-main pointer-events-auto absolute bottom-0 w-full touch-auto overflow-hidden rounded-[25px] rounded-b-none border-t transition-[box-shadow,background,border,max-height,height,translate]',
+                    `border-border bg-bg-main pointer-events-auto absolute
+                    bottom-0 w-full touch-auto overflow-hidden rounded-[25px]
+                    rounded-b-none border-t
+                    transition-[box-shadow,background,border,max-height,height,translate]`,
                     'micro:max-h-[70dvh] max-h-[90dvh]',
                     previewState.opened
-                        ? 'translate-y-0 shadow-[0px_-10px_15px_5px_light-dark(rgba(0,0,0,0.1),rgba(255,255,255,0.05))]'
+                        ? `translate-y-0
+                            shadow-[0px_-10px_15px_5px_light-dark(rgba(0,0,0,0.1),rgba(255,255,255,0.05))]`
                         : 'translate-y-full shadow-none',
                 ]"
             >
@@ -110,10 +115,12 @@ await usePhrases(
                     <div
                         v-if="previewState.blink"
                         :key="previewState.blink"
-                        class="pointer-events-none absolute top-0 left-0 h-full w-full touch-none"
+                        class="pointer-events-none absolute top-0 left-0 h-full
+                            w-full touch-none"
                     >
                         <div
-                            class="bg-brand animate-opacity-blink absolute top-0 left-0 h-full w-full opacity-0"
+                            class="bg-brand animate-opacity-blink absolute top-0
+                                left-0 h-full w-full opacity-0"
                         ></div>
                     </div>
                 </TransitionFade>

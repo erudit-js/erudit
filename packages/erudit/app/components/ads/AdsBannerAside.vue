@@ -33,10 +33,12 @@ onMounted(() => {
 <template>
     <section
         v-if="adsData"
-        class="p-small border-border border-t transition-[border] [@media(max-height:500px)]:hidden"
+        class="p-small border-border border-t transition-[border]
+            [@media(max-height:500px)]:hidden"
     >
         <div
-            class="relative max-h-[300px] overflow-hidden [@media(max-height:700px)]:max-h-[100px]"
+            class="relative max-h-[300px] overflow-hidden
+                [@media(max-height:700px)]:max-h-[100px]"
         >
             <Ads :data="adsData" />
         </div>

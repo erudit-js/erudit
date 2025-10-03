@@ -56,10 +56,12 @@ const phrase = await usePhrases(
             <!-- Active button underline -->
             <div
                 :style="`left: calc(${underlinePaneIndex} * var(--_button-size))`"
-                :class="`absolute bottom-0 w-(--_button-size) transition-[left]`"
+                :class="'absolute bottom-0 w-(--_button-size) transition-[left]'"
             >
                 <div
-                    class="bg-text-muted absolute right-(--_underline-p) bottom-[-2px] left-(--_underline-p) h-[3px] rounded-[20px]"
+                    class="bg-text-muted absolute right-(--_underline-p)
+                        bottom-[-2px] left-(--_underline-p) h-[3px]
+                        rounded-[20px]"
                 ></div>
             </div>
         </div>

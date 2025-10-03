@@ -19,7 +19,8 @@ const active = computed(() => {
         @click="asideMajorPane = pane"
         :title="hint"
         :class="[
-            'group relative flex size-(--_button-size) cursor-pointer items-center justify-center transition-[color]',
+            `group relative flex size-(--_button-size) cursor-pointer
+            items-center justify-center transition-[color]`,
             {
                 'text-text': active,
                 'text-text-muted hocus:text-text': !active,
@@ -29,7 +30,9 @@ const active = computed(() => {
         <MyIcon :name="icon" class="size-[40%]" />
         <!-- Button underline -->
         <div
-            class="group-hocus:bg-border absolute right-(--_underline-p) bottom-[-2px] left-(--_underline-p) h-[3px] rounded-[20px] bg-transparent transition-[background]"
+            class="group-hocus:bg-border absolute right-(--_underline-p)
+                bottom-[-2px] left-(--_underline-p) h-[3px] rounded-[20px]
+                bg-transparent transition-[background]"
         ></div>
     </button>
 </template>

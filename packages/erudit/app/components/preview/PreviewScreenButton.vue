@@ -19,7 +19,8 @@ const LinkComponent = external ? h('a') : EruditLink;
         :to="link"
         target="_blank"
         :class="{
-            'p-small micro:text-[18px] cursor-pointer rounded bg-transparent text-[14px] transition-[background,color,opacity]': true,
+            [`p-small micro:text-[18px] cursor-pointer rounded bg-transparent
+            text-[14px] transition-[background,color,opacity]`]: true,
             'pointer-events-none opacity-15': state === 'disabled',
             'text-brand hocus:bg-brand/20': state === 'brand',
             'text-text-muted hocus:text-text hocus:bg-bg-accent': !state,

@@ -50,7 +50,9 @@ function checkActiveDescendant(
 
 <template>
     <div
-        class="my-small py-small mx-0 border-y border-[var(--color-border)] px-0 first:mt-0 first:border-t-0 first:pt-0 [&+div]:mt-0 [&+div]:border-t-0 [&+div]:pt-0"
+        class="my-small py-small mx-0 border-y border-[var(--color-border)] px-0
+            first:mt-0 first:border-t-0 first:pt-0 [&+div]:mt-0
+            [&+div]:border-t-0 [&+div]:pt-0"
     >
         <ItemTemplate :navItem :state :class="['font-semibold']" />
         <ContentNavItem

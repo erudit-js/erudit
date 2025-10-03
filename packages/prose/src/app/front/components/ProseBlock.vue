@@ -28,7 +28,10 @@ onMounted(() => {
     >
         <div :class="[proseStyle.blockAbove, 'h-(--proseGap)']"></div>
 
-        <div class="relative">
+        <div
+            class="relative askldf asdlkf lkasjf lksadjflksklsfaksld jakld
+                aklsdfjaklsdfj lksadjf ;lkasjfljf; fajsfdljsfklajdsf sdfsadf"
+        >
             <div
                 :class="[
                     proseStyle.blockAside,
@@ -38,7 +41,8 @@ onMounted(() => {
                 <div
                     :class="[
                         proseStyle.blockAsideBg,
-                        'micro:rounded absolute top-0 left-0 h-full w-full transition-[background]',
+                        `micro:rounded absolutetop-0 left-0 h-full w-full
+                        transition-[background]`,
                     ]"
                 ></div>
             </div>

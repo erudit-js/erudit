@@ -79,7 +79,9 @@ function checkActiveDirectChild(
         <div
             :style="{ '--level': level ? +level : 0 }"
             :class="[
-                'absolute top-0 left-[calc(var(--spacing-normal)*(var(--level)+1)+2px)] h-full border-l opacity-40 transition-[border]',
+                `absolute top-0
+                left-[calc(var(--spacing-normal)*(var(--level)+1)+2px)] h-full
+                border-l opacity-40 transition-[border]`,
                 [hasActiveDirectChild ? 'border-brand' : 'border-text-dimmed'],
             ]"
         ></div>

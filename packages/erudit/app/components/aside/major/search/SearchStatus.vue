@@ -38,7 +38,8 @@ onUnmounted(() => {
     <section ref="section">
         <div
             v-if="icon || message"
-            class="px-normal gap-big text-text-dimmed flex flex-col items-center justify-center py-[40px] text-center text-sm"
+            class="px-normal gap-big text-text-dimmed flex flex-col items-center
+                justify-center py-[40px] text-center text-sm"
         >
             <MaybeMyIcon v-if="icon" :name="icon" class="size-[40px]" />
             <p v-if="message">{{ message }}</p>

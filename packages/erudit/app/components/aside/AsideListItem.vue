@@ -18,9 +18,11 @@ const isExternalLink = computed(() => {
 <template>
     <EruditLink
         :class="[
-            'border-border block min-h-(--h-min-aside-item) border-b bg-transparent text-sm transition-[background,color,border]',
+            `border-border block min-h-(--h-min-aside-item) border-b
+            bg-transparent text-sm transition-[background,color,border]`,
             hoverable &&
-                'hocus:bg-neutral-800/8 hocus:dark:bg-neutral-400/8 cursor-pointer',
+                `hocus:bg-neutral-800/8 hocus:dark:bg-neutral-400/8
+                cursor-pointer`,
             active
                 ? 'text-brand'
                 : ['text-text-muted', hoverable && 'hocus:text-text'],
@@ -29,7 +31,8 @@ const isExternalLink = computed(() => {
     >
         <slot>
             <div
-                class="gap-normal px-normal flex min-h-(--h-min-aside-item) items-center"
+                class="gap-normal px-normal flex min-h-(--h-min-aside-item)
+                    items-center"
             >
                 <MaybeMyIcon
                     v-if="icon"
@@ -43,7 +46,8 @@ const isExternalLink = computed(() => {
                     <MyIcon
                         v-if="isExternalLink"
                         name="arrow/outward"
-                        class="text-text-dimmed absolute top-[3px] right-[-11px] text-[6px]"
+                        class="text-text-dimmed absolute top-[3px] right-[-11px]
+                            text-[6px]"
                     />
                 </span>
                 <slot name="main" v-else-if="$slots.main"></slot>

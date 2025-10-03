@@ -22,7 +22,8 @@ const pharse = await usePhrases('to_index', 'about_textbook');
                 class="absolute top-0 left-0 flex h-full w-full flex-col"
             >
                 <div
-                    class="border-border p-normal shrink-0 border-b text-sm font-bold"
+                    class="border-border p-normal shrink-0 border-b text-sm
+                        font-bold"
                 >
                     {{ frontNavBook.title }}
                 </div>
@@ -56,7 +57,8 @@ const pharse = await usePhrases('to_index', 'about_textbook');
             </div>
             <div
                 v-else
-                class="text-text-dimmed absolute top-0 left-0 flex h-full w-full items-center justify-center text-[50px]"
+                class="text-text-dimmed absolute top-0 left-0 flex h-full w-full
+                    items-center justify-center text-[50px]"
             >
                 <MyRuntimeIcon :svg="loadingSvg" />
             </div>

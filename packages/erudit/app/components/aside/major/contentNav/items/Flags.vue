@@ -44,7 +44,8 @@ const flagOrder: ContentFlag[] = ['secondary', 'advanced', 'dev'];
         >
             <MyIcon
                 :name="flagData(flagType).icon"
-                class="text-text-disabled hocus:text-text-dimmed cursor-help transition-[color]"
+                class="text-text-disabled hocus:text-text-dimmed cursor-help
+                    transition-[color]"
             />
         </div>
     </div>

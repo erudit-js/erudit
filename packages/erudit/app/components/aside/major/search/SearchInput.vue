@@ -70,13 +70,16 @@ const phrase = await usePhrases('search_the_site');
             spellcheck="false"
             :placeholder="phrase.search_the_site"
             v-model="currentQuery"
-            class="ps-normal h-[60px] w-full pe-[calc(0.5*var(--spacing-normal))] font-sans text-sm font-[500] outline-none"
+            class="ps-normal h-[60px] w-full
+                pe-[calc(0.5*var(--spacing-normal))] font-sans text-sm
+                font-[500] outline-none"
         />
         <TransitionFade>
             <div
                 v-if="currentQuery"
                 @click="currentQuery = ''"
-                class="p-normal text-text-dimmed hocus:text-text cursor-pointer ps-[calc(0.5*var(--spacing-normal))] transition-[color]"
+                class="p-normal text-text-dimmed hocus:text-text cursor-pointer
+                    ps-[calc(0.5*var(--spacing-normal))] transition-[color]"
             >
                 <MyIcon name="plus" class="rotate-45" />
             </div>

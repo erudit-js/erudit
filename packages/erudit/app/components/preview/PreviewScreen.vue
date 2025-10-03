@@ -18,7 +18,9 @@ const { closePreview, hasPreviousRequest, setPreviousPreview } = usePreview();
             <slot></slot>
         </div>
         <div
-            class="border-border gap-small micro:gap-normal px-normal micro:h-[60px] flex h-[54px] shrink-0 items-center border-t transition-[border]"
+            class="border-border gap-small micro:gap-normal px-normal
+                micro:h-[60px] flex h-[54px] shrink-0 items-center border-t
+                transition-[border]"
         >
             <MaybeMyIcon
                 :name="icon"
@@ -26,19 +28,22 @@ const { closePreview, hasPreviousRequest, setPreviousPreview } = usePreview();
             />
             <div class="flex flex-1 flex-col justify-center overflow-hidden">
                 <div
-                    class="micro:text-sm overflow-hidden text-xs font-bold text-nowrap overflow-ellipsis"
+                    class="micro:text-sm overflow-hidden text-xs font-bold
+                        text-nowrap overflow-ellipsis"
                 >
                     {{ main }}
                 </div>
                 <div
                     v-if="secondary"
-                    class="text-text-muted text-tiny micro:text-xs overflow-hidden text-nowrap overflow-ellipsis"
+                    class="text-text-muted text-tiny micro:text-xs
+                        overflow-hidden text-nowrap overflow-ellipsis"
                 >
                     {{ secondary }}
                 </div>
             </div>
             <div
-                class="micro:gap-small flex shrink-0 items-center gap-[calc(var(--spacing-small)/2)]"
+                class="micro:gap-small flex shrink-0 items-center
+                    gap-[calc(var(--spacing-small)/2)]"
             >
                 <PreviewScreenButton
                     :class="hasPreviousRequest ? '' : 'opacity-0'"
