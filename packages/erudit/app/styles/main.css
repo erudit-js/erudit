@@ -4,6 +4,8 @@
 @import 'tailwindcss' source(none);
 @source '../..';
 @source '../../../prose/src/app/front';
+@source '../../../prose/src/default';
+@source '../../../prose/src/elements';
 
 @custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
 
@@ -32,7 +34,7 @@
     --color-bg-root: light-dark(#ebebeb, #171717);
     --color-bg-aside: light-dark(#f7f7f7, #1d1d1d);
     --color-bg-main: light-dark(#ffffff, #212121);
-    --color-bg-accent: light-dark(#e6e6e6, #2b2b2b);
+    --color-bg-accent: light-dark(#e6e6e6, #2e2e2e);
     --color-text: light-dark(#373737, #b9b9b9);
     --color-text-deep: light-dark(#232323, #e1e1e1);
     --color-text-muted: light-dark(#696969, #7f7f7f);
@@ -49,6 +51,16 @@
         }
         50% {
             opacity: 0.8;
+        }
+        100% {
+            opacity: 0;
+        }
+    }
+
+    --animate-fade-out: fade-out 8s linear;
+    @keyframes fade-out {
+        0% {
+            opacity: 0.5;
         }
         100% {
             opacity: 0;

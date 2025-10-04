@@ -8,7 +8,9 @@ defineProps<{ element: ParsedElement<ParagraphSchema> }>();
 </script>
 
 <template>
-    <ProseBlock>
-        <Render v-for="child of element.children" :element="child" />
+    <ProseBlock :element>
+        <div class="text-justify break-words">
+            <Render v-for="child of element.children" :element="child" />
+        </div>
     </ProseBlock>
 </template>

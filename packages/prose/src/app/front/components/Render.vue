@@ -3,7 +3,7 @@ import { h, inject, type Component } from 'vue';
 
 import type { ParsedElement } from '../../../element';
 import type { ElementSchemaAny } from '../../../schema';
-import { proseContextSymbol } from '../composables/prose';
+import { proseContextSymbol } from '../composables/appContext';
 import { blocksName } from '../../../default/blocks/index';
 
 // Default Renderers

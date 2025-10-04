@@ -1,18 +1,42 @@
 <script lang="ts" setup>
-import { onMounted, ref, useTemplateRef } from 'vue';
+import { inject, onMounted, ref, useTemplateRef, watch } from 'vue';
 
-import proseStyle from '../styles/prose.module.css';
+import type { ParsedElement } from '../../../element';
+import type { BlockSchemaAny } from '../../../schema';
+import { proseContextSymbol } from '../composables/appContext';
+import { useElementIcon } from '../composables/elementIcon';
+import { useIsAnchor } from '../composables/anchor';
+
+const { element } = defineProps<{ element: ParsedElement<BlockSchemaAny> }>();
+const { MaybeMyIcon, TransitionFade, loadingSvg } = inject(proseContextSymbol)!;
 
 const blockElement = useTemplateRef('block');
-const focus = ref(false);
+const hover = ref(false);
+
+const elementIcon = ref(loadingSvg);
+useElementIcon(element).then((icon) => {
+    elementIcon.value = icon;
+});
+
+const isAnchor = useIsAnchor(element);
 
 onMounted(() => {
-    blockElement.value?.addEventListener('mouseenter', () => {
-        focus.value = true;
+    watch(
+        isAnchor,
+        () => {
+            if (isAnchor.value) {
+                blockElement.value!.scrollIntoView();
+            }
+        },
+        { immediate: true },
+    );
+
+    blockElement.value!.addEventListener('mouseenter', () => {
+        hover.value = true;
     });
 
-    blockElement.value?.addEventListener('mouseleave', () => {
-        focus.value = false;
+    blockElement.value!.addEventListener('mouseleave', () => {
+        hover.value = false;
     });
 });
 </script>
@@ -20,37 +44,63 @@ onMounted(() => {
 <template>
     <div
         ref="block"
-        :class="[
-            proseStyle.block,
-            focus && proseStyle.blockFocus,
-            'pr-(--proseGap) pl-[calc(var(--proseGap)-var(--proseAsideWidth))]',
-        ]"
+        :id="element.domId"
+        class="group/block hocus:not-last:-mb-(--proseGap) hocus:not-last:z-10
+            relative pr-(--proseAsideWidth)"
     >
-        <div :class="[proseStyle.blockAbove, 'h-(--proseGap)']"></div>
+        <div class="h-(--proseGap) group-first/block:hidden"></div>
 
-        <div
-            class="relative askldf asdlkf lkasjf lksadjflksklsfaksld jakld
-                aklsdfjaklsdfj lksadjf ;lkasjfljf; fajsfdljsfklajdsf sdfsadf"
-        >
-            <div
-                :class="[
-                    proseStyle.blockAside,
-                    'absolute top-0 left-0 h-full w-(--proseAsideWidth)',
-                ]"
+        <div class="relative">
+            <!-- Block Aside -->
+            <aside
+                class="group/aside absolute top-0 left-0 h-full
+                    w-[calc(var(--proseAsideWidth)-2px)] cursor-pointer"
             >
+                <!-- Aside Background -->
                 <div
-                    :class="[
-                        proseStyle.blockAsideBg,
-                        `micro:rounded absolutetop-0 left-0 h-full w-full
-                        transition-[background]`,
-                    ]"
+                    class="micro:rounded-sm group-hocus/aside:bg-bg-accent
+                        absolute top-0 left-0 h-full w-full bg-transparent
+                        transition-[background]"
                 ></div>
-            </div>
-            <div class="pl-(--proseAsideWidth)">
+                <!-- Aside Icon -->
+                <div class="sticky top-0">
+                    <TransitionFade mode="out-in">
+                        <div v-if="hover" :key="elementIcon">
+                            <MaybeMyIcon
+                                :name="elementIcon"
+                                class="micro:w-[60%] text-text-dimmed
+                                    group-hocus/aside:text-text m-auto mt-[2px]
+                                    aspect-square w-[70%] transition-[color]"
+                            />
+                        </div>
+                    </TransitionFade>
+                </div>
+            </aside>
+
+            <!-- Block Content -->
+            <main class="relative ml-(--proseAsideWidth)">
                 <slot></slot>
-            </div>
+                <!-- Anchor Overlay -->
+                <TransitionFade>
+                    <div v-if="isAnchor">
+                        <div
+                            class="bg-brand animate-fade-out pointer-events-none
+                                absolute -top-(--overlayPadding)
+                                -right-(--overlayPadding)
+                                -bottom-(--overlayPadding)
+                                -left-(--overlayPadding) touch-none rounded
+                                opacity-0
+                                shadow-[0_0_18px_2px_var(--color-brand)]
+                                [--overlayPadding:5px]"
+                        ></div>
+                    </div>
+                </TransitionFade>
+            </main>
         </div>
 
-        <div :class="[proseStyle.blockBelow, 'h-(--proseGap)']"></div>
+        <div
+            class="group-not-hocus/block:hidden h-(--proseGap)
+                group-last/block:hidden"
+        ></div>
     </div>
 </template>

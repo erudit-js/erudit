@@ -10,6 +10,6 @@ export const document = createProseDocument({
             <br />
             истец!!11112
         </p>
-        <p>Абоба не идиот!</p>
+        <p>Абоба не -- идиот...! Может вы что-нибудь знаете про это?</p>
     </blocks>
 ));

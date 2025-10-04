@@ -1,6 +1,7 @@
-import tailwindcss from '@tailwindcss/vite';
 import { dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
+
+import tailwindcss from '@tailwindcss/vite';
 
 const currentDir = dirname(fileURLToPath(import.meta.url));
 

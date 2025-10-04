@@ -1,33 +1,39 @@
 <script lang="ts" setup>
 import { provide } from 'vue';
 
-import type { AppElementDefinition } from '../../../app/appElement';
-import type { BlocksSchema } from '../../../default/blocks/index';
 import type { ParsedElement } from '../../../element';
-import { proseContextSymbol } from '../composables/prose';
-import type { GenericStorage } from '../../../storage';
+import {
+    proseContextSymbol,
+    type ProseAppContext,
+} from '../composables/appContext';
+import type { ElementSchemaAny } from '../../../schema';
+import { anchorStateSymbol, useAnchorState } from '../composables/anchor';
 import Render from './Render.vue';
 
-const { storage, appElements } = defineProps<{
-    root: ParsedElement<BlocksSchema>;
-    storage: GenericStorage;
-    appElements: Record<string, AppElementDefinition>;
+const { element, context } = defineProps<{
+    element: ParsedElement<ElementSchemaAny>;
+    context: ProseAppContext;
 }>();
+provide(proseContextSymbol, { ...context });
 
-provide(proseContextSymbol, {
-    storage,
-    appElements,
+const { anchorElement, containsAnchorElements } = useAnchorState(
+    context.hashId,
+    element,
+);
+provide(anchorStateSymbol, {
+    anchorElement,
+    containsAnchorElements,
 });
 </script>
 
 <template>
     <section
         :class="[
-            `micro:[--proseAsideWidth:20px] [--proseAsideWidth:12px]
+            /* Variables */
+            `micro:[--proseAsideWidth:20px] [--proseAsideWidth:16px]
             [--proseGap:none]`,
-            '',
         ]"
     >
-        <Render :element="root" />
+        <Render :element />
     </section>
 </template>
