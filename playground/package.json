@@ -3,6 +3,7 @@
     "name": "erudit-playground",
     "type": "module",
     "dependencies": {
-        "erudit": "workspace:*"
+        "erudit": "workspace:*",
+        "@erudit-js/prose": "workspace:*"
     }
 }

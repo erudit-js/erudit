@@ -102,7 +102,11 @@ export function defineTag<TTagName extends string>(tagName: TTagName) {
                 element.snippet = snippet;
             }
 
-            element.hash = hashElement(element.data, normalizedChildren);
+            element.hash = hashElement(
+                element.name,
+                element.data,
+                normalizedChildren,
+            );
 
             return element;
         };
@@ -124,14 +128,18 @@ export function defineTag<TTagName extends string>(tagName: TTagName) {
     return finalizeTag;
 }
 
-function hashElement(data: any, children: JsxElement<any>[] | undefined) {
+function hashElement(
+    name: string,
+    data: any,
+    children: JsxElement<any>[] | undefined,
+) {
     const strData = JSON.stringify(data) ?? '<undefined-data>';
 
     const childrenHashes = children
         ? children.map((c) => c.hash).join('|')
         : '<no-children>';
 
-    return hash(strData + childrenHashes, 12);
+    return hash(name + strData + childrenHashes, 12);
 }
 
 function tryCreateSnippet(

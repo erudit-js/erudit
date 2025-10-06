@@ -74,6 +74,7 @@ export async function prepare({
                     allowSyntheticDefaultImports: true,
                     jsx: 'react-jsx',
                     jsxImportSource: '@erudit-js/prose',
+                    types: ['vite/client'],
                 },
                 include: [`${projectPath}/**/*`, `${eruditBuildDir}/**/*`],
                 exclude: [`${eruditBuildDir}/nuxt/**/*`],

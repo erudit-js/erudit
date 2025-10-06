@@ -90,7 +90,7 @@ onMounted(() => {
                                 -bottom-(--overlayPadding)
                                 -left-(--overlayPadding) touch-none rounded
                                 opacity-0
-                                shadow-[0_0_18px_2px_var(--color-brand)]
+                                shadow-[0_0_18px_1px_var(--color-brand)]
                                 [--overlayPadding:5px]"
                         ></div>
                     </div>

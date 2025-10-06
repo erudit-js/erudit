@@ -40,7 +40,6 @@
     --color-text-muted: light-dark(#696969, #7f7f7f);
     --color-text-dimmed: light-dark(#969696, #616161);
     --color-text-disabled: light-dark(#b9b9b9, #4f4f4f);
-    --color-scrollbar: light-dark(#bfbfbf, #494949);
     --color-invert: light-dark(white, black);
     --color-border: light-dark(var(--color-neutral-300), #323232);
 
@@ -137,22 +136,22 @@
 
     &::-webkit-scrollbar {
         -webkit-appearance: none;
-        height: 7px;
-        width: 7px;
+        height: 8px;
+        width: 8px;
     }
 
     &::-webkit-scrollbar-thumb {
-        background: var(--color-scrollbar);
+        background: light-dark(#bfbfbf, #494949);
         border-radius: 15px;
-        border: 1.5px solid transparent;
+        border: 2px solid transparent;
         background-clip: content-box;
-        &:hover {
-            background: color-mix(
-                in srgb,
-                var(--color-scrollbar),
-                var(--color-invert) 15%
-            );
-        }
+    }
+
+    &::-webkit-scrollbar-thumb:hover {
+        background: light-dark(#a6a6a6, #5a5a5a);
+        border-radius: 15px;
+        border: 2px solid transparent;
+        background-clip: content-box;
     }
 
     &::-webkit-scrollbar-corner {

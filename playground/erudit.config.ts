@@ -137,6 +137,7 @@ export default defineEruditConfig({
         '@erudit-js/prose/elements/list/list', // Use proxy here? Will have to proxy erudit/prose/elements/* somehow...
         '@erudit-js/prose/elements/list/listItem',
         './elements/test/element',
+        './elements/statement/element',
     ],
     nuxtAugmentations: [
         async (nuxt) => {

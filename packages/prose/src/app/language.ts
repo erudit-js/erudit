@@ -2,7 +2,7 @@ export type ElementDefaultPhrases = {
     element_name: string;
 };
 
-export type ElementPhrases<T extends Record<string, string>> = Omit<
+export type ElementPhrases<T extends Record<string, string> = {}> = Omit<
     T,
     keyof ElementDefaultPhrases
 > &
@@ -14,12 +14,12 @@ export function defineElementLanguage<
     return phrases;
 }
 
-export type ElementLanguages<T extends ElementPhrases<T>> = Record<
+export type ElementLanguages<T extends ElementPhrases> = Record<
     string,
     () => Promise<T>
 >;
 
-export type ElementLanguagesRaw<T extends ElementPhrases<T>> = Record<
+export type ElementLanguagesRaw<T extends ElementPhrases> = Record<
     string,
     () => Promise<{ default: T }>
 >;

@@ -1,8 +1,10 @@
+import type { RawChildren } from 'src/children';
 import { isBlockElement, type JsxElement } from '../../element';
 import { ProseError } from '../../error';
 import type { ElementSchema, InlinerSchemaAny } from '../../schema';
 import { defineTag } from '../../tag';
 import { ElementType } from '../../type';
+import { defineGlobalElement } from 'src/globalElement';
 
 export const paragraphName = 'paragraph';
 
@@ -15,7 +17,10 @@ export type ParagraphSchema = ElementSchema<{
     Children: InlinerSchemaAny[];
 }>;
 
-export const Paragraph = defineTag('p')<ParagraphSchema>({
+export const Paragraph = defineTag('p')<
+    ParagraphSchema,
+    { children: RawChildren }
+>({
     type: ElementType.Block,
     name: paragraphName,
     linkable: true,
