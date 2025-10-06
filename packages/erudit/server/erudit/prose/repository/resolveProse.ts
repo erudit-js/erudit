@@ -5,7 +5,7 @@ import {
     fillStorage,
 } from '@erudit-js/prose';
 
-import globalElements from '#erudit/prose/global-elements';
+import globalElements from '#erudit/prose/global';
 import { tryCreateLinkStorage } from '../default/link';
 
 export async function resolveProse<TSchema extends ElementSchemaAny>(

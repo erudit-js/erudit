@@ -1,6 +1,6 @@
 import { eq } from 'drizzle-orm';
 import { ContentType, isTopicPart, TopicPart } from '@erudit-js/cog/schema';
-import type { BlocksSchema } from '@erudit-js/prose/default/blocks';
+import type { BlocksSchema } from '@erudit-js/prose/default/blocks/index';
 
 export default defineEventHandler<Promise<MainContent>>(async (event) => {
     const contentPath = event.context.params!.contentPath;

@@ -17,14 +17,14 @@ export function defineGlobalElement<TSchema extends ElementSchemaAny>() {
             ) => Promise<TSchema['Storage']> | TSchema['Storage'];
         },
     >(definition: TDefinition) {
-        for (const outerTagName in definition.tags) {
-            const tag = definition.tags[outerTagName];
-            if (outerTagName !== tag.tagName) {
-                throw new ProseError(
-                    `Global element "${definition.name}" has a tag with mismatched name: expected "${outerTagName}", but got "${tag.tagName}"!`,
-                );
-            }
-        }
+        // for (const outerTagName in definition.tags) {
+        //     const tag = definition.tags[outerTagName];
+        //     if (outerTagName !== tag.tagName) {
+        //         throw new ProseError(
+        //             `Global element "${definition.name}" has a tag with mismatched name: expected "${outerTagName}", but got "${tag.tagName}"!`,
+        //         );
+        //     }
+        // }
 
         return definition;
     }

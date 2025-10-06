@@ -1,17 +1,21 @@
-import { existsSync } from 'node:fs';
 import type { Nuxt } from 'nuxt/schema';
-import { resolvePath } from 'nuxt/kit';
-
+import { addTemplate, findPath } from 'nuxt/kit';
+import chalk from 'chalk';
+import { writeFileSync } from 'node:fs';
+import type { GlobalElementDefinition } from '@erudit-js/prose';
 import { paragraphName } from '@erudit-js/prose/default/paragraph/index';
 import { headingName } from '@erudit-js/prose/default/heading/index';
 import { spanName } from '@erudit-js/prose/default/span/index';
 
-type BuiltinElement = {
+import { moduleLogger } from '../logger';
+import type { EruditRuntimeConfig } from '../../../shared/types/runtimeConfig';
+
+type ElementImports = {
     global: string;
-    app: string;
+    app: string | undefined;
 };
 
-type BuiltinElements = Record<string, BuiltinElement>;
+type BuiltinElements = Record<string, ElementImports>;
 
 const BUILTIN_ELEMENTS: BuiltinElements = {
     [paragraphName]: {
@@ -28,342 +32,238 @@ const BUILTIN_ELEMENTS: BuiltinElements = {
     },
 };
 
-export async function setupGlobalElements(
-    nuxt: Nuxt,
+type ElementTagTypeof = {
+    import: string;
+    index: number | undefined;
+};
+
+type TagName2Typeof = Record<string, ElementTagTypeof>;
+
+async function collectElementImports(
     runtimeConfig: EruditRuntimeConfig,
-) {
-    const globalElementImports: string[] = [];
+): Promise<ElementImports[]> {
+    const imports: ElementImports[] = [];
 
     // Built-in elements
     for (const element of Object.values(BUILTIN_ELEMENTS)) {
-        globalElementImports.push(element.global);
+        imports.push({
+            global: element.global,
+            app: element.app,
+        });
     }
 
     // Project elements
     for (const elementPath of runtimeConfig.project.elements) {
         const globalModulePath = elementPath + '.global';
-        let resolvedPath: string;
-        try {
-            resolvedPath = await resolvePath(globalModulePath);
-        } catch {
+        const appModulePath = elementPath + '.app';
+
+        const globalAbsPath = await findPath(globalModulePath, {
+            cwd: runtimeConfig.paths.project,
+            extensions: ['.ts', '.js'],
+        });
+
+        const appAbsPath = await findPath(appModulePath, {
+            cwd: runtimeConfig.paths.project,
+            extensions: ['.ts', '.js'],
+        });
+
+        if (!globalAbsPath) {
             throw new Error(
-                `Global module for element "${elementPath}" not found (resolve failed).`,
+                `Failed to detect ".global" part of project prose element "${elementPath}"!`,
             );
         }
-        if (!existsSync(resolvedPath)) {
-            throw new Error(
-                `Global module for element "${elementPath}" does not exist at "${resolvedPath}".`,
+
+        let resolvedGlobalModulePath = globalModulePath;
+        if (globalModulePath.startsWith('./')) {
+            resolvedGlobalModulePath = globalModulePath.replace(
+                './',
+                runtimeConfig.paths.project + '/',
             );
         }
-        console.log('Ok');
-        globalElementImports.push(globalModulePath);
+
+        let resolvedAppModulePath: string | undefined = undefined;
+        if (appAbsPath) {
+            resolvedAppModulePath = appModulePath;
+            if (appModulePath.startsWith('./')) {
+                resolvedAppModulePath = appModulePath.replace(
+                    './',
+                    runtimeConfig.paths.project + '/',
+                );
+            }
+        }
+
+        imports.push({
+            global: resolvedGlobalModulePath,
+            app: resolvedAppModulePath,
+        });
     }
+
+    return imports;
 }
 
-// import { writeFileSync } from 'node:fs';
-// import { existsSync } from 'node:fs';
-// import type { Nuxt } from '@nuxt/schema';
-// import { addTemplate, resolvePath } from 'nuxt/kit';
+export async function setupProseElements(
+    nuxt: Nuxt,
+    runtimeConfig: EruditRuntimeConfig,
+) {
+    const imports = await collectElementImports(runtimeConfig);
+    const elementName2Import: Record<string, string> = {};
+    const tagName2Typeof: TagName2Typeof = {};
 
-// import type { GlobalElementDefinition } from '@erudit-js/prose';
+    for (const elementImport of imports) {
+        try {
+            const rawDefault = (await import(elementImport.global)).default;
+            const isDefinitionArray = Array.isArray(rawDefault);
+            const definitions: GlobalElementDefinition[] = isDefinitionArray
+                ? rawDefault
+                : [rawDefault];
 
-// import type { EruditRuntimeConfig } from '../../../shared/types/runtimeConfig';
-// import { moduleLogger } from '../logger';
+            for (let i = 0; i < definitions.length; i++) {
+                const definition = definitions[i]!;
 
-// const BUILTIN_TAGS = Object.values(BUILTIN_ELEMENTS).flatMap((element) =>
-//     Object.entries(element.tags ?? {}).map(([tagName, modulePath]) => ({
-//         name: tagName,
-//         module: modulePath,
-//         exportName: tagName,
-//     })),
-// );
+                if (definition.name in elementName2Import) {
+                    throw new Error(
+                        `Prose element name "${definition.name}" is already registered by another element!`,
+                    );
+                }
 
-// const BUILTIN_APP_IMPORTS = Object.values(BUILTIN_ELEMENTS).map((el) => {
-//     const parts = el.appDefinition.split('/');
-//     return { name: parts[parts.length - 2]!, path: el.appDefinition };
-// });
+                elementName2Import[definition.name] = elementImport.global;
 
-// let registeredElements = 0;
-// let registeredTags: Map<string, string> = new Map();
+                if (definition.tags) {
+                    for (const tagName of Object.keys(definition.tags)) {
+                        if (tagName in tagName2Typeof) {
+                            throw new Error(
+                                `Prose element tag name "<${tagName}>" is already registered by "${tagName2Typeof[tagName]!.import}"!`,
+                            );
+                        }
 
-// function generateGlobalTagTypes(tagMap: Map<string, string>) {
-//     const dynamic = Array.from(tagMap.entries())
-//         .map(
-//             ([tagKey, tagModulePath]) =>
-//                 `    const ${tagKey}: typeof import('${tagModulePath}')['default']['tags']['${tagKey}'];`,
-//         )
-//         .join('\n');
+                        tagName2Typeof[tagName] = {
+                            import: elementImport.global,
+                            index: isDefinitionArray ? i : undefined,
+                        };
+                    }
+                }
+            }
+        } catch (error) {
+            throw new Error(
+                `Failed to setup prose element from "${elementImport.global}":\n\n${error}`,
+            );
+        }
+    }
 
-//     const builtin = BUILTIN_TAGS.map(
-//         (t) =>
-//             `    const ${t.name}: typeof import('${t.module}')['${t.exportName}'];`,
-//     ).join('\n');
+    await setupGlobalTemplate(
+        nuxt,
+        runtimeConfig,
+        imports.map((i) => i.global),
+    );
+    await setupGlobalTagTypes(runtimeConfig, tagName2Typeof);
+    await setupAppTemplate(
+        nuxt,
+        runtimeConfig,
+        imports.map((i) => i.app).filter((j): j is string => Boolean(j)),
+    );
+}
 
-//     return `declare global {
-// ${dynamic}${dynamic && builtin ? '\n' : ''}${builtin}
-// }
+async function setupGlobalTemplate(
+    nuxt: Nuxt,
+    runtimeConfig: EruditRuntimeConfig,
+    imports: string[],
+) {
+    const templateImportName = (i: number) => `global_elements_${i}`;
+    const importNames = imports.map((_, i) => templateImportName(i));
 
-// export {};`;
-// }
+    const template = `
+import type { GlobalElementDefinitions } from '@erudit-js/prose';
 
-// function buildTagImportsAndAssignments(tagMap: Map<string, string>) {
-//     const dynamicImports = Array.from(tagMap.entries())
-//         .map(
-//             ([, elementPath], idx) =>
-//                 `import element${idx} from '${elementPath}';`,
-//         )
-//         .join('\n');
+${importNames.map((importName, i) => `import ${importName} from '${imports[i]}';`).join('\n')}
 
-//     const moduleGroups: Record<string, Set<string>> = {};
-//     for (const t of BUILTIN_TAGS) {
-//         (moduleGroups[t.module] ||= new Set()).add(t.exportName);
-//     }
-//     const builtinImports = Object.entries(moduleGroups)
-//         .map(
-//             ([mod, names]) =>
-//                 `import { ${Array.from(names).join(', ')} } from '${mod}';`,
-//         )
-//         .join('\n');
+const elements = [
+    ${importNames.join(',\n    ')}
+].flatMap(e => (Array.isArray(e) ? e : [e]));
 
-//     const dynamicAssignments = Array.from(tagMap.keys())
-//         .map(
-//             (tagKey, idx) =>
-//                 `globalThis.${tagKey} = element${idx}.tags.${tagKey};`,
-//         )
-//         .join('\n');
+Object.assign(globalThis, {
+    ...Object.fromEntries(
+        elements
+            .flatMap(element => element.tags ? Object.entries(element.tags) : [])
+            .map(([tagName, tag]) => [tagName, tag])
+    ),
+});
 
-//     const builtinAssignments = BUILTIN_TAGS.map(
-//         (t) => `globalThis.${t.name} = ${t.name};`,
-//     ).join('\n');
+export default Object.fromEntries(elements.map((e) => [e.name, e])) as GlobalElementDefinitions;
+    `.trim();
 
-//     return {
-//         imports: [dynamicImports, builtinImports].filter(Boolean).join('\n'),
-//         assignments: [dynamicAssignments, builtinAssignments]
-//             .filter(Boolean)
-//             .join('\n'),
-//     };
-// }
+    addTemplate({
+        write: true,
+        filename: '#erudit/prose/global.ts',
+        getContents() {
+            return template;
+        },
+    });
 
-// export async function setupEruditElements(
-//     nuxt: Nuxt,
-//     runtimeConfig: EruditRuntimeConfig,
-// ) {
-//     const elementPaths = runtimeConfig.project.elements;
-//     for (const elementPath of elementPaths) {
-//         try {
-//             let elementImportPath = elementPath + '.global';
-//             if (elementImportPath.startsWith('./')) {
-//                 elementImportPath = elementImportPath.replace(
-//                     './',
-//                     runtimeConfig.paths.project + '/',
-//                 );
-//             }
+    const alias = (nuxt.options.alias ||= {});
+    alias['#erudit/prose/global'] =
+        runtimeConfig.paths.build + `/nuxt/.nuxt/#erudit/prose/global.ts`;
+}
 
-//             // Handle default export being either a single element or an array of elements
-//             const rawDefault = (await import(elementImportPath)).default;
-//             const elements = Array.isArray(rawDefault)
-//                 ? (rawDefault as GlobalElementDefinition[])
-//                 : ([rawDefault] as GlobalElementDefinition[]);
+async function setupGlobalTagTypes(
+    runtimeConfig: EruditRuntimeConfig,
+    tagName2Typeof: TagName2Typeof,
+) {
+    const content = `
+declare global {
+${Object.entries(tagName2Typeof)
+    .map(
+        ([tagName, info]) =>
+            `    const ${tagName}: typeof import('${info.import}')${info.index !== undefined ? `['default'][${info.index}]` : "['default']"}['tags']['${tagName}'];`,
+    )
+    .join('\n')}
+}
 
-//             for (const el of elements) {
-//                 const importedName =
-//                     (el as any)?.name && typeof (el as any).name === 'string'
-//                         ? (el as any).name
-//                         : undefined;
+export {};
+    `.trim();
 
-//                 if (importedName && importedName in BUILTIN_ELEMENTS) {
-//                     throw new Error(
-//                         `Built-in element "${importedName}" cannot be overridden by "${elementPath}".`,
-//                     );
-//                 }
+    writeFileSync(runtimeConfig.paths.build + '/types/tags.d.ts', content);
 
-//                 registerElementDependencies(nuxt, el);
-//                 registerElementTags(el, elementImportPath);
-//                 registeredElements++;
-//             }
-//         } catch (error) {
-//             if (
-//                 error instanceof Error &&
-//                 error.message.startsWith('Built-in element')
-//             ) {
-//                 throw error;
-//             }
-//             moduleLogger.warn(
-//                 `Failed to register prose elements: ${elementPath}\n\n${error}`,
-//             );
-//         }
-//     }
+    moduleLogger.info(
+        `Registered ${Object.keys(tagName2Typeof).length} prose tags:${chalk.gray(
+            '\n' +
+                Object.keys(tagName2Typeof)
+                    .map((t) => `<${t}>`)
+                    .join(' '),
+        )}`,
+    );
+}
 
-//     createGlobalTagTypes(runtimeConfig);
-//     createTagsTemplate(nuxt, runtimeConfig);
-//     await createAppElementsTemplate(nuxt, runtimeConfig);
-//     await createGlobalElementsTemplate(nuxt, runtimeConfig);
+async function setupAppTemplate(
+    nuxt: Nuxt,
+    runtimeConfig: EruditRuntimeConfig,
+    appImports: string[],
+) {
+    const templateImportName = (i: number) => `app_elements_${i}`;
+    const importNames = appImports.map((_, i) => templateImportName(i));
 
-//     moduleLogger.info(
-//         `Registered ${registeredElements} prose elements and ${registeredTags.size} tags${
-//             registeredTags.size
-//                 ? ':\n' +
-//                   Array.from(registeredTags.keys())
-//                       .map((t) => `<${t}>`)
-//                       .join(' ')
-//                 : '.'
-//         }`,
-//     );
-// }
+    const template = `
+import type { AppElementDefinitions } from '@erudit-js/prose/app';
 
-// function registerElementDependencies(
-//     nuxt: Nuxt,
-//     globalElement: GlobalElementDefinition,
-// ) {
-//     if (!globalElement.dependencies) return;
+${importNames.map((importName, i) => `import ${importName} from '${appImports[i]}';`).join('\n')}
 
-//     const nuxtTranspile = (nuxt.options.build.transpile ||= []);
-//     const optimizeDeps = (nuxt.options.vite.optimizeDeps ||= {});
-//     const optimizeDepsInclude = (optimizeDeps.include ||= []);
+const elements = [
+    ${importNames.join(',\n    ')}
+].flatMap((e: any) => Array.isArray(e) ? e : [e]);
 
-//     for (const [dependency, options] of Object.entries(
-//         globalElement.dependencies,
-//     )) {
-//         if (options.transpile) nuxtTranspile.push(dependency);
-//         if (options.optimize) optimizeDepsInclude.push(dependency);
-//     }
-// }
+export default Object.fromEntries(
+    elements.map((e: any) => [e.name, e])
+) as AppElementDefinitions;
+    `.trim();
 
-// function registerElementTags(
-//     globalElement: GlobalElementDefinition,
-//     elementImportPath: string,
-// ) {
-//     if (!globalElement.tags) return;
+    addTemplate({
+        write: true,
+        filename: '#erudit/prose/app.ts',
+        getContents() {
+            return template;
+        },
+    });
 
-//     for (const tagKey of Object.keys(globalElement.tags)) {
-//         if (registeredTags.has(tagKey)) {
-//             moduleLogger.warn(
-//                 `Tag <${tagKey}> is already registered in "${registeredTags.get(tagKey)}"!`,
-//             );
-//             continue;
-//         }
-//         registeredTags.set(tagKey, elementImportPath);
-//     }
-// }
-
-// function createGlobalTagTypes(runtimeConfig: EruditRuntimeConfig) {
-//     const content = generateGlobalTagTypes(registeredTags);
-//     writeFileSync(runtimeConfig.paths.build + '/types/tags.d.ts', content);
-// }
-
-// function createTagsTemplate(nuxt: Nuxt, runtimeConfig: EruditRuntimeConfig) {
-//     const templateBase = '#erudit/prose/tags';
-
-//     addTemplate({
-//         filename: templateBase + '.ts',
-//         write: true,
-//         getContents() {
-//             const { imports, assignments } =
-//                 buildTagImportsAndAssignments(registeredTags);
-//             return `${imports}\n\n${assignments}\n\nexport {};`;
-//         },
-//     });
-
-//     const alias = (nuxt.options.alias ||= {});
-//     alias[templateBase] =
-//         runtimeConfig.paths.build + `/nuxt/.nuxt/${templateBase}.ts`;
-// }
-
-// async function createElementsTemplate(
-//     nuxt: Nuxt,
-//     runtimeConfig: EruditRuntimeConfig,
-//     options: {
-//         templateBase: string;
-//         variantSuffix: string;
-//         defaultImports: { name: string; path: string }[];
-//     },
-// ) {
-//     const { templateBase, variantSuffix, defaultImports } = options;
-
-//     addTemplate({
-//         filename: templateBase + '.ts',
-//         write: true,
-//         async getContents() {
-//             let imports = defaultImports
-//                 .map((i) => `import ${i.name} from '${i.path}';`)
-//                 .join('\n');
-
-//             imports =
-//                 options.variantSuffix === 'global'
-//                     ? "import type { GlobalElementDefinitions } from '@erudit-js/prose';\n" +
-//                       imports
-//                     : "import type { AppElementDefinitions } from '@erudit-js/prose/app';\n" +
-//                       imports;
-
-//             const elementVars = defaultImports.map((i) => i.name);
-
-//             if (runtimeConfig.project.elements?.length) {
-//                 for (
-//                     let idx = 0;
-//                     idx < runtimeConfig.project.elements.length;
-//                     idx++
-//                 ) {
-//                     let basePath = runtimeConfig.project.elements[idx];
-//                     let importPath = basePath + '.' + variantSuffix;
-//                     let resolvedPath = importPath;
-//                     if (importPath.startsWith('./')) {
-//                         resolvedPath = importPath.replace(
-//                             './',
-//                             runtimeConfig.paths.project + '/',
-//                         );
-//                     }
-//                     let absPath: string;
-//                     try {
-//                         absPath = await resolvePath((absPath = resolvedPath));
-//                     } catch {
-//                         absPath = '';
-//                     }
-//                     if (!absPath || !existsSync(absPath)) continue;
-//                     imports += `\nimport ${variantSuffix}_elements_${idx} from '${absPath}';`;
-//                     elementVars.push(`${variantSuffix}_elements_${idx}`);
-//                 }
-//             }
-
-//             // Flatten any array default exports into a single list before building the map
-//             return `
-
-// ${imports}
-
-// const __elementsList = [
-//     ${elementVars.join(',\n    ')}
-// ].flatMap((e: any) => Array.isArray(e) ? e : [e]);
-
-// const elements: ${options.variantSuffix === 'global' ? 'GlobalElementDefinitions' : 'AppElementDefinitions'} = Object.fromEntries(
-//     __elementsList.map((e: any) => [e.name, e])
-// );
-
-// export default elements;`;
-//         },
-//     });
-
-//     const alias = (nuxt.options.alias ||= {});
-//     alias[templateBase] =
-//         runtimeConfig.paths.build + `/nuxt/.nuxt/${templateBase}.ts`;
-// }
-
-// async function createAppElementsTemplate(
-//     nuxt: Nuxt,
-//     runtimeConfig: EruditRuntimeConfig,
-// ) {
-//     return createElementsTemplate(nuxt, runtimeConfig, {
-//         templateBase: '#erudit/prose/app-elements',
-//         variantSuffix: 'app',
-//         defaultImports: [...BUILTIN_APP_IMPORTS],
-//     });
-// }
-
-// async function createGlobalElementsTemplate(
-//     nuxt: Nuxt,
-//     runtimeConfig: EruditRuntimeConfig,
-// ) {
-//     return createElementsTemplate(nuxt, runtimeConfig, {
-//         templateBase: '#erudit/prose/global-elements',
-//         variantSuffix: 'global',
-//         defaultImports: [],
-//     });
-// }
+    const alias = (nuxt.options.alias ||= {});
+    alias['#erudit/prose/app'] =
+        runtimeConfig.paths.build + `/nuxt/.nuxt/#erudit/prose/app.ts`;
+}

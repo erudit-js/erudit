@@ -12,6 +12,7 @@ export default defineNuxtPlugin({
     },
     hooks: {
         'app:mounted': async () => {
+            await import('#erudit/prose/global');
             await setupHtmlBranding();
             await setupWelcomeMessage();
         },

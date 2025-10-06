@@ -1,6 +1,6 @@
 import { sqliteTable, text } from 'drizzle-orm/sqlite-core';
 import type { ParsedElement } from '@erudit-js/prose';
-import type { BlocksSchema } from '@erudit-js/prose/default/blocks';
+import type { BlocksSchema } from '@erudit-js/prose/default/blocks/index';
 
 export const pages = sqliteTable('pages', {
     fullId: text().primaryKey(),

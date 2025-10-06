@@ -18,7 +18,7 @@ import {
     registerModuleGlobals,
     registerServerGlobals,
 } from './setup/globals';
-import { setupGlobalElements } from './setup/elements';
+import { setupProseElements } from './setup/elements';
 
 export default defineNuxtModule({
     meta: { name: 'Erudit', configKey: 'erudit', version },
@@ -41,7 +41,7 @@ export default defineNuxtModule({
         );
         await setupEruditPublicAssets(nuxt, eruditRuntimeConfig);
         await setupEruditCustomBaseUrl(nuxt, eruditPublicRuntimeConfig);
-        await setupGlobalElements(nuxt, eruditRuntimeConfig);
+        await setupProseElements(nuxt, eruditRuntimeConfig);
         await optimizeTranspileEruditDependencies(nuxt, eruditRuntimeConfig);
         await setupEruditNuxtConfig(
             nuxt,

@@ -1,4 +1,4 @@
-import { default as _appElements } from '#erudit/prose/app-elements';
+import { default as _appElements } from '#erudit/prose/app';
 
 export const appElements = _appElements;
 

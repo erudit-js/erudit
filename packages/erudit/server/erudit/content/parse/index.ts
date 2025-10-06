@@ -1,7 +1,7 @@
 import { ContentType } from '@erudit-js/cog/schema';
 import { notInArray, inArray } from 'drizzle-orm';
 
-import { ContentNavNode } from '../nav/types';
+import type { ContentNavNode } from '../nav/types';
 
 // Parsers
 import { booksParser } from './types/books';

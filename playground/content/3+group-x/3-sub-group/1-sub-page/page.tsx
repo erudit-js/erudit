@@ -2,6 +2,17 @@ export const document = createProseDocument({
     url: import.meta.url,
 })(() => (
     <blocks>
+        <Statement
+            $snippet={{
+                search: { synonyms: ['Пифагор'] },
+                title: 'Мое заявление',
+                description: 'А может и теорема Пифагора',
+            }}
+        >
+            <StatementMain>
+                <p>sdfs</p>
+            </StatementMain>
+        </Statement>
         <h1>Sub Page</h1>
         <p>Мой п</p>
         <p>
