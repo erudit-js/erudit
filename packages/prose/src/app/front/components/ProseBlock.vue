@@ -1,5 +1,12 @@
 <script lang="ts" setup>
-import { inject, onMounted, ref, useTemplateRef, watch } from 'vue';
+import {
+    inject,
+    onMounted,
+    ref,
+    useCssModule,
+    useTemplateRef,
+    watch,
+} from 'vue';
 
 import type { ParsedElement } from '../../../element';
 import type { BlockSchemaAny } from '../../../schema';
@@ -9,6 +16,7 @@ import { useIsAnchor } from '../composables/anchor';
 
 const { element } = defineProps<{ element: ParsedElement<BlockSchemaAny> }>();
 const { MaybeMyIcon, TransitionFade, loadingSvg } = inject(proseContextSymbol)!;
+const style = useCssModule();
 
 const blockElement = useTemplateRef('block');
 const hover = ref(false);
@@ -45,16 +53,15 @@ onMounted(() => {
     <div
         ref="block"
         :id="element.domId"
-        class="group/block hocus:not-last:-mb-(--proseGap) hocus:not-last:z-10
-            relative pr-(--proseAsideWidth)"
+        :class="[style.block, 'scroll-mt-big pr-(--proseAsideWidth)']"
     >
-        <div class="h-(--proseGap) group-first/block:hidden"></div>
+        <div :class="[style.blockAbove, 'h-(--proseGap)']"></div>
 
         <div class="relative">
             <!-- Block Aside -->
             <aside
                 class="group/aside absolute top-0 left-0 h-full
-                    w-[calc(var(--proseAsideWidth)-2px)] cursor-pointer"
+                    w-(--proseAsideWidth) cursor-pointer"
             >
                 <!-- Aside Background -->
                 <div
@@ -98,9 +105,36 @@ onMounted(() => {
             </main>
         </div>
 
-        <div
-            class="group-not-hocus/block:hidden h-(--proseGap)
-                group-last/block:hidden"
-        ></div>
+        <div :class="[style.blockBelow, 'h-(--proseGap)']"></div>
     </div>
 </template>
+
+<style module>
+/* Always hide corresponding block gaps for frist/last blocks. */
+
+.block:first-child > .blockAbove {
+    display: none !important;
+}
+
+.block:last-child > .blockBelow {
+    display: none !important;
+}
+
+/* Hiding bottom block gap by default, to compensate next block's top gap. */
+
+.blockBelow {
+    display: none;
+}
+
+/* When hover/focus show block bottom gap to increase hoverable area and hide next block's top gap so no gap duplication happens. */
+
+.block:hover > .blockBelow,
+.block:focus > .blockBelow {
+    display: block;
+}
+
+.block:hover + .block > .blockAbove,
+.block:focus + .block > .blockAbove {
+    display: none;
+}
+</style>

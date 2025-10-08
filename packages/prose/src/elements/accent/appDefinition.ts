@@ -1,5 +1,6 @@
 import {
     defineAppElement,
+    type AppElementDefinition,
     type ElementIconRaw,
     type ElementLanguagesRaw,
     type ElementPhrases,
@@ -8,7 +9,11 @@ import { ElementType } from '../../type';
 import type { AccentBlockSchema, AccentSchema } from './schema';
 
 export interface AccentAppContext {
-    color: string;
+    colors: {
+        text: string;
+        background: string;
+        border: string;
+    };
 }
 
 export type AccentAppDefinition<TAccentSchema extends AccentSchema> = {
@@ -19,7 +24,12 @@ export type AccentAppDefinition<TAccentSchema extends AccentSchema> = {
         }>
     >;
     icon?: ElementIconRaw;
-} & AccentAppContext;
+    context: AccentAppContext;
+};
+
+export function getAccentContext(appElement: AppElementDefinition) {
+    return (appElement as any).accentContext as AccentAppContext;
+}
 
 export function defineAccentApp<TAccentSchema extends AccentSchema>(
     definition: AccentAppDefinition<TAccentSchema>,
@@ -32,5 +42,8 @@ export function defineAccentApp<TAccentSchema extends AccentSchema>(
         component: () => import('./AccentBlock.vue'),
     });
 
-    return { ...appDefinition, ...{ color: definition.color } };
+    return {
+        ...appDefinition,
+        accentContext: definition.context,
+    };
 }

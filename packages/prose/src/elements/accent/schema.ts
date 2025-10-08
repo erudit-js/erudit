@@ -1,5 +1,4 @@
-import type { AccentSectionData } from './sectionData';
-import type { AccentBlockDirection } from './direction';
+import type { AccentBlockData, AccentSectionData } from './data';
 import type { BlockSchemaAny, ElementSchema } from '../../schema';
 import { ProseError } from '../../error';
 import type { ElementType } from '../../type';
@@ -44,7 +43,7 @@ export type AccentBlockSchema<TAccentSchema extends AccentSchema> =
         Type: ElementType.Block;
         Name: TAccentSchema['name'];
         Linkable: true;
-        Data: AccentBlockDirection;
+        Data: AccentBlockData;
         Storage: undefined;
         Children: AccentSectionSchema<TAccentSchema>[];
     }>;

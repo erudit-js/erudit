@@ -1,3 +1,18 @@
+//
+// Block
+//
+
+export type AccentBlockDirection = 'row' | 'column';
+
+export interface AccentBlockData {
+    title: string;
+    direction: AccentBlockDirection;
+}
+
+//
+// Section
+//
+
 export interface AccentSectionDataMain {
     type: 'main';
 }

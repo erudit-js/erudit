@@ -3,11 +3,10 @@ import {
     type AccentSchema,
     type AccentSectionSchema,
 } from './schema';
-import type { AccentSectionData } from './sectionData';
-import type { AccentBlockDirection } from './direction';
+import type { AccentBlockDirection } from './data';
 import { defineTag } from '../../tag';
 import { defineGlobalElement } from '../../globalElement';
-import type { BlockSchemaAny, ElementSchema } from '../../schema';
+import type { BlockSchemaAny } from '../../schema';
 import { ElementType } from '../../type';
 import { type JsxElement } from '../../element';
 import { ProseError } from '../../error';
@@ -119,6 +118,7 @@ export function defineAccentGlobal<TAccentSchema extends AccentSchema>(
     const blockTag = defineTag(accentSchema.name)<
         _BlockSchema,
         {
+            title: string;
             direction?: AccentBlockDirection;
             children: RawChildren;
         }
@@ -127,7 +127,10 @@ export function defineAccentGlobal<TAccentSchema extends AccentSchema>(
         name: accentSchema.name,
         linkable: true,
         initElement({ tagName, children, element, props }) {
-            element.data = props.direction || 'column';
+            element.data = {
+                title: props.title,
+                direction: props.direction || 'column',
+            };
 
             ensureHasChildren(tagName, children);
 

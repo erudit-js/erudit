@@ -86,30 +86,14 @@ export async function parseContent() {
         try {
             await createdParsers.get(node.type)!.step(node);
         } catch (error) {
-            const errorLocation =
-                'Content Location: ' +
-                chalk.redBright(
-                    ERUDIT.config.paths.project +
-                        '/content/' +
-                        node.contentRelPath,
-                );
+            ERUDIT.log.error(
+                `
+Error parsing ${node.type} ${ERUDIT.log.stress(node.fullId)}!
+Location: ${chalk.redBright(ERUDIT.config.paths.project + '/content/' + node.contentRelPath)}
+            `.trim(),
+            );
 
-            if (error instanceof ContentContextError) {
-                ERUDIT.log.error(
-                    'Error parsing ' +
-                        node.type +
-                        ' ' +
-                        ERUDIT.log.stress(node.fullId) +
-                        ': ' +
-                        error.getFullMessage() +
-                        '\n' +
-                        errorLocation +
-                        '\n' +
-                        error.getOriginalStack() || 'No stack trace available',
-                );
-            } else {
-                ERUDIT.log.error(error + '\n' + errorLocation);
-            }
+            throw error;
         }
     }
 

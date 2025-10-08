@@ -138,6 +138,7 @@ export default defineEruditConfig({
         '@erudit-js/prose/elements/list/listItem',
         './elements/test/element',
         './elements/statement/element',
+        './elements/term/element',
     ],
     nuxtAugmentations: [
         async (nuxt) => {

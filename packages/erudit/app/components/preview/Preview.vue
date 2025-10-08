@@ -52,13 +52,17 @@ async function delayedResize() {
 }
 
 function resizePreview() {
+    if (!previewElement.value || !previewScreenElement.value) {
+        return;
+    }
+
     const lastChild = Array.from(
-        previewScreenElement.value!.childNodes || [],
+        previewScreenElement.value.childNodes || [],
     ).pop() as HTMLElement;
 
     if (lastChild) {
         const newHeight = lastChild?.offsetHeight || 10;
-        previewElement.value!.setAttribute('style', `height: ${newHeight}px`);
+        previewElement.value.setAttribute('style', `height: ${newHeight}px`);
     }
 }
 

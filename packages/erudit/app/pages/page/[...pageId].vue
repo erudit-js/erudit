@@ -17,6 +17,7 @@ const hashId = computed(() => {
 });
 
 const context: ProseAppContext = {
+    languageCode: ERUDIT.config.project.language.current,
     storage: mainContent.storage,
     appElements,
     loadingSvg,

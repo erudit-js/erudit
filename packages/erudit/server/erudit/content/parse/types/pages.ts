@@ -1,7 +1,7 @@
-import { ContentConfigPage } from '@erudit-js/cog/schema';
-import { DocumentAny, parseJsxContent } from '@erudit-js/prose';
+import type { ContentConfigPage } from '@erudit-js/cog/schema';
+import { type DocumentAny, parseJsxContent } from '@erudit-js/prose';
 
-import { ContentParser } from '..';
+import type { ContentParser } from '..';
 import type { ContentNavNode } from '../../nav/types';
 import { documentUrlMismatch, wrapError } from '../utils/error';
 import { insertSnippets, insertUniques } from '../utils/element';
@@ -20,11 +20,7 @@ export const pagesParser: ContentParser = async () => {
                 navNode.contentRelPath +
                 '/page';
 
-            try {
-                pageModule = await ERUDIT.import(pageModulePath, { try: true });
-            } catch (error) {
-                throw wrapError(error, `Failed to import page module!`);
-            }
+            pageModule = await ERUDIT.import(pageModulePath, { try: true });
 
             if (!pageModule) {
                 return;

@@ -1,13 +1,14 @@
-import { EruditServerChangedFiles } from './build';
+import type { EruditServerBuildError, EruditServerChangedFiles } from './build';
 import type { EruditServerConfig } from './config';
-import { EruditServerContentNav } from './content/nav/types';
+import type { EruditServerContentNav } from './content/nav/types';
 import type { EruditServerDatabase } from './db/types';
 import type { EruditServerImporter } from './importer';
 import type { EruditServerLanguage } from './language/types';
 import type { EruditServerLogger } from './logger';
-import { EruditServerRepository } from './repository';
+import type { EruditServerRepository } from './repository';
 
 export const ERUDIT: {
+    buildError: EruditServerBuildError;
     buildPromise: Promise<void>;
     changedFiles: EruditServerChangedFiles;
     config: EruditServerConfig;

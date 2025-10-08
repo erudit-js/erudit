@@ -9,15 +9,37 @@ import { buildContentNav } from './content/nav/build';
 import { parseContent } from './content/parse';
 
 export type EruditServerChangedFiles = Set<string>;
+export type EruditServerBuildError = Error | undefined;
 
 export async function buildServerErudit() {
     ERUDIT.buildPromise = (async () => {
-        ERUDIT.log.start('Building...');
-        await buildContributors();
-        await buildSponsors();
-        await buildContentNav();
-        await parseContent();
-        ERUDIT.log.success(chalk.green('Build Complete!'));
+        ERUDIT.buildError = undefined;
+
+        try {
+            ERUDIT.log.start('Building...');
+            await buildContributors();
+            await buildSponsors();
+            await buildContentNav();
+            await parseContent();
+            ERUDIT.log.success(chalk.green('Build Complete!'));
+        } catch (buildError) {
+            if (buildError instanceof Error) {
+                ERUDIT.buildError = buildError;
+                if (buildError.stack) {
+                    ERUDIT.log.error(buildError.stack);
+                }
+            } else {
+                ERUDIT.buildError = createError({
+                    statusCode: 500,
+                    statusMessage: 'Unknown Erudit Build Error!',
+                    message:
+                        typeof buildError === 'string'
+                            ? buildError
+                            : 'An unknown error occurred!',
+                });
+                ERUDIT.log.error(ERUDIT.buildError.message);
+            }
+        }
     })();
 
     await ERUDIT.buildPromise;
@@ -53,22 +75,26 @@ export async function setupServerProjectWatcher() {
 
     const tryRebuildErudit = debounce(async () => {
         pendingRebuild = true;
-        await ERUDIT.buildPromise;
-        const files = Array.from(ERUDIT.changedFiles);
-        console.log();
-        ERUDIT.log.warn(
-            `${chalk.yellow('Rebuilding due to file change(s):')}\n\n` +
-                files
-                    .map((p, i) => chalk.gray(`${i + 1} -`) + ` "${p}"`)
-                    .join('\n'),
-        );
-        console.log();
-        await buildServerErudit();
-        ERUDIT.changedFiles.clear();
-        pendingRebuild = false;
+        try {
+            await ERUDIT.buildPromise;
+            const files = Array.from(ERUDIT.changedFiles);
+            console.log();
+            ERUDIT.log.warn(
+                `${chalk.yellow('Rebuilding due to file change(s):')}\n\n` +
+                    files
+                        .map((p, i) => chalk.gray(`${i + 1} -`) + ` "${p}"`)
+                        .join('\n'),
+            );
+            console.log();
+            await buildServerErudit();
+            ERUDIT.changedFiles.clear();
+        } finally {
+            ERUDIT.changedFiles.clear();
+            pendingRebuild = false;
+        }
     }, 300);
 
-    watcher.on('all', (event, filePath) => {
+    watcher.on('all', (_, filePath) => {
         filePath = filePath.replaceAll('\\', '/');
 
         if (pendingRebuild) {

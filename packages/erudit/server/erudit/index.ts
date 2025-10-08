@@ -18,9 +18,61 @@ let serverSetupPromise: Promise<void>;
 export default defineNitroPlugin((nitro) => {
     serverSetupPromise = setupServer();
 
-    nitro.hooks.hook('request', async () => {
+    nitro.hooks.hook('request', async (event) => {
         await serverSetupPromise;
         await ERUDIT.buildPromise;
+
+        if (ERUDIT.buildError) {
+            // Define a standard Nuxt error response format
+            const errorPayload = {
+                statusCode: 503,
+                statusMessage: 'Service Unavailable',
+                message:
+                    'Server temporarily unavailable. Please try again later.',
+                data: null,
+            };
+
+            const accept = getHeader(event, 'accept') || '';
+            if (accept.includes('text/html')) {
+                // Simple HTML escaping to prevent tag injection
+                function escapeHtml(str: string) {
+                    return str
+                        .replace(/&/g, '&amp;')
+                        .replace(/</g, '&lt;')
+                        .replace(/>/g, '&gt;')
+                        .replace(/"/g, '&quot;')
+                        .replace(/'/g, '&#39;');
+                }
+
+                event.node.res.end(`
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Erudit Build Error</title>
+        <style>
+        :root {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen;
+        }
+        </style>
+    </head>
+    <body>
+    <h1>Erudit Build Error</h1>
+    <pre style="padding: 1em; border-radius: 4px; overflow-x: auto;">
+${escapeHtml(ERUDIT.buildError.stack || '')}
+    </pre>
+    </body>
+</html>
+  `);
+            } else {
+                setHeader(
+                    event,
+                    'content-type',
+                    'application/json; charset=utf-8',
+                );
+                event.node.res.end(JSON.stringify(errorPayload));
+            }
+        }
     });
 
     nitro.hooks.hook('close', async () => {
@@ -29,18 +81,32 @@ export default defineNitroPlugin((nitro) => {
 });
 
 async function setupServer() {
-    //await new Promise((resolve) => setTimeout(resolve, 100));
-    await import('#erudit/prose/global');
-    await setupServerRuntimeConfig();
-    await setupServerLogger();
-    await setupServerImporter();
-    await setupServerProjectWatcher();
-    await setupServerLanguage();
-    await setupServerDatabase();
-    await setupServerRepository();
-    await setupServerContentNav();
-    ERUDIT.log.success(chalk.green('Setup Complete!'));
-    await buildServerErudit();
+    try {
+        await import('#erudit/prose/global');
+        await setupServerRuntimeConfig();
+        await setupServerLogger();
+        await setupServerImporter();
+        await setupServerProjectWatcher();
+        await setupServerLanguage();
+        await setupServerDatabase();
+        await setupServerRepository();
+        await setupServerContentNav();
+        ERUDIT.log.success(chalk.green('Setup Complete!'));
+        await buildServerErudit();
+    } catch (buildError) {
+        if (buildError instanceof Error) {
+            ERUDIT.buildError = buildError;
+        } else {
+            ERUDIT.buildError = createError({
+                statusCode: 500,
+                statusMessage: 'Unknown Erudit Server Error',
+                message:
+                    typeof buildError === 'string'
+                        ? buildError
+                        : 'An unknown error occurred!',
+            });
+        }
+    }
 }
 
 async function closeServer() {

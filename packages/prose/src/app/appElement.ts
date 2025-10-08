@@ -2,14 +2,18 @@ import type { ParsedElement } from 'src/element';
 import type { ElementSchemaAny } from '../schema';
 import { type ElementComponentRaw, resolveElementComponent } from './component';
 import { type ElementIconRaw, resolveElementIcon } from './icon';
-import { type ElementLanguagesRaw, resolveElementLanguages } from './language';
+import {
+    type ElementLanguagesRaw,
+    type ElementPhrases,
+    resolveElementLanguages,
+} from './language';
 
 export function defineAppElement<TSchema extends ElementSchemaAny>(definition: {
     type: TSchema['Type'];
     name: TSchema['Name'];
     icon?: ElementIconRaw;
     component: ElementComponentRaw;
-    languages: ElementLanguagesRaw<any>;
+    languages: ElementLanguagesRaw<ElementPhrases<any>>;
     createStorageData?: (
         element: ParsedElement<TSchema>,
     ) => Promise<TSchema['Storage']> | TSchema['Storage'];

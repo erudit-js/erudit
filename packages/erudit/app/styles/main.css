@@ -21,7 +21,7 @@
     --default-transition-duration: calc(200ms * var(--duration-multiplier));
 
     --spacing-normal: calc(4 * var(--spacing));
-    --spacing-big: calc(1.5 * var(--spacing-normal));
+    --spacing-big: calc(2 * var(--spacing-normal));
     --spacing-small: calc(0.5 * var(--spacing-normal));
 
     --w-aside: 300px;

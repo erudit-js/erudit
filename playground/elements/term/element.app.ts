@@ -1,14 +1,14 @@
 import { defineAccentApp } from '@erudit-js/prose/elements/accent/appDefinition';
 
-import { statementSchema } from './element.schema';
+import { termSchema } from './element.schema';
 
 export default defineAccentApp({
-    schema: statementSchema,
+    schema: termSchema,
     context: {
         colors: {
-            text: 'light-dark(#b04a4a, #c96565)',
-            background: 'light-dark(#feefef, #312323)',
-            border: 'light-dark(#e7c9c9, #4b2d2d)',
+            text: 'light-dark(#65a63c, #a4c965)',
+            background: 'light-dark(#f8feef, #2a3123)',
+            border: 'light-dark(#dde7c9, #404b2d)',
         },
     },
     icon: () => import('./icon.svg?raw'),
