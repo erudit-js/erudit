@@ -1,4 +1,4 @@
-import type { JsxSnippet } from 'src/snippet';
+import type { JsxSnippet } from '../../snippet';
 import { ProseError } from '../../error';
 import type { ElementSchema } from '../../schema';
 import { defineTag } from '../../tag';

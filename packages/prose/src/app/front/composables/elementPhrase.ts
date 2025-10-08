@@ -1,7 +1,7 @@
 import { inject } from 'vue';
 
-import type { ParsedElement } from 'src/element';
-import type { ElementSchemaAny } from 'src/schema';
+import type { ParsedElement } from '../../../element';
+import type { ElementSchemaAny } from '../../../schema';
 import { useAppElement } from './appElement';
 import { proseContextSymbol } from './appContext';
 

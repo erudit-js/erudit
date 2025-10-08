@@ -5,14 +5,14 @@ import {
     ref,
     useCssModule,
     useTemplateRef,
-    watch,
+    watchEffect,
 } from 'vue';
 
 import type { ParsedElement } from '../../../element';
 import type { BlockSchemaAny } from '../../../schema';
 import { proseContextSymbol } from '../composables/appContext';
 import { useElementIcon } from '../composables/elementIcon';
-import { useIsAnchor } from '../composables/anchor';
+import { useIsAnchor, useJumpToAnchor } from '../composables/anchor';
 
 const { element } = defineProps<{ element: ParsedElement<BlockSchemaAny> }>();
 const { MaybeMyIcon, TransitionFade, loadingSvg } = inject(proseContextSymbol)!;
@@ -27,17 +27,14 @@ useElementIcon(element).then((icon) => {
 });
 
 const isAnchor = useIsAnchor(element);
+const jumpToAnchor = useJumpToAnchor();
 
 onMounted(() => {
-    watch(
-        isAnchor,
-        () => {
-            if (isAnchor.value) {
-                blockElement.value!.scrollIntoView();
-            }
-        },
-        { immediate: true },
-    );
+    watchEffect(() => {
+        if (isAnchor.value) {
+            jumpToAnchor(blockElement.value!);
+        }
+    });
 
     blockElement.value!.addEventListener('mouseenter', () => {
         hover.value = true;

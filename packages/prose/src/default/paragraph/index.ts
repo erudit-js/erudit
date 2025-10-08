@@ -1,10 +1,9 @@
-import type { RawChildren } from 'src/children';
+import type { RawChildren } from '../../children';
 import { isBlockElement, type JsxElement } from '../../element';
 import { ProseError } from '../../error';
 import type { ElementSchema, InlinerSchemaAny } from '../../schema';
 import { defineTag } from '../../tag';
 import { ElementType } from '../../type';
-import { defineGlobalElement } from 'src/globalElement';
 
 export const paragraphName = 'paragraph';
 

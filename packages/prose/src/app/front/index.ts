@@ -1,5 +1,6 @@
 export { default as Prose } from './components/Prose.vue';
 export { default as Render } from './components/Render.vue';
+export { default as Expander } from './components/Expander.vue';
 
 export * from './composables/anchor';
 export * from './composables/appContext';

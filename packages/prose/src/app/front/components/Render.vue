@@ -12,6 +12,10 @@ import { textName } from '../../../default/text';
 import Text from '../../../default/text/Text.vue';
 import { brName } from '../../../default/br';
 import Br from '../../../default/br/Br.vue';
+import { bName } from '../../../default/b';
+import B from '../../../default/b/B.vue';
+import { iName } from '../../../default/i';
+import I from '../../../default/i/I.vue';
 
 const { element } = defineProps<{
     element: ParsedElement<ElementSchemaAny>;
@@ -35,6 +39,10 @@ const RenderComponent: Component<{ element: ParsedElement<ElementSchemaAny> }> =
                 return Text;
             case brName:
                 return Br;
+            case bName:
+                return B;
+            case iName:
+                return I;
         }
 
         return {

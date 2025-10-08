@@ -1,4 +1,4 @@
-import type { ParsedElement } from 'src/element';
+import type { ParsedElement } from '../element';
 import type { ElementSchemaAny } from '../schema';
 import { type ElementComponentRaw, resolveElementComponent } from './component';
 import { type ElementIconRaw, resolveElementIcon } from './icon';

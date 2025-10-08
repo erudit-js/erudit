@@ -16,14 +16,8 @@ const { element, context } = defineProps<{
 }>();
 provide(proseContextSymbol, { ...context });
 
-const { anchorElement, containsAnchorElements } = useAnchorState(
-    context.hashId,
-    element,
-);
-provide(anchorStateSymbol, {
-    anchorElement,
-    containsAnchorElements,
-});
+const anchorState = useAnchorState(context.hashId, element);
+provide(anchorStateSymbol, anchorState);
 </script>
 
 <template>

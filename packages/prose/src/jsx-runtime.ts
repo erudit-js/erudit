@@ -1,4 +1,7 @@
+import { ElementTagSymbol } from './tag';
+import type { ElementSchemaAny } from './schema';
 import type { JsxElement } from './element';
+
 import { Blocks } from './default/blocks';
 import { Br } from './default/br';
 import { H1, H2, H3 } from './default/heading';
@@ -6,8 +9,8 @@ import { Inliners } from './default/inliners';
 import { Paragraph } from './default/paragraph';
 import { Span } from './default/span';
 import { Link } from './default/link';
-import { ElementTagSymbol } from './tag';
-import type { ElementSchemaAny } from './schema';
+import { B } from './default/b';
+import { I } from './default/i';
 
 declare global {
     namespace JSX {
@@ -23,6 +26,8 @@ declare global {
             span: Parameters<typeof Span>[0];
             br: Parameters<typeof Br>[0];
             a: Parameters<typeof Link>[0];
+            b: Parameters<typeof B>[0];
+            i: Parameters<typeof I>[0];
         }
         type Element = JsxElement<ElementSchemaAny>;
     }
@@ -50,6 +55,10 @@ export function jsx(tag: any, props: any) {
             return Br(props);
         case 'a':
             return Link(props);
+        case 'b':
+            return B(props);
+        case 'i':
+            return I(props);
     }
 
     if (ElementTagSymbol in tag) {

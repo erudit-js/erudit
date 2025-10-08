@@ -47,7 +47,7 @@ async function delayedResize() {
         bad looking "jumps" from previous screen halfway to 0 and then to actual new screen height.
     */
     await nextTick();
-    await new Promise((resolve) => setTimeout(resolve, 150));
+    await new Promise((resolve) => setTimeout(resolve, 50));
     resizePreview();
 }
 

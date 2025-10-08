@@ -12,6 +12,7 @@ import type { ParsedElement } from '../../../element';
 import type { ElementSchemaAny } from '../../../schema';
 
 export interface AnchorState {
+    jumpedToAnchor: Ref<boolean>;
     anchorElement: Ref<ParsedElement<ElementSchemaAny> | undefined>;
     containsAnchorElements: Ref<Set<ParsedElement<ElementSchemaAny>>>;
 }
@@ -22,7 +23,7 @@ export function useIsAnchor(element: ParsedElement<ElementSchemaAny>) {
     const { anchorElement } = inject(anchorStateSymbol)!;
 
     return computed(() => {
-        return element.domId && anchorElement.value?.domId === element.domId;
+        return anchorElement.value?.domId === element.domId;
     });
 }
 
@@ -30,14 +31,44 @@ export function useContainsAnchor(element: ParsedElement<ElementSchemaAny>) {
     const { containsAnchorElements } = inject(anchorStateSymbol)!;
 
     return computed(() => {
-        return element.domId && containsAnchorElements.value.has(element);
+        return containsAnchorElements.value.has(element);
     });
+}
+
+export function useArrayContainsAnchor(
+    elements: ParsedElement<ElementSchemaAny>[],
+) {
+    const { containsAnchorElements } = inject(anchorStateSymbol)!;
+
+    return computed(() => {
+        const i = elements.findIndex((el) =>
+            containsAnchorElements.value.has(el),
+        );
+        return i !== -1 ? i : undefined;
+    });
+}
+
+export function useJumpToAnchor() {
+    const { jumpedToAnchor } = inject(anchorStateSymbol)!;
+
+    return (element: HTMLElement) => {
+        if (jumpedToAnchor.value) {
+            return;
+        }
+
+        element.scrollIntoView({
+            block: 'center',
+        });
+
+        jumpedToAnchor.value = true;
+    };
 }
 
 export function useAnchorState(
     hashId: Ref<string | undefined>,
     element: ParsedElement<ElementSchemaAny>,
-) {
+): AnchorState {
+    const jumpedToAnchor = shallowRef(false);
     const anchorElement = shallowRef<ParsedElement<ElementSchemaAny>>();
     const containsAnchorElements = shallowRef<
         Set<ParsedElement<ElementSchemaAny>>
@@ -47,6 +78,7 @@ export function useAnchorState(
         watch(
             hashId,
             () => {
+                jumpedToAnchor.value = false;
                 anchorElement.value = undefined;
                 containsAnchorElements.value = new Set();
 
@@ -89,6 +121,7 @@ export function useAnchorState(
     });
 
     return {
+        jumpedToAnchor,
         anchorElement,
         containsAnchorElements,
     };

@@ -1,3 +1,77 @@
+<script lang="ts" setup>
+import { ref, watch } from 'vue';
+
+import type { AccentSchema, AccentSectionSchema } from './schema';
+import {
+    Expander,
+    useArrayContainsAnchor,
+    useFormatText,
+    type ElementPhrases,
+} from '../../app';
+import type { ParsedElement } from '../../element';
+import type { AccentSectionData } from './data';
+import Render from '../../app/front/components/Render.vue';
+
+const { phrase, sections } = defineProps<{
+    phrase: ElementPhrases<any>;
+    sections: ParsedElement<AccentSectionSchema<AccentSchema>>[];
+}>();
+
+const formatText = useFormatText();
+const openedSectionI = ref<number>();
+const containsAnchorI = useArrayContainsAnchor(sections);
+
+watch(containsAnchorI, (i) => {
+    if (i !== undefined) {
+        openedSectionI.value = i;
+    }
+});
+
+function getSectionTitle(sectionData: AccentSectionData) {
+    let title = '';
+
+    if (sectionData.type === 'suffix') {
+        title = phrase[`section_title_${sectionData.suffix}`];
+    } else if (sectionData.type === 'custom') {
+        title = sectionData.title;
+    }
+
+    return formatText(title);
+}
+</script>
+
 <template>
-    <div>Row Sections</div>
+    <div
+        :class="[
+            `flex flex-wrap items-center gap-(--proseAsideWidth) border-b
+            p-(--proseAsideWidth) transition-[border]`,
+            openedSectionI === undefined
+                ? 'border-transparent'
+                : 'border-(--accentBorder)',
+        ]"
+    >
+        <button
+            v-for="(section, i) of sections"
+            @click="openedSectionI = i === openedSectionI ? undefined : i"
+            :class="[
+                `text-prose-sm micro:py-[8px] micro:px-[10px] cursor-pointer
+                rounded-xl px-[8px] py-[6px] font-medium
+                transition-[color,background]`,
+                i === openedSectionI
+                    ? 'bg-(--accentText)/80 text-white'
+                    : `hocus:bg-(--accentText)/30 bg-(--accentText)/15
+                        text-(--accentText)`,
+            ]"
+        >
+            {{ getSectionTitle(section.data) }}
+        </button>
+    </div>
+    <Expander>
+        <div v-if="openedSectionI !== undefined" class="py-(--proseAsideWidth)">
+            <Render
+                v-for="child of sections[openedSectionI].children"
+                :element="child"
+            />
+        </div>
+    </Expander>
 </template>

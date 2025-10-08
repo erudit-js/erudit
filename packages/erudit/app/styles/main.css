@@ -17,6 +17,12 @@
 
     --text-tiny: 0.695rem;
 
+    --text-prose: 1em;
+    --text-prose-xs: calc(0.75 * var(--text-prose));
+    --text-prose-sm: calc(0.875 * var(--text-prose));
+    --text-prose-lg: calc(1.125 * var(--text-prose));
+    --text-prose-xl: calc(1.25 * var(--text-prose));
+
     --default-transition-timing-function: cubic-bezier(0, 0, 0.5, 1);
     --default-transition-duration: calc(200ms * var(--duration-multiplier));
 
@@ -100,7 +106,7 @@
         border-radius: 3px;
     }
 
-    h1,
+    /* h1,
     h2,
     h3,
     h4,
@@ -108,7 +114,7 @@
     h6,
     strong {
         color: var(--color-text-deep);
-    }
+    } */
 }
 
 @variant micro {

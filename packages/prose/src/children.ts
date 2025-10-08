@@ -51,7 +51,9 @@ export function normalizeChildren(
             ? props.children
             : [props.children];
 
-        const normalizedChildren = children.map((child) => {
+        const normalizedChildren: JsxElement<ElementSchemaAny>[] = [];
+
+        for (const child of children) {
             let normalizedChild: JsxElement<ElementSchemaAny>;
 
             // Intercept strings
@@ -81,8 +83,20 @@ export function normalizeChildren(
 
             step?.(normalizedChild);
 
-            return normalizedChild;
-        });
+            // Merge adjacent text nodes
+            const prev = normalizedChildren[normalizedChildren.length - 1];
+            if (
+                prev &&
+                prev.tagName === 'text' &&
+                normalizedChild.tagName === 'text'
+            ) {
+                const combinedData = prev.data + normalizedChild.data;
+                prev.data = combinedData;
+                prev.hash = hash(combinedData, 12);
+            } else {
+                normalizedChildren.push(normalizedChild);
+            }
+        }
 
         return normalizedChildren;
     }

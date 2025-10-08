@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { inject, shallowRef } from 'vue';
+import { shallowRef } from 'vue';
 
 import {
     type AccentSectionSchema,
@@ -11,17 +11,18 @@ import type { ParsedElement } from '../../element';
 import ProseBlock from '../../app/front/components/ProseBlock.vue';
 import Render from '../../app/front/components/Render.vue';
 import { useAppElement } from '../../app/front/composables/appElement';
-import { proseContextSymbol, useElementIcon } from '../../app';
+import { proseContextSymbol, useElementIcon, useFormatText } from '../../app';
 import { useElementPhrase } from '../../app/front/composables/elementPhrase';
 import AccentSectionsColumn from './AccentSectionsColumn.vue';
 import AccentSectionsRow from './AccentSectionsRow.vue';
+import { useIcon } from '../../app/front/composables/icon';
 
 const { element } = defineProps<{
     element: ParsedElement<AccentBlockSchema<AccentSchema>>;
 }>();
 
-const { MaybeMyIcon, formatText } = inject(proseContextSymbol)!;
-
+const Icon = useIcon();
+const formatText = useFormatText();
 const appElement = await useAppElement(element);
 const accentIcon = await useElementIcon(element);
 const accentContext = getAccentContext(appElement);
@@ -64,16 +65,16 @@ const phrase = await useElementPhrase(element);
             :class="[
                 `rounded-xl border border-(--accentBorder)
                 bg-(--accentBackground) transition-[background,border]`,
-                { 'pb-normal': !hasSections },
+                { 'pb-(--proseAsideWidth)': !hasSections },
             ]"
         >
             <div
-                class="py-normal gap-normal flex items-center
-                    px-(--proseAsideWidth) font-semibold text-(--accentText)
-                    transition-[color]"
+                class="text-prose-lg flex items-center gap-(--proseAsideWidth)
+                    px-(--proseAsideWidth) py-(--proseAsideWidth) font-semibold
+                    text-(--accentText) transition-[color]"
             >
-                <MaybeMyIcon :name="accentIcon" class="shrink-0" />
-                <span>{{ formatText(element.data.title) }}</span>
+                <Icon :name="accentIcon" class="shrink-0" />
+                <h2>{{ formatText(element.data.title) }}</h2>
             </div>
             <div>
                 <Render
