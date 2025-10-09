@@ -35,7 +35,7 @@
         "dist"
     ],
     "scripts": {
-        "build": "bun mkdist -d --loaders=js",
+        "build": "bun run build.ts",
         "dev": "bun run dev.ts",
         "test": "vitest run",
         "test:watch": "vitest"
@@ -45,7 +45,8 @@
         "@erudit-js/cog": "workspace:3.0.0-dev.23"
     },
     "devDependencies": {
-        "mkdist": "^2.4.1",
+        "glob": "11.0.3",
+        "oxc-transform": "0.94.0",
         "vitest": "^3.2.4"
     }
 }

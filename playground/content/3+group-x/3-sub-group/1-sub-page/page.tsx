@@ -1,9 +1,13 @@
 export const document = createProseDocument({
     url: import.meta.url,
-})(() => (
+    uniques: {
+        pifagor: Statement,
+    },
+})(({ uniques }) => (
     <blocks>
         <Statement
-            title="Первое утверждение"
+            title="Первое утвержение"
+            $={uniques.pifagor}
             $snippet={{
                 search: { synonyms: ['Синоним первого'] },
                 description: 'А может и теорема Пифагора',
@@ -11,7 +15,8 @@ export const document = createProseDocument({
         >
             <StatementMain>
                 <p>
-                    <b accent>Товарищи!</b> новая модель организационной
+                    <b accent>Товарищи!</b> новая модель{' '}
+                    <a to={uniques.pifagor}>организационной</a>
                     деятельности требуют от нас анализа позиций, занимаемых
                     участниками в отношении поставленных задач. Равным образом
                     постоянное информационно-пропагандистское обеспечение нашей

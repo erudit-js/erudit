@@ -1,4 +1,4 @@
-import type { JsxElement, ParsedElement, ResolvedElement } from './element';
+import type { JsxElement, ParsedElement } from './element';
 import type { ElementSchemaAny } from './schema';
 
 export enum ElementWalk {
@@ -9,8 +9,7 @@ export enum ElementWalk {
 export async function walkElements<
     TElementKind extends
         | JsxElement<ElementSchemaAny>
-        | ParsedElement<ElementSchemaAny>
-        | ResolvedElement<ElementSchemaAny>,
+        | ParsedElement<ElementSchemaAny>,
 >(
     element: TElementKind,
     step: (
