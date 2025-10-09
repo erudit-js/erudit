@@ -28,6 +28,8 @@ function ensureMjsExtensions(code: string, fileDir: string): string {
 
     const fixPath = (spec: string) => {
         if (!spec.startsWith('.')) return spec; // bare specifier, skip
+        // Skip Vite / resource query or hash imports (e.g. ?raw, ?url, #fragment)
+        if (/[?#]/.test(spec)) return spec;
         if (/\.(mjs|cjs|json|node)$/i.test(spec)) return spec; // already has acceptable extension
         if (/\.(ts|tsx|js)$/i.test(spec))
             return spec.replace(/\.(ts|tsx|js)$/i, '.mjs');

@@ -59,12 +59,13 @@ onMounted(async () => {
         <MyRuntimeIcon :svg="githubIcon" class="size-[16px]" />
         <span>GitHub</span>
         <TransitionFade>
-            <template v-if="!pending && stars !== null">
-                <span class="gap-small flex items-center">
-                    <MyRuntimeIcon :svg="starIcon" class="size-[16px]" />
-                    <span>{{ starsFormatted }}</span>
-                </span>
-            </template>
+            <span
+                v-if="!pending && stars !== null"
+                class="gap-small flex items-center"
+            >
+                <MyRuntimeIcon :svg="starIcon" class="size-[16px]" />
+                <span>{{ starsFormatted }}</span>
+            </span>
         </TransitionFade>
     </div>
 </template>

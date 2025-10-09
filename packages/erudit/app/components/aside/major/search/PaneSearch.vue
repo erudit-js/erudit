@@ -135,23 +135,11 @@ function defineStatuses<
                     <SearchResult v-for="result in results" :result="result" />
                 </ol>
             </div>
-            <div class="relative">
-                <!-- This actually controls and creates height -->
-                <SearchStatus
-                    :key="`${status.id}-${results.length}`"
-                    :statusVariant="status"
-                    @reach="more"
-                    class="invisible"
-                />
-                <TransitionFade>
-                    <!-- This is just for nice visuals -->
-                    <SearchStatus
-                        :key="`${status.id}-${results.length}`"
-                        :statusVariant="status"
-                        class="absolute top-0 left-0 w-full"
-                    />
-                </TransitionFade>
-            </div>
+            <SearchStatus
+                :key="`${status.id}-${results.length}`"
+                :statusVariant="status"
+                @reach="more"
+            />
         </ScrollHolder>
     </AsideMajorPaneTemplate>
 </template>

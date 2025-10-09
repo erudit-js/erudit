@@ -58,7 +58,8 @@ const pharse = await usePhrases('to_index', 'about_textbook');
             <div
                 v-else
                 class="text-text-dimmed absolute top-0 left-0 flex h-full w-full
-                    items-center justify-center text-[50px]"
+                    items-center justify-center text-[50px]
+                    transition-[opacity]"
             >
                 <MyRuntimeIcon :svg="loadingSvg" />
             </div>
