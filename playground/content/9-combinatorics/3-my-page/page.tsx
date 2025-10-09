@@ -11,6 +11,9 @@ export const document = createProseDocument({
     url: import.meta.url,
 })(() => (
     <blocks>
+        <p center serif>
+            Алалия
+        </p>
         <h1>Заголовок моей страницы</h1>
         <p $snippet={{ search: true, title: 'Первый параграф моей страницы!' }}>
             Первый{' '}

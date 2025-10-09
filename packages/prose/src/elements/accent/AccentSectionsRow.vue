@@ -54,7 +54,7 @@ function getSectionTitle(sectionData: AccentSectionData) {
             v-for="(section, i) of sections"
             @click="openedSectionI = i === openedSectionI ? undefined : i"
             :class="[
-                `text-prose-sm micro:py-[8px] micro:px-[10px] cursor-pointer
+                `text-main-sm micro:py-[8px] micro:px-[10px] cursor-pointer
                 rounded-xl px-[8px] py-[6px] font-medium
                 transition-[color,background]`,
                 i === openedSectionI

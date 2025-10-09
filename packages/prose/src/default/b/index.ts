@@ -14,7 +14,7 @@ export type BSchema = ElementSchema<{
     Type: ElementType.Inliner;
     Name: typeof bName;
     Linkable: false;
-    Data: { accent?: true };
+    Data: { accent?: true } | undefined;
     Storage: undefined;
     Children: InlinerSchemaAny[];
 }>;

@@ -69,7 +69,7 @@ const phrase = await useElementPhrase(element);
             ]"
         >
             <div
-                class="text-prose-lg flex items-center gap-(--proseAsideWidth)
+                class="text-main-lg flex items-center gap-(--proseAsideWidth)
                     px-(--proseAsideWidth) py-(--proseAsideWidth) font-semibold
                     text-(--accentText) transition-[color]"
             >

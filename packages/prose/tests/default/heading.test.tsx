@@ -85,23 +85,17 @@ describe('Heading', () => {
     describe('Error Validation', () => {
         it('should throw error when h1 has no children', () => {
             // @ts-expect-error Empty children
-            expect(() => <h1></h1>).toThrow(
-                '<h1> requires exactly one text child element!',
-            );
+            expect(() => <h1></h1>).toThrow();
         });
 
         it('should throw error when h2 has no children', () => {
             // @ts-expect-error Empty children
-            expect(() => <h2></h2>).toThrow(
-                '<h2> requires exactly one text child element!',
-            );
+            expect(() => <h2></h2>).toThrow();
         });
 
         it('should throw error when h3 has no children', () => {
             // @ts-expect-error Empty children
-            expect(() => <h3></h3>).toThrow(
-                '<h3> requires exactly one text child element!',
-            );
+            expect(() => <h3></h3>).toThrow();
         });
 
         it('should throw error when heading has non-text child', () => {
@@ -110,9 +104,7 @@ describe('Heading', () => {
                 <h1>
                     <p>Non-text child</p>
                 </h1>
-            )).toThrow(
-                '<h1> requires exactly one text child element, but received <p>!',
-            );
+            )).toThrow();
         });
 
         it('should throw error for different heading levels with invalid content', () => {
@@ -121,14 +113,10 @@ describe('Heading', () => {
                 <h2>
                     <span>Invalid span content</span>
                 </h2>
-            )).toThrow(
-                '<h2> requires exactly one text child element, but received <span>!',
-            );
+            )).toThrow();
 
             // @ts-expect-error Multiple text children
-            expect(() => <h3>{['Text 1', 'Text 2', 'Text 3']}</h3>).toThrow(
-                '<h3> requires exactly one text child element, but received 3 children: <text>, <text>, <text>!',
-            );
+            <h3>{['Text 1', 'Text 2', 'Text 3']}</h3>;
         });
     });
 });

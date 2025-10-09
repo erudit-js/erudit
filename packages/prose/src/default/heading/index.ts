@@ -4,6 +4,7 @@ import type { ElementSchema } from '../../schema';
 import { defineTag } from '../../tag';
 import { ElementType } from '../../type';
 import { isTextElement } from '../text';
+import { ensureHasOneChild } from '../../children';
 
 export const headingName = 'heading';
 
@@ -26,19 +27,7 @@ function createHeadingTag(tagName: string, level: 1 | 2 | 3) {
         name: headingName,
         linkable: true,
         initElement({ tagName, element, props, children }) {
-            if (!children) {
-                throw new ProseError(
-                    `<${tagName}> requires exactly one text child element!`,
-                );
-            }
-
-            if (children.length !== 1) {
-                throw new ProseError(
-                    `<${tagName}> requires exactly one text child element, but received ${children.length} children: ${children
-                        .map((c) => `<${c.tagName}>`)
-                        .join(', ')}!`,
-                );
-            }
+            ensureHasOneChild(tagName, children);
 
             const child = children[0];
 

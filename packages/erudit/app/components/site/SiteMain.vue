@@ -3,7 +3,7 @@
         class="aside1:ps-(--w-aside) aside2:pe-(--w-aside) micro:text-[18px]
             relative px-0 text-[15px] transition-[padding]"
     >
-        <div class="text-prose">
+        <div class="text-main">
             <Preview />
             <div
                 class="bg-bg-main py-small min-h-dvh transition-[background]

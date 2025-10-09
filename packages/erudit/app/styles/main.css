@@ -17,11 +17,11 @@
 
     --text-tiny: 0.695rem;
 
-    --text-prose: 1em;
-    --text-prose-xs: calc(0.75 * var(--text-prose));
-    --text-prose-sm: calc(0.875 * var(--text-prose));
-    --text-prose-lg: calc(1.125 * var(--text-prose));
-    --text-prose-xl: calc(1.25 * var(--text-prose));
+    --text-main: 1em;
+    --text-main-xs: calc(0.75 * var(--text-main));
+    --text-main-sm: calc(0.875 * var(--text-main));
+    --text-main-lg: calc(1.125 * var(--text-main));
+    --text-main-xl: calc(1.25 * var(--text-main));
 
     --default-transition-timing-function: cubic-bezier(0, 0, 0.5, 1);
     --default-transition-duration: calc(200ms * var(--duration-multiplier));

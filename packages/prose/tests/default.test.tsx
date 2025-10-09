@@ -1,7 +1,6 @@
-import { H1 } from '../src/default/heading';
-import { createProseDocument } from '../src/document';
-import { Paragraph } from '../src/default/paragraph';
-import { parseJsxContent } from '../src/parse';
+import { H1 } from 'src/default/heading';
+import { createProseDocument } from 'src/document';
+import { Paragraph } from 'src/default/paragraph';
 
 const myDoc = createProseDocument({
     url: 'testDocument',

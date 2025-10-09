@@ -45,7 +45,7 @@
         "@erudit-js/cog": "workspace:3.0.0-dev.23"
     },
     "devDependencies": {
-        "vitest": "^3.2.4",
-        "mkdist": "^2.4.1"
+        "mkdist": "^2.4.1",
+        "vitest": "^3.2.4"
     }
 }

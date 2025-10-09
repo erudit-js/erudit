@@ -10,7 +10,15 @@ defineProps<{ element: ParsedElement<ParagraphSchema> }>();
 <template>
     <ProseBlock :element>
         <div
-            class="micro:text-justify text-left break-words transition-[color]"
+            :class="[
+                'break-words transition-[color]',
+                element.data?.center
+                    ? 'text-center'
+                    : 'micro:text-justify text-left',
+                {
+                    'font-serif': element.data?.serif,
+                },
+            ]"
         >
             <Render v-for="child of element.children" :element="child" />
         </div>

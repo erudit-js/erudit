@@ -23,18 +23,8 @@ export default defineNitroPlugin((nitro) => {
         await ERUDIT.buildPromise;
 
         if (ERUDIT.buildError) {
-            // Define a standard Nuxt error response format
-            const errorPayload = {
-                statusCode: 503,
-                statusMessage: 'Service Unavailable',
-                message:
-                    'Server temporarily unavailable. Please try again later.',
-                data: null,
-            };
-
             const accept = getHeader(event, 'accept') || '';
             if (accept.includes('text/html')) {
-                // Simple HTML escaping to prevent tag injection
                 function escapeHtml(str: string) {
                     return str
                         .replace(/&/g, '&amp;')
@@ -64,13 +54,6 @@ ${escapeHtml(ERUDIT.buildError.stack || '')}
     </body>
 </html>
   `);
-            } else {
-                setHeader(
-                    event,
-                    'content-type',
-                    'application/json; charset=utf-8',
-                );
-                event.node.res.end(JSON.stringify(errorPayload));
             }
         }
     });
