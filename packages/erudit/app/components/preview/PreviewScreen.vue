@@ -52,7 +52,7 @@ const { closePreview, hasPreviousRequest, setPreviousPreview } = usePreview();
                     @click="setPreviousPreview"
                 />
                 <PreviewScreenButton
-                    icon="cross"
+                    icon="plus"
                     @click="closePreview"
                     :external="true"
                 />

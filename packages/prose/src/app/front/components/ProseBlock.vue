@@ -6,28 +6,65 @@ import {
     useCssModule,
     useTemplateRef,
     watchEffect,
+    onBeforeUnmount,
+    watch,
 } from 'vue';
+import { autoUpdate, offset, shift, useFloating } from '@floating-ui/vue';
 
 import type { ParsedElement } from '../../../element';
 import type { BlockSchemaAny } from '../../../schema';
 import { proseContextSymbol } from '../composables/appContext';
 import { useElementIcon } from '../composables/elementIcon';
 import { useIsAnchor, useJumpToAnchor } from '../composables/anchor';
+import { useIcon } from '../composables/icon';
+import { useElementPhrase } from '../composables/elementPhrase';
+import { useProseLanguage } from '../composables/proseLanguage';
+import AsideMenu from './blockAsideMenu/AsideMenu.vue';
 
 const { element } = defineProps<{ element: ParsedElement<BlockSchemaAny> }>();
-const { MaybeMyIcon, TransitionFade, loadingSvg } = inject(proseContextSymbol)!;
+const Icon = useIcon();
+const { TransitionFade } = inject(proseContextSymbol)!;
 const style = useCssModule();
 
 const blockElement = useTemplateRef('block');
+const asideElement = useTemplateRef('aside');
+const asideMenuElement = useTemplateRef('asideMenu');
 const hover = ref(false);
+const menuVisible = ref(false);
 
-const elementIcon = ref(loadingSvg);
-useElementIcon(element).then((icon) => {
-    elementIcon.value = icon;
-});
+const { floatingStyles: floatingMenuStyle } = useFloating(
+    asideElement,
+    asideMenuElement,
+    {
+        whileElementsMounted: autoUpdate,
+        placement: 'right-start',
+        strategy: 'fixed',
+        middleware: [offset(10), shift({ rootBoundary: 'viewport' })],
+    },
+);
+
+await useProseLanguage();
+await useElementPhrase(element);
+const elementIcon = await useElementIcon(element);
 
 const isAnchor = useIsAnchor(element);
 const jumpToAnchor = useJumpToAnchor();
+
+const outsideClickHandler = (e: MouseEvent) => {
+    if (!menuVisible.value) return;
+    const aside = asideElement.value;
+    if (!aside) return;
+    if (aside.contains(e.target as Node)) return;
+    menuVisible.value = false;
+};
+
+watch(menuVisible, (visible) => {
+    if (visible) {
+        document.addEventListener('click', outsideClickHandler);
+    } else {
+        document.removeEventListener('click', outsideClickHandler);
+    }
+});
 
 onMounted(() => {
     watchEffect(() => {
@@ -36,6 +73,8 @@ onMounted(() => {
         }
     });
 
+    hover.value = blockElement.value!.matches(':hover');
+
     blockElement.value!.addEventListener('mouseenter', () => {
         hover.value = true;
     });
@@ -43,6 +82,10 @@ onMounted(() => {
     blockElement.value!.addEventListener('mouseleave', () => {
         hover.value = false;
     });
+});
+
+onBeforeUnmount(() => {
+    document.removeEventListener('click', outsideClickHandler);
 });
 </script>
 
@@ -57,6 +100,8 @@ onMounted(() => {
         <div class="relative">
             <!-- Block Aside -->
             <aside
+                ref="aside"
+                @click="menuVisible = !menuVisible"
                 class="group/aside absolute top-0 left-0 h-full
                     w-(--proseAsideWidth) cursor-pointer"
             >
@@ -70,7 +115,7 @@ onMounted(() => {
                 <div class="sticky top-0">
                     <TransitionFade mode="out-in">
                         <div v-if="hover" :key="elementIcon">
-                            <MaybeMyIcon
+                            <Icon
                                 :name="elementIcon"
                                 class="micro:w-[60%] text-text-dimmed
                                     group-hocus/aside:text-text m-auto mt-[2px]
@@ -79,6 +124,18 @@ onMounted(() => {
                         </div>
                     </TransitionFade>
                 </div>
+                <!-- Aside Menu -->
+                <TransitionFade>
+                    <div
+                        ref="asideMenu"
+                        :style="floatingMenuStyle"
+                        v-if="menuVisible"
+                        @click.stop
+                        class="z-10 cursor-auto"
+                    >
+                        <AsideMenu :element />
+                    </div>
+                </TransitionFade>
             </aside>
 
             <!-- Block Content -->

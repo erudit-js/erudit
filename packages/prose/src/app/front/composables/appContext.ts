@@ -4,6 +4,7 @@ import type { AppElementDefinitions } from '../../appElement';
 import type { GenericStorage } from '../../../storage';
 
 export interface ProseAppContext {
+    sitePath: string;
     languageCode: string;
     storage: GenericStorage;
     appElements: AppElementDefinitions;

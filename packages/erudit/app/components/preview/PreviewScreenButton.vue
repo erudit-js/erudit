@@ -26,6 +26,6 @@ const LinkComponent = external ? h('a') : EruditLink;
             'text-text-muted hocus:text-text hocus:bg-bg-accent': !state,
         }"
     >
-        <MaybeMyIcon :name="icon" />
+        <MaybeMyIcon :name="icon" :class="{ 'rotate-45': icon === 'plus' }" />
     </component>
 </template>

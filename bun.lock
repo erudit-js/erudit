@@ -91,6 +91,7 @@
       },
       "peerDependencies": {
         "@erudit-js/cog": "workspace:3.0.0-dev.23",
+        "@floating-ui/vue": "^1.1.9",
         "vue": "latest",
       },
     },
