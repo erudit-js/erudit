@@ -1,8 +1,6 @@
-import { inject } from 'vue';
-
-import { proseContextSymbol } from './appContext';
+import { useProseAppContext } from './appContext';
 
 export function useIcon() {
-    const { MaybeMyIcon } = inject(proseContextSymbol)!;
+    const { MaybeMyIcon } = useProseAppContext();
     return MaybeMyIcon;
 }

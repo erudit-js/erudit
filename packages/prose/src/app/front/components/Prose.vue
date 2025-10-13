@@ -24,8 +24,8 @@ provide(anchorStateSymbol, anchorState);
     <section
         :class="[
             /* Variables */
-            `micro:[--proseAsideWidth:20px] [--proseAsideWidth:16px]
-            [--proseGap:none]`,
+            `micro:[--proseAsideWidth:20px] [--proseGap:none]1
+            [--proseAsideWidth:16px]`,
         ]"
     >
         <Render :element />

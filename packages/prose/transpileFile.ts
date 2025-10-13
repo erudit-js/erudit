@@ -1,4 +1,4 @@
-import { transform, isolatedDeclaration } from 'oxc-transform';
+import { transform } from 'oxc-transform';
 import { dirname, extname, join, resolve } from 'node:path';
 import {
     mkdirSync,
@@ -77,10 +77,9 @@ export function transpileFile(
     file: string,
     srcRoot: string = SRC_DIR,
     outRoot: string = OUT_DIR,
-): { jsOutPath?: string; dtsOutPath?: string; assetOutPath?: string } {
+): { jsOutPath?: string; assetOutPath?: string } {
     const ext = extname(file).toLowerCase();
 
-    // Compute relative path if inside srcRoot
     let relPath: string;
     const normSrc = srcRoot.replace(/[/\\]+$/, '');
     if (
@@ -90,7 +89,6 @@ export function transpileFile(
     ) {
         relPath = file.slice(normSrc.length).replace(/^[/\\]/, '');
     } else {
-        // Not under srcRoot: treat whole path as relative (could also throw)
         relPath = file;
     }
 
@@ -98,27 +96,21 @@ export function transpileFile(
         const fileContents = readFileSync(file, 'utf-8');
         const result = transform('file', fileContents, {
             lang: 'ts',
+            target: 'esnext',
             typescript: {
-                onlyRemoveTypeImports: false,
+                onlyRemoveTypeImports: true,
                 allowNamespaces: true,
-                removeClassFieldsWithoutInitializer: false,
-                rewriteImportExtensions: false,
             },
         });
-        const declarationResult = isolatedDeclaration(file, fileContents);
 
         const jsOutPath = `${outRoot}/${relPath.replace(/\.(ts|tsx)$/, '.mjs')}`;
-        const dtsOutPath = `${outRoot}/${relPath.replace(/\.(ts|tsx)$/, '.d.ts')}`;
 
         mkdirSync(dirname(jsOutPath), { recursive: true });
         let jsCode = result.code;
         jsCode = ensureMjsExtensions(jsCode, dirname(file));
         writeFileSync(jsOutPath, jsCode);
 
-        mkdirSync(dirname(dtsOutPath), { recursive: true });
-        writeFileSync(dtsOutPath, declarationResult.code);
-
-        return { jsOutPath, dtsOutPath };
+        return { jsOutPath };
     } else {
         const assetOutPath = `${outRoot}/${relPath}`;
         mkdirSync(dirname(assetOutPath), { recursive: true });

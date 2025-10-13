@@ -3,7 +3,9 @@ import { getContentLink } from './content/repository/contentLink';
 
 import { getTopicParts } from './content/repository/topicParts';
 import { countContributors } from './contributors/repository/count';
+import { getProseFor } from './prose/repository/get';
 import { resolveProse } from './prose/repository/resolveProse';
+import { getUniqueData } from './prose/repository/unique';
 import { countSponsors } from './sponsors/repository/count';
 
 export const repository = {
@@ -20,6 +22,8 @@ export const repository = {
     },
     prose: {
         resolve: resolveProse,
+        unique: getUniqueData,
+        get: getProseFor,
     },
 } as const;
 

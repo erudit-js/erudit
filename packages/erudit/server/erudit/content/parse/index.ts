@@ -9,7 +9,6 @@ import { groupsParser } from './types/groups';
 import { pagesParser } from './types/pages';
 import { topicsParser } from './types/topics';
 import chalk from 'chalk';
-import { ContentContextError } from './utils/error';
 
 export type ContentParser = () => Promise<{
     step: (navNode: ContentNavNode) => Promise<void>;

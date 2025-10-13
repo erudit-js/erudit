@@ -10,9 +10,12 @@ import {
     nextTick,
 } from 'vue';
 
-import { proseContextSymbol } from '../composables/appContext';
+import {
+    proseContextSymbol,
+    useProseAppContext,
+} from '../composables/appContext';
 
-const { TransitionFade } = inject(proseContextSymbol)!;
+const { TransitionFade } = useProseAppContext();
 const slots = useSlots();
 const key = ref(0);
 const expander = useTemplateRef('expander');
@@ -38,8 +41,12 @@ watch(key, async () => {
 });
 
 function doResize() {
-    const paneHeight = pane.value!.offsetHeight;
-    expander.value!.style.height = paneHeight + 'px';
+    if (!expander.value || !pane.value) {
+        return;
+    }
+
+    const paneHeight = pane.value.offsetHeight;
+    expander.value.style.height = paneHeight + 'px';
 }
 
 onMounted(() => {

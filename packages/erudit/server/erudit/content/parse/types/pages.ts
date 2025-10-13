@@ -1,4 +1,4 @@
-import type { ContentConfigPage } from '@erudit-js/cog/schema';
+import { ContentType, type ContentConfigPage } from '@erudit-js/cog/schema';
 import { type DocumentAny, parseJsxContent } from '@erudit-js/prose';
 
 import type { ContentParser } from '..';
@@ -46,7 +46,7 @@ export const pagesParser: ContentParser = async () => {
 
             await insertUniques(
                 navNode.fullId,
-                undefined,
+                ContentType.Page,
                 Object.values(parsedContent.uniques),
             );
 

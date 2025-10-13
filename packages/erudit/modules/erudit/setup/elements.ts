@@ -9,6 +9,7 @@ import { spanName } from '@erudit-js/prose/default/span/index';
 
 import { moduleLogger } from '../logger';
 import type { EruditRuntimeConfig } from '../../../shared/types/runtimeConfig';
+import { blockLinkName } from '@erudit-js/prose/default/blockLink/index';
 
 type ElementImports = {
     global: string;
@@ -29,6 +30,10 @@ const BUILTIN_ELEMENTS: BuiltinElements = {
     [spanName]: {
         app: '@erudit-js/prose/default/span/app',
         global: '@erudit-js/prose/default/span/global',
+    },
+    [blockLinkName]: {
+        app: '@erudit-js/prose/default/blockLink/app',
+        global: '@erudit-js/prose/default/blockLink/global',
     },
 };
 

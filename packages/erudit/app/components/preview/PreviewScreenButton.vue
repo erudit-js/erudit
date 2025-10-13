@@ -15,8 +15,10 @@ const LinkComponent = external ? h('a') : EruditLink;
 <template>
     <component
         :is="LinkComponent"
+        v-bind="{
+            [external ? 'href' : 'to']: link,
+        }"
         tabindex="0"
-        :to="link"
         target="_blank"
         :class="{
             [`p-small micro:text-[18px] cursor-pointer rounded bg-transparent
@@ -26,6 +28,9 @@ const LinkComponent = external ? h('a') : EruditLink;
             'text-text-muted hocus:text-text hocus:bg-bg-accent': !state,
         }"
     >
-        <MaybeMyIcon :name="icon" :class="{ 'rotate-45': icon === 'plus' }" />
+        <MaybeMyIcon
+            :name="icon"
+            :class="{ 'scale-120 rotate-45': icon === 'plus' }"
+        />
     </component>
 </template>

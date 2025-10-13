@@ -1,11 +1,11 @@
-import { ContentConfigTopic, TopicPart } from '@erudit-js/cog/schema';
+import { type ContentConfigTopic, TopicPart } from '@erudit-js/cog/schema';
 import {
-    DocumentAny,
-    ParsedJsxContent,
+    type DocumentAny,
+    type ParsedJsxContent,
     parseJsxContent,
 } from '@erudit-js/prose';
 
-import { ContentParser } from '..';
+import type { ContentParser } from '..';
 import type { ContentNavNode } from '../../nav/types';
 import { documentUrlMismatch, wrapError } from '../utils/error';
 import { insertSnippets, insertUniques } from '../utils/element';

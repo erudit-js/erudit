@@ -1,7 +1,9 @@
 {
     "editor.formatOnSave": true,
-    "editor.defaultFormatter": "esbenp.prettier-vscode",
-    "typescript.tsserver.watchOptions": {
-        "watchFile": "fixedChunkSizePolling"
-    }
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+
+    // https://github.com/microsoft/TypeScript/issues/54087
+    // "typescript.tsserver.watchOptions": {
+    //     "watchFile": "fixedChunkSizePolling"
+    // }
 }

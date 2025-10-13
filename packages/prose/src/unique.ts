@@ -9,7 +9,6 @@ export type ElementUnique<TTag extends ElementTagAny> = {
     readonly element: ReturnType<TTag> | undefined;
     readonly slug: string;
     readonly url: string;
-    readonly id: string;
 };
 
 export type ElementUniqueAny = ElementUnique<ElementTagAny>;
@@ -43,9 +42,6 @@ export function defineUnique<TTag extends ElementTagAny>(definition: {
             }
 
             _element = value;
-        },
-        get id(): string {
-            return `${definition.url} → ${definition.slug}`;
         },
     } as ElementUnique<TTag>;
 }

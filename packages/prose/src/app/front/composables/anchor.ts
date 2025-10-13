@@ -23,7 +23,9 @@ export function useIsAnchor(element: ParsedElement<ElementSchemaAny>) {
     const { anchorElement } = inject(anchorStateSymbol)!;
 
     return computed(() => {
-        return anchorElement.value?.domId === element.domId;
+        return (
+            anchorElement.value && anchorElement.value.domId === element.domId
+        );
     });
 }
 

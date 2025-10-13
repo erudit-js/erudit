@@ -8,6 +8,8 @@ import type { JsxSnippet } from './snippet';
 type ConstructElementKind<TSchema extends ElementSchemaAny, TProperties> = {
     type: TSchema['Type'];
     name: TSchema['Name'];
+    title?: string;
+    uniqueSlug?: string;
     storageKey: string | undefined;
     data: TSchema['Data'];
     children: TSchema['Children'] extends ElementSchemaAny[]
@@ -26,9 +28,13 @@ export type JsxElement<
     {
         hash: string;
         tagName: TTagName;
-        slug: string | undefined;
+        /**
+         * The slug is a URL-friendly version of the element's title.
+         *
+         * Not to be confused with `uniqueSlug`, which holds a name of document-global uniqueness.
+         */
+        slug?: string;
         linkable: true | undefined;
-        uniqueId: string | undefined;
         snippet: JsxSnippet | undefined;
     }
 >;
@@ -37,7 +43,6 @@ export type ParsedElement<TSchema extends ElementSchemaAny> =
     ConstructElementKind<
         TSchema,
         {
-            uniqueId: string | undefined;
             domId: string | undefined;
         }
     >;

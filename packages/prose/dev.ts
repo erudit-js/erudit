@@ -8,6 +8,7 @@ import {
 import { join, relative } from 'node:path';
 import { createHash } from 'node:crypto';
 import { transpileFile } from './transpileFile';
+import { execSync } from 'node:child_process';
 
 /**
  * Incremental dev builder:
@@ -93,6 +94,15 @@ const flush = () => {
     if (deleted.length) {
         console.log('🗑️ Deleted:');
         for (const f of deleted) console.log('  •', f);
+    }
+    if (changed.length || deleted.length) {
+        console.log('📝 Refreshing declarations via bun tsc...');
+        try {
+            execSync('bun tsc', { stdio: 'inherit' });
+            console.log('✅ Declarations refreshed');
+        } catch (e) {
+            console.error('❌ bun tsc failed', e);
+        }
     }
 };
 

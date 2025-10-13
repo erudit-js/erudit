@@ -18,8 +18,8 @@ const { closePreview, hasPreviousRequest, setPreviousPreview } = usePreview();
             <slot></slot>
         </div>
         <div
-            class="border-border gap-small micro:gap-normal px-normal
-                micro:h-[60px] flex h-[54px] shrink-0 items-center border-t
+            class="border-border gap-small micro:gap-normal micro:h-[60px] flex
+                h-[54px] shrink-0 items-center border-t px-(--_pMainX)
                 transition-[border]"
         >
             <MaybeMyIcon

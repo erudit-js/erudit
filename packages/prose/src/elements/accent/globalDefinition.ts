@@ -132,6 +132,8 @@ export function defineAccentGlobal<TAccentSchema extends AccentSchema>(
                 direction: props.direction || 'column',
             };
 
+            element.title = props.title;
+
             ensureHasChildren(tagName, children);
 
             let hasMainSection = false;

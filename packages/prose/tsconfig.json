@@ -1,13 +1,15 @@
 {
     "compilerOptions": {
+        "emitDeclarationOnly": true,
+        "declaration": true,
+        "skipLibCheck": true,
+        "outDir": "dist",
         "target": "esnext",
         "module": "ESNext",
         "moduleResolution": "bundler",
         "strict": true,
-        "verbatimModuleSyntax": true,
-        "jsx": "react-jsx",
-        "jsxImportSource": "src",
-        "types": ["vite/client"]
+        "verbatimModuleSyntax": true
     },
-    "include": ["./src/**/*", "./tests/**/*"]
+    "include": ["./src/**/*", "./tests/**/*", "./env.d.ts"],
+    "exclude": ["./tests/**/*"]
 }

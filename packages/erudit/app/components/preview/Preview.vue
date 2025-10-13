@@ -104,6 +104,7 @@ await usePhrases(
                         <Suspense :timeout="0" @resolve="delayedResize">
                             <CurrentScreen
                                 v-if="CurrentScreen"
+                                :key="JSON.stringify(currentRequest)"
                                 :request="currentRequest"
                             />
                             <PreviewLoading v-else />

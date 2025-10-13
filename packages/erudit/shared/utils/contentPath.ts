@@ -7,7 +7,7 @@ import {
 
 export function parseContentPath(contentPath: string): {
     typeOrPart: ContentType | TopicPart;
-    shortId: string;
+    fullOrShortId: string;
 } {
     const contentPathArray = contentPath.split('/');
     const typeOrPart = contentPathArray.shift();
@@ -19,24 +19,24 @@ export function parseContentPath(contentPath: string): {
         });
     }
 
-    const shortId = contentPathArray.join('/');
+    const fullOrShortId = contentPathArray.join('/');
 
-    if (!shortId) {
+    if (!fullOrShortId) {
         throw createError({
             status: 400,
-            statusMessage: `Falsy content path short ID: "${contentPath}"!`,
+            statusMessage: `Falsy content path full/short ID: "${contentPath}"!`,
         });
     }
 
     return {
         typeOrPart,
-        shortId,
+        fullOrShortId,
     };
 }
 
 export function createContentPath(
     typeOrPart: ContentType | TopicPart,
-    shortId: string,
+    fullOrShortId: string,
 ): string {
-    return `${typeOrPart}/${shortId}`;
+    return `${typeOrPart}/${fullOrShortId}`;
 }

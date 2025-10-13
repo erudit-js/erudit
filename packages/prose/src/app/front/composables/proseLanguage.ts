@@ -1,9 +1,7 @@
-import { inject } from 'vue';
-
-import { proseContextSymbol } from './appContext';
+import { useProseAppContext } from './appContext';
 import { proseLanguages } from '../languages/language';
 
 export async function useProseLanguage() {
-    const { languageCode } = inject(proseContextSymbol)!;
+    const { languageCode } = useProseAppContext();
     return (await proseLanguages[languageCode]()).default;
 }

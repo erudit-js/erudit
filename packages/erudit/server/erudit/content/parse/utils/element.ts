@@ -1,28 +1,28 @@
-import {
+import type {
     ElementSchemaAny,
     ParsedElement,
     ParsedSnippet,
 } from '@erudit-js/prose';
-import { TopicPart } from '@erudit-js/cog/schema';
+import { ContentType, TopicPart } from '@erudit-js/cog/schema';
 
 import { wrapError } from './error';
 
 export async function insertUniques(
     fullId: string,
-    topicPart: TopicPart | undefined,
+    typeOrPart: ContentType | TopicPart,
     uniques: ParsedElement<ElementSchemaAny>[],
 ) {
     for (const unique of uniques) {
         try {
             await ERUDIT.db.insert(ERUDIT.db.schema.uniques).values({
                 contentFullId: fullId,
-                uniqueId: unique.uniqueId!,
+                uniqueSlug: unique.uniqueSlug!,
+                typeOrPart,
                 domId: unique.domId!,
-                topicPart,
                 parsedElement: unique,
             });
         } catch (error) {
-            throw wrapError(error, `Inserting unique ${unique.uniqueId}!`);
+            throw wrapError(error, `Inserting unique ${unique.uniqueSlug}!`);
         }
     }
 }

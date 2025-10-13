@@ -85,7 +85,7 @@ export function defineTag<TTagName extends string>(tagName: TTagName) {
             }
 
             if (allProps.$) {
-                element.uniqueId = allProps.$.id;
+                element.uniqueSlug = allProps.$.slug;
                 // @ts-expect-error Bypass readonly
                 allProps.$.element = element;
             }

@@ -19,6 +19,12 @@ export async function getElementIcon(elementName: string) {
     return await appElement.icon();
 }
 
+export async function getElementPhrase(elementName: string) {
+    const appElement = getAppElement(elementName);
+    const languageCode = ERUDIT.config.project.language.current;
+    return await appElement.languages[languageCode]!();
+}
+
 function getAppElement(elementName: string) {
     const appElement = appElements[elementName];
 

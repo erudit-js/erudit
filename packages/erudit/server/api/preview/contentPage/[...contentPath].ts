@@ -1,30 +1,28 @@
 import { eq } from 'drizzle-orm';
-import { ContentType, TopicPart } from '@erudit-js/cog/schema';
+
+import { ContentType, isTopicPart, TopicPart } from '@erudit-js/cog/schema';
 
 export default defineEventHandler<Promise<PreviewContentPage>>(
     async (event) => {
-        const contentPath = event.context.params!.contentPath;
-        const { typeOrPart, shortId } = parseContentPath(contentPath);
-        const contentNavNode = ERUDIT.contentNav.getNodeOrThrow(shortId);
+        // <typeOrPart>/<fullContentId>.json
+        const contentPath = event.context.params!.contentPath.slice(0, -5);
 
-        let topicPart: TopicPart | undefined;
-        if (contentNavNode.type === ContentType.Topic) {
-            topicPart = typeOrPart as TopicPart;
-        }
+        const { typeOrPart, fullOrShortId: fullId } =
+            parseContentPath(contentPath);
 
         const dbContent = (await ERUDIT.db.query.content.findFirst({
             columns: {
                 title: true,
                 description: true,
             },
-            where: eq(ERUDIT.db.schema.content.fullId, contentNavNode.fullId),
+            where: eq(ERUDIT.db.schema.content.fullId, fullId),
         }))!;
 
-        const bookNavNode = ERUDIT.contentNav.getBookFor(shortId);
+        const bookNavNode = ERUDIT.contentNav.getBookFor(fullId);
         let bookTitle: string | undefined;
 
         if (bookNavNode) {
-            if (bookNavNode.shortId !== shortId) {
+            if (bookNavNode.fullId !== fullId) {
                 const dbBook = (await ERUDIT.db.query.content.findFirst({
                     columns: {
                         title: true,
@@ -40,19 +38,24 @@ export default defineEventHandler<Promise<PreviewContentPage>>(
         }
 
         const link = (() => {
-            switch (contentNavNode.type) {
+            if (isTopicPart(typeOrPart)) {
+                const topicPart = typeOrPart as TopicPart;
+                return PAGES.topic(topicPart, fullId);
+            }
+
+            switch (typeOrPart) {
                 case ContentType.Book:
                 case ContentType.Group:
                 case ContentType.Page:
-                    return PAGES[contentNavNode.type](shortId);
-                case ContentType.Topic:
-                    return PAGES.topic(topicPart!, shortId);
+                    return PAGES[typeOrPart](fullId);
             }
-        })();
+        })()!;
 
         return {
-            type: contentNavNode.type,
-            topicPart,
+            type: isTopicPart(typeOrPart) ? ContentType.Topic : typeOrPart,
+            topicPart: isTopicPart(typeOrPart)
+                ? (typeOrPart as TopicPart)
+                : undefined,
             title: dbContent.title,
             description: dbContent.description ?? undefined,
             bookTitle,

@@ -1,5 +1,4 @@
 import type { ParsedElement } from './element';
-import { ProseError } from './error';
 import type { ElementSchemaAny } from './schema';
 import type { ElementTag } from './tag';
 

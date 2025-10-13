@@ -1,7 +1,8 @@
 <script lang="ts" setup>
-import { inject, ref, watch } from 'vue';
+import { ref, watch } from 'vue';
+
 import { useIcon } from '../../composables/icon';
-import { proseContextSymbol } from '../../composables/appContext';
+import { useProseAppContext } from '../../composables/appContext';
 
 const { icon, title } = defineProps<{
     icon: string;
@@ -10,7 +11,7 @@ const { icon, title } = defineProps<{
 }>();
 
 const Icon = useIcon();
-const { TransitionFade } = inject(proseContextSymbol)!;
+const { TransitionFade } = useProseAppContext();
 
 const key = ref(0);
 watch(

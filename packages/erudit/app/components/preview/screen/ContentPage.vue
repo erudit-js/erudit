@@ -2,7 +2,9 @@
 const { request } = defineProps<{ request: PreviewRequestContentPage }>();
 
 const previewData: PreviewContentPage = await $fetch(
-    '/api/preview/contentPage/' + request.shortId + '...' + request.typeOrPart,
+    '/api/preview/contentPage/' +
+        createContentPath(request.typeOrPart!, request.fullId) +
+        '.json',
     {
         responseType: 'json',
     },
@@ -33,7 +35,10 @@ const secondary =
         :main="previewData.title"
         :secondary
     >
-        <div class="p-normal micro:text-base text-sm">
+        <div
+            class="micro:text-base px-(--_pMainX) py-[calc(var(--_pMainY)*2)]
+                text-sm"
+        >
             {{
                 previewData.description ??
                 phrase.preview_content_page_description

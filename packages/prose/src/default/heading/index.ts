@@ -44,6 +44,7 @@ function createHeadingTag(tagName: string, level: 1 | 2 | 3) {
             }
 
             element.data = { level, title };
+            element.title = title;
 
             element.snippet = {
                 search: true,

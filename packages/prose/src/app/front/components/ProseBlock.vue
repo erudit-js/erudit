@@ -13,7 +13,7 @@ import { autoUpdate, offset, shift, useFloating } from '@floating-ui/vue';
 
 import type { ParsedElement } from '../../../element';
 import type { BlockSchemaAny } from '../../../schema';
-import { proseContextSymbol } from '../composables/appContext';
+import { useProseAppContext } from '../composables/appContext';
 import { useElementIcon } from '../composables/elementIcon';
 import { useIsAnchor, useJumpToAnchor } from '../composables/anchor';
 import { useIcon } from '../composables/icon';
@@ -23,7 +23,7 @@ import AsideMenu from './blockAsideMenu/AsideMenu.vue';
 
 const { element } = defineProps<{ element: ParsedElement<BlockSchemaAny> }>();
 const Icon = useIcon();
-const { TransitionFade } = inject(proseContextSymbol)!;
+const { TransitionFade } = useProseAppContext();
 const style = useCssModule();
 
 const blockElement = useTemplateRef('block');

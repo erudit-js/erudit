@@ -37,7 +37,6 @@ export async function parseJsxContent(argObj: {
         }
 
         const parsedElement: ParsedElement<TSchema> = {
-            uniqueId: jsxElement.uniqueId,
             domId: createDomId(ids, jsxElement),
             type: jsxElement.type,
             name: jsxElement.name,
@@ -46,16 +45,20 @@ export async function parseJsxContent(argObj: {
             children: transformedChildren as any,
         };
 
-        if (!parsedElement.uniqueId) {
-            delete parsedElement.uniqueId;
+        if (jsxElement.title) {
+            parsedElement.title = jsxElement.title;
+        }
+
+        if (jsxElement.uniqueSlug) {
+            parsedElement.uniqueSlug = jsxElement.uniqueSlug;
         }
 
         if (!parsedElement.domId) {
             delete parsedElement.domId;
         }
 
-        if (jsxElement.uniqueId) {
-            uniques[jsxElement.uniqueId] = parsedElement;
+        if (jsxElement.uniqueSlug) {
+            uniques[jsxElement.uniqueSlug] = parsedElement;
         }
 
         if (jsxElement.snippet) {
@@ -85,11 +88,8 @@ async function tryTitleToSlug(
     jsxElement: JsxElement<ElementSchemaAny>,
     context: ProseContext,
 ) {
-    if (jsxElement.data?.title) {
-        jsxElement.slug ||= await slugify(
-            jsxElement.data.title,
-            context.language,
-        );
+    if (jsxElement.title) {
+        jsxElement.slug ||= await slugify(jsxElement.title, context.language);
     }
 }
 

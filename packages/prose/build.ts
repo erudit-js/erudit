@@ -1,6 +1,7 @@
 import { globSync } from 'glob';
 import { rmSync, existsSync } from 'node:fs';
 import { transpileFile } from './transpileFile';
+import { execSync } from 'node:child_process';
 
 // Clean previous build output (dist directory)
 if (existsSync('dist')) {
@@ -18,3 +19,6 @@ for (const file of srcFiles) {
 }
 
 console.log(`✅ Built ${count} files`);
+console.log('📝 Generating type declarations via bun tsc...');
+execSync('bun tsc', { stdio: 'inherit' });
+console.log('✅ Declarations updated');

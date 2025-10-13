@@ -1,17 +1,17 @@
 <script lang="ts" setup>
-import { inject, ref } from 'vue';
+import { ref } from 'vue';
 
 import { useProseLanguage } from '../../composables/proseLanguage';
 import linkIcon from '../../assets/link.svg?raw';
 import checkIcon from '../../assets/check.svg?raw';
 import AsideMenuButton from './AsideMenuButton.vue';
-import { proseContextSymbol } from '../../composables/appContext';
+import { useProseAppContext } from '../../composables/appContext';
 
 const { domId } = defineProps<{
     domId: string;
 }>();
 
-const { sitePath } = inject(proseContextSymbol)!;
+const { sitePath } = useProseAppContext();
 const prosePhrase = await useProseLanguage();
 
 const copied = ref(false);

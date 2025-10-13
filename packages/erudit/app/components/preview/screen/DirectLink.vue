@@ -11,7 +11,10 @@ const phrase = await usePhrases('direct_link', 'direct_link_explain');
         :link="request.href"
         :external="true"
     >
-        <div class="p-normal micro:text-base text-sm">
+        <div
+            class="micro:text-base px-(--_pMainX) py-[calc(var(--_pMainY)*2)]
+                text-sm"
+        >
             <div>{{ phrase.direct_link_explain }}</div>
             <div class="mt-small font-mono break-words underline">
                 {{ request.href }}

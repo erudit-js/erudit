@@ -50,7 +50,7 @@ const logotype = (() => {
         <div>
             <div>
                 <EruditLink
-                    class="text-nice-underline text-lg font-bold"
+                    class="text-hover-underline text-lg font-bold"
                     to="/"
                 >
                     {{ title }}

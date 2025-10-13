@@ -1,8 +1,5 @@
 <script setup lang="ts">
 import { ContentType } from '@erudit-js/cog/schema';
-import { Prose, type ProseAppContext } from '@erudit-js/prose/app';
-
-import { MaybeMyIcon, TransitionFade } from '#components';
 
 const route = useRoute();
 const pageId = Array.isArray(route.params.pageId)
@@ -10,24 +7,6 @@ const pageId = Array.isArray(route.params.pageId)
     : route.params.pageId!;
 const contentPath = createContentPath(ContentType.Page, pageId);
 const mainContent = await useMainContent<MainContentPage>(contentPath);
-const formatText = await useFormatText();
-const sitePath = withBaseUrl('/' + contentPath);
-
-const hashId = computed(() => {
-    return route.hash ? route.hash.slice(1) : undefined;
-});
-
-const context: ProseAppContext = {
-    sitePath,
-    languageCode: ERUDIT.config.project.language.current,
-    storage: mainContent.storage,
-    appElements,
-    loadingSvg,
-    hashId,
-    formatText,
-    MaybeMyIcon,
-    TransitionFade,
-};
 </script>
 
 <template>
@@ -40,8 +19,8 @@ const context: ProseAppContext = {
     </div>
     <Prose
         :element="mainContent.element"
-        :context
-        :style="{ '--proseGap': 'var(--_pMainX)' }"
-        class="px-[calc(var(--proseGap)-var(--proseAsideWidth))] py-(--_pMainY)"
+        :storage="mainContent.storage"
+        :urlPath="'/' + contentPath"
+        :useHash="true"
     />
 </template>

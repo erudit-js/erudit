@@ -3,7 +3,7 @@ import { h, inject, type Component } from 'vue';
 
 import type { ParsedElement } from '../../../element';
 import type { ElementSchemaAny } from '../../../schema';
-import { proseContextSymbol } from '../composables/appContext';
+import { useProseAppContext } from '../composables/appContext';
 import { blocksName } from '../../../default/blocks/index';
 
 // Default Renderers
@@ -16,12 +16,14 @@ import { bName } from '../../../default/b';
 import B from '../../../default/b/B.vue';
 import { iName } from '../../../default/i';
 import I from '../../../default/i/I.vue';
+import { linkName } from '../../../default/link';
+import Link from '../../../default/link/Link.vue';
 
 const { element } = defineProps<{
     element: ParsedElement<ElementSchemaAny>;
 }>();
 
-const { appElements } = inject(proseContextSymbol)!;
+const { appElements } = useProseAppContext();
 
 const RenderComponent: Component<{ element: ParsedElement<ElementSchemaAny> }> =
     await (async () => {
@@ -43,6 +45,8 @@ const RenderComponent: Component<{ element: ParsedElement<ElementSchemaAny> }> =
                 return B;
             case iName:
                 return I;
+            case linkName:
+                return Link;
         }
 
         return {

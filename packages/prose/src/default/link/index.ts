@@ -7,6 +7,7 @@ import { defineTag } from '../../tag';
 import { ElementType } from '../../type';
 import { isUnique, type ElementUniqueAny } from '../../unique';
 import { isTextElement } from '../text';
+import { ensureHasOneChild } from '../../children';
 
 export enum LinkType {
     Direct = 'direct',
@@ -25,7 +26,8 @@ export interface LinkDataDirect extends LinkDataBase {
 
 export interface LinkDataUnique extends LinkDataBase {
     type: LinkType.Unique;
-    targetUniqueId: string;
+    targetDocumentUrl: string;
+    targetUniqueSlug: string;
 }
 
 export interface LinkDataDocument extends LinkDataBase {
@@ -37,9 +39,11 @@ export type LinkData = LinkDataDirect | LinkDataUnique | LinkDataDocument;
 
 export type LinkStorageUnique = {
     type: LinkType.Unique;
+    contentFullId: string;
+    uniqueSlug: string;
     href: string;
     elementName: string;
-    title: string;
+    elementTitle?: string;
     documentTypeOrPart: ContentType | TopicPart;
     documentTitle: string;
 };
@@ -47,22 +51,12 @@ export type LinkStorageUnique = {
 export type LinkStorageDocument = {
     type: LinkType.Document;
     href: string;
+    contentFullId: string;
     typeOrPart: ContentType | TopicPart;
     title: string;
 };
 
 export type LinkStorage = LinkStorageUnique | LinkStorageDocument | undefined;
-
-export function createLinkStorageKey(data: LinkData): string | undefined {
-    switch (data.type) {
-        case LinkType.Direct:
-            return undefined;
-        case LinkType.Unique:
-            return 'link:' + data.type + ':' + data.targetUniqueId;
-        case LinkType.Document:
-            return 'link:' + data.type + ':' + data.targetDocumentUrl;
-    }
-}
 
 export const linkName = 'link';
 
@@ -83,19 +77,7 @@ export const Link = defineTag('a')<
     name: linkName,
     linkable: false,
     initElement({ tagName, element, children, props: { to } }) {
-        if (!children) {
-            throw new ProseError(
-                `<${tagName}> requires exactly one child element!`,
-            );
-        }
-
-        if (children.length !== 1) {
-            throw new ProseError(
-                `<${tagName}> requires exactly one child element, but received ${children.length} children: ${children
-                    .map((c) => `<${c.tagName}>`)
-                    .join(', ')}!`,
-            );
-        }
+        ensureHasOneChild(tagName, children);
 
         const child = children[0];
 
@@ -116,7 +98,8 @@ export const Link = defineTag('a')<
         } else if (isUnique(to)) {
             data = {
                 type: LinkType.Unique,
-                targetUniqueId: to.id,
+                targetDocumentUrl: to.url,
+                targetUniqueSlug: to.slug,
                 text: child.data,
             };
         } else {
@@ -131,3 +114,21 @@ export const Link = defineTag('a')<
         element.storageKey = createLinkStorageKey(data);
     },
 });
+
+export function createLinkStorageKey(data: LinkData): string | undefined {
+    switch (data.type) {
+        case LinkType.Direct:
+            return undefined;
+        case LinkType.Unique:
+            return (
+                'link:' +
+                data.type +
+                ': ' +
+                data.targetUniqueSlug +
+                ' ⟵ ' +
+                data.targetDocumentUrl
+            );
+        case LinkType.Document:
+            return 'link:' + data.type + ': ' + data.targetDocumentUrl;
+    }
+}

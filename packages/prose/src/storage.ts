@@ -22,27 +22,20 @@ export async function fillStorage(argsObj: {
     ): Promise<void> {
         const storageKey = element.storageKey;
 
-        if (!storageKey) {
-            return;
+        if (storageKey && !storage[storageKey]) {
+            const generator = argsObj.storageGenerators[element.name];
+            if (generator) {
+                storage[storageKey] = await generator(element);
+            }
         }
 
-        if (storage[storageKey]) {
-            return;
-        }
-
-        const generator = argsObj.storageGenerators[element.name];
-        if (generator) {
-            storage[storageKey] = await generator(element);
-        }
-
-        if (element.children) {
+        if (element.children?.length) {
             await Promise.all(
-                element.children.map((child) => {
-                    createStorageForElement(child);
-                    if (argsObj.step) {
-                        return argsObj.step(child);
-                    }
-                }),
+                element.children.map((child) =>
+                    createStorageForElement(child).then(() =>
+                        argsObj.step ? argsObj.step(child) : undefined,
+                    ),
+                ),
             );
         }
     }

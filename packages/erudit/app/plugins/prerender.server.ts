@@ -22,6 +22,7 @@ export default defineNuxtPlugin({
             '/api/prerender/language',
             '/api/prerender/frontNav',
             '/api/prerender/content',
+            '/api/prerender/uniques',
         ];
 
         for (const provider of routeProviders) {
