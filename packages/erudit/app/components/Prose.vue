@@ -21,6 +21,7 @@ const hashId = computed(() => {
 });
 
 const context: ProseAppContext = {
+    mode: ERUDIT.config.mode,
     sitePath: withBaseUrl(urlPath),
     languageCode: ERUDIT.config.project.language.current,
     storage,

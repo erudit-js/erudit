@@ -43,6 +43,7 @@ export async function spawnNuxt(
                     env: {
                         ...process.env,
                         ERUDIT_PROJECT_DIR: projectPath,
+                        ERUDIT_MODE: command,
                     },
                 },
             );

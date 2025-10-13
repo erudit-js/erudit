@@ -56,5 +56,6 @@ export type PreviewContentPage = {
 export type PreviewContentUnique = {
     href: string;
     documentTitle: string;
-    headingStack?: ParsedElement<BlocksSchema>;
+    fadeOverlay?: boolean;
+    toRenderElement?: ParsedElement<BlocksSchema>;
 } & ResolvedProse;

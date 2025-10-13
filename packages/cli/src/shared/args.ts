@@ -31,6 +31,14 @@ export const contentTargetsArg = {
     },
 } satisfies { target: ArgDef };
 
+export const nitroPresetArg = {
+    preset: {
+        type: 'string',
+        required: false,
+        description: '(Nuxt Build Flag) Nitro preset to use for building',
+    },
+} satisfies { preset: ArgDef };
+
 export function resolveArgPaths(projectPath: string, eruditPath: string) {
     consola.start('Resolving project path...');
     projectPath = resolvePath(projectPath);

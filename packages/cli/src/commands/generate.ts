@@ -1,4 +1,3 @@
-import consola from 'consola';
 import { defineCommand } from 'citty';
 
 import {
@@ -9,29 +8,23 @@ import {
     resolveArgPaths,
 } from '../shared/args';
 import { logCommand } from '../shared/log';
-import { spawnNuxt } from '../shared/nuxt';
 import { prepare } from '../shared/prepare';
+import { spawnNuxt } from '../shared/nuxt';
 
-export const build = defineCommand({
+export const generate = defineCommand({
     meta: {
-        name: 'Build',
+        name: 'Generate',
         description:
-            'Builds Erudit project for fast and convenient content writing',
+            'Generates static production-ready site from Erudit project',
     },
     args: {
         ...projectPathArg,
         ...eruditPathArg,
         ...contentTargetsArg,
         ...nitroPresetArg,
-        prerender: {
-            required: false,
-            type: 'boolean',
-            default: false,
-            description: '(Nuxt Build Flag) Prerender routes',
-        },
     },
     async run({ args }) {
-        logCommand('build');
+        logCommand('generate');
 
         const { projectPath, eruditPath } = resolveArgPaths(
             args.projectPath,
@@ -44,11 +37,9 @@ export const build = defineCommand({
             contentTargets: args.target,
         });
 
-        const restParams =
-            (args.prerender ? '--prerender' : '') +
-            (args.preset ? ` --preset ${args.preset}` : '');
+        const restParams = args.preset ? `--preset ${args.preset}` : '';
 
-        consola.start('Starting Nuxt build...');
-        await spawnNuxt('build', projectPath, restParams);
+        console.log('Starting Nuxt generate...');
+        await spawnNuxt('generate', projectPath, restParams);
     },
 });

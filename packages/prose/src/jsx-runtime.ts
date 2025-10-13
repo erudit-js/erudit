@@ -7,6 +7,7 @@ import { Br } from './default/br';
 import { H1, H2, H3 } from './default/heading';
 import { Inliners } from './default/inliners';
 import { Paragraph } from './default/paragraph';
+import { Details } from './default/details';
 import { Span } from './default/span';
 import { Link } from './default/link';
 import { B } from './default/b';
@@ -21,6 +22,7 @@ declare global {
             h1: Parameters<typeof H1>[0];
             h2: Parameters<typeof H2>[0];
             h3: Parameters<typeof H3>[0];
+            details: Parameters<typeof Details>[0];
             // Default inliners
             inliners: Parameters<typeof Inliners>[0];
             span: Parameters<typeof Span>[0];
@@ -46,6 +48,8 @@ export function jsx(tag: any, props: any) {
             return H2(props);
         case 'h3':
             return H3(props);
+        case 'details':
+            return Details(props);
         // Default inliners
         case 'inliners':
             return Inliners(props);

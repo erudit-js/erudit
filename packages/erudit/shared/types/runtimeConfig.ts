@@ -2,6 +2,7 @@ import type {
     EruditAdsBanners,
     EruditCustomLinks,
     EruditLanguage,
+    EruditMode,
     EruditRepository,
     EruditSiteBrandLayout,
     EruditSponsors,
@@ -24,6 +25,7 @@ export interface EruditRuntimeConfig {
 }
 
 export interface EruditPublicRuntimeConfig {
+    mode: EruditMode;
     version: string;
     project: {
         language: EruditLanguage;

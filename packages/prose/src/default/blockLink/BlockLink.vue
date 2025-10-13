@@ -60,8 +60,8 @@ const uiData: UIData = await (async () => {
         <EruditLink
             target="_blank"
             :to="linkStorage!.href"
-            class="group bg-brand/5 border-brand/40 hocus:bg-brand/10
-                hocus:border-brand/60 relative block rounded-xl border
+            class="group bg-brand/5 border-brand/20 hocus:bg-brand/10
+                hocus:border-brand/40 relative block rounded-xl border-2
                 border-dashed p-(--proseAsideWidth)
                 transition-[border,background]"
         >
@@ -80,7 +80,7 @@ const uiData: UIData = await (async () => {
                     class="text-main-sm mr-small relative top-[2px] inline
                         align-baseline"
                 />
-                {{ formatText(uiData.text) }}
+                <span>{{ formatText(uiData.text) }}</span>
             </div>
             <div class="text-text-muted">
                 {{ formatText(element.data.text) }}
@@ -93,7 +93,7 @@ const uiData: UIData = await (async () => {
                     :name="uiData.secondary.icon"
                     class="mr-small relative top-[2px] inline align-baseline"
                 />
-                {{ formatText(uiData.secondary.text) }}
+                <span>{{ formatText(uiData.secondary.text) }}</span>
             </div>
         </EruditLink>
     </ProseBlock>

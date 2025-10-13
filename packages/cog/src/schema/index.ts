@@ -20,3 +20,5 @@ export * from './erudit/config';
 export * from './erudit/repository';
 export * from './erudit/content';
 export * from './erudit/links';
+
+export * from './mode';

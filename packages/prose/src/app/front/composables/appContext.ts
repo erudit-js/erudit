@@ -1,9 +1,11 @@
 import { inject, type Component, type InjectionKey, type Ref } from 'vue';
+import type { EruditMode } from '@erudit-js/cog/schema';
 
 import type { AppElementDefinitions } from '../../appElement';
 import type { GenericStorage } from '../../../storage';
 
 export interface ProseAppContext {
+    mode: EruditMode;
     sitePath: string;
     languageCode: string;
     storage: GenericStorage;

@@ -20,8 +20,7 @@ const secondary = (() => {
     return `${elementPhrase.element_name} • ${uniqueContent.documentTitle}`;
 })();
 
-const isHeadingUnique = Boolean(uniqueContent.headingStack);
-const element = uniqueContent.headingStack ?? uniqueContent.element;
+const element = uniqueContent.toRenderElement ?? uniqueContent.element;
 </script>
 
 <template>
@@ -42,7 +41,7 @@ const element = uniqueContent.headingStack ?? uniqueContent.element;
                 :useHash="false"
             />
             <div
-                v-if="isHeadingUnique"
+                v-if="uniqueContent.fadeOverlay"
                 class="to-bg-main pointer-events-none absolute bottom-0 left-0
                     h-full w-full touch-none bg-linear-to-b from-transparent"
             ></div>

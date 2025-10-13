@@ -17,7 +17,7 @@
         "play": "bun erudit dev playground --eruditPath=./packages/erudit",
         "play:prepare": "bun erudit prepare playground",
         "play:build": "bun erudit build playground",
-        "play:generate": "bun erudit build playground --prerender",
+        "play:generate": "bun erudit generate playground",
         "play:launch": "bun erudit launch playground",
         "play:preview": "bun erudit preview playground"
     },

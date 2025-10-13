@@ -16,6 +16,7 @@ export async function setupEruditRuntimeConfig(nuxt: Nuxt) {
     } as any;
 
     const eruditPublicRuntimeConfig: EruditPublicRuntimeConfig = {
+        mode: process.env.ERUDIT_MODE,
         version,
         project: {},
     } as any;

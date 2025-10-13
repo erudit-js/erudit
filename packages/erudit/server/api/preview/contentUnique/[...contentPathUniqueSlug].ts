@@ -1,6 +1,12 @@
 import { getHeadingUniqueData } from '@erudit/server/prose/default/heading';
 import { headingName } from '@erudit-js/prose/default/heading/index';
 import type { PreviewContentUnique } from '#layers/erudit/shared/types/preview';
+import { detailsName } from '@erudit-js/prose/default/details/index';
+import {
+    blocksName,
+    type BlocksSchema,
+} from '@erudit-js/prose/default/blocks/index';
+import { ElementType, type ParsedElement } from '@erudit-js/prose';
 
 export default defineEventHandler<Promise<PreviewContentUnique>>(
     async (event) => {
@@ -26,7 +32,7 @@ export default defineEventHandler<Promise<PreviewContentUnique>>(
             uniqueData.element,
         );
 
-        const toReturn: PreviewContentUnique = {
+        const uniqueContent: PreviewContentUnique = {
             href: uniqueData.href,
             documentTitle: uniqueData.documentTitle,
             element,
@@ -39,9 +45,19 @@ export default defineEventHandler<Promise<PreviewContentUnique>>(
 
             Object.assign(storage, extraStorage);
 
-            toReturn.headingStack = extraElement;
+            uniqueContent.fadeOverlay = true;
+            uniqueContent.toRenderElement = extraElement;
+        } else if (uniqueData.element.name === detailsName) {
+            const blocks: ParsedElement<BlocksSchema> = {
+                type: ElementType.Block,
+                name: blocksName,
+                // @ts-expect-error
+                children: uniqueData.element.children,
+            };
+
+            uniqueContent.toRenderElement = blocks;
         }
 
-        return toReturn;
+        return uniqueContent;
     },
 );

@@ -10,6 +10,7 @@ import { dev } from './dev';
 import { build } from './build';
 import { preview } from './preview';
 import { launch } from './launch';
+import { generate } from './generate';
 
 export const main = defineCommand({
     meta: {
@@ -22,6 +23,7 @@ export const main = defineCommand({
         prepare,
         dev,
         build,
+        generate,
         preview,
         launch,
     },

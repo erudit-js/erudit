@@ -6,10 +6,11 @@ import type { GlobalElementDefinition } from '@erudit-js/prose';
 import { paragraphName } from '@erudit-js/prose/default/paragraph/index';
 import { headingName } from '@erudit-js/prose/default/heading/index';
 import { spanName } from '@erudit-js/prose/default/span/index';
+import { blockLinkName } from '@erudit-js/prose/default/blockLink/index';
+import { detailsName } from '@erudit-js/prose/default/details/index';
 
 import { moduleLogger } from '../logger';
 import type { EruditRuntimeConfig } from '../../../shared/types/runtimeConfig';
-import { blockLinkName } from '@erudit-js/prose/default/blockLink/index';
 
 type ElementImports = {
     global: string;
@@ -34,6 +35,10 @@ const BUILTIN_ELEMENTS: BuiltinElements = {
     [blockLinkName]: {
         app: '@erudit-js/prose/default/blockLink/app',
         global: '@erudit-js/prose/default/blockLink/global',
+    },
+    [detailsName]: {
+        app: '@erudit-js/prose/default/details/app',
+        global: '@erudit-js/prose/default/details/global',
     },
 };
 
