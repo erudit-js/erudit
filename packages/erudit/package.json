@@ -25,6 +25,9 @@
             "import": "./proxy/prose.app.ts"
         }
     },
+    "scripts": {
+        "test": "vitest run"
+    },
     "peerDependencies": {
         "@erudit-js/cog": "workspace:3.0.0-dev.23",
         "@erudit-js/cli": "workspace:3.0.0-dev.23",
@@ -53,6 +56,7 @@
         "vue-router": "latest"
     },
     "devDependencies": {
-        "@types/better-sqlite3": "^7.6.13"
+        "@types/better-sqlite3": "^7.6.13",
+        "vitest": "^3.2.4"
     }
 }

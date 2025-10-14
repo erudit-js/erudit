@@ -1,4 +1,3 @@
-import { gzip } from 'node:zlib';
 import { Document, Encoder } from 'flexsearch';
 
 import { encoderAugments } from '@erudit/shared/search/encoders';
@@ -65,12 +64,7 @@ export default defineEventHandler(async () => {
         exported.export[key] = data;
     });
 
-    const gzipped = await new Promise<Buffer>((resolve, reject) => {
-        gzip(JSON.stringify(exported), (err, result) => {
-            if (err) return reject(err);
-            resolve(result);
-        });
-    });
+    const gzipped = await zip(JSON.stringify(exported));
 
     return gzipped;
 });

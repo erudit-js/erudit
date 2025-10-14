@@ -152,6 +152,17 @@ export async function setupProseElements(
                         };
                     }
                 }
+
+                const transpile = (nuxt.options.build.transpile ||= []);
+                const optimizeDeps = nuxt.options.vite.optimizeDeps || {};
+                const optimizeDepsInclude = (optimizeDeps.include ||= []);
+
+                for (const [name, options] of Object.entries(
+                    definition.dependencies ?? {},
+                )) {
+                    if (options?.transpile) transpile.push(name);
+                    if (options?.optimize) optimizeDepsInclude.push(name);
+                }
             }
         } catch (error) {
             throw new Error(

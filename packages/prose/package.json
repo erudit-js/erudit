@@ -40,6 +40,9 @@
         "test": "vitest run",
         "test:watch": "vitest"
     },
+    "dependencies": {
+        "katex": "^0.16.25"
+    },
     "peerDependencies": {
         "@erudit-js/cog": "workspace:3.0.0-dev.23",
         "vue": "latest",

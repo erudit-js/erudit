@@ -7,9 +7,9 @@ import type {
 } from '@erudit-js/prose';
 import { Prose, type ProseAppContext } from '@erudit-js/prose/app';
 
-const { element, storage, urlPath, useHash } = defineProps<{
+const { element, zippedStorage, urlPath, useHash } = defineProps<{
     element: ParsedElement<ElementSchemaAny>;
-    storage: GenericStorage;
+    zippedStorage: string;
     urlPath: string;
     useHash: boolean;
 }>();
@@ -24,7 +24,7 @@ const context: ProseAppContext = {
     mode: ERUDIT.config.mode,
     sitePath: withBaseUrl(urlPath),
     languageCode: ERUDIT.config.project.language.current,
-    storage,
+    storage: JSON.parse(await unzip(zippedStorage)),
     appElements,
     loadingSvg,
     hashId,

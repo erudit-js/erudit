@@ -31,5 +31,5 @@ export async function resolveProse<TSchema extends ElementSchemaAny>(
         },
     });
 
-    return { element, storage };
+    return { element, storage: await zip(JSON.stringify(storage)) };
 }

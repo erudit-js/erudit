@@ -1,3 +1,5 @@
+import { describe, it, expect } from 'vitest';
+
 import { slasher } from '../../../shared/utils/slasher';
 
 describe('slasher', () => {

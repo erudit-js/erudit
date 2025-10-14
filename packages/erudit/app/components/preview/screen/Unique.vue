@@ -36,7 +36,7 @@ const element = uniqueContent.toRenderElement ?? uniqueContent.element;
         >
             <Prose
                 :element
-                :storage="uniqueContent.storage"
+                :zippedStorage="uniqueContent.zippedStorage"
                 :urlPath="'/' + uniqueContent.href.split('#')[0]"
                 :useHash="false"
             />

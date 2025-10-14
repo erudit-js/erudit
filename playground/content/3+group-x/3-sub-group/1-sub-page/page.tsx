@@ -24,6 +24,40 @@ export const document = createProseDocument({
             предложений.
         </p>
 
+        <BlockMath
+            freeze
+            latex={`
+                   3 > \\red{9^{\\default{3} \\sin}}
+
+                a \\green{\\sin}
+
+                b >>
+
+                \\brand{A^2 + B^2 = C^2} A^2 + B^2 = C^2 \\orange{A^2 + B^2 = C^2} A^2 + B^2 = C^2A^2 + B^2 = C^2A^2 + B^2 = C^2A^2 + B^2 = C^2
+            `}
+        />
+
+        <BlockMath
+            latex={`
+                   3 > 9^{3 \\sin}
+
+                a /sin
+
+                b >>
+
+                A^2 + B^2 = C^2 A^2 + B^2 = C^2A^2 + B^2 = C^2A^2 + B^2 = C^2A^2 + B^2 = C^2A^2 + B^2 = C^2A^2 + B^2 = C^2
+            `}
+        />
+
+        <BlockMath
+            latex={`
+                   f(x) = \\begin{alignat*}{2}
+                10&x+ &3&y = 2 \\\\
+                3&x+&13&y = 4
+                \\end{alignat*} = \\lim\\limits_{x \\to \\infty} \\frac{1}{x}
+            `}
+        />
+
         <BlockLink to={uniques.myH1}>
             Вот бы сейчас в Battlefield 6 поиграть...
         </BlockLink>

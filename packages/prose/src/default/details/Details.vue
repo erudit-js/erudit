@@ -30,7 +30,7 @@ const containsAnchor = useContainsAnchor(element);
         v-if="isAnchor || containsAnchor || mode !== 'generate'"
     >
         <div
-            class="border-border bg-bg-accent/25 rounded-xl border-2
+            class="border-border bg-bg-accent/30 rounded-xl border-2
                 border-dashed transition-[border,background]"
         >
             <div class="text-text-muted p-(--proseAsideWidth) font-medium">

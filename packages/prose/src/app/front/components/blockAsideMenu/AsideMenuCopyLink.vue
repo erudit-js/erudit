@@ -19,7 +19,7 @@ let resetTimer: number | undefined;
 
 async function copyLink() {
     await navigator.clipboard.writeText(
-        location.origin + '/' + sitePath + '#' + domId,
+        location.origin + sitePath + '#' + domId,
     );
     copied.value = true;
     if (resetTimer) clearTimeout(resetTimer);

@@ -16,14 +16,14 @@ export default defineEventHandler<Promise<MainContent>>(async (event) => {
             part: typeOrPart as TopicPart,
             breadcrumbs: await ERUDIT.repository.content.breadcrumbs(fullId),
             element,
-            storage,
+            zippedStorage: storage,
         };
     } else {
         return {
             type: typeOrPart as ContentType.Page,
             breadcrumbs: await ERUDIT.repository.content.breadcrumbs(fullId),
             element,
-            storage,
+            zippedStorage: storage,
         };
     }
 });

@@ -44,8 +44,8 @@ async function init(initCommand: SearchCommandInit) {
         const fetchedSearch = await fetch(
             fullSiteUrl + 'search.json.gz?' + initCommand.cacheId,
         );
-        const gzipSearch = await fetchedSearch.arrayBuffer();
-        const textSearch = await unzip(gzipSearch as unknown as ArrayBuffer);
+        const gzipSearch = await fetchedSearch.text();
+        const textSearch = await unzip(gzipSearch);
         const jsonSearch = JSON.parse(textSearch);
 
         const encoder = new Encoder();
@@ -160,13 +160,4 @@ function sendResults(searchId: number, pageSize: number) {
     };
 
     postMessage(resultsResponse);
-}
-
-async function unzip(buffer: ArrayBuffer): Promise<string> {
-    const ds = new DecompressionStream('gzip');
-    const decompressedStream = new Blob([buffer]).stream().pipeThrough(ds);
-    const decompressedBuffer = await new Response(
-        decompressedStream,
-    ).arrayBuffer();
-    return new TextDecoder().decode(decompressedBuffer);
 }

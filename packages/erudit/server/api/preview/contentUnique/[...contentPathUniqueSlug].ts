@@ -36,15 +36,14 @@ export default defineEventHandler<Promise<PreviewContentUnique>>(
             href: uniqueData.href,
             documentTitle: uniqueData.documentTitle,
             element,
-            storage,
+            zippedStorage: storage,
         };
 
         if (uniqueData.element.name === headingName) {
-            const { element: extraElement, storage: extraStorage } =
+            const { element: extraElement, storage: renderStorage } =
                 await getHeadingUniqueData(contentPath, uniqueSlug);
 
-            Object.assign(storage, extraStorage);
-
+            uniqueContent.zippedStorage = renderStorage;
             uniqueContent.fadeOverlay = true;
             uniqueContent.toRenderElement = extraElement;
         } else if (uniqueData.element.name === detailsName) {
