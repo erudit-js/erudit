@@ -10,62 +10,62 @@ import {
 } from 'vue';
 
 import { useProseAppContext } from '../composables/appContext';
+import { useAnchorResolving } from '../composables/anchor';
 
-type ExpanderMode = 'transition' | 'instant';
-
-const { instant = false } = defineProps<{
-    instant?: boolean;
-}>();
-
-const _mode = ref<ExpanderMode>('instant');
-const expanderHeight = ref(0);
 const { TransitionFade } = useProseAppContext();
+const anchorResolving = useAnchorResolving();
 const slots = useSlots();
-const key = ref(0);
 const expander = useTemplateRef('expander');
 const pane = useTemplateRef('pane');
+const key = ref(0);
+const absolute = ref(false);
+const transition = ref(false);
+
 let resizeObserver: ResizeObserver;
 
-watch(
-    () => slots.default?.(),
-    () => key.value++,
-);
+onMounted(async () => {
+    updateExpanderHeight();
+    // Set min-height to prevent layout shift
+    //expander.value!.style.minHeight = pane.value!.offsetHeight + 'px';
 
-watch(key, async () => {
-    /*
-        We need to delay because the DOM needs to update before we measure it.
-        The height transition speed is fast, so not waiting for actual height might result in
-        bad looking "jumps" from previous screen halfway to 0 and then to actual new screen height.
-    */
-    await nextTick();
-    await new Promise((resolve) => setTimeout(resolve, 50));
-    resizeObserver.disconnect();
-    resizeObserver.observe(pane.value!);
-    doResize();
-});
+    await nextPaint();
+    absolute.value = true;
+    // Remove min-height after initial render to allow shrinking
+    //expander.value!.style.minHeight = '';
 
-watchEffect(() => {
-    if (_mode.value === 'transition') {
-        doResize();
-    }
-});
+    await nextPaint();
+    watchEffect(() => {
+        //transition.value = !anchorResolving.value;
+    });
 
-function doResize() {
-    if (!expander.value || !pane.value || _mode.value === 'instant') {
-        return;
-    }
-    const paneHeight = pane.value.offsetHeight;
-    expanderHeight.value = paneHeight;
-}
-
-onMounted(() => {
-    resizeObserver = new ResizeObserver(doResize);
     watch(
-        () => instant,
-        () => (_mode.value = instant ? 'instant' : 'transition'),
+        () => slots.default?.(),
+        () => key.value++,
+    );
+
+    watch(
+        key,
+        async () => {
+            await nextPaint();
+            resizeObserver ||= new ResizeObserver(updateExpanderHeight);
+            resizeObserver.disconnect();
+            resizeObserver.observe(pane.value!);
+            updateExpanderHeight();
+        },
         { immediate: true },
     );
 });
+
+function updateExpanderHeight() {
+    if (expander.value && pane.value) {
+        expander.value.style.height = pane.value.offsetHeight + 'px';
+    }
+}
+
+async function nextPaint() {
+    await nextTick();
+    await new Promise(requestAnimationFrame);
+}
 </script>
 
 <template>
@@ -73,20 +73,17 @@ onMounted(() => {
         ref="expander"
         :class="[
             'relative overflow-hidden',
-            { ['transition-[height]']: _mode === 'transition' },
+            { ['transition-[height]']: transition },
         ]"
-        :style="{
-            height: _mode === 'transition' ? expanderHeight + 'px' : '',
-        }"
     >
-        <TransitionFade :css="_mode === 'transition'">
+        <TransitionFade>
             <div
                 ref="pane"
+                :key
                 :class="[
                     'top-0 left-0 w-full',
-                    { ['absolute']: _mode === 'transition' },
+                    absolute ? 'absolute' : 'static',
                 ]"
-                :key
             >
                 <slot v-if="$slots.default"></slot>
                 <div v-else></div>
