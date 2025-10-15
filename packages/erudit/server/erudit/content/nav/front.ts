@@ -1,7 +1,7 @@
 import { eq } from 'drizzle-orm';
 import { ContentType } from '@erudit-js/cog/schema';
 
-import { ContentNavNode } from './types';
+import type { ContentNavNode } from './types';
 
 export async function getGlobalFrontContentNav(): Promise<FrontGlobalContentNav> {
     const bookShortIds = Array.from(
@@ -36,12 +36,14 @@ export async function getBookFrontContentNav(
     return (await createFrontContentNavItem(
         bookNavNode,
         false,
+        true, // include empty book when directly requesting book nav
     )) as FrontContentNavBook;
 }
 
 async function createFrontContentNavItem(
     navNode: ContentNavNode,
     isGlobal: boolean,
+    includeIfEmpty = false,
 ): Promise<FrontContentNavItem | undefined> {
     const dbContentItem = (await ERUDIT.db.query.content.findFirst({
         columns: {
@@ -53,7 +55,7 @@ async function createFrontContentNavItem(
         where: eq(ERUDIT.db.schema.content.fullId, navNode.fullId),
     }))!;
 
-    if (dbContentItem.hidden) {
+    if (ERUDIT.config.public.mode === 'generate' && dbContentItem.hidden) {
         if (navNode.type === ContentType.Book) {
             if (isGlobal) {
                 // We can hide book in global nav.
@@ -74,14 +76,15 @@ async function createFrontContentNavItem(
     };
 
     async function processChildren() {
-        return (await Promise.all(
-            (navNode.children || [])
-                .map(
-                    async (childNavNode) =>
-                        await createFrontContentNavItem(childNavNode, isGlobal),
-                )
-                .filter(Boolean),
-        )) as FrontContentNavItem[];
+        const children = await Promise.all(
+            (navNode.children || []).map(
+                async (childNavNode) =>
+                    await createFrontContentNavItem(childNavNode, isGlobal),
+            ),
+        );
+        return children.filter(
+            (c): c is FrontContentNavItem => c !== undefined,
+        );
     }
 
     switch (navNode.type) {
@@ -95,23 +98,34 @@ async function createFrontContentNavItem(
                 type: ContentType.Page,
                 ...baseItem,
             };
-        case ContentType.Group:
+        case ContentType.Group: {
             const dbGroup = (await ERUDIT.db.query.groups.findFirst({
                 columns: { separator: true },
                 where: eq(ERUDIT.db.schema.groups.fullId, navNode.fullId),
             }))!;
-
+            const children = await processChildren();
+            if (children.length === 0 && !includeIfEmpty) {
+                return undefined;
+            }
             return {
                 type: ContentType.Group,
                 separator: dbGroup.separator,
                 ...baseItem,
-                children: await processChildren(),
+                children,
             };
-        case ContentType.Book:
+        }
+        case ContentType.Book: {
+            const children = await processChildren();
+            // In global nav we suppress empty books; when directly loading book (includeIfEmpty)
+            // we still return it so consumer can show the book shell.
+            if (children.length === 0 && !includeIfEmpty) {
+                return undefined;
+            }
             return {
                 type: ContentType.Book,
                 ...baseItem,
-                children: isGlobal ? [] : await processChildren(),
+                children: isGlobal ? [] : children,
             };
+        }
     }
 }

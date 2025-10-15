@@ -1,5 +1,9 @@
 import topicA from '#content/topic-a/article';
 
+export default definePage({
+    hidden: true,
+});
+
 export const document = createProseDocument({
     url: import.meta.url,
     uniques: {
