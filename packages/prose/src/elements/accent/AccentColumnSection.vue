@@ -1,8 +1,9 @@
 <script lang="ts" setup>
-import { ref, watchEffect } from 'vue';
+import { nextTick, onMounted, ref, watchEffect } from 'vue';
 
 import { useIcon } from '../../app/front/composables/icon';
 import {
+    useAnchorResolving,
     useContainsAnchor,
     useFormatText,
     type ElementPhrases,
@@ -20,10 +21,11 @@ const { phrase, section } = defineProps<{
 }>();
 
 const opened = ref(false);
-
+const instant = ref(false);
 const Icon = useIcon();
 const formatText = useFormatText();
 const containsAnchor = useContainsAnchor(section);
+const anchorResolving = useAnchorResolving();
 
 function getSectionTitle(sectionData: AccentSectionData) {
     let title = '';
@@ -39,6 +41,7 @@ function getSectionTitle(sectionData: AccentSectionData) {
 
 watchEffect(() => {
     if (containsAnchor.value) {
+        instant.value = anchorResolving.value;
         opened.value = true;
     }
 });
@@ -71,7 +74,7 @@ watchEffect(() => {
                 ]"
             ></div>
         </div>
-        <Expander>
+        <Expander :instant>
             <div class="py-(--proseAsideWidth)" v-if="opened">
                 <Render v-for="child of section.children" :element="child" />
             </div>

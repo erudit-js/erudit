@@ -8,6 +8,7 @@ import {
     watchEffect,
     onBeforeUnmount,
     watch,
+    nextTick,
 } from 'vue';
 import { autoUpdate, offset, shift, useFloating } from '@floating-ui/vue';
 
@@ -15,7 +16,7 @@ import type { ParsedElement } from '../../../element';
 import type { BlockSchemaAny } from '../../../schema';
 import { useProseAppContext } from '../composables/appContext';
 import { useElementIcon } from '../composables/elementIcon';
-import { useIsAnchor, useJumpToAnchor } from '../composables/anchor';
+import { useIsAnchor, useResolveAnchor } from '../composables/anchor';
 import { useIcon } from '../composables/icon';
 import { useElementPhrase } from '../composables/elementPhrase';
 import { useProseLanguage } from '../composables/proseLanguage';
@@ -48,7 +49,7 @@ await useElementPhrase(element);
 const elementIcon = await useElementIcon(element);
 
 const isAnchor = useIsAnchor(element);
-const jumpToAnchor = useJumpToAnchor();
+const resolveAnchor = useResolveAnchor();
 
 const outsideClickHandler = (e: MouseEvent) => {
     if (!menuVisible.value) return;
@@ -69,7 +70,7 @@ watch(menuVisible, (visible) => {
 onMounted(() => {
     watchEffect(() => {
         if (isAnchor.value) {
-            jumpToAnchor(blockElement.value!);
+            resolveAnchor(blockElement.value!);
         }
     });
 

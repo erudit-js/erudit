@@ -1,9 +1,10 @@
 <script lang="ts" setup>
-import { ref, watch } from 'vue';
+import { nextTick, onMounted, ref, watch, watchEffect } from 'vue';
 
 import type { AccentSchema, AccentSectionSchema } from './schema';
 import {
     Expander,
+    useAnchorResolving,
     useArrayContainsAnchor,
     useFormatText,
     type ElementPhrases,
@@ -17,15 +18,11 @@ const { phrase, sections } = defineProps<{
     sections: ParsedElement<AccentSectionSchema<AccentSchema>>[];
 }>();
 
+const anchorResolving = useAnchorResolving();
 const formatText = useFormatText();
+const instant = ref(false);
 const openedSectionI = ref<number>();
 const containsAnchorI = useArrayContainsAnchor(sections);
-
-watch(containsAnchorI, (i) => {
-    if (i !== undefined) {
-        openedSectionI.value = i;
-    }
-});
 
 function getSectionTitle(sectionData: AccentSectionData) {
     let title = '';
@@ -38,6 +35,17 @@ function getSectionTitle(sectionData: AccentSectionData) {
 
     return formatText(title);
 }
+
+watchEffect(() => {
+    if (containsAnchorI.value !== undefined) {
+        instant.value = true;
+        openedSectionI.value = containsAnchorI.value;
+
+        setTimeout(() => {
+            instant.value = false;
+        }, 100);
+    }
+});
 </script>
 
 <template>
@@ -66,7 +74,7 @@ function getSectionTitle(sectionData: AccentSectionData) {
             {{ getSectionTitle(section.data) }}
         </button>
     </div>
-    <Expander>
+    <Expander :instant>
         <div v-if="openedSectionI !== undefined" class="py-(--proseAsideWidth)">
             <Render
                 v-for="child of sections[openedSectionI].children"

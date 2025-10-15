@@ -1,6 +1,7 @@
 import {
     computed,
     inject,
+    nextTick,
     onMounted,
     shallowRef,
     watch,
@@ -12,9 +13,83 @@ import type { ParsedElement } from '../../../element';
 import type { ElementSchemaAny } from '../../../schema';
 
 export interface AnchorState {
+    anchorResolving: Ref<boolean>;
     jumpedToAnchor: Ref<boolean>;
     anchorElement: Ref<ParsedElement<ElementSchemaAny> | undefined>;
     containsAnchorElements: Ref<Set<ParsedElement<ElementSchemaAny>>>;
+}
+
+export function useAnchorState(
+    hashId: Ref<string | undefined>,
+    element: ParsedElement<ElementSchemaAny>,
+): AnchorState {
+    const anchorResolving = shallowRef(false);
+    const jumpedToAnchor = shallowRef(false);
+    const anchorElement = shallowRef<ParsedElement<ElementSchemaAny>>();
+    const containsAnchorElements = shallowRef<
+        Set<ParsedElement<ElementSchemaAny>>
+    >(new Set());
+
+    onMounted(() => {
+        watch(
+            hashId,
+            () => {
+                anchorResolving.value = true;
+                jumpedToAnchor.value = false;
+                anchorElement.value = undefined;
+                containsAnchorElements.value = new Set();
+
+                if (!hashId.value) {
+                    // No hash, no anchor to resolve
+                    anchorResolving.value = false;
+                    return;
+                }
+
+                const stack: ParsedElement<ElementSchemaAny>[] = [];
+
+                const dfs = (
+                    _element: ParsedElement<ElementSchemaAny>,
+                ): boolean => {
+                    stack.push(_element);
+
+                    if (_element.domId === hashId.value) {
+                        anchorElement.value = _element;
+                        containsAnchorElements.value = new Set(
+                            stack.slice(0, -1),
+                        );
+                        stack.pop();
+                        return true;
+                    }
+
+                    const children = _element.children || [];
+                    for (const child of children) {
+                        if (dfs(child)) {
+                            stack.pop();
+                            return true;
+                        }
+                    }
+
+                    stack.pop();
+                    return false;
+                };
+
+                dfs(element);
+
+                if (!anchorElement.value) {
+                    // There is a hash, but it targets somewhere else, not this element tree
+                    anchorResolving.value = false;
+                }
+            },
+            { immediate: true },
+        );
+    });
+
+    return {
+        anchorResolving,
+        jumpedToAnchor,
+        anchorElement,
+        containsAnchorElements,
+    };
 }
 
 export const anchorStateSymbol = Symbol() as InjectionKey<AnchorState>;
@@ -50,81 +125,22 @@ export function useArrayContainsAnchor(
     });
 }
 
-export function useJumpToAnchor() {
-    const { jumpedToAnchor } = inject(anchorStateSymbol)!;
-
-    return (element: HTMLElement) => {
-        if (jumpedToAnchor.value) {
-            return;
-        }
-
-        element.scrollIntoView({
-            block: 'center',
-        });
-
-        jumpedToAnchor.value = true;
-    };
+export function useAnchorResolving() {
+    const { anchorResolving } = inject(anchorStateSymbol)!;
+    return anchorResolving;
 }
 
-export function useAnchorState(
-    hashId: Ref<string | undefined>,
-    element: ParsedElement<ElementSchemaAny>,
-): AnchorState {
-    const jumpedToAnchor = shallowRef(false);
-    const anchorElement = shallowRef<ParsedElement<ElementSchemaAny>>();
-    const containsAnchorElements = shallowRef<
-        Set<ParsedElement<ElementSchemaAny>>
-    >(new Set());
+export function useResolveAnchor() {
+    const { jumpedToAnchor, anchorResolving } = inject(anchorStateSymbol)!;
 
-    onMounted(() => {
-        watch(
-            hashId,
-            () => {
-                jumpedToAnchor.value = false;
-                anchorElement.value = undefined;
-                containsAnchorElements.value = new Set();
+    return (element: HTMLElement) => {
+        if (!jumpedToAnchor.value) {
+            element.scrollIntoView({
+                block: 'center',
+            });
+        }
 
-                if (!hashId.value) {
-                    return;
-                }
-
-                const stack: ParsedElement<ElementSchemaAny>[] = [];
-
-                const dfs = (
-                    _element: ParsedElement<ElementSchemaAny>,
-                ): boolean => {
-                    stack.push(_element);
-
-                    if (_element.domId === hashId.value) {
-                        anchorElement.value = _element;
-                        containsAnchorElements.value = new Set(
-                            stack.slice(0, -1),
-                        );
-                        stack.pop();
-                        return true;
-                    }
-
-                    const children = _element.children || [];
-                    for (const child of children) {
-                        if (dfs(child)) {
-                            stack.pop();
-                            return true;
-                        }
-                    }
-
-                    stack.pop();
-                    return false;
-                };
-
-                dfs(element);
-            },
-            { immediate: true },
-        );
-    });
-
-    return {
-        jumpedToAnchor,
-        anchorElement,
-        containsAnchorElements,
+        jumpedToAnchor.value = true;
+        anchorResolving.value = false;
     };
 }
