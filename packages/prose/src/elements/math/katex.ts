@@ -15,6 +15,11 @@ export async function latexToHtml(katex: string, mode: 'block' | 'inline') {
     return html;
 }
 
+export function normalizeKatex(katex: string): string {
+    katex = katex.replace(/[\s\n]+/g, ' ').trim();
+    return katex;
+}
+
 export function ensureKatexNotEmpty(katex: string) {
     katex = katex.trim();
 

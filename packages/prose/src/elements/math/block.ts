@@ -1,9 +1,7 @@
-import { latexToHtml } from './katex';
+import { latexToHtml, normalizeKatex } from './katex';
 import type { ElementSchema } from '../../schema';
 import { ElementType } from '../../type';
 import { defineTag } from '../../tag';
-import { ensureHasOneChild } from '../../children';
-import { isTextElement } from '../../default/text';
 import { ProseError } from '../../error';
 
 export const mathGroupTypes = ['zero', 'normal', 'big'] as const;
@@ -141,10 +139,12 @@ export const BlockMath = defineTag('BlockMath')<
     name: blockMathName,
     linkable: true,
     initElement({ tagName, element, props }) {
-        const katex = props.latex.trim();
+        const katex = normalizeKatex(props.latex);
 
         if (!katex) {
-            throw new ProseError(`<${tagName}> element cannot be empty!`);
+            throw new ProseError(
+                `<${tagName}> element must have "latex" prop!`,
+            );
         }
 
         element.data = { freeze: props.freeze ?? false, katex };

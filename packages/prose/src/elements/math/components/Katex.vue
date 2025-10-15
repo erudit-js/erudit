@@ -20,10 +20,10 @@ const MathComponent = h(mode === 'block' ? 'div' : 'span', {
         :is="MathComponent"
         v-once
         :class="[
-            'nice-scrollbars overflow-auto',
             $style.math,
             {
-                [$style.blockMath]: mode === 'block',
+                [`'nice-scrollbars overflow-auto' ${$style.blockMath}`]:
+                    mode === 'block',
                 [$style.freeze]: freeze,
             },
         ]"

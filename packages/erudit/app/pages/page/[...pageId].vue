@@ -19,7 +19,7 @@ const mainContent = await useMainContent<MainContentPage>(contentPath);
     </div>
     <Prose
         :element="mainContent.element"
-        :zippedStorage="mainContent.zippedStorage"
+        :storage="mainContent.storage"
         :urlPath="'/' + contentPath"
         :useHash="true"
     />

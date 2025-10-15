@@ -8,5 +8,5 @@ export interface ResolvedProse<
     TSchema extends ElementSchemaAny = ElementSchemaAny,
 > {
     element: ParsedElement<TSchema>;
-    zippedStorage: string;
+    storage: GenericStorage;
 }

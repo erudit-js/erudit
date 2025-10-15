@@ -1,20 +1,20 @@
 import type { ContentType, TopicPart } from '@erudit-js/cog/schema';
-import type { BlocksSchema } from '@erudit-js/prose/default/blocks/index';
+import type { ApiProse } from './prose';
 
-interface Base {
+interface MainContentBase {
     type: ContentType;
     breadcrumbs: Breadcrumbs;
 }
 
-export interface MainContentTopicPart
-    extends Base,
-        ResolvedProse<BlocksSchema> {
-    type: ContentType.Topic;
-    part: TopicPart;
-}
+export type MainContentTopicPart = MainContentBase &
+    ApiProse & {
+        type: ContentType.Topic;
+        part: TopicPart;
+    };
 
-export interface MainContentPage extends Base, ResolvedProse<BlocksSchema> {
-    type: ContentType.Page;
-}
+export type MainContentPage = MainContentBase &
+    ApiProse & {
+        type: ContentType.Page;
+    };
 
 export type MainContent = MainContentTopicPart | MainContentPage;

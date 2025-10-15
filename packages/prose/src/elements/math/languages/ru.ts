@@ -1,5 +1,5 @@
 import { defineElementLanguage } from '../../../app';
 
 export default defineElementLanguage({
-    element_name: 'Блочная формула',
+    element_name: 'Математика',
 });

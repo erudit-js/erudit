@@ -2,7 +2,11 @@
 import type { MathGroup } from '../block';
 import Katex from './Katex.vue';
 
-const { mathGroup } = defineProps<{ mathGroup: MathGroup; freeze: boolean }>();
+// Destructure both props (freeze was missing before)
+const { mathGroup } = defineProps<{
+    mathGroup: MathGroup;
+    freeze: boolean;
+}>();
 
 const columnGap = (() => {
     switch (mathGroup.gap.type) {
@@ -30,7 +34,7 @@ const columnGap = (() => {
                 :math="part"
                 :freeze
             />
-            <MathGroup v-else :mathGroup :freeze />
+            <MathGroup v-else :mathGroup="part" :freeze="freeze" />
         </template>
     </div>
 </template>

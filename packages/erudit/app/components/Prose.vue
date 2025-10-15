@@ -1,5 +1,4 @@
 <script lang="ts" setup>
-import { MaybeMyIcon, TransitionFade, EruditLink } from '#components';
 import type {
     ElementSchemaAny,
     GenericStorage,
@@ -7,9 +6,11 @@ import type {
 } from '@erudit-js/prose';
 import { Prose, type ProseAppContext } from '@erudit-js/prose/app';
 
-const { element, zippedStorage, urlPath, useHash } = defineProps<{
+import { MaybeMyIcon, TransitionFade, EruditLink } from '#components';
+
+const { element, storage, urlPath, useHash } = defineProps<{
     element: ParsedElement<ElementSchemaAny>;
-    zippedStorage: string;
+    storage: GenericStorage;
     urlPath: string;
     useHash: boolean;
 }>();
@@ -24,7 +25,7 @@ const context: ProseAppContext = {
     mode: ERUDIT.config.mode,
     sitePath: withBaseUrl(urlPath),
     languageCode: ERUDIT.config.project.language.current,
-    storage: JSON.parse(await unzip(zippedStorage)),
+    storage,
     appElements,
     loadingSvg,
     hashId,

@@ -137,6 +137,7 @@ export default defineEruditConfig({
         '@erudit-js/prose/elements/list/list', // Use proxy here? Will have to proxy erudit/prose/elements/* somehow...
         '@erudit-js/prose/elements/list/listItem',
         '@erudit-js/prose/elements/math/block',
+        '@erudit-js/prose/elements/math/inliner',
         './elements/test/element',
         './elements/statement/element',
         './elements/term/element',
