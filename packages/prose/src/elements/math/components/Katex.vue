@@ -22,7 +22,7 @@ const MathComponent = h(mode === 'block' ? 'div' : 'span', {
         :class="[
             $style.math,
             {
-                [`'nice-scrollbars overflow-auto' ${$style.blockMath}`]:
+                [`nice-scrollbars overflow-auto ${$style.blockMath}`]:
                     mode === 'block',
                 [$style.freeze]: freeze,
             },

@@ -23,37 +23,31 @@ const transition = ref(false);
 
 let resizeObserver: ResizeObserver;
 
+watch(
+    () => slots.default?.(),
+    () => key.value++,
+);
+
+watch(key, async () => {
+    await nextPaint();
+    resizeObserver ||= new ResizeObserver(updateExpanderHeight);
+    resizeObserver.disconnect();
+    resizeObserver.observe(pane.value!);
+    updateExpanderHeight();
+});
+
 onMounted(async () => {
     updateExpanderHeight();
-    // Set min-height to prevent layout shift
-    //expander.value!.style.minHeight = pane.value!.offsetHeight + 'px';
 
     await nextPaint();
     absolute.value = true;
-    // Remove min-height after initial render to allow shrinking
-    //expander.value!.style.minHeight = '';
 
     await nextPaint();
+    transition.value = !anchorResolving.value;
+
     watchEffect(() => {
-        //transition.value = !anchorResolving.value;
+        transition.value = !anchorResolving.value;
     });
-
-    watch(
-        () => slots.default?.(),
-        () => key.value++,
-    );
-
-    watch(
-        key,
-        async () => {
-            await nextPaint();
-            resizeObserver ||= new ResizeObserver(updateExpanderHeight);
-            resizeObserver.disconnect();
-            resizeObserver.observe(pane.value!);
-            updateExpanderHeight();
-        },
-        { immediate: true },
-    );
 });
 
 function updateExpanderHeight() {

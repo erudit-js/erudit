@@ -2,7 +2,7 @@ export default defineEruditConfig({
     //contentTargets: ['test', 'zet'],
     debug: {
         log: true,
-        slowTransition: false,
+        slowTransition: true,
         ads: true,
         // fakeApi: {
         //     repository: false,

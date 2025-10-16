@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 import {
-    inject,
     onMounted,
     ref,
     useCssModule,
@@ -8,7 +7,6 @@ import {
     watchEffect,
     onBeforeUnmount,
     watch,
-    nextTick,
 } from 'vue';
 import { autoUpdate, offset, shift, useFloating } from '@floating-ui/vue';
 
@@ -21,6 +19,7 @@ import { useIcon } from '../composables/icon';
 import { useElementPhrase } from '../composables/elementPhrase';
 import { useProseLanguage } from '../composables/proseLanguage';
 import AsideMenu from './blockAsideMenu/AsideMenu.vue';
+import { waitForStableHeight } from '../composables/stableHeight';
 
 const { element } = defineProps<{ element: ParsedElement<BlockSchemaAny> }>();
 const Icon = useIcon();
@@ -68,8 +67,9 @@ watch(menuVisible, (visible) => {
 });
 
 onMounted(() => {
-    watchEffect(() => {
+    watchEffect(async () => {
         if (isAnchor.value) {
+            await waitForStableHeight();
             resolveAnchor(blockElement.value!);
         }
     });
