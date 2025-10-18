@@ -3,7 +3,6 @@ import { ref, watchEffect } from 'vue';
 
 import type { AccentSchema, AccentSectionSchema } from './schema';
 import {
-    Expander,
     useArrayContainsAnchor,
     useFormatText,
     type ElementPhrases,
@@ -11,6 +10,7 @@ import {
 import type { ParsedElement } from '../../element';
 import type { AccentSectionData } from './data';
 import Render from '../../app/front/components/Render.vue';
+import Expander from '../../shared/Expander.vue';
 
 const { phrase, sections } = defineProps<{
     phrase: ElementPhrases<any>;

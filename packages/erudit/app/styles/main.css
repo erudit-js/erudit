@@ -1,11 +1,13 @@
 /* Noto Fonts */
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&family=Noto+Serif:ital,wght@0,100..900;1,100..900&display=swap');
-/* Tailwind CSS */
+
+/* Tailwind CSS Config */
 @import 'tailwindcss' source(none);
 @source '../..';
 @source '../../../prose/src/app/front';
 @source '../../../prose/src/default';
 @source '../../../prose/src/elements';
+@source '../../../prose/src/shared';
 
 @custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
 

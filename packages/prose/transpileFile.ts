@@ -43,6 +43,14 @@ function ensureMjsExtensions(code: string, fileDir: string): string {
             }
             return spec + '.mjs';
         }
+
+        // If a corresponding source file (e.g. main.global.ts/.tsx/.js) exists, point to .mjs output.
+        const absBase = resolve(fileDir, spec);
+        for (const ext of ['.ts', '.tsx', '.js']) {
+            if (existsSync(absBase + ext)) {
+                return spec + '.mjs';
+            }
+        }
         return spec;
     };
 

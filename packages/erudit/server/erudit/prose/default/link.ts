@@ -5,111 +5,105 @@ import {
     isTopicPart,
     type TopicPart,
 } from '@erudit-js/cog/schema';
-import type {
-    ParsedElement,
-    ElementSchemaAny,
-    GenericStorage,
-} from '@erudit-js/prose';
+import type { ParsedElement, GenericStorage } from '@erudit-js/prose';
 import {
-    linkName,
     LinkType,
-    type LinkData,
+    type LinkSchema,
     type LinkStorage,
 } from '@erudit-js/prose/default/link/index';
+import type { BlockLinkSchema } from '@erudit-js/prose/default/blockLink/index';
 
-export async function tryCreateLinkStorage(
-    element: ParsedElement<ElementSchemaAny>,
+export async function createLinkStorage(
+    element: ParsedElement<LinkSchema> | ParsedElement<BlockLinkSchema>,
     storage: GenericStorage,
 ): Promise<void> {
-    if (element.name === linkName) {
-        const linkData = element.data as LinkData;
+    const linkData = element.data;
 
-        if (linkData.type === LinkType.Direct) {
-            return;
-        }
+    if (linkData.type === LinkType.Direct) {
+        return;
+    }
 
-        const storageKey = element.storageKey!;
-        let storageValue: LinkStorage = storage[storageKey] as LinkStorage;
+    const storageKey = element.storageKey!;
+    let storageValue: LinkStorage = storage[storageKey] as LinkStorage;
 
-        if (storageValue) {
-            return;
-        }
+    if (storageValue) {
+        return;
+    }
 
-        if (linkData.type === LinkType.Unique) {
-            const { targetDocumentUrl, targetUniqueSlug } = linkData;
-            const { fullId, typeOrPart } =
-                documentFsPathToContentId(targetDocumentUrl);
+    if (linkData.type === LinkType.Unique) {
+        const { targetDocumentUrl, targetUniqueSlug } = linkData;
+        const { fullId, typeOrPart } =
+            documentFsPathToContentId(targetDocumentUrl);
 
-            const uniqueData = await ERUDIT.repository.prose.unique(
-                fullId,
-                typeOrPart,
-                targetUniqueSlug,
-            );
+        const uniqueData = await ERUDIT.repository.prose.unique(
+            fullId,
+            typeOrPart,
+            targetUniqueSlug,
+        );
 
-            storageValue = {
-                type: LinkType.Unique,
-                contentFullId: fullId,
-                uniqueSlug: targetUniqueSlug,
-                elementName: uniqueData.elementName,
-                elementTitle: uniqueData.elementTitle,
-                documentTitle: uniqueData.documentTitle,
-                documentTypeOrPart: uniqueData.documentType,
-                href: uniqueData.href,
-            };
+        storageValue = {
+            type: LinkType.Unique,
+            contentFullId: fullId,
+            uniqueSlug: targetUniqueSlug,
+            elementName: uniqueData.elementName,
+            elementTitle: uniqueData.elementTitle,
+            documentTitle: uniqueData.documentTitle,
+            documentTypeOrPart: uniqueData.documentType,
+            href: uniqueData.href,
+        };
 
-            storage[storageKey] = storageValue;
-            return;
-        }
+        storage[storageKey] = storageValue;
+        return;
+    }
 
-        if (linkData.type === LinkType.Document) {
-            const { fullId, typeOrPart } = documentFsPathToContentId(
-                linkData.targetDocumentUrl,
-            );
+    if (linkData.type === LinkType.Document) {
+        const { fullId, typeOrPart } = documentFsPathToContentId(
+            linkData.targetDocumentUrl,
+        );
 
-            const dbContentItem = await ERUDIT.db.query.content.findFirst({
-                columns: {
-                    title: true,
-                },
-                where: eq(ERUDIT.db.schema.content.fullId, fullId),
+        const dbContentItem = await ERUDIT.db.query.content.findFirst({
+            columns: {
+                title: true,
+            },
+            where: eq(ERUDIT.db.schema.content.fullId, fullId),
+        });
+
+        if (!dbContentItem) {
+            throw createError({
+                statusCode: 404,
+                statusMessage: `Content item with full ID "${fullId}" not found in database, but it is referenced by link to document "${linkData.targetDocumentUrl}"!`,
             });
+        }
 
-            if (!dbContentItem) {
-                throw createError({
-                    statusCode: 404,
-                    statusMessage: `Content item with full ID "${fullId}" not found in database, but it is referenced by link to document "${linkData.targetDocumentUrl}"!`,
-                });
+        const href = (() => {
+            if (isTopicPart(typeOrPart)) {
+                const topicPart = typeOrPart as TopicPart;
+                return PAGES.topic(topicPart, fullId);
             }
 
-            const href = (() => {
-                if (isTopicPart(typeOrPart)) {
-                    const topicPart = typeOrPart as TopicPart;
-                    return PAGES.topic(topicPart, fullId);
-                }
+            switch (typeOrPart) {
+                case ContentType.Book:
+                case ContentType.Group:
+                case ContentType.Page:
+                    return PAGES[typeOrPart](fullId);
+            }
 
-                switch (typeOrPart) {
-                    case ContentType.Book:
-                    case ContentType.Group:
-                    case ContentType.Page:
-                        return PAGES[typeOrPart](fullId);
-                }
+            throw createError({
+                statusCode: 500,
+                statusMessage: `Unable to create href for content item with full ID "${fullId}" of type or part "${typeOrPart}", referenced by link to document "${linkData.targetDocumentUrl}".`,
+            });
+        })();
 
-                throw createError({
-                    statusCode: 500,
-                    statusMessage: `Unable to create href for content item with full ID "${fullId}" of type or part "${typeOrPart}", referenced by link to document "${linkData.targetDocumentUrl}".`,
-                });
-            })();
+        storageValue = {
+            type: LinkType.Document,
+            typeOrPart,
+            contentFullId: fullId,
+            title: dbContentItem.title,
+            href,
+        };
 
-            storageValue = {
-                type: LinkType.Document,
-                typeOrPart,
-                contentFullId: fullId,
-                title: dbContentItem.title,
-                href,
-            };
-
-            storage[storageKey] = storageValue;
-            return;
-        }
+        storage[storageKey] = storageValue;
+        return;
     }
 }
 

@@ -9,8 +9,16 @@ export const document = createProseDocument({
         myDetails: Details,
     },
 })(({ uniques }) => (
-    <blocks>
+    <>
         <h1 $={uniques.myH1}>Заголовок статьи</h1>
+
+        <Image
+            src="./public/magic-triangle-usage.svg"
+            invert="dark"
+            width="50%"
+        >
+            <Caption>"Магический" треугольник</Caption>
+        </Image>
 
         <Term
             title="Мое определение"
@@ -29,6 +37,7 @@ export const document = createProseDocument({
                     процесс внедрения и модернизации форм развития.
                 </p>
             </TermMain>
+
             <TermSection title="Пояснение 1">
                 <p>
                     С другой стороны укрепление и развитие структуры
@@ -97,27 +106,33 @@ export const document = createProseDocument({
             проверки новых предложений.
         </p>
 
-        <BlockMath
-            latex={`
-                (x+1)^2 >> (x+2)^2 >>{big} (x+3)^2 >>{zero} (x+4)^2 >>{50px} (x+5)^2
-            `}
-        />
+        <BlockMath>{`
+            (x+1)^2 >> (x+2)^2 >>{big} (x+3)^2 >>{zero} (x+4)^2 >>{50px} (x+5)^{10}
+        `}</BlockMath>
 
-        <BlockMath
-            freeze
-            latex={`
-                   3 > \\red{9^{\\default{3} \\sin}}
+        <BlockMath freeze>{`
+                3 > \\red{9^{\\default{3} \\sin}}
 
                 a \\green{\\sin}
 
                 b >>
 
                 \\brand{A^2 + B^2 = C^2} A^2 + B^2 = C^2 \\orange{A^2 + B^2 = C^2} A^2 + B^2 = C^2A^2 + B^2 = C^2A^2 + B^2 = C^2A^2 + B^2 = C^2
-            `}
-        />
+        `}</BlockMath>
 
-        <BlockMath
-            latex={`
+        <Image src="./public/meme.jpg">
+            <Caption>
+                <CaptionMain>
+                    Нет, я не умру в <a to={uniques.myDetails}>игре</a>! Я буду{' '}
+                    <M>f(x) = A</M> "жить" вечно
+                </CaptionMain>
+                <CaptionSecondary>
+                    Но есть еще несколько интересных историй!
+                </CaptionSecondary>
+            </Caption>
+        </Image>
+
+        <BlockMath>{`
                    3 > 9^{3 \\sin}
 
                 a /sin
@@ -125,17 +140,14 @@ export const document = createProseDocument({
                 b >>
 
                 A^2 + B^2 = C^2 A^2 + B^2 = C^2A^2 + B^2 = C^2A^2 + B^2 = C^2A^2 + B^2 = C^2A^2 + B^2 = C^2A^2 + B^2 = C^2
-            `}
-        />
+        `}</BlockMath>
 
-        <BlockMath
-            latex={`
+        <BlockMath>{`
                    f(x) = \\begin{alignat*}{2}
                 10&x+ &3&y = 2 \\\\
                 3&x+&13&y = 4
                 \\end{alignat*} = \\lim\\limits_{x \\to \\infty} \\frac{1}{x}
-            `}
-        />
+        `}</BlockMath>
 
         <BlockLink to={uniques.myH1}>
             Вот бы сейчас в Battlefield 6 поиграть...
@@ -312,5 +324,5 @@ export const document = createProseDocument({
             </b>{' '}
             вы что-нибудь знаете про это?
         </p>
-    </blocks>
+    </>
 ));

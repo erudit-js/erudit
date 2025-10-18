@@ -75,6 +75,7 @@ export async function prepare({
                     jsx: 'react-jsx',
                     jsxImportSource: '@erudit-js/prose',
                     types: ['vite/client'],
+                    lib: ['ESNext'],
                 },
                 include: [`${projectPath}/**/*`, `${eruditBuildDir}/**/*`],
                 exclude: [`${eruditBuildDir}/nuxt/**/*`],

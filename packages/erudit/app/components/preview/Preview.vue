@@ -10,7 +10,8 @@ const previewScreenElement = useTemplateRef('previewScreen');
 const { previewState, closePreview } = usePreview();
 const route = useRoute();
 
-watch(() => route.path, closePreview);
+const screenKey = ref(0);
+const loading = ref(true);
 
 const screenComponents: Record<PreviewType, Component> = {
     [PreviewType.DirectLink]: LazyPreviewScreenDirectLink,
@@ -21,11 +22,11 @@ const screenComponents: Record<PreviewType, Component> = {
 const currentRequest = shallowRef<PreviewRequest>();
 const CurrentScreen = shallowRef<Component>();
 
+const LOADING_FALLBACK_HEIGHT = 200;
+const lastHeight = ref(LOADING_FALLBACK_HEIGHT);
 let resizeObserver: ResizeObserver;
-onMounted(() => {
-    resizeObserver = new ResizeObserver(resizePreview);
-    resizeObserver.observe(previewScreenElement.value!);
-});
+
+watch(() => route.path, closePreview);
 
 watch(
     () => previewState.value.request,
@@ -35,35 +36,57 @@ watch(
             return;
         }
 
+        lastHeight.value =
+            previewElement.value?.offsetHeight || lastHeight.value;
+
         currentRequest.value = newRequest;
         CurrentScreen.value = screenComponents[newRequest.type];
+
+        screenKey.value++;
+        loading.value = true;
+
+        // Lock height during loading so it does not collapse
+        if (previewElement.value) {
+            previewElement.value.style.height = `${Math.max(lastHeight.value, LOADING_FALLBACK_HEIGHT)}px`;
+        }
     },
 );
 
-async function delayedResize() {
-    /*
-        We need to delay because the DOM needs to update before we measure it.
-        The height transition speed is fast, so not waiting for actual height might result in
-        bad looking "jumps" from previous screen halfway to 0 and then to actual new screen height.
-    */
-    await nextTick();
-    await new Promise((resolve) => setTimeout(resolve, 50));
-    resizePreview();
-}
+function updatePreviewHeight() {
+    if (!previewElement.value) return;
 
-function resizePreview() {
-    if (!previewElement.value || !previewScreenElement.value) {
+    // While loading, keep previous (or fallback) height
+    if (loading.value) {
+        previewElement.value.style.height = `${Math.max(lastHeight.value, LOADING_FALLBACK_HEIGHT)}px`;
         return;
     }
 
-    const lastChild = Array.from(
-        previewScreenElement.value.childNodes || [],
-    ).pop() as HTMLElement;
-
-    if (lastChild) {
-        const newHeight = lastChild?.offsetHeight || 10;
-        previewElement.value.setAttribute('style', `height: ${newHeight}px`);
+    if (previewScreenElement.value) {
+        const h = previewScreenElement.value.offsetHeight;
+        previewElement.value.style.height = `${h}px`;
+        if (h > 0) {
+            lastHeight.value = h;
+        }
     }
+}
+
+async function nextPaint() {
+    await nextTick();
+    await new Promise(requestAnimationFrame);
+}
+
+async function suspenseResolved() {
+    await nextPaint();
+    updatePreviewHeight();
+    resizeObserver ||= new ResizeObserver(updatePreviewHeight);
+    resizeObserver.disconnect();
+    resizeObserver.observe(previewScreenElement.value!);
+
+    await nextPaint();
+    loading.value = false;
+
+    await nextPaint();
+    updatePreviewHeight();
 }
 
 // Prefetch phrases
@@ -88,32 +111,44 @@ await usePhrases(
             <div
                 ref="preview"
                 :class="[
-                    `border-border bg-bg-main pointer-events-auto absolute
-                    bottom-0 w-full touch-auto overflow-hidden rounded-[25px]
-                    rounded-b-none border-t
+                    `border-border bg-bg-main micro:max-h-[70dvh]
+                    pointer-events-auto absolute bottom-0 max-h-[90dvh] w-full
+                    touch-auto overflow-hidden rounded-[25px] rounded-b-none
+                    border-t
                     transition-[box-shadow,background,border,max-height,height,translate]`,
-                    'micro:max-h-[70dvh] max-h-[90dvh]',
                     previewState.opened
                         ? `translate-y-0
                             shadow-[0px_-10px_15px_5px_light-dark(rgba(0,0,0,0.1),rgba(255,255,255,0.05))]`
                         : 'translate-y-full shadow-none',
                 ]"
             >
-                <div ref="previewScreen" class="max-h-[inherit]">
-                    <TransitionFade mode="out-in">
-                        <Suspense :timeout="0" @resolve="delayedResize">
-                            <CurrentScreen
-                                v-if="CurrentScreen"
-                                :key="JSON.stringify(currentRequest)"
-                                :request="currentRequest"
-                            />
-                            <PreviewLoading v-else />
-                            <template #fallback>
-                                <PreviewLoading />
-                            </template>
+                <!-- Screen -->
+                <TransitionFade>
+                    <div
+                        v-if="CurrentScreen"
+                        :key="screenKey"
+                        ref="previewScreen"
+                        class="absolute bottom-0 max-h-[inherit] w-full"
+                    >
+                        <Suspense @resolve="suspenseResolved">
+                            <CurrentScreen :request="currentRequest" />
                         </Suspense>
-                    </TransitionFade>
-                </div>
+                    </div>
+                </TransitionFade>
+
+                <!-- Loading overlay -->
+                <TransitionFade>
+                    <div
+                        v-if="loading"
+                        class="bg-bg-main absolute bottom-0 flex h-full w-full
+                            items-center justify-center"
+                    >
+                        <MyRuntimeIcon
+                            :svg="loadingSvg"
+                            class="text-text-dimmed text-[50px]"
+                        />
+                    </div>
+                </TransitionFade>
 
                 <!-- Blink overlay -->
                 <TransitionFade>

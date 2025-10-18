@@ -4,13 +4,25 @@ import {
     blockMathName,
     resolveMathGroups,
     type BlockMathSchema,
+    type MathGroup,
 } from './block';
 
 export default defineGlobalElement<BlockMathSchema>()({
     name: blockMathName,
     tags: { BlockMath },
     async createStorageData(element) {
-        return await resolveMathGroups(element.data.katex);
+        let result: MathGroup = {
+            gap: { type: 'normal' },
+            parts: ['<span style="color: red">KaTeX Error!</span>'],
+        };
+
+        try {
+            result = await resolveMathGroups(element.data.katex);
+        } catch (error) {
+            console.error('Error while rendering math:', error);
+        }
+
+        return result;
     },
     dependencies: {
         ['katex']: {

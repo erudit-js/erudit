@@ -1,4 +1,6 @@
-import { createReadStream, existsSync } from 'node:fs';
+import { existsSync } from 'node:fs';
+
+import { serveStaticFile } from '@erudit/server/staticFile';
 
 export default defineEventHandler(async (event) => {
     const idAndExt = event.context.params?.idAndExt;
@@ -38,5 +40,5 @@ export default defineEventHandler(async (event) => {
         });
     }
 
-    return sendStream(event, createReadStream(contributorAvatarPath));
+    return serveStaticFile(event, contributorAvatarPath);
 });

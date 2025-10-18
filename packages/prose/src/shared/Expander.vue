@@ -9,8 +9,8 @@ import {
     watchEffect,
 } from 'vue';
 
-import { useProseAppContext } from '../composables/appContext';
-import { useAnchorResolving } from '../composables/anchor';
+import { useProseAppContext } from '../app/front/composables/appContext';
+import { useAnchorResolving } from '../app/front/composables/anchor';
 
 const { TransitionFade } = useProseAppContext();
 const anchorResolving = useAnchorResolving();

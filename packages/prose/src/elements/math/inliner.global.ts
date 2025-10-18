@@ -17,9 +17,16 @@ export default defineGlobalElement<InlinerMathSchema>()({
             return tokens;
         }
 
+        let mathHtml = '<span style="color: red">KaTeX Error!</span>';
+        try {
+            mathHtml = await latexToHtml(element.data.katex, 'inline');
+        } catch (error) {
+            console.error('Error while rendering math:', error);
+        }
+
         return {
             type: 'katext',
-            mathHtml: await latexToHtml(element.data.katex, 'inline'),
+            mathHtml,
         };
     },
 });

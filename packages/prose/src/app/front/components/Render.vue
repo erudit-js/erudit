@@ -1,13 +1,15 @@
 <script lang="ts" setup>
-import { h, inject, type Component } from 'vue';
+import { h, type Component } from 'vue';
 
 import type { ParsedElement } from '../../../element';
 import type { ElementSchemaAny } from '../../../schema';
 import { useProseAppContext } from '../composables/appContext';
-import { blocksName } from '../../../default/blocks/index';
 
 // Default Renderers
+import { blocksName } from '../../../default/blocks/index';
 import Blocks from '../../../default/blocks/Blocks.vue';
+import { inlinersName } from '../../../default/inliners';
+import Inliners from '../../../default/inliners/Inliners.vue';
 import { textName } from '../../../default/text';
 import Text from '../../../default/text/Text.vue';
 import { brName } from '../../../default/br';
@@ -37,6 +39,8 @@ const RenderComponent: Component<{ element: ParsedElement<ElementSchemaAny> }> =
         switch (element.name) {
             case blocksName:
                 return Blocks;
+            case inlinersName:
+                return Inliners;
             case textName:
                 return Text;
             case brName:

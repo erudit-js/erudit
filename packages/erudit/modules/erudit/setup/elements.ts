@@ -11,10 +11,13 @@ import { detailsName } from '@erudit-js/prose/default/details/index';
 
 import { moduleLogger } from '../logger';
 import type { EruditRuntimeConfig } from '../../../shared/types/runtimeConfig';
+import { captionName } from '@erudit-js/prose/elements/caption/caption.global';
+import { captionMainName } from '@erudit-js/prose/elements/caption/main.global';
+import { captionSecondaryName } from '@erudit-js/prose/elements/caption/secondary.global';
 
 type ElementImports = {
     global: string;
-    app: string | undefined;
+    app?: string;
 };
 
 type BuiltinElements = Record<string, ElementImports>;
@@ -39,6 +42,15 @@ const BUILTIN_ELEMENTS: BuiltinElements = {
     [detailsName]: {
         app: '@erudit-js/prose/default/details/app',
         global: '@erudit-js/prose/default/details/global',
+    },
+    [captionName]: {
+        global: '@erudit-js/prose/elements/caption/caption.global',
+    },
+    [captionMainName]: {
+        global: '@erudit-js/prose/elements/caption/main.global',
+    },
+    [captionSecondaryName]: {
+        global: '@erudit-js/prose/elements/caption/secondary.global',
     },
 };
 

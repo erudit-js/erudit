@@ -1,17 +1,25 @@
 import { ElementTagSymbol } from './tag';
 import type { ElementSchemaAny } from './schema';
 import type { JsxElement } from './element';
+import { isBlockElement, isInlinerElement } from './element';
+import { ProseError } from './error';
 
-import { Blocks } from './default/blocks';
+import { Blocks, type BlocksSchema } from './default/blocks';
 import { Br } from './default/br';
 import { H1, H2, H3 } from './default/heading';
-import { Inliners } from './default/inliners';
+import { Inliners, type InlinersSchema } from './default/inliners';
 import { Paragraph } from './default/paragraph';
 import { Details } from './default/details';
 import { Span } from './default/span';
 import { Link } from './default/link';
 import { B } from './default/b';
 import { I } from './default/i';
+import {
+    ensureBlockChild,
+    ensureInlinerChild,
+    normalizeChildren,
+    type RawChildren,
+} from './children';
 
 declare global {
     namespace JSX {
@@ -81,6 +89,43 @@ Tag .toString():
 ${tag}`,
     );
 }
+
+export const Fragment = (props: {
+    children?: RawChildren;
+}): JsxElement<BlocksSchema> | JsxElement<InlinersSchema> => {
+    const children = normalizeChildren(props);
+
+    if (!children) {
+        throw new ProseError('Fragment requires at least one child element!');
+    }
+
+    const first = children[0];
+
+    const isBlock = isBlockElement(first);
+    const isInliner = isInlinerElement(first);
+
+    if (!isBlock && !isInliner) {
+        throw new ProseError(
+            'Fragment first child must be either a block or inliner element!',
+        );
+    }
+
+    for (const child of children.slice(1)) {
+        if (isBlock) {
+            ensureBlockChild('', child);
+        } else if (isInliner) {
+            ensureInlinerChild('', child);
+        }
+    }
+
+    if (isBlock) {
+        return Blocks({ children });
+    }
+
+    return Inliners({ children });
+};
+
+Object.defineProperty(Fragment, ElementTagSymbol, { value: undefined });
 
 export const jsxs = jsx;
 export const jsxDEV = jsx;

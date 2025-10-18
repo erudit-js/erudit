@@ -9,7 +9,7 @@ export function defineGlobalElement<TSchema extends ElementSchemaAny>() {
             tags?: Record<string, ElementTag<TSchema, string, any>>;
             dependencies?: Record<
                 string,
-                { transpile?: true; optimize?: true }
+                { transpile?: boolean; optimize?: boolean }
             >;
             createStorageData?: (
                 element: ParsedElement<TSchema>,

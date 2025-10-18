@@ -3,6 +3,8 @@ import type { ElementSchema } from '../../schema';
 import { ElementType } from '../../type';
 import { defineTag } from '../../tag';
 import { ProseError } from '../../error';
+import { ensureHasOneChild } from '../../children';
+import { isTextElement } from '../../default/text';
 
 export const mathGroupTypes = ['zero', 'normal', 'big'] as const;
 export type MathGroupGapType = (typeof mathGroupTypes)[number] | 'custom';
@@ -133,13 +135,23 @@ export type BlockMathSchema = ElementSchema<{
 
 export const BlockMath = defineTag('BlockMath')<
     BlockMathSchema,
-    { latex: string; freeze?: true; children?: undefined }
+    { freeze?: true; children: string }
 >({
     type: ElementType.Block,
     name: blockMathName,
     linkable: true,
-    initElement({ tagName, element, props }) {
-        const katex = normalizeKatex(props.latex);
+    initElement({ tagName, element, props, children }) {
+        ensureHasOneChild(tagName, children);
+
+        const child = children[0];
+
+        if (!isTextElement(child)) {
+            throw new ProseError(
+                `<${tagName}> requires exactly one text child element, but received <${children[0].tagName}>!`,
+            );
+        }
+
+        const katex = normalizeKatex(child.data);
 
         if (!katex) {
             throw new ProseError(

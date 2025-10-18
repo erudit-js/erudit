@@ -28,7 +28,10 @@ export default defineEventHandler<Promise<PreviewContentUnique>>(
             uniqueSlug,
         );
 
+        const navNode = ERUDIT.contentNav.getNodeOrThrow(fullId);
+
         const { element, storage } = await ERUDIT.repository.prose.resolve(
+            navNode,
             uniqueData.element,
         );
 
@@ -41,7 +44,7 @@ export default defineEventHandler<Promise<PreviewContentUnique>>(
 
         if (uniqueData.element.name === headingName) {
             const { element: extraElement, storage: renderStorage } =
-                await getHeadingUniqueData(contentPath, uniqueSlug);
+                await getHeadingUniqueData(navNode, contentPath, uniqueSlug);
 
             uniqueContent.storage = renderStorage;
             uniqueContent.fadeOverlay = true;

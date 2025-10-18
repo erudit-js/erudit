@@ -1,9 +1,9 @@
-import type { RawChildren } from '../children';
-import { isBlockElement, type JsxElement } from '../element';
-import { ProseError } from '../error';
-import type { ElementSchema, InlinerSchemaAny } from '../schema';
-import { defineTag } from '../tag';
-import { ElementType } from '../type';
+import type { RawChildren } from '../../children';
+import { isBlockElement, type JsxElement } from '../../element';
+import { ProseError } from '../../error';
+import type { ElementSchema, InlinerSchemaAny } from '../../schema';
+import { defineTag } from '../../tag';
+import { ElementType } from '../../type';
 
 export const inlinersName = 'inliners';
 

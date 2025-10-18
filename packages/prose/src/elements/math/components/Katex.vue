@@ -1,8 +1,6 @@
 <script lang="ts" setup>
-import { h, useCssModule } from 'vue';
+import { h } from 'vue';
 import 'katex/dist/katex.min.css';
-
-const style = useCssModule();
 
 const { mode, math, freeze } = defineProps<{
     mode: 'inline' | 'block';

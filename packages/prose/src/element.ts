@@ -4,6 +4,7 @@ import type {
     InlinerSchemaAny,
 } from './schema';
 import type { JsxSnippet } from './snippet';
+import type { ElementTag } from './tag';
 
 type ConstructElementKind<TSchema extends ElementSchemaAny, TProperties> = {
     type: TSchema['Type'];
@@ -57,4 +58,28 @@ export function isInlinerElement(
     element: any,
 ): element is JsxElement<InlinerSchemaAny> {
     return element && element?.type === 'inliner';
+}
+
+export function isElement<
+    TSchema extends ElementSchemaAny,
+    T extends JsxElement<TSchema, string> | ParsedElement<TSchema>,
+>(element: T, tag: ElementTag<TSchema, string, any>): element is T;
+
+export function isElement<
+    TSchema extends ElementSchemaAny,
+    TName extends string = string,
+>(
+    element:
+        | JsxElement<ElementSchemaAny, string>
+        | ParsedElement<ElementSchemaAny>,
+    tag: ElementTag<TSchema, TName, any>,
+): element is JsxElement<TSchema, TName> | ParsedElement<TSchema>;
+
+export function isElement(
+    element: any,
+    tag: ElementTag<ElementSchemaAny, string, any>,
+): element is
+    | JsxElement<ElementSchemaAny, string>
+    | ParsedElement<ElementSchemaAny> {
+    return !!element && element.name === tag.name;
 }

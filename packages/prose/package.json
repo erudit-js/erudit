@@ -22,6 +22,10 @@
             "import": "./dist/elements/*.mjs",
             "types": "./dist/elements/*.d.ts"
         },
+        "./shared/*": {
+            "import": "./dist/shared/*.mjs",
+            "types": "./dist/shared/*.d.ts"
+        },
         "./jsx-runtime": {
             "import": "./dist/jsx-runtime.mjs",
             "types": "./dist/jsx-runtime.d.ts"
@@ -41,7 +45,8 @@
         "test:watch": "vitest"
     },
     "dependencies": {
-        "katex": "^0.16.25"
+        "katex": "^0.16.25",
+        "photoswipe": "^5.4.4"
     },
     "peerDependencies": {
         "@erudit-js/cog": "workspace:3.0.0-dev.23",

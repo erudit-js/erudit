@@ -7,6 +7,7 @@ import type { GenericStorage } from '../../../storage';
 export interface ProseAppContext {
     mode: EruditMode;
     sitePath: string;
+    siteBaseUrl: string;
     languageCode: string;
     storage: GenericStorage;
     appElements: AppElementDefinitions;

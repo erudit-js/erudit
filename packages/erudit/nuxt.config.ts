@@ -26,9 +26,6 @@ export default defineNuxtConfig({
     myicons: {
         iconsDir: '@erudit/app/assets/icons',
     },
-    build: {
-        transpile: ['photoswipe'],
-    },
     plugins: ['@erudit/app/plugins/appSetup'],
     nitro: {
         plugins: ['@erudit/server'],
@@ -93,7 +90,6 @@ export default defineNuxtConfig({
             include: [
                 '@vue/devtools-core',
                 '@vue/devtools-kit',
-                'photoswipe',
                 '@floating-ui/vue',
                 'perfect-debounce',
                 'flexsearch',

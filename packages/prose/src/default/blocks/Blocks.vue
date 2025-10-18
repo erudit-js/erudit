@@ -3,7 +3,7 @@ import type { ParsedElement } from '../../element';
 import type { BlocksSchema } from '.';
 import Render from '../../app/front/components/Render.vue';
 
-const { element } = defineProps<{ element: ParsedElement<BlocksSchema> }>();
+defineProps<{ element: ParsedElement<BlocksSchema> }>();
 </script>
 
 <template>

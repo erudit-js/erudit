@@ -11,7 +11,10 @@ import {
 } from '@erudit-js/prose/default/blocks/index';
 import { headingName } from '@erudit-js/prose/default/heading/index';
 
+import type { ContentNavNode } from '../../content/nav/types';
+
 export async function getHeadingUniqueData(
+    navNode: ContentNavNode,
     contentPath: string,
     uniqueSlug: string,
 ) {
@@ -50,5 +53,5 @@ export async function getHeadingUniqueData(
         children: afterHeadingElements,
     };
 
-    return await ERUDIT.repository.prose.resolve<BlocksSchema>(blocks);
+    return await ERUDIT.repository.prose.resolve<BlocksSchema>(navNode, blocks);
 }

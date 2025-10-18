@@ -138,6 +138,7 @@ export default defineEruditConfig({
         '@erudit-js/prose/elements/list/listItem',
         '@erudit-js/prose/elements/math/block',
         '@erudit-js/prose/elements/math/inliner',
+        '@erudit-js/prose/elements/image/image',
         './elements/test/element',
         './elements/statement/element',
         './elements/term/element',

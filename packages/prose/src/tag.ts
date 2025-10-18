@@ -113,6 +113,7 @@ export function defineTag<TTagName extends string>(tagName: TTagName) {
 
         Object.defineProperties(tag, {
             [ElementTagSymbol]: { value: undefined },
+            name: { value: definition.name },
             tagName: { value: tagName },
             isTagElement: {
                 value: (

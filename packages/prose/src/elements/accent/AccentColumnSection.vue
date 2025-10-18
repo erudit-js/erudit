@@ -11,8 +11,8 @@ import type { ParsedElement } from '../../element';
 import type { AccentSectionData } from './data';
 import type { AccentSectionSchema, AccentSchema } from './schema';
 import Render from '../../app/front/components/Render.vue';
+import Expander from '../../shared/Expander.vue';
 import plusIcon from '../../app/front/assets/plus.svg?raw';
-import Expander from '../../app/front/components/Expander.vue';
 
 const { phrase, section } = defineProps<{
     phrase: ElementPhrases<any>;
