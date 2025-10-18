@@ -20,6 +20,8 @@ export const document = createProseDocument({
             <Caption>"Магический" треугольник</Caption>
         </Image>
 
+        <hr />
+
         <Term
             title="Мое определение"
             direction="row"
@@ -36,6 +38,10 @@ export const document = createProseDocument({
                     реализация намеченных плановых заданий влечет за собой
                     процесс внедрения и модернизации форм развития.
                 </p>
+
+                <Video src="./public/el.mp4" invert="light">
+                    <Caption>Эль Фаннинг в Death Stranding 2</Caption>
+                </Video>
             </TermMain>
 
             <TermSection title="Пояснение 1">
@@ -107,18 +113,18 @@ export const document = createProseDocument({
         </p>
 
         <BlockMath>{`
-            (x+1)^2 >> (x+2)^2 >>{big} (x+3)^2 >>{zero} (x+4)^2 >>{50px} (x+5)^{10}
-        `}</BlockMath>
+        (x+1)^2 >> (x+2)^2 >>{big} (x+3)^2 >>{zero} (x+4)^2 >>{50px} (x+5)^{10}
+    `}</BlockMath>
 
         <BlockMath freeze>{`
-                3 > \\red{9^{\\default{3} \\sin}}
+            3 > \\red{9^{\\default{3} \\sin}}
 
-                a \\green{\\sin}
+            a \\green{\\sin}
 
-                b >>
+            b >>
 
-                \\brand{A^2 + B^2 = C^2} A^2 + B^2 = C^2 \\orange{A^2 + B^2 = C^2} A^2 + B^2 = C^2A^2 + B^2 = C^2A^2 + B^2 = C^2A^2 + B^2 = C^2
-        `}</BlockMath>
+            \\brand{A^2 + B^2 = C^2} A^2 + B^2 = C^2 \\orange{A^2 + B^2 = C^2} A^2 + B^2 = C^2A^2 + B^2 = C^2A^2 + B^2 = C^2A^2 + B^2 = C^2
+    `}</BlockMath>
 
         <Image src="./public/meme.jpg">
             <Caption>
@@ -133,21 +139,21 @@ export const document = createProseDocument({
         </Image>
 
         <BlockMath>{`
-                   3 > 9^{3 \\sin}
+                3 > 9^{3 \\sin}
 
-                a /sin
+            a /sin
 
-                b >>
+            b >>
 
-                A^2 + B^2 = C^2 A^2 + B^2 = C^2A^2 + B^2 = C^2A^2 + B^2 = C^2A^2 + B^2 = C^2A^2 + B^2 = C^2A^2 + B^2 = C^2
-        `}</BlockMath>
+            A^2 + B^2 = C^2 A^2 + B^2 = C^2A^2 + B^2 = C^2A^2 + B^2 = C^2A^2 + B^2 = C^2A^2 + B^2 = C^2A^2 + B^2 = C^2
+    `}</BlockMath>
 
         <BlockMath>{`
-                   f(x) = \\begin{alignat*}{2}
-                10&x+ &3&y = 2 \\\\
-                3&x+&13&y = 4
-                \\end{alignat*} = \\lim\\limits_{x \\to \\infty} \\frac{1}{x}
-        `}</BlockMath>
+                f(x) = \\begin{alignat*}{2}
+            10&x+ &3&y = 2 \\\\
+            3&x+&13&y = 4
+            \\end{alignat*} = \\lim\\limits_{x \\to \\infty} \\frac{1}{x}
+    `}</BlockMath>
 
         <BlockLink to={uniques.myH1}>
             Вот бы сейчас в Battlefield 6 поиграть...

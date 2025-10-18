@@ -57,7 +57,7 @@ function imageClick() {
             v-bind="maxWidth ? { style: { maxWidth } } : {}"
             @click="imageClick"
             :class="[
-                'width-full m-auto block cursor-pointer',
+                'width-full m-auto block cursor-pointer rounded-xl',
                 {
                     [lightInvert]: element.data.invert === 'light',
                     [darkInvert]: element.data.invert === 'dark',
@@ -69,7 +69,6 @@ function imageClick() {
             @captionMounted="(element) => (captionElement = element)"
             :fallbackWidth="element.data.width"
             :caption="element.children[0]"
-            class="mt-small micro:mt-normal"
         />
     </ProseBlock>
 </template>

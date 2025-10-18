@@ -31,7 +31,8 @@ onMounted(() => {
 <template>
     <div
         ref="caption"
-        class="text-text-muted text-main-sm m-auto text-center"
+        class="text-text-muted text-main-sm mt-small micro:mt-normal m-auto
+            text-center"
         v-bind="maxWidth ? { style: { maxWidth } } : {}"
     >
         <div class="font-semibold">

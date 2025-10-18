@@ -28,7 +28,7 @@ export async function parseJsxContent(argObj: {
         let transformedChildren: ParsedElement<any>[] | undefined = undefined;
         if (jsxElement.children) {
             transformedChildren = [];
-            for (const child of jsxElement.children) {
+            for (const child of jsxElement.children as JsxElement<any>[]) {
                 if (child) {
                     const transformedChild = await parseElement(child);
                     transformedChildren.push(transformedChild);

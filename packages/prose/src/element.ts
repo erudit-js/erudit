@@ -13,12 +13,16 @@ type ConstructElementKind<TSchema extends ElementSchemaAny, TProperties> = {
     uniqueSlug?: string;
     storageKey: string | undefined;
     data: TSchema['Data'];
-    children: TSchema['Children'] extends ElementSchemaAny[]
-        ? ConstructElementKind<
-              TSchema['Children'][number],
-              Omit<TProperties, 'tagName'> & { tagName: string }
-          >[]
-        : undefined;
+    children: TSchema['Children'] extends infer C
+        ? C extends ElementSchemaAny[]
+            ? ConstructElementKind<
+                  C[number],
+                  Omit<TProperties, 'tagName'> & { tagName: string }
+              >[]
+            : C extends undefined
+              ? undefined
+              : never
+        : never;
 } & TProperties;
 
 export type JsxElement<

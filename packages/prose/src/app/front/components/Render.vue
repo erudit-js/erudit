@@ -20,6 +20,8 @@ import { iName } from '../../../default/i';
 import I from '../../../default/i/I.vue';
 import { linkName } from '../../../default/link';
 import Link from '../../../default/link/Link.vue';
+import { hrName } from '../../../default/hr';
+import Hr from '../../../default/hr/Hr.vue';
 
 const { element } = defineProps<{
     element: ParsedElement<ElementSchemaAny>;
@@ -51,6 +53,8 @@ const RenderComponent: Component<{ element: ParsedElement<ElementSchemaAny> }> =
                 return I;
             case linkName:
                 return Link;
+            case hrName:
+                return Hr;
         }
 
         return {

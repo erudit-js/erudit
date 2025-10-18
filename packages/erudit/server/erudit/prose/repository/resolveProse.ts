@@ -5,14 +5,16 @@ import {
     fillStorage,
     isElement,
 } from '@erudit-js/prose';
-
-import globalElements from '#erudit/prose/global';
-import type { ContentNavNode } from '../../content/nav/types';
+import { Video } from '@erudit-js/prose/elements/video/video.global';
 import { Link } from '@erudit-js/prose/default/link/index';
 import { BlockLink } from '@erudit-js/prose/default/blockLink/index';
 import { Image } from '@erudit-js/prose/elements/image/image.global';
+
+import globalElements from '#erudit/prose/global';
+import type { ContentNavNode } from '../../content/nav/types';
 import { createImageStorage } from '../default/image';
 import { createLinkStorage } from '../default/link';
+import { createVideoStorage } from '../default/video';
 
 export async function resolveProse<TSchema extends ElementSchemaAny>(
     navNode: ContentNavNode,
@@ -41,6 +43,9 @@ export async function resolveProse<TSchema extends ElementSchemaAny>(
                     break;
                 case isElement(element, Image):
                     await createImageStorage(navNode, element, storage);
+                    break;
+                case isElement(element, Video):
+                    await createVideoStorage(navNode, element, storage);
                     break;
             }
         },

@@ -3,6 +3,12 @@ import type { ElementSchemaAny } from './schema';
 import type { JsxElement } from './element';
 import { isBlockElement, isInlinerElement } from './element';
 import { ProseError } from './error';
+import {
+    ensureBlockChild,
+    ensureInlinerChild,
+    normalizeChildren,
+    type RawChildren,
+} from './children';
 
 import { Blocks, type BlocksSchema } from './default/blocks';
 import { Br } from './default/br';
@@ -10,16 +16,11 @@ import { H1, H2, H3 } from './default/heading';
 import { Inliners, type InlinersSchema } from './default/inliners';
 import { Paragraph } from './default/paragraph';
 import { Details } from './default/details';
+import { Hr } from './default/hr';
 import { Span } from './default/span';
 import { Link } from './default/link';
 import { B } from './default/b';
 import { I } from './default/i';
-import {
-    ensureBlockChild,
-    ensureInlinerChild,
-    normalizeChildren,
-    type RawChildren,
-} from './children';
 
 declare global {
     namespace JSX {
@@ -31,6 +32,7 @@ declare global {
             h2: Parameters<typeof H2>[0];
             h3: Parameters<typeof H3>[0];
             details: Parameters<typeof Details>[0];
+            hr: Parameters<typeof Hr>[0];
             // Default inliners
             inliners: Parameters<typeof Inliners>[0];
             span: Parameters<typeof Span>[0];
@@ -58,6 +60,8 @@ export function jsx(tag: any, props: any) {
             return H3(props);
         case 'details':
             return Details(props);
+        case 'hr':
+            return Hr(props);
         // Default inliners
         case 'inliners':
             return Inliners(props);

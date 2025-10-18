@@ -35,9 +35,9 @@ export type ImageSchema = ElementSchema<{
 export const Image = defineTag('Image')<
     ImageSchema,
     {
+        src: string;
         invert?: InvertOption;
         width?: string;
-        src: string;
         children?: RawSingleChild;
     }
 >({

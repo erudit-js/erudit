@@ -183,8 +183,8 @@ onBeforeUnmount(() => {
 
 /* When hover/focus show block bottom gap to increase hoverable area and hide next block's top gap so no gap duplication happens. */
 
-.block:hover > .blockBelow,
-.block:focus > .blockBelow {
+.block:hover:has(+ .block) > .blockBelow,
+.block:focus:has(+ .block) > .blockBelow {
     display: block;
 }
 
