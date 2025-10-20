@@ -14,6 +14,7 @@ import type { EruditRuntimeConfig } from '../../../shared/types/runtimeConfig';
 import { captionName } from '@erudit-js/prose/elements/caption/caption.global';
 import { captionMainName } from '@erudit-js/prose/elements/caption/main.global';
 import { captionSecondaryName } from '@erudit-js/prose/elements/caption/secondary.global';
+import { flexName } from '@erudit-js/prose/default/flex/index';
 
 type ElementImports = {
     global: string;
@@ -24,24 +25,24 @@ type BuiltinElements = Record<string, ElementImports>;
 
 const BUILTIN_ELEMENTS: BuiltinElements = {
     [paragraphName]: {
-        app: '@erudit-js/prose/default/paragraph/app',
         global: '@erudit-js/prose/default/paragraph/global',
+        app: '@erudit-js/prose/default/paragraph/app',
     },
     [headingName]: {
-        app: '@erudit-js/prose/default/heading/app',
         global: '@erudit-js/prose/default/heading/global',
+        app: '@erudit-js/prose/default/heading/app',
     },
     [spanName]: {
-        app: '@erudit-js/prose/default/span/app',
         global: '@erudit-js/prose/default/span/global',
+        app: '@erudit-js/prose/default/span/app',
     },
     [blockLinkName]: {
-        app: '@erudit-js/prose/default/blockLink/app',
         global: '@erudit-js/prose/default/blockLink/global',
+        app: '@erudit-js/prose/default/blockLink/app',
     },
     [detailsName]: {
-        app: '@erudit-js/prose/default/details/app',
         global: '@erudit-js/prose/default/details/global',
+        app: '@erudit-js/prose/default/details/app',
     },
     [captionName]: {
         global: '@erudit-js/prose/elements/caption/caption.global',
@@ -51,6 +52,10 @@ const BUILTIN_ELEMENTS: BuiltinElements = {
     },
     [captionSecondaryName]: {
         global: '@erudit-js/prose/elements/caption/secondary.global',
+    },
+    [flexName]: {
+        global: '@erudit-js/prose/default/flex/global',
+        app: '@erudit-js/prose/default/flex/app',
     },
 };
 

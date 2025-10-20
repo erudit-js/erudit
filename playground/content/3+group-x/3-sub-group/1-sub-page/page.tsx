@@ -172,6 +172,12 @@ export const document = createProseDocument({
 
         <h3>Подподзаголовок статьи</h3>
 
+        <flex>
+            <Image src="./public/smalles/pizza-1-6.svg" width="100px" />
+            <Image src="./public/smalles/pizza-2-6.svg" width="200px" />
+            <Image src="./public/smalles/pizza-3-6.svg" width="100px" />
+        </flex>
+
         <p>
             С другой стороны начало повседневной работы по формированию позиции
             обеспечивает широкому кругу (специалистов) участие в формировании

@@ -17,7 +17,7 @@ const captionElement = useTemplateRef('caption');
 const captionMain = caption.children[0];
 const captionSecondary = caption.children[1];
 
-const maxWidth = caption.data.width
+const width = caption.data.width
     ? `min(${caption.data.width}, 100%)`
     : fallbackWidth
       ? `min(${fallbackWidth}, 100%)`
@@ -33,7 +33,7 @@ onMounted(() => {
         ref="caption"
         class="text-text-muted text-main-sm mt-small micro:mt-normal m-auto
             text-center"
-        v-bind="maxWidth ? { style: { maxWidth } } : {}"
+        v-bind="width ? { style: { width } } : {}"
     >
         <div class="font-semibold">
             <Render v-for="child of captionMain.children" :element="child" />

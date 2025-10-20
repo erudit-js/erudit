@@ -17,6 +17,7 @@ import { Inliners, type InlinersSchema } from './default/inliners';
 import { Paragraph } from './default/paragraph';
 import { Details } from './default/details';
 import { Hr } from './default/hr';
+import { Flex } from './default/flex';
 import { Span } from './default/span';
 import { Link } from './default/link';
 import { B } from './default/b';
@@ -33,6 +34,7 @@ declare global {
             h3: Parameters<typeof H3>[0];
             details: Parameters<typeof Details>[0];
             hr: Parameters<typeof Hr>[0];
+            flex: Parameters<typeof Flex>[0];
             // Default inliners
             inliners: Parameters<typeof Inliners>[0];
             span: Parameters<typeof Span>[0];
@@ -62,6 +64,8 @@ export function jsx(tag: any, props: any) {
             return Details(props);
         case 'hr':
             return Hr(props);
+        case 'flex':
+            return Flex(props);
         // Default inliners
         case 'inliners':
             return Inliners(props);

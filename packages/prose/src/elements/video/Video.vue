@@ -11,7 +11,7 @@ import { onMounted, onUnmounted, ref, useTemplateRef } from 'vue';
 const { element } = defineProps<{ element: ParsedElement<VideoSchema> }>();
 const videoStorage = await useElementStorage<VideoSchema>(element);
 const { siteBaseUrl } = useProseAppContext();
-const maxWidth = element.data.width ? `min(${element.data.width}, 100%)` : '';
+const width = element.data.width ? `min(${element.data.width}, 100%)` : '';
 
 const videoElement = useTemplateRef('video');
 const observer = ref<IntersectionObserver | null>(null);
@@ -84,7 +84,16 @@ onUnmounted(() => {
                         element.data.invert === 'dark',
                 },
             ]"
-            v-bind="maxWidth ? { style: { maxWidth } } : {}"
+            v-bind="
+                element.data.width
+                    ? {
+                          style: {
+                              width: element.data.width,
+                              maxWidth: `min(${element.data.width}, 100%)`,
+                          },
+                      }
+                    : {}
+            "
         ></video>
         <Caption
             v-if="element.children"

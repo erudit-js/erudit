@@ -13,7 +13,6 @@ import Caption from '../caption/Caption.vue';
 const { element } = defineProps<{ element: ParsedElement<ImageSchema> }>();
 const imageStorage = await useElementStorage<ImageSchema>(element);
 const { siteBaseUrl } = useProseAppContext();
-const maxWidth = element.data.width ? `min(${element.data.width}, 100%)` : '';
 
 const captionElement = shallowRef<HTMLElement>();
 
@@ -52,18 +51,29 @@ function imageClick() {
 
 <template>
     <ProseBlock :element>
-        <img
-            :src="siteBaseUrl + imageStorage.resolvedSrc"
-            v-bind="maxWidth ? { style: { maxWidth } } : {}"
-            @click="imageClick"
-            :class="[
-                'width-full m-auto block cursor-pointer rounded-xl',
-                {
-                    [lightInvert]: element.data.invert === 'light',
-                    [darkInvert]: element.data.invert === 'dark',
-                },
-            ]"
-        />
+        <div class="text-center">
+            <img
+                :src="siteBaseUrl + imageStorage.resolvedSrc"
+                @click="imageClick"
+                v-bind="
+                    element.data.width
+                        ? {
+                              style: {
+                                  width: element.data.width,
+                                  maxWidth: `min(${element.data.width}, 100%)`,
+                              },
+                          }
+                        : {}
+                "
+                :class="[
+                    'inline-block cursor-pointer rounded-xl',
+                    {
+                        [lightInvert]: element.data.invert === 'light',
+                        [darkInvert]: element.data.invert === 'dark',
+                    },
+                ]"
+            />
+        </div>
         <Caption
             v-if="element.children"
             @captionMounted="(element) => (captionElement = element)"
