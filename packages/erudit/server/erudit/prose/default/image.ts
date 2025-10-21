@@ -40,6 +40,7 @@ export async function createImageStorage(
 
     storage[element.storageKey!] = {
         resolvedSrc:
+            ERUDIT.config.public.project.baseUrl +
             'content/file/' +
             finalFsPath.replace(ERUDIT.config.paths.project + '/content/', ''),
         width,

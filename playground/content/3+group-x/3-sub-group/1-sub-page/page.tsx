@@ -174,8 +174,12 @@ export const document = createProseDocument({
 
         <flex>
             <Image src="./public/smalles/pizza-1-6.svg" width="100px" />
-            <Image src="./public/smalles/pizza-2-6.svg" width="200px" />
-            <Image src="./public/smalles/pizza-3-6.svg" width="100px" />
+            <Image src="./public/smalles/pizza-2-6.svg" width="200px">
+                <Caption>Это моя подпись!</Caption>
+            </Image>
+            <Image src="./public/smalles/pizza-3-6.svg" width="150px">
+                <Caption>Этого не будет...</Caption>
+            </Image>
         </flex>
 
         <p>
@@ -185,6 +189,20 @@ export const document = createProseDocument({
             значительной степени обуславливает создание направлений
             прогрессивного развития.
         </p>
+
+        <Gallery>
+            <Image src="./public/smalles/pizza-1-6.svg" width="100px" />
+            <Image
+                src="./public/smalles/pizza-2-6.svg"
+                width="200px"
+                invert="dark"
+            >
+                <Caption>Это моя подпись!</Caption>
+            </Image>
+            <Image src="./public/smalles/pizza-3-6.svg" width="150px">
+                <Caption>Этого не будет...</Caption>
+            </Image>
+        </Gallery>
 
         <details title="Lol" $={uniques.myHelloWorld}>
             <p>Привет мир!</p>

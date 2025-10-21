@@ -140,6 +140,7 @@ export default defineEruditConfig({
         '@erudit-js/prose/elements/math/inliner',
         '@erudit-js/prose/elements/image/image',
         '@erudit-js/prose/elements/video/video',
+        '@erudit-js/prose/elements/gallery/gallery',
         './elements/test/element',
         './elements/statement/element',
         './elements/term/element',
