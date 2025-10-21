@@ -1,4 +1,5 @@
 import type { RawChildren } from '../../children';
+import { Paragraph } from '../../default/paragraph';
 import type { JsxElement } from '../../element';
 import { ProseError } from '../../error';
 import type { ElementSchemaAny } from '../../schema';
@@ -35,8 +36,13 @@ export const Li = defineTag('Li')<ListItemSchema, { children: RawChildren }>({
             }
         }
 
+        if (firstChildType === ElementType.Inliner) {
+            element.children = [Paragraph({ children })];
+        } else {
+            element.children = children as JsxElement<ElementSchemaAny>[];
+        }
+
         element.data = firstChildType;
-        element.children = children as JsxElement<ElementSchemaAny>[];
     },
 });
 
