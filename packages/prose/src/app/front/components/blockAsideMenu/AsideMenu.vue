@@ -29,7 +29,7 @@ const phrase = await useElementPhrase(element);
             '--asideMenuGapBig': 'calc(var(--asideMenuGap) * 2)',
         }"
         class="bg-bg-main border-border flex w-[160px] flex-col rounded-sm
-            border py-(--asideMenuGap)
+            border py-(--asideMenuGap) font-sans
             shadow-[0_0_12px_5px_light-dark(rgba(0,0,0,0.12),rgba(255,255,255,0.08))]
             backface-hidden"
     >

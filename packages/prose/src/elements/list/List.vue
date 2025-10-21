@@ -30,9 +30,10 @@ defineProps<{ element: ParsedElement<ListSchema> }>();
             >
                 <div class="shrink-0">
                     <div
-                        class="flex size-[23px] items-center justify-center
-                            rounded-full border border-(--liBorder)
-                            bg-(--liBackground) font-semibold text-(--liText)
+                        class="micro:top-[1.5px] relative flex size-[23px]
+                            items-center justify-center rounded-full border
+                            border-(--liBorder) bg-(--liBackground)
+                            font-semibold text-(--liText)
                             transition-[border,background,color]"
                     >
                         <template v-if="element.data.type === 'ordered'">

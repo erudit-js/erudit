@@ -23,6 +23,11 @@ export const document = createProseDocument({
             </Li>
         </Ol>
 
+        <Callout icon="./public/churchill.png" title="Важное сообщение">
+            <p>Мой я здесь не тут!</p>
+            <p>Мой я здесь не тут!</p>
+        </Callout>
+
         <Image
             src="./public/magic-triangle-usage.svg"
             invert="dark"
