@@ -62,6 +62,32 @@ export const document = createProseDocument({
             </Li>
         </Ul>
 
+        <Table>
+            <Tr>
+                <Td></Td>
+                <Td>
+                    <b>Второй</b>
+                </Td>
+                <Td>Третий</Td>
+                <Td>
+                    <b>Четвертый</b>
+                </Td>
+                <Td>Пятый</Td>
+                <Td>Шестой</Td>
+            </Tr>
+            <Tr>
+                <Td>Четвертый</Td>
+                <Td>Пятый</Td>
+                <Td>
+                    Шес <M>x^2</M> той
+                </Td>
+                <Td>Первый</Td>
+                <Td>Второй</Td>
+                <Td>Третий</Td>
+            </Tr>
+            <Caption>А это подпись таблицы</Caption>
+        </Table>
+
         <Term
             title="Мое определение"
             direction="row"
@@ -78,6 +104,25 @@ export const document = createProseDocument({
                     реализация намеченных плановых заданий влечет за собой
                     процесс внедрения и модернизации форм развития.
                 </p>
+
+                <Table>
+                    <Tr>
+                        <Td>Первый</Td>
+                        <Td>Второй</Td>
+                        <Td>Третий</Td>
+                        <Td>Четвертый</Td>
+                        <Td>Пятый</Td>
+                        <Td>Шестой</Td>
+                    </Tr>
+                    <Tr>
+                        <Td>Четвертый</Td>
+                        <Td>Пятый</Td>
+                        <Td>Шестой</Td>
+                        <Td>Первый</Td>
+                        <Td>Второй</Td>
+                        <Td>Третий</Td>
+                    </Tr>
+                </Table>
 
                 <Ol>
                     <Li>Первый элемент списка</Li>

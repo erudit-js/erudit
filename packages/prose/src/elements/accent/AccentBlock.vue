@@ -8,14 +8,15 @@ import {
 } from './schema';
 import { getAccentContext } from './appDefinition';
 import type { ParsedElement } from '../../element';
+
+import { useAppElement } from '../../app/front/composables/appElement';
+import { useElementIcon, useFormatText } from '../../app';
+import { useElementPhrase } from '../../app/front/composables/elementPhrase';
+import { useIcon } from '../../app/front/composables/icon';
 import ProseBlock from '../../app/front/components/ProseBlock.vue';
 import Render from '../../app/front/components/Render.vue';
-import { useAppElement } from '../../app/front/composables/appElement';
-import { proseContextSymbol, useElementIcon, useFormatText } from '../../app';
-import { useElementPhrase } from '../../app/front/composables/elementPhrase';
 import AccentSectionsColumn from './AccentSectionsColumn.vue';
 import AccentSectionsRow from './AccentSectionsRow.vue';
-import { useIcon } from '../../app/front/composables/icon';
 
 const { element } = defineProps<{
     element: ParsedElement<AccentBlockSchema<AccentSchema>>;
@@ -57,6 +58,7 @@ const phrase = await useElementPhrase(element);
 <template>
     <ProseBlock :element>
         <div
+            data-prose-accent
             :style="{
                 '--accentText': accentContext.colors.text,
                 '--accentBackground': accentContext.colors.background,

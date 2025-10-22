@@ -25,7 +25,7 @@ const formatText = useFormatText();
                 />
             </div>
             <div
-                class="border-border/70 relative flex-1 rounded-xl border
+                class="border-border/90 relative flex-1 rounded-xl border
                     bg-(--calloutBg) py-(--proseAsideWidth) font-serif shadow-md
                     transition-[border,background]"
             >

@@ -1,7 +1,12 @@
 {
     "editor.formatOnSave": true,
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "files.associations": {
+        "*.css": "tailwindcss"
+    },
+    "editor.quickSuggestions": {
+        "strings": "on"
+    }
     // https://github.com/microsoft/TypeScript/issues/54087
     // "typescript.tsserver.watchOptions": {
     //     "watchFile": "fixedChunkSizePolling"
