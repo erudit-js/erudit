@@ -1,4 +1,8 @@
-import { ensureHasChildren, ensureInlinerChild } from '../../children';
+import {
+    ensureHasChildren,
+    ensureInlinerChild,
+    type RawChildren,
+} from '../../children';
 import { isElement, type JsxElement } from '../../element';
 import { ProseError } from '../../error';
 import { defineGlobalElement } from '../../globalElement';
@@ -64,7 +68,7 @@ export type TRSchema = ElementSchema<{
     Children: TDSchema[];
 }>;
 
-export const Tr = defineTag('Tr')<TRSchema>({
+export const Tr = defineTag('Tr')<TRSchema, { children: RawChildren }>({
     type: ElementType.Block,
     name: trName,
     linkable: false,

@@ -28,6 +28,38 @@ export const document = createProseDocument({
             <p>Мой я здесь не тут!</p>
         </Callout>
 
+        <Diagram>
+            {`
+                flowchart TB
+                    root[[**Подсчет комбинаций**]]
+                    root -->|Использовать базовые правила| rules[**Базовые правила**]
+                    root -->|Свести к типовым комбинациям| configurations[**Комбинаторные конфигруации**]
+
+                    rules[**Базовые правила**]
+                    rules -->|Разбить на группы| sumRule[Правило суммы]
+                    rules -->|Поочередно выбирать элементы| productRule[Правило произведения]
+
+                    configurations[**Комбинаторная конфигурация**] --> question{{Порядок элементов важен?}}
+
+                    question -->|Да| arrangement[**Размещение**]
+                    question -->|Нет| combination[**Сочетание**]
+
+                    arrangement -->|Без повторений| awr["$$ A_n^k = \\frac{n!}{(n-k)!} $$"]
+                    arrangement -->|С повторениями| ar["$$ \\bar{A}_n^k = n^k $$"]
+
+                    combination -->|Без повторений| cwr["$$ C_n^k = \\frac{n!}{(n-k)! \ k!} $$"]
+                    combination -->|С повторениями| cr["$$ \\bar{C}_n^k = C_{n+k-1}^k $$"]
+
+                    awr -->|Используются все элементы| permutation[**Перестановка**]
+
+                    permutation -->|Без повторений| pwr["$$ P_n = n! $$"]
+                    permutation -.->|С повторениями$^*$| pr["$$ P_{n_1, \\ \\ldots, \\ n_k} = \\frac{n!}{n_1! \\ \\ldots \\ n_k!} $$"]
+
+                    class rules,configurations,arrangement,combination,permutation fill
+            `}
+            <Caption>Пример диаграммы потока</Caption>
+        </Diagram>
+
         <Image
             src="./public/magic-triangle-usage.svg"
             invert="dark"
@@ -104,6 +136,17 @@ export const document = createProseDocument({
                     реализация намеченных плановых заданий влечет за собой
                     процесс внедрения и модернизации форм развития.
                 </p>
+
+                <Diagram>
+                    {`
+                        flowchart TB
+                            original["$$ x^2 + x = 0 $$"] -->|Вынесение за скобки| root["$$ x(x+1) = 0 $$"]
+                            root["$$ x(x+1) = 0 $$"] -->|Подуравнение 1| solution1["$$ x = 0 $$"]
+                            root -->|Подуравнение 2| sub2["$$ x + 1 = 0 $$"]
+                            sub2 --> solution2["$$ x = -1 $$"]
+                            class solution1,solution2 fill
+                    `}
+                </Diagram>
 
                 <Table>
                     <Tr>

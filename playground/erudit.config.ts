@@ -143,6 +143,7 @@ export default defineEruditConfig({
         '@erudit-js/prose/elements/gallery/gallery',
         '@erudit-js/prose/elements/callout/callout',
         '@erudit-js/prose/elements/table/table',
+        '@erudit-js/prose/elements/diagram/diagram',
         './elements/test/element',
         './elements/statement/element',
         './elements/term/element',

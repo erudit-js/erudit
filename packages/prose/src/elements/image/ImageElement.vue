@@ -6,7 +6,6 @@ import type { ImageSchema } from './image.global';
 import { useElementStorage } from '../../app/front/composables/elementStorage';
 import { usePhotoSwipe } from '../../shared/photoswipe/composable';
 import { darkInvert, lightInvert } from '../../shared/invert';
-import ProseBlock from '../../app/front/components/ProseBlock.vue';
 import Caption from '../caption/Caption.vue';
 
 const { element } = defineProps<{ element: ParsedElement<ImageSchema> }>();
