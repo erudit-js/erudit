@@ -10,7 +10,6 @@ import { setupEruditAliases } from './setup/aliases';
 import { addEruditProjectConfigToRuntime } from './setup/projectConfig';
 import { setupEruditPublicAssets } from './setup/publicAssets';
 import { setupEruditCustomBaseUrl } from './setup/baseUrl';
-import { optimizeTranspileEruditDependencies } from './setup/optimizeTranspile';
 import { setupEruditNuxtConfig } from './setup/nuxtConfig';
 import {
     registerAppGlobals,
@@ -22,7 +21,7 @@ import { setupProseElements } from './setup/elements';
 
 export default defineNuxtModule({
     meta: { name: 'Erudit', configKey: 'erudit', version },
-    async setup(options, nuxt) {
+    async setup(_, nuxt) {
         moduleLogger.start('Setting up Erudit module...');
 
         const { eruditRuntimeConfig, eruditPublicRuntimeConfig } =
@@ -42,7 +41,6 @@ export default defineNuxtModule({
         await setupEruditPublicAssets(nuxt, eruditRuntimeConfig);
         await setupEruditCustomBaseUrl(nuxt, eruditPublicRuntimeConfig);
         await setupProseElements(nuxt, eruditRuntimeConfig);
-        await optimizeTranspileEruditDependencies(nuxt, eruditRuntimeConfig);
         await setupEruditNuxtConfig(
             nuxt,
             eruditRuntimeConfig,

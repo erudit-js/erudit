@@ -4,6 +4,7 @@ import { getContentLink } from './content/repository/contentLink';
 import { getTopicParts } from './content/repository/topicParts';
 import { countContributors } from './contributors/repository/count';
 import { getProseFor } from './prose/repository/get';
+import { parseEruditJsx } from './prose/repository/parseJsx';
 import { resolveProse } from './prose/repository/resolveProse';
 import { getUniqueData } from './prose/repository/unique';
 import { countSponsors } from './sponsors/repository/count';
@@ -22,6 +23,7 @@ export const repository = {
     },
     prose: {
         resolve: resolveProse,
+        parse: parseEruditJsx,
         unique: getUniqueData,
         get: getProseFor,
     },

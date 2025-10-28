@@ -24,7 +24,7 @@ export type DocumentAny = Document<Record<string, ElementUniqueAny>>;
 export function createProseDocument<
     TUniqueDefs extends Record<string, ElementTagAny>,
 >(definition: {
-    /** The location of document. Normally you pass `import.meta.url` here. */
+    /** The location of document module. Normally you pass `import.meta.url` here. */
     url: string;
     /** Important and/or reusable elements. */
     uniques?: TUniqueDefs;

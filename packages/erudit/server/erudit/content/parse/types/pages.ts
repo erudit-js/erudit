@@ -1,5 +1,5 @@
 import { ContentType, type ContentConfigPage } from '@erudit-js/cog/schema';
-import { type DocumentAny, parseJsxContent } from '@erudit-js/prose';
+import { type DocumentAny } from '@erudit-js/prose';
 
 import type { ContentParser } from '..';
 import type { ContentNavNode } from '../../nav/types';
@@ -37,12 +37,9 @@ export const pagesParser: ContentParser = async () => {
                 );
             }
 
-            const parsedContent = await parseJsxContent({
-                content: pageModule.document.content,
-                context: {
-                    language: ERUDIT.config.public.project.language.current,
-                },
-            });
+            const parsedContent = await ERUDIT.repository.prose.parse(
+                pageModule.document.content,
+            );
 
             await insertUniques(
                 navNode.fullId,

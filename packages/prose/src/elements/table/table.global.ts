@@ -134,4 +134,4 @@ export default [
         name: tableName,
         tags: { Table },
     }),
-];
+] as const;

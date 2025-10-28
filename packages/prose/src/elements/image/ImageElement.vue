@@ -12,7 +12,6 @@ const { element } = defineProps<{ element: ParsedElement<ImageSchema> }>();
 const imageStorage = await useElementStorage<ImageSchema>(element);
 
 const captionElement = shallowRef<HTMLElement>();
-
 const { lightbox, initLightbox } = usePhotoSwipe();
 
 function imageClick() {

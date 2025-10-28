@@ -1,5 +1,7 @@
 import topicA from '#content/topic-a/article';
 
+import diego from './problems/diego';
+
 export const document = createProseDocument({
     url: import.meta.url,
     uniques: {
@@ -473,6 +475,17 @@ export const document = createProseDocument({
                 </p>
             </TermSection>
         </Term>
+
+        <Problem title="Моя прелесть!" level="example" generator={diego} />
+
+        <Problems title="Набор задач" level="easy">
+            <SubProblem label="Ручная">
+                <ProblemDescription>
+                    <p>Описание ручной задачи</p>
+                </ProblemDescription>
+            </SubProblem>
+            <SubProblem generator={diego} />
+        </Problems>
 
         <h1>Sub Page</h1>
         <p>Мой п</p>

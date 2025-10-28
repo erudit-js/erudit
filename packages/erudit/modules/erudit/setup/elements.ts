@@ -3,61 +3,64 @@ import { addTemplate, findPath } from 'nuxt/kit';
 import chalk from 'chalk';
 import { writeFileSync } from 'node:fs';
 import type { GlobalElementDefinition } from '@erudit-js/prose';
-import { paragraphName } from '@erudit-js/prose/default/paragraph/index';
-import { headingName } from '@erudit-js/prose/default/heading/index';
-import { spanName } from '@erudit-js/prose/default/span/index';
-import { blockLinkName } from '@erudit-js/prose/default/blockLink/index';
-import { detailsName } from '@erudit-js/prose/default/details/index';
 
 import { moduleLogger } from '../logger';
 import type { EruditRuntimeConfig } from '../../../shared/types/runtimeConfig';
-import { captionName } from '@erudit-js/prose/elements/caption/caption.global';
-import { captionMainName } from '@erudit-js/prose/elements/caption/main.global';
-import { captionSecondaryName } from '@erudit-js/prose/elements/caption/secondary.global';
-import { flexName } from '@erudit-js/prose/default/flex/index';
 
 type ElementImports = {
     global: string;
     app?: string;
 };
 
-type BuiltinElements = Record<string, ElementImports>;
+type BuiltinImports = ElementImports[];
 
-const BUILTIN_ELEMENTS: BuiltinElements = {
-    [paragraphName]: {
+const BUILTIN_IMPORTS: BuiltinImports = [
+    {
         global: '@erudit-js/prose/default/paragraph/global',
         app: '@erudit-js/prose/default/paragraph/app',
     },
-    [headingName]: {
+    {
         global: '@erudit-js/prose/default/heading/global',
         app: '@erudit-js/prose/default/heading/app',
     },
-    [spanName]: {
+    {
         global: '@erudit-js/prose/default/span/global',
         app: '@erudit-js/prose/default/span/app',
     },
-    [blockLinkName]: {
+    {
         global: '@erudit-js/prose/default/blockLink/global',
         app: '@erudit-js/prose/default/blockLink/app',
     },
-    [detailsName]: {
+    {
         global: '@erudit-js/prose/default/details/global',
         app: '@erudit-js/prose/default/details/app',
     },
-    [captionName]: {
+    {
         global: '@erudit-js/prose/elements/caption/caption.global',
     },
-    [captionMainName]: {
+    {
         global: '@erudit-js/prose/elements/caption/main.global',
     },
-    [captionSecondaryName]: {
+    {
         global: '@erudit-js/prose/elements/caption/secondary.global',
     },
-    [flexName]: {
+    {
         global: '@erudit-js/prose/default/flex/global',
         app: '@erudit-js/prose/default/flex/app',
     },
-};
+    // Problem
+    {
+        global: '@erudit-js/prose/elements/problem/problem.global',
+        app: '@erudit-js/prose/elements/problem/problem.app',
+    },
+    {
+        global: '@erudit-js/prose/elements/problem/problems.global',
+        app: '@erudit-js/prose/elements/problem/problems.app',
+    },
+    {
+        global: '@erudit-js/prose/elements/problem/content',
+    },
+];
 
 type ElementTagTypeof = {
     import: string;
@@ -72,10 +75,10 @@ async function collectElementImports(
     const imports: ElementImports[] = [];
 
     // Built-in elements
-    for (const element of Object.values(BUILTIN_ELEMENTS)) {
+    for (const builtinImport of BUILTIN_IMPORTS) {
         imports.push({
-            global: element.global,
-            app: element.app,
+            global: builtinImport.global,
+            app: builtinImport.app,
         });
     }
 
@@ -211,6 +214,8 @@ async function setupGlobalTemplate(
 
     const template = `
 import type { GlobalElementDefinitions } from '@erudit-js/prose';
+import { jsx, jsxs, Fragment } from '@erudit-js/prose/jsx-runtime';
+import { defineProblemGenerator } from '@erudit-js/prose/elements/problem/generator';
 
 ${importNames.map((importName, i) => `import ${importName} from '${imports[i]}';`).join('\n')}
 
@@ -219,6 +224,10 @@ const elements = [
 ].flatMap(e => (Array.isArray(e) ? e : [e]));
 
 Object.assign(globalThis, {
+    jsx,
+    jsxs,
+    Fragment,
+    defineProblemGenerator,
     ...Object.fromEntries(
         elements
             .flatMap(element => element.tags ? Object.entries(element.tags) : [])

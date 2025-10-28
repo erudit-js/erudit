@@ -33,6 +33,10 @@ export async function registerAppGlobals(runtimeConfig: EruditRuntimeConfig) {
             name: 'eruditPublic',
             from: `${runtimeConfig.paths.module}/globals/public`,
         },
+        {
+            name: 'defineProblemGenerator',
+            from: `${runtimeConfig.paths.module}/globals/problem`,
+        },
     ]);
 }
 
@@ -48,6 +52,10 @@ export async function registerServerGlobals(
             name: 'ERUDIT',
             from: `${runtimeConfig.paths.server}/global`,
         },
+        // {
+        //     name: 'defineProblemGenerator',
+        //     from: `${runtimeConfig.paths.module}/globals/problem`,
+        // },
     ]);
 }
 
@@ -97,6 +105,10 @@ export async function registerGlobalContentTypes(
         {
             name: 'createProseDocument',
             from: `${runtimeConfig.paths.module}/globals/prose`,
+        },
+        {
+            name: 'defineProblemGenerator',
+            from: `${runtimeConfig.paths.module}/globals/problem`,
         },
     ]);
 

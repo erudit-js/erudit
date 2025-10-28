@@ -14,8 +14,11 @@ export interface ParsedJsxContent {
 export async function parseJsxContent(argObj: {
     content: JsxElement<BlocksSchema>;
     context: ProseContext;
+    step?:
+        | ((element: ParsedElement<ElementSchemaAny>) => Promise<void> | void)
+        | undefined;
 }): Promise<ParsedJsxContent> {
-    const { content, context } = argObj;
+    const { content, context, step } = argObj;
     const ids = new Map<string, undefined>();
     const uniques: Record<string, ParsedElement<ElementSchemaAny>> = {};
     const snippets: ParsedSnippet[] = [];
@@ -68,6 +71,10 @@ export async function parseJsxContent(argObj: {
                 elementName: jsxElement.name,
                 domId: parsedElement.domId!,
             });
+        }
+
+        if (step) {
+            await step(parsedElement);
         }
 
         return parsedElement;

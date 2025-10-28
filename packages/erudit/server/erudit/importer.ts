@@ -1,4 +1,4 @@
-import { createJiti, type Jiti } from 'jiti';
+import { createJiti, type Jiti, type JitiOptions } from 'jiti';
 
 import { defineContributor } from '@erudit/module/globals/contributor';
 import { defineSponsor } from '@erudit/module/globals/sponsor';
@@ -13,12 +13,37 @@ export type EruditServerImporter = Jiti['import'];
 export let jiti: Jiti;
 
 export async function setupServerImporter() {
-    jiti = createJiti(ERUDIT.config.paths.project, {
-        fsCache: true,
+    const jitiOptions: JitiOptions = {
+        fsCache: false,
         moduleCache: false,
         jsx: {
             runtime: 'automatic',
             importSource: '@erudit-js/prose',
+        },
+    };
+
+    const defaultJiti = createJiti(ERUDIT.config.paths.project, jitiOptions);
+    const defaultTransform = defaultJiti.transform.bind(defaultJiti);
+
+    jiti = createJiti(ERUDIT.config.paths.project, {
+        ...jitiOptions,
+        extensions: [
+            '.ts',
+            '.tsx',
+            '.js',
+            '.jsx',
+            '.json',
+            '.jpg',
+            '.png',
+            '.svg',
+        ],
+        transform: (opts) => {
+            if (opts.filename && opts.filename.endsWith('.jpg')) {
+                console.log('Transforming JPG:', opts.filename);
+
+                return { code: `exports.default = 'foobar';` };
+            }
+            return { code: defaultTransform(opts) };
         },
     });
 

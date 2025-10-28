@@ -2,7 +2,6 @@ import { type ContentConfigTopic, TopicPart } from '@erudit-js/cog/schema';
 import {
     type DocumentAny,
     type ParsedJsxContent,
-    parseJsxContent,
 } from '@erudit-js/prose';
 
 import type { ContentParser } from '..';
@@ -46,14 +45,9 @@ export const topicsParser: ContentParser = async () => {
 
                     parsedParts.set(
                         topicPart,
-                        await parseJsxContent({
-                            content: proseDocument.content,
-                            context: {
-                                language:
-                                    ERUDIT.config.public.project.language
-                                        .current,
-                            },
-                        }),
+                        await ERUDIT.repository.prose.parse(
+                            proseDocument.content,
+                        ),
                     );
                 } catch (error) {
                     throw wrapError(

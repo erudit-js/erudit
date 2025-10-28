@@ -10,6 +10,8 @@ import { Link } from '@erudit-js/prose/default/link/index';
 import { BlockLink } from '@erudit-js/prose/default/blockLink/index';
 import { Image } from '@erudit-js/prose/elements/image/image.global';
 import { Callout } from '@erudit-js/prose/elements/callout/callout.global';
+import { Problem } from '@erudit-js/prose/elements/problem/problem.global';
+import { SubProblem } from '@erudit-js/prose/elements/problem/problems.global';
 
 import globalElements from '#erudit/prose/global';
 import type { ContentNavNode } from '../../content/nav/types';
@@ -17,6 +19,7 @@ import { createImageStorage } from '../default/image';
 import { createLinkStorage } from '../default/link';
 import { createVideoStorage } from '../default/video';
 import { createCalloutStorage } from '../default/callout';
+import { generateInitialProblemContent } from '../default/problem';
 
 export async function resolveProse<TSchema extends ElementSchemaAny>(
     navNode: ContentNavNode,
@@ -51,6 +54,10 @@ export async function resolveProse<TSchema extends ElementSchemaAny>(
                     break;
                 case isElement(element, Callout):
                     await createCalloutStorage(navNode, element, storage);
+                    break;
+                case isElement(element, Problem):
+                case isElement(element, SubProblem):
+                    await generateInitialProblemContent(element, storage);
                     break;
             }
         },

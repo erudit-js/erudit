@@ -45,7 +45,10 @@ onMounted(async () => {
         await prepareMathDiagram();
     }
 
-    observer = new IntersectionObserver(diagramIntersectHit);
+    observer = new IntersectionObserver(diagramIntersectHit, {
+        root: null,
+        threshold: 0.01,
+    });
     observer.observe(diagramElement.value!);
 });
 
@@ -162,16 +165,16 @@ async function prepareMathDiagram() {
     await new Promise(requestAnimationFrame);
 }
 
-async function diagramIntersectHit() {
-    if (loading.value) {
-        if (diagramRendering.value) {
-            return;
-        }
-        diagramRendering.value = true;
-        await renderDiagram();
-        diagramRendering.value = false;
-        loading.value = false;
-    }
+async function diagramIntersectHit(entries: IntersectionObserverEntry[]) {
+    if (!entries.some((e) => e.isIntersecting)) return;
+    if (!loading.value || diagramRendering.value) return;
+
+    diagramRendering.value = true;
+    await renderDiagram();
+    diagramRendering.value = false;
+    loading.value = false;
+
+    observer.disconnect();
 }
 
 async function renderDiagram() {
@@ -228,6 +231,7 @@ async function renderDiagram() {
 .diagram {
     > svg {
         margin: auto;
+        cursor: pointer;
     }
 
     /* Text color */

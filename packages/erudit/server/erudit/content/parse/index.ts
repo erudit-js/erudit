@@ -1,5 +1,6 @@
-import { ContentType } from '@erudit-js/cog/schema';
+import chalk from 'chalk';
 import { notInArray, inArray } from 'drizzle-orm';
+import { ContentType } from '@erudit-js/cog/schema';
 
 import type { ContentNavNode } from '../nav/types';
 
@@ -8,7 +9,16 @@ import { booksParser } from './types/books';
 import { groupsParser } from './types/groups';
 import { pagesParser } from './types/pages';
 import { topicsParser } from './types/topics';
-import chalk from 'chalk';
+
+export interface InterParseData {
+    problemGeneratorPaths: string[];
+    contentFilePaths: string[];
+}
+
+export const INTER_PARSE_DATA: InterParseData = {
+    problemGeneratorPaths: [],
+    contentFilePaths: [],
+};
 
 export type ContentParser = () => Promise<{
     step: (navNode: ContentNavNode) => Promise<void>;
@@ -24,6 +34,9 @@ const parsers: Record<ContentType, ContentParser> = {
 
 export async function parseContent() {
     ERUDIT.log.debug.start('Parsing content...');
+
+    INTER_PARSE_DATA.problemGeneratorPaths = [];
+    INTER_PARSE_DATA.contentFilePaths = [];
 
     const createdParsers = new Map<
         ContentType,

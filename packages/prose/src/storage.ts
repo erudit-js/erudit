@@ -29,20 +29,16 @@ export async function fillStorage(argsObj: {
             }
         }
 
+        if (argsObj.step) {
+            await argsObj.step(element);
+        }
+
         if (element.children?.length) {
             await Promise.all(
-                element.children.map((child) =>
-                    createStorageForElement(child).then(() =>
-                        argsObj.step ? argsObj.step(child) : undefined,
-                    ),
-                ),
+                element.children.map((child) => createStorageForElement(child)),
             );
         }
     }
 
     await createStorageForElement(argsObj.element);
-
-    if (argsObj.step) {
-        await argsObj.step(argsObj.element);
-    }
 }

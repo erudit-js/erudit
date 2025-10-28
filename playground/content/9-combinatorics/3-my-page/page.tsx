@@ -1,3 +1,7 @@
+import tali from '#content/combinatorics/my-page/tali.jpg';
+
+console.log(tali);
+
 export default definePage({
     title: 'Моя страница. Ура!',
     description: 'Описание моей страницы',
@@ -22,5 +26,32 @@ export const document = createProseDocument({
             </b>{' '}
             <b>моей</b> страницы!
         </p>
+        <Diagram>
+            {`
+                flowchart TB
+                    A & B--> C & D
+            `}
+            <Caption>Пример диаграммы потока</Caption>
+        </Diagram>
+
+        <Problem title="Моя первая задача" level="medium" applied>
+            <ProblemDescription>
+                <p>Содержимое</p>
+            </ProblemDescription>
+        </Problem>
+
+        <Problems title="Много задач" level="hard" pretty>
+            <p>Общее условие</p>
+            <SubProblem>
+                <ProblemDescription>
+                    <p>Первый подзадача</p>
+                </ProblemDescription>
+            </SubProblem>
+            <SubProblem label="Вторая">
+                <ProblemDescription>
+                    <p>Вторая подзадача</p>
+                </ProblemDescription>
+            </SubProblem>
+        </Problems>
     </blocks>
 ));
