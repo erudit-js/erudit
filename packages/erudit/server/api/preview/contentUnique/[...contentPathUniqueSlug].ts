@@ -31,7 +31,6 @@ export default defineEventHandler<Promise<PreviewContentUnique>>(
         const navNode = ERUDIT.contentNav.getNodeOrThrow(fullId);
 
         const { element, storage } = await ERUDIT.repository.prose.resolve(
-            navNode,
             uniqueData.element,
         );
 

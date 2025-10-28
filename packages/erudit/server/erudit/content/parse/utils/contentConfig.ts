@@ -1,5 +1,5 @@
-import { ContentConfig } from '@erudit-js/cog/schema';
-import { ContentNavNode } from '../../nav/types';
+import type { ContentConfig } from '@erudit-js/cog/schema';
+import type { ContentNavNode } from '../../nav/types';
 
 export async function insertContentConfig(
     navNode: ContentNavNode,

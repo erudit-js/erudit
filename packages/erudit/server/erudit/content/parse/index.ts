@@ -10,16 +10,6 @@ import { groupsParser } from './types/groups';
 import { pagesParser } from './types/pages';
 import { topicsParser } from './types/topics';
 
-export interface InterParseData {
-    problemGeneratorPaths: string[];
-    contentFilePaths: string[];
-}
-
-export const INTER_PARSE_DATA: InterParseData = {
-    problemGeneratorPaths: [],
-    contentFilePaths: [],
-};
-
 export type ContentParser = () => Promise<{
     step: (navNode: ContentNavNode) => Promise<void>;
     finally?: () => Promise<void>;
@@ -34,9 +24,6 @@ const parsers: Record<ContentType, ContentParser> = {
 
 export async function parseContent() {
     ERUDIT.log.debug.start('Parsing content...');
-
-    INTER_PARSE_DATA.problemGeneratorPaths = [];
-    INTER_PARSE_DATA.contentFilePaths = [];
 
     const createdParsers = new Map<
         ContentType,
@@ -151,6 +138,10 @@ async function clearUnusedReparseContent(
                 {
                     table: ERUDIT.db.schema.snippets,
                     column: ERUDIT.db.schema.snippets.contentFullId,
+                },
+                {
+                    table: ERUDIT.db.schema.contentParseData,
+                    column: ERUDIT.db.schema.contentParseData.fullId,
                 },
             ];
 

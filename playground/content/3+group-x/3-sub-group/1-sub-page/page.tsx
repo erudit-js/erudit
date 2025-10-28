@@ -2,6 +2,14 @@ import topicA from '#content/topic-a/article';
 
 import diego from './problems/diego';
 
+import el from './public/el.mp4';
+import churchill from './public/churchill.png';
+import magicTriangleUsage from './public/magic-triangle-usage.svg';
+import meme from './public/meme.jpg';
+import pizza16 from './public/smalles/pizza-1-6.svg';
+import pizza26 from './public/smalles/pizza-2-6.svg';
+import pizza36 from './public/smalles/pizza-3-6.svg';
+
 export const document = createProseDocument({
     url: import.meta.url,
     uniques: {
@@ -25,7 +33,7 @@ export const document = createProseDocument({
             </Li>
         </Ol>
 
-        <Callout icon="./public/churchill.png" title="Важное сообщение">
+        <Callout icon={churchill} title="Важное сообщение">
             <p>Мой я здесь не тут!</p>
             <p>Мой я здесь не тут!</p>
         </Callout>
@@ -62,11 +70,7 @@ export const document = createProseDocument({
             <Caption>Пример диаграммы потока</Caption>
         </Diagram>
 
-        <Image
-            src="./public/magic-triangle-usage.svg"
-            invert="dark"
-            width="50%"
-        >
+        <Image src={magicTriangleUsage} invert="dark" width="50%">
             <Caption>"Магический" треугольник</Caption>
         </Image>
 
@@ -176,7 +180,7 @@ export const document = createProseDocument({
                     <Li>Четвертый элемент списка</Li>
                 </Ol>
 
-                <Video src="./public/el.mp4" invert="light">
+                <Video src={el} invert="light">
                     <Caption>Эль Фаннинг в Death Stranding 2</Caption>
                 </Video>
             </TermMain>
@@ -263,7 +267,7 @@ export const document = createProseDocument({
             \\brand{A^2 + B^2 = C^2} A^2 + B^2 = C^2 \\orange{A^2 + B^2 = C^2} A^2 + B^2 = C^2A^2 + B^2 = C^2A^2 + B^2 = C^2A^2 + B^2 = C^2
     `}</BlockMath>
 
-        <Image src="./public/meme.jpg">
+        <Image src={meme}>
             <Caption>
                 <CaptionMain>
                     Нет, я не умру в <a to={uniques.myDetails}>игре</a>! Я буду{' '}
@@ -310,11 +314,11 @@ export const document = createProseDocument({
         <h3>Подподзаголовок статьи</h3>
 
         <flex>
-            <Image src="./public/smalles/pizza-1-6.svg" width="100px" />
-            <Image src="./public/smalles/pizza-2-6.svg" width="200px">
+            <Image src={pizza16} width="100px" />
+            <Image src={pizza26} width="200px">
                 <Caption>Это моя подпись!</Caption>
             </Image>
-            <Image src="./public/smalles/pizza-3-6.svg" width="150px">
+            <Image src={pizza36} width="150px">
                 <Caption>Этого не будет...</Caption>
             </Image>
         </flex>
@@ -328,15 +332,11 @@ export const document = createProseDocument({
         </p>
 
         <Gallery>
-            <Image src="./public/smalles/pizza-1-6.svg" width="100px" />
-            <Image
-                src="./public/smalles/pizza-2-6.svg"
-                width="200px"
-                invert="dark"
-            >
+            <Image src={pizza16} width="100px" />
+            <Image src={pizza26} width="200px" invert="dark">
                 <Caption>Это моя подпись!</Caption>
             </Image>
-            <Image src="./public/smalles/pizza-3-6.svg" width="150px">
+            <Image src={pizza36} width="150px">
                 <Caption>Этого не будет...</Caption>
             </Image>
         </Gallery>

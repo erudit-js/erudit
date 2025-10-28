@@ -1,7 +1,7 @@
 import { primaryKey, sqliteTable, text } from 'drizzle-orm/sqlite-core';
 
 import type { ElementSchemaAny, ParsedElement } from '@erudit-js/prose';
-import { ContentType, TopicPart } from '@erudit-js/cog/schema';
+import type { ContentType, TopicPart } from '@erudit-js/cog/schema';
 
 export const uniques = sqliteTable(
     'uniques',

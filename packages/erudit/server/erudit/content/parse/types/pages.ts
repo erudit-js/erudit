@@ -6,6 +6,7 @@ import type { ContentNavNode } from '../../nav/types';
 import { documentUrlMismatch, wrapError } from '../utils/error';
 import { insertSnippets, insertUniques } from '../utils/element';
 import { insertContentConfig } from '../utils/contentConfig';
+import { contentParseDataStep } from '../parseData';
 
 export const pagesParser: ContentParser = async () => {
     return {
@@ -39,6 +40,7 @@ export const pagesParser: ContentParser = async () => {
 
             const parsedContent = await ERUDIT.repository.prose.parse(
                 pageModule.document.content,
+                (element) => contentParseDataStep(navNode.fullId, element),
             );
 
             await insertUniques(

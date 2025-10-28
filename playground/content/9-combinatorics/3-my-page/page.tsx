@@ -1,7 +1,5 @@
 import tali from '#content/combinatorics/my-page/tali.jpg';
 
-console.log(tali);
-
 export default definePage({
     title: 'Моя страница. Ура!',
     description: 'Описание моей страницы',
@@ -33,6 +31,8 @@ export const document = createProseDocument({
             `}
             <Caption>Пример диаграммы потока</Caption>
         </Diagram>
+
+        <Image src={tali} />
 
         <Problem title="Моя первая задача" level="medium" applied>
             <ProblemDescription>

@@ -33,10 +33,12 @@
         "./jsx-dev-runtime": {
             "import": "./dist/jsx-dev-runtime.mjs",
             "types": "./dist/jsx-dev-runtime.d.ts"
-        }
+        },
+        "./types": "./types.d.ts"
     },
     "files": [
-        "dist"
+        "dist",
+        "types.d.ts"
     ],
     "scripts": {
         "build": "bun run build.ts",

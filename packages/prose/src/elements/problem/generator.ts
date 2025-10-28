@@ -5,6 +5,12 @@ import { parseJsxContent } from '../../parse';
 import type { ElementSchemaAny } from '../../schema';
 import { validateProblemContent, type ProblemContentChild } from './content';
 
+/**
+ * This is static seed and not random for SEO reasons.
+ * It ensures that initial problem content is always the same on each build, helping search engines to index the problem consistently.
+ */
+const INITIAL_SEED = '31415926';
+
 export interface GeneratorDefinition {
     /** The location of generator module. Normally you pass `import.meta.url` here. */
     url: string;
@@ -23,8 +29,7 @@ export interface ProblemGenerator {
 }
 
 export function defineProblemGenerator(definition: GeneratorDefinition) {
-    const randomSeed = Math.floor(Math.random() * 1000000) + 1; // Use random or some static value?
-    const initialSeed = definition.initialSeed ?? randomSeed;
+    const initialSeed = definition.initialSeed ?? INITIAL_SEED;
 
     return (
         problemJsxFn: (args: {

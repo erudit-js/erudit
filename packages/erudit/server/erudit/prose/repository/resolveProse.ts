@@ -14,7 +14,6 @@ import { Problem } from '@erudit-js/prose/elements/problem/problem.global';
 import { SubProblem } from '@erudit-js/prose/elements/problem/problems.global';
 
 import globalElements from '#erudit/prose/global';
-import type { ContentNavNode } from '../../content/nav/types';
 import { createImageStorage } from '../default/image';
 import { createLinkStorage } from '../default/link';
 import { createVideoStorage } from '../default/video';
@@ -22,7 +21,6 @@ import { createCalloutStorage } from '../default/callout';
 import { generateInitialProblemContent } from '../default/problem';
 
 export async function resolveProse<TSchema extends ElementSchemaAny>(
-    navNode: ContentNavNode,
     element: ParsedElement<TSchema>,
 ) {
     const storageGenerators = Object.fromEntries(
@@ -47,13 +45,13 @@ export async function resolveProse<TSchema extends ElementSchemaAny>(
                     await createLinkStorage(element, storage);
                     break;
                 case isElement(element, Image):
-                    await createImageStorage(navNode, element, storage);
+                    await createImageStorage(element, storage);
                     break;
                 case isElement(element, Video):
-                    await createVideoStorage(navNode, element, storage);
+                    await createVideoStorage(element, storage);
                     break;
                 case isElement(element, Callout):
-                    await createCalloutStorage(navNode, element, storage);
+                    await createCalloutStorage(element, storage);
                     break;
                 case isElement(element, Problem):
                 case isElement(element, SubProblem):

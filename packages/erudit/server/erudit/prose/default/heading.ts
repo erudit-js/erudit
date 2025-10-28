@@ -53,5 +53,5 @@ export async function getHeadingUniqueData(
         children: afterHeadingElements,
     };
 
-    return await ERUDIT.repository.prose.resolve<BlocksSchema>(navNode, blocks);
+    return await ERUDIT.repository.prose.resolve<BlocksSchema>(blocks);
 }

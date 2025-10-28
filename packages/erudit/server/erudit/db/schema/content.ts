@@ -1,6 +1,6 @@
 import { integer, sqliteTable, text } from 'drizzle-orm/sqlite-core';
 
-import { ContentFlags, ContentType } from '@erudit-js/cog/schema';
+import { type ContentFlags, ContentType } from '@erudit-js/cog/schema';
 
 export const content = sqliteTable('content', {
     fullId: text().primaryKey(),

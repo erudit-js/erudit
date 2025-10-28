@@ -1,14 +1,12 @@
 import { type ContentConfigTopic, TopicPart } from '@erudit-js/cog/schema';
-import {
-    type DocumentAny,
-    type ParsedJsxContent,
-} from '@erudit-js/prose';
+import { type DocumentAny, type ParsedJsxContent } from '@erudit-js/prose';
 
 import type { ContentParser } from '..';
 import type { ContentNavNode } from '../../nav/types';
 import { documentUrlMismatch, wrapError } from '../utils/error';
 import { insertSnippets, insertUniques } from '../utils/element';
 import { insertContentConfig } from '../utils/contentConfig';
+import { contentParseDataStep } from '../parseData';
 
 export const topicsParser: ContentParser = async () => {
     return {
@@ -47,6 +45,8 @@ export const topicsParser: ContentParser = async () => {
                         topicPart,
                         await ERUDIT.repository.prose.parse(
                             proseDocument.content,
+                            (element) =>
+                                contentParseDataStep(navNode.fullId, element),
                         ),
                     );
                 } catch (error) {

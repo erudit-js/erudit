@@ -1,4 +1,4 @@
-import { globSync } from 'glob';
+import { eq } from 'drizzle-orm';
 import { ContentType } from '@erudit-js/cog/schema';
 
 export default defineEventHandler(async () => {
@@ -28,17 +28,50 @@ export default defineEventHandler(async () => {
                 `/api/preview/contentPage/${createContentPath(navNode.type, navNode.fullId)}.json`,
             );
         }
-
-        const publicFiles = globSync(navNode.contentRelPath + `/public/**/*`, {
-            cwd: ERUDIT.config.paths.project + '/content/',
-            nodir: true,
-            posix: true,
-        });
-
-        for (const publicFile of publicFiles) {
-            routes.push(`/content/file/${publicFile}`);
-        }
     }
+
+    routes.push(...(await getContentFileRoutes()));
 
     return routes;
 });
+
+//
+//
+//
+
+async function getContentFileRoutes(): Promise<string[]> {
+    const routes: string[] = [];
+
+    const dbContentFiles = await ERUDIT.db.query.contentParseData.findMany({
+        columns: { value: true },
+        where: eq(ERUDIT.db.schema.contentParseData.type, 'fileSrc'),
+    });
+
+    for (const dbContentFile of dbContentFiles) {
+        if (
+            !dbContentFile.value.startsWith(
+                ERUDIT.config.paths.project + '/content/',
+            )
+        ) {
+            throw createError({
+                statusCode: 403,
+                statusMessage: `Content file path is outside content folder: ${dbContentFile.value}`,
+            });
+        }
+
+        const contentRelativePath = dbContentFile.value.replace(
+            ERUDIT.config.paths.project + '/content/',
+            '',
+        );
+
+        routes.push(`/content/file/${contentRelativePath}`);
+    }
+
+    return routes;
+}
+
+async function getProblemGeneratorRoutes(): Promise<string[]> {
+    const routes: string[] = [];
+
+    return routes;
+}

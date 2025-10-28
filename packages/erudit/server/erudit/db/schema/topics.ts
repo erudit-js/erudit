@@ -1,6 +1,6 @@
 import { sqliteTable, text } from 'drizzle-orm/sqlite-core';
-import { ParsedElement } from '@erudit-js/prose';
-import { BlocksSchema } from '@erudit-js/prose/default/blocks';
+import { type ParsedElement } from '@erudit-js/prose';
+import { type BlocksSchema } from '@erudit-js/prose/default/blocks/index';
 
 export const topics = sqliteTable('topics', {
     fullId: text().primaryKey(),

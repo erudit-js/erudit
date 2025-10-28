@@ -175,6 +175,12 @@ async function diagramIntersectHit(entries: IntersectionObserverEntry[]) {
     loading.value = false;
 
     observer.disconnect();
+
+    await nextTick();
+    const svg = diagramSvgElement.value?.querySelector('svg');
+    if (svg) {
+        svg.addEventListener('click', diagramClick);
+    }
 }
 
 async function renderDiagram() {
@@ -216,7 +222,6 @@ async function renderDiagram() {
                 ref="diagramSvg"
                 v-html="diagramSvgContent"
                 :class="$style.diagram"
-                @click="diagramClick"
             ></div>
         </div>
         <Caption

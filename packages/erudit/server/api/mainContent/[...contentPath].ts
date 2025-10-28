@@ -7,10 +7,8 @@ export default defineEventHandler<Promise<MainContent>>(async (event) => {
     const navNode = ERUDIT.contentNav.getNodeOrThrow(shortId);
     const fullId = navNode.fullId;
     const proseBlocks = await ERUDIT.repository.prose.get(contentPath);
-    const { element, storage } = await ERUDIT.repository.prose.resolve(
-        navNode,
-        proseBlocks,
-    );
+    const { element, storage } =
+        await ERUDIT.repository.prose.resolve(proseBlocks);
 
     if (isTopicPart(typeOrPart)) {
         return {

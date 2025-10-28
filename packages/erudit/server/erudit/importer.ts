@@ -7,6 +7,9 @@ import { defineTopic } from '@erudit/module/globals/topic';
 import { definePage } from '@erudit/module/globals/page';
 import { defineGroup } from '@erudit/module/globals/group';
 import { createProseDocument } from '@erudit/module/globals/prose';
+import { imageExtensions } from '@erudit-js/prose/elements/image/index';
+import { videoExtensions } from '@erudit-js/prose/elements/video/index';
+import { tryImport2Src } from '@erudit-js/prose/shared/import2Src';
 
 export type EruditServerImporter = Jiti['import'];
 
@@ -32,16 +35,16 @@ export async function setupServerImporter() {
             '.tsx',
             '.js',
             '.jsx',
-            '.json',
-            '.jpg',
-            '.png',
-            '.svg',
+            ...imageExtensions,
+            ...videoExtensions,
         ],
         transform: (opts) => {
-            if (opts.filename && opts.filename.endsWith('.jpg')) {
-                console.log('Transforming JPG:', opts.filename);
-
-                return { code: `exports.default = 'foobar';` };
+            const fileSrc = tryImport2Src(
+                [...imageExtensions, ...videoExtensions],
+                opts.filename,
+            );
+            if (fileSrc) {
+                return { code: fileSrc };
             }
             return { code: defaultTransform(opts) };
         },
