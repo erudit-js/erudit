@@ -30,6 +30,7 @@ watch(
 
 watch(key, async () => {
     await nextPaint();
+    await new Promise((resolve) => setTimeout(resolve, 50));
     resizeObserver ||= new ResizeObserver(updateExpanderHeight);
     resizeObserver.disconnect();
     resizeObserver.observe(pane.value!);

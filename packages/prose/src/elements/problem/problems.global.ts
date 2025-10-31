@@ -76,7 +76,7 @@ export type ProblemsSchema = ElementSchema<{
     Type: ElementType.Block;
     Name: typeof problemsName;
     Linkable: true;
-    Data: ProblemInfo;
+    Data: { info: ProblemInfo };
     Storage: undefined;
     Children: BlockSchemaAny[];
 }>;
@@ -89,7 +89,7 @@ export const Problems = defineTag('Problems')<
     name: problemsName,
     linkable: true,
     initElement({ tagName, element, children, props }) {
-        element.data = problemProps2Info(props);
+        element.data = { info: problemProps2Info(props) };
         ensureHasChildren(tagName, children);
         const subProblems: JsxElement<SubProblemSchema>[] = [];
         const nonSubProblemChildren: JsxElement<BlockSchemaAny>[] = [];

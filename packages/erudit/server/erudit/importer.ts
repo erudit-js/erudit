@@ -19,6 +19,10 @@ export async function setupServerImporter() {
     const jitiOptions: JitiOptions = {
         fsCache: false,
         moduleCache: false,
+        alias: {
+            '#project/': ERUDIT.config.paths.project + '/',
+            '#content/': ERUDIT.config.paths.project + '/content/',
+        },
         jsx: {
             runtime: 'automatic',
             importSource: '@erudit-js/prose',

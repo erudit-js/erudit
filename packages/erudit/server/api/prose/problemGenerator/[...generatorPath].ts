@@ -1,31 +1,13 @@
-import esbuild from 'esbuild';
+import { bundleProblemGenerator } from '@erudit/server/prose/default/problem';
 
 export default defineEventHandler<Promise<string>>(async (event) => {
-    const pathToGenerator =
-        'E:/code/erudit-js/erudit/playground/content/3+group-x/3-sub-group/1-sub-page/problems/diego.tsx';
+    const generatorContentRelativePath = event.context.params!.generatorPath;
 
-    const result = await esbuild.build({
-        entryPoints: [pathToGenerator],
-        bundle: true,
-        platform: 'node',
-        format: 'esm',
-        write: false,
-        jsx: 'automatic',
-        jsxImportSource: '@erudit-js/prose',
-        sourcemap: false,
-        minify: false,
-        target: 'esnext',
-        charset: 'utf8',
-        external: ['@erudit-js/prose/jsx-runtime'],
-    });
-
-    const output = result.outputFiles?.[0]?.text ?? '';
-
-    const cleanedOutput = output.replace(
-        /import\s*(?:[\w*\s{},]*from\s*)?['"][^'"]+['"];?/g,
-        '',
-    );
+    const generatorFilePath =
+        ERUDIT.config.paths.project +
+        '/content/' +
+        generatorContentRelativePath.replace(/\.js$/, '.tsx');
 
     setHeader(event, 'content-type', 'text/javascript');
-    return cleanedOutput;
+    return await bundleProblemGenerator(generatorFilePath);
 });

@@ -124,7 +124,7 @@ export async function buildContentNav() {
     //
 
     ERUDIT.log.debug.start(`Augmenting types and import aliases...`);
-    augmentTypesAndJiti(ERUDIT.contentNav.id2Node);
+    //augmentTypesAndJiti(ERUDIT.contentNav.id2Node);
     createRuntimeTypes();
 
     const stats = ERUDIT.contentNav.id2Node.size
@@ -293,31 +293,31 @@ function getContentNavStats(id2Node: ContentNavMap) {
     return parts.join('; ');
 }
 
-function augmentTypesAndJiti(id2Node: ContentNavMap) {
-    const tsconfigPath = ERUDIT.config.paths.build + '/tsconfig.erudit.json';
-    const tsconfig = JSON.parse(readFileSync(tsconfigPath, 'utf8'));
-    tsconfig.compilerOptions ||= {};
-    tsconfig.compilerOptions.paths ||= {};
-    const paths: Record<string, string[]> = tsconfig.compilerOptions.paths;
-    const jitiAliases = (jiti.options.alias ||= {});
+// function augmentTypesAndJiti(id2Node: ContentNavMap) {
+//     const tsconfigPath = ERUDIT.config.paths.build + '/tsconfig.erudit.json';
+//     const tsconfig = JSON.parse(readFileSync(tsconfigPath, 'utf8'));
+//     tsconfig.compilerOptions ||= {};
+//     tsconfig.compilerOptions.paths ||= {};
+//     const paths: Record<string, string[]> = tsconfig.compilerOptions.paths;
+//     const jitiAliases = (jiti.options.alias ||= {});
 
-    for (const key of Object.keys(paths)) {
-        if (key.startsWith('#content/') && key !== '#content/*') {
-            delete paths[key];
-            delete jitiAliases[key];
-        }
-    }
+//     for (const key of Object.keys(paths)) {
+//         if (key.startsWith('#content/') && key !== '#content/*') {
+//             delete paths[key];
+//             delete jitiAliases[key];
+//         }
+//     }
 
-    for (const navNode of id2Node.values()) {
-        const key = `#content/${navNode.fullId}`;
-        const value =
-            ERUDIT.config.paths.project + '/content/' + navNode.contentRelPath;
-        paths[key + '/*'] = [value + '/*'];
-        jitiAliases[key] = value;
-    }
+//     for (const navNode of id2Node.values()) {
+//         const key = `#content/${navNode.fullId}`;
+//         const value =
+//             ERUDIT.config.paths.project + '/content/' + navNode.contentRelPath;
+//         paths[key + '/*'] = [value + '/*'];
+//         jitiAliases[key] = value;
+//     }
 
-    writeFileSync(tsconfigPath, JSON.stringify(tsconfig, null, 4));
-}
+//     writeFileSync(tsconfigPath, JSON.stringify(tsconfig, null, 4));
+// }
 
 function createRuntimeTypes() {
     let union = '';

@@ -20,7 +20,7 @@ export type ProblemSchema = ElementSchema<{
     Type: ElementType.Block;
     Name: typeof problemName;
     Linkable: true;
-    Data: ProblemInfo & { generatorPath?: string };
+    Data: { info: ProblemInfo; generatorPath?: string };
     Storage: ProblemStorage;
     Children: ProblemContentChild[];
 }>;
@@ -37,7 +37,7 @@ export const Problem = defineTag('Problem')<
     name: problemName,
     linkable: true,
     initElement({ tagName, element, props, children }) {
-        element.data = problemProps2Info(props);
+        element.data = { info: problemProps2Info(props) };
         if (props.generator) {
             element.data.generatorPath = normalizeGeneratorUrl(
                 props.generator.url,

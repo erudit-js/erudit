@@ -1,4 +1,4 @@
-import topicA from '#content/topic-a/article';
+import topicA from '#content/1-topic-a/article';
 
 import diego from './problems/diego';
 

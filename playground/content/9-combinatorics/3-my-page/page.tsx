@@ -1,4 +1,4 @@
-import tali from '#content/combinatorics/my-page/tali.jpg';
+import tali from '#content/9-combinatorics/3-my-page/tali.jpg';
 
 export default definePage({
     title: 'Моя страница. Ура!',
@@ -34,13 +34,41 @@ export const document = createProseDocument({
 
         <Image src={tali} />
 
-        <Problem title="Моя первая задача" level="medium" applied>
+        <Problem title="Моя первая задача" level="hard" applied pretty>
             <ProblemDescription>
-                <p>Содержимое</p>
+                <p>Содержимое. Может даже с формулой:</p>
+                <BlockMath>A^2 + B^2 = C^2</BlockMath>
             </ProblemDescription>
+            <ProblemHint>
+                <p>Подсказка к задаче</p>
+            </ProblemHint>
+            <ProblemHint>
+                <p>Вторая подсказка к задаче</p>
+            </ProblemHint>
+            <ProblemNote>
+                <p>Заметочка Небольшая</p>
+            </ProblemNote>
+            <ProblemSolution>
+                <BlockMath>f(x) = a \in R</BlockMath>
+                <ProblemSection title="Часть 1">
+                    <p>Решение, часть 1</p>
+                </ProblemSection>
+            </ProblemSolution>
+            <ProblemAnswer>
+                <ProblemSection title="Ответ">
+                    <p>42</p>
+                </ProblemSection>
+            </ProblemAnswer>
+            <ProblemCheck
+                answer="fargus"
+                placeholder="Ответ тута"
+                label="Студия локализации"
+                hint="Ответ текстовый"
+            />
+            <ProblemCheck answers={[1, 2, 3]} />
         </Problem>
 
-        <Problems title="Много задач" level="hard" pretty>
+        <Problems title="Много задач" level="example" method>
             <p>Общее условие</p>
             <SubProblem>
                 <ProblemDescription>
@@ -50,6 +78,14 @@ export const document = createProseDocument({
             <SubProblem label="Вторая">
                 <ProblemDescription>
                     <p>Вторая подзадача</p>
+                </ProblemDescription>
+                <ProblemHint>
+                    <p>Подсказка ко второй подзадаче</p>
+                </ProblemHint>
+            </SubProblem>
+            <SubProblem>
+                <ProblemDescription>
+                    <p>Третья подзадача</p>
                 </ProblemDescription>
             </SubProblem>
         </Problems>

@@ -31,6 +31,7 @@ export default defineEventHandler(async () => {
     }
 
     routes.push(...(await getContentFileRoutes()));
+    routes.push(...(await getProblemGeneratorRoutes()));
 
     return routes;
 });
@@ -72,6 +73,36 @@ async function getContentFileRoutes(): Promise<string[]> {
 
 async function getProblemGeneratorRoutes(): Promise<string[]> {
     const routes: string[] = [];
+
+    const dbProblemGeneratorFiles =
+        await ERUDIT.db.query.contentParseData.findMany({
+            columns: { value: true },
+            where: eq(
+                ERUDIT.db.schema.contentParseData.type,
+                'problemGeneratorSrc',
+            ),
+        });
+
+    for (const dbProblemGeneratorFile of dbProblemGeneratorFiles) {
+        if (
+            !dbProblemGeneratorFile.value.startsWith(
+                ERUDIT.config.paths.project + '/content/',
+            )
+        ) {
+            throw createError({
+                statusCode: 403,
+                statusMessage: `Problem generator file path is outside content folder: ${dbProblemGeneratorFile.value}`,
+            });
+        }
+
+        let contentRelativePath = dbProblemGeneratorFile.value.replace(
+            ERUDIT.config.paths.project + '/content/',
+            '',
+        );
+        contentRelativePath = contentRelativePath.replace(/\.[^/.]+$/, '.js');
+
+        routes.push(`/api/prose/problemGenerator/${contentRelativePath}`);
+    }
 
     return routes;
 }

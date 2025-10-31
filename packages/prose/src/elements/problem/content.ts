@@ -209,7 +209,7 @@ export const ProblemAnswer = defineProblemSectionContainer(
 export const problemCheckName = 'problemCheck';
 
 export type ProblemCheckData = {
-    check: (answer: string) => boolean | Promise<boolean>;
+    answers: string[];
     label?: string;
     hint?: string;
     placeholder?: string;
@@ -228,18 +228,22 @@ export const ProblemCheck = defineTag('ProblemCheck')<
     ProblemCheckSchema,
     {
         children?: undefined;
-        check: (answer: string) => boolean | Promise<boolean>;
         label?: string;
         hint?: string;
         placeholder?: string;
-    }
+    } & (
+        | { answer: string | number; answers?: undefined }
+        | { answers: (string | number)[]; answer?: undefined }
+    )
 >({
     type: ElementType.Block,
     name: problemCheckName,
     linkable: false,
     initElement({ element, props }) {
         element.data = {
-            check: props.check,
+            answers: props.answer
+                ? [String(props.answer)]
+                : props.answers!.map(String),
             label: props.label,
             hint: props.hint,
             placeholder: props.placeholder,

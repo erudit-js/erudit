@@ -1,4 +1,12 @@
 import type { ElementPhrases } from '../../app';
+import { isElement } from '../../element';
+import {
+    ProblemAnswer,
+    ProblemCheck,
+    ProblemHint,
+    ProblemNote,
+    ProblemSolution,
+} from './content';
 
 //
 //
@@ -39,6 +47,43 @@ export function isProblemAttribute(value: unknown): value is ProblemAttribute {
 //
 //
 
+export const problemActions = [
+    'hint',
+    'answer',
+    'solution',
+    'note',
+    'check',
+    'generate',
+] as const;
+
+export type ProblemAction = (typeof problemActions)[number];
+
+export function isProblemAction(value: unknown): value is ProblemAction {
+    return (
+        typeof value === 'string' &&
+        problemActions.includes(value as ProblemAction)
+    );
+}
+
+export function isProblemActionElement(element: any, action: ProblemAction) {
+    switch (action) {
+        case 'answer':
+            return isElement(element, ProblemAnswer);
+        case 'check':
+            return isElement(element, ProblemCheck);
+        case 'hint':
+            return isElement(element, ProblemHint);
+        case 'solution':
+            return isElement(element, ProblemSolution);
+        case 'note':
+            return isElement(element, ProblemNote);
+    }
+}
+
+//
+//
+//
+
 export type ProblemPhrases = ElementPhrases<
     {
         [K in `level.${ProblemLevel}`]: string;
@@ -52,6 +97,7 @@ export type ProblemPhrases = ElementPhrases<
         action_solution: string;
         action_answer: string;
         action_note: string;
+        action_check: string;
         action_generate: string;
         seed_explain: string;
     }

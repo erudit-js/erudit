@@ -24,6 +24,7 @@ export default defineElementLanguage<ProblemPhrases>({
     action_solution: 'Solution',
     action_answer: 'Answer',
     action_note: 'Note',
+    action_check: 'Check',
     action_generate: 'Similar',
     seed_explain:
         'Seed to calculate all random numbers in the problem. Same seed = same numbers.',

@@ -33,6 +33,7 @@ export function defineProblemGenerator(definition: GeneratorDefinition) {
 
     return (
         problemJsxFn: (args: {
+            initial: boolean;
             random: Random;
         }) =>
             | JsxElement<ElementSchemaAny>
@@ -47,7 +48,10 @@ export function defineProblemGenerator(definition: GeneratorDefinition) {
             ) => {
                 const normalizedSeed = normalizeSeed(seed);
                 const random = new Random(normalizedSeed);
-                const jsxProblemContent = await problemJsxFn({ random });
+                const jsxProblemContent = await problemJsxFn({
+                    initial: normalizedSeed === initialSeed,
+                    random,
+                });
 
                 validateProblemContent(
                     '[Problem Generator]',

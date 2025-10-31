@@ -24,6 +24,7 @@ export default defineElementLanguage<ProblemPhrases>({
     action_solution: 'Решение',
     action_answer: 'Ответ',
     action_note: 'Примечание',
+    action_check: 'Проверить',
     action_generate: 'Аналог',
     seed_explain:
         'Зерно. От него высчитываются все случайные числа в задаче. То же зерно = те же числа.',

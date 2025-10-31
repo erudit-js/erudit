@@ -2,19 +2,6 @@
 useThemeWatcher();
 useAsideMajorPaneWatcher();
 useAppElements();
-
-prerenderRoutes('/api/prose/problemGenerator/aboba.js');
-onMounted(async () => {
-    const generatorModule = await import(
-        /* @vite-ignore */ `http://localhost:3000/subfolder/api/prose/problemGenerator/aboba.js`
-    );
-    //console.log(generatorModule);
-    console.log(
-        await generatorModule.default.createProblemContent(9235, {
-            language: 'ru',
-        }),
-    );
-});
 </script>
 
 <template>
