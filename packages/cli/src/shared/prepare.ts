@@ -1,5 +1,5 @@
-import { consola } from 'consola';
 import { existsSync, mkdirSync, rmSync, writeFileSync } from 'node:fs';
+import { consola } from 'consola';
 
 interface PrepareData {
     projectPath: string;
@@ -58,6 +58,9 @@ export async function prepare({
             {
                 compilerOptions: {
                     paths: {
+                        '#contributors': [
+                            `${eruditBuildDir}/nuxt/.nuxt/#erudit/contributors`,
+                        ],
                         '#project/*': [`${projectPath}/*`],
                         '#content/*': [`${projectPath}/content/*`],
                     },
@@ -73,12 +76,15 @@ export async function prepare({
                     resolveJsonModule: true,
                     allowSyntheticDefaultImports: true,
                     jsx: 'react-jsx',
-                    jsxImportSource: '@erudit-js/prose',
-                    types: ['@erudit-js/prose/types'],
+                    jsxImportSource: '@jsprose/core',
+                    types: ['@jsprose/core/types'],
                     lib: ['ESNext'],
                 },
                 include: [`${projectPath}/**/*`, `${eruditBuildDir}/**/*`],
-                exclude: [`${eruditBuildDir}/nuxt/**/*`],
+                exclude: [
+                    `${eruditBuildDir}/nuxt/**/*`,
+                    `${projectPath}/**/docs.ts`,
+                ],
             },
             null,
             4,

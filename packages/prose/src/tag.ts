@@ -1,192 +1,79 @@
-import { normalizeChildren, type NormalizedChildren } from './children';
-import type { JsxElement } from './element';
-import { ProseError } from './error';
-import { hash } from './hash';
-import { type JsxAllProps, type JsxTagProps } from './props';
-import type { ElementSchemaAny } from './schema';
-import type { JsxSnippet } from './snippet';
-import { ElementType } from './type';
+import {
+    defineTag,
+    Registry,
+    type AnySchema,
+    type ConfigurableTagProps,
+    type NormalizedChildren,
+    type ProcessTagFunction,
+    type TagDefinition,
+} from '@jsprose/core';
 
-export const ElementTagSymbol = Symbol('ElementTag');
+import type { EruditRawElement } from './rawElement.js';
+import { finalizeSnippet, type ObjPropSnippet } from './snippet.js';
+import { finalizeToc, type ObjPropToc } from './toc.js';
+import { finalizeTitle } from './title.js';
 
-export type ElementTag<
-    TSchema extends ElementSchemaAny,
-    TTagName extends string,
-    TProps extends any,
-> = ((props: TProps) => JsxElement<TSchema, TTagName>) & {
-    [ElementTagSymbol]: undefined;
-    tagName: TTagName;
-    isTagElement(element: any): element is JsxElement<TSchema, TTagName>;
+declare const NoTocSymbol: unique symbol;
+declare const NoSnippetSymbol: unique symbol;
+
+export type NoToc = { readonly [NoTocSymbol]?: never };
+export type NoSnippet = { readonly [NoSnippetSymbol]?: never };
+
+export type EruditTagProps<TProps extends Record<string, unknown>> =
+    (TProps extends NoToc ? {} : ObjPropToc) &
+        (TProps extends NoSnippet ? {} : ObjPropSnippet);
+
+export type EruditProcessTagArgs = {
+    tagName: string;
+    element: EruditRawElement<AnySchema>;
+    props: ConfigurableTagProps & ObjPropSnippet & ObjPropToc;
+    children: NormalizedChildren;
+    registry: Registry;
 };
 
-export type ElementTagAny = ElementTag<ElementSchemaAny, string, any>;
+export function defineEruditTag<
+    const TSchema extends AnySchema,
+    const TTagDefinition extends TagDefinition<TSchema>,
+>(definition: TTagDefinition) {
+    const baseFinalizeTag = defineTag(definition);
 
-export function isTag(tag: any): tag is ElementTagAny {
-    return tag && ElementTagSymbol in tag;
-}
+    function eruditFinalizeTag<
+        const TConfigurableTagProps extends ConfigurableTagProps,
+    >(
+        processTag: ProcessTagFunction<
+            TTagDefinition['schema'],
+            TTagDefinition,
+            TConfigurableTagProps &
+                (TTagDefinition['schema']['linkable'] extends true
+                    ? EruditTagProps<TConfigurableTagProps>
+                    : {}),
+            EruditRawElement<
+                TTagDefinition['schema'],
+                TTagDefinition['tagName']
+            >
+        >,
+    ) {
+        const eruditTag = baseFinalizeTag<
+            TConfigurableTagProps &
+                (TTagDefinition['schema']['linkable'] extends true
+                    ? EruditTagProps<TConfigurableTagProps>
+                    : {})
+        >((args: EruditProcessTagArgs) => {
+            processTag(args as any);
 
-export function defineTag<TTagName extends string>(tagName: TTagName) {
-    type TagSelf<TSchema extends ElementSchemaAny> = ElementTag<
-        TSchema,
-        TTagName,
-        any
-    >;
+            // Use every possibility to get shared title property
+            args.element.title = finalizeTitle(args);
 
-    function finalizeTag<
-        TSchema extends ElementSchemaAny,
-        TProps extends JsxTagProps<TSchema, TagSelf<TSchema>> &
-            Record<string, any> = JsxTagProps<TSchema, TagSelf<TSchema>>,
-    >(definition: {
-        type: TSchema['Type'];
-        name: TSchema['Name'];
-        linkable: TSchema['Linkable'];
-        initElement: (args: {
-            tagName: TTagName;
-            element: JsxElement<TSchema, TTagName>;
-            props: JsxTagProps<TSchema, TagSelf<TSchema>> & TProps;
-            children: NormalizedChildren;
-        }) => void;
-        childStep?: (args: {
-            tagName: TTagName;
-            child: JsxElement<ElementSchemaAny>;
-        }) => void;
-    }): ElementTag<
-        TSchema,
-        TTagName,
-        JsxTagProps<TSchema, TagSelf<TSchema>> & TProps
-    > {
-        const tag = (
-            props: JsxTagProps<TSchema, TagSelf<TSchema>> & TProps,
-        ) => {
-            const allProps = props as JsxAllProps;
+            args.element.snippet = finalizeSnippet(args);
+            args.element.toc = finalizeToc(args);
 
-            const normalizedChildren = normalizeChildren(props, (child) => {
-                if (
-                    definition.type === ElementType.Inliner &&
-                    child.type === ElementType.Block
-                ) {
-                    throw new ProseError(
-                        `Inliner <${tagName}> cannot have block child <${child.tagName}>!`,
-                    );
-                }
-
-                definition.childStep?.({ tagName, child });
-            });
-
-            const element = <JsxElement<TSchema, TTagName>>{
-                type: definition.type,
-                name: definition.name,
-                tagName,
-                slug: allProps.$?.slug,
-            };
-
-            if (definition.linkable) {
-                element.linkable = true;
-            }
-
-            if (allProps.$) {
-                element.uniqueSlug = allProps.$.slug;
-                // @ts-expect-error Bypass readonly
-                allProps.$.element = element;
-            }
-
-            definition.initElement({
-                tagName,
-                element,
-                props,
-                children: normalizedChildren,
-            });
-
-            const snippet = tryCreateSnippet(allProps, element);
-            if (snippet) {
-                element.snippet = snippet;
-            }
-
-            element.hash = hashElement(
-                element.name,
-                element.data,
-                normalizedChildren,
-            );
-
-            return element;
-        };
-
-        Object.defineProperties(tag, {
-            [ElementTagSymbol]: { value: undefined },
-            name: { value: definition.name },
-            tagName: { value: tagName },
-            isTagElement: {
-                value: (
-                    element: any,
-                ): element is JsxElement<TSchema, TTagName> =>
-                    element && element.tagName === tagName,
-            },
+            // Use every possibility to get human-readable slug whether it is set manually or taken from snippet or toc
+            args.element.slug ||=
+                args.element.snippet?.title || args.element.toc?.title;
         });
 
-        return tag as any;
+        return eruditTag;
     }
 
-    return finalizeTag;
-}
-
-function hashElement(
-    name: string,
-    data: any,
-    children: JsxElement<any>[] | undefined,
-) {
-    const strData = JSON.stringify(data) ?? '<undefined-data>';
-
-    const childrenHashes = children
-        ? children.map((c) => c.hash).join('|')
-        : '<no-children>';
-
-    return hash(name + strData + childrenHashes, 12);
-}
-
-function tryCreateSnippet(
-    props: JsxAllProps,
-    element: JsxElement<ElementSchemaAny>,
-): JsxSnippet | undefined {
-    if (!props.$snippet && !element.snippet) {
-        return undefined;
-    }
-
-    const rawSearch = element.snippet?.search ?? props.$snippet?.search;
-    const rawQuick = element.snippet?.quick ?? props.$snippet?.quick;
-
-    if (rawSearch === undefined && rawQuick === undefined) {
-        throw new ProseError(
-            `Unable to create unused snippet for <${element.tagName}>: "quick" or "search" must be defined!`,
-        );
-    }
-
-    let rawTitle =
-        element.snippet?.title || props.$snippet?.title || element.data?.title;
-
-    if (!rawTitle) {
-        throw new ProseError(
-            `Unable to get snipped title for <${element.tagName}>!`,
-        );
-    }
-
-    const title = String(rawTitle);
-
-    const description =
-        element.snippet?.description ||
-        props.$snippet?.description ||
-        element.data?.description;
-
-    const synonyms =
-        element.snippet?.synonyms ||
-        (typeof props.$snippet?.search === 'object' && props.$snippet?.search
-            ? props.$snippet?.search.synonyms
-            : undefined);
-
-    return {
-        title,
-        description,
-        quick: Boolean(rawQuick),
-        search: Boolean(rawSearch),
-        synonyms,
-    };
+    return eruditFinalizeTag;
 }

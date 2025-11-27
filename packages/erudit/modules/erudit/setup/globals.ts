@@ -34,8 +34,8 @@ export async function registerAppGlobals(runtimeConfig: EruditRuntimeConfig) {
             from: `${runtimeConfig.paths.module}/globals/public`,
         },
         {
-            name: 'defineProblemGenerator',
-            from: `${runtimeConfig.paths.module}/globals/problem`,
+            name: 'defineProblemScript',
+            from: `${runtimeConfig.paths.module}/globals/prose`,
         },
     ]);
 }
@@ -52,10 +52,34 @@ export async function registerServerGlobals(
             name: 'ERUDIT',
             from: `${runtimeConfig.paths.server}/global`,
         },
-        // {
-        //     name: 'defineProblemGenerator',
-        //     from: `${runtimeConfig.paths.module}/globals/problem`,
-        // },
+        {
+            name: 'defineContributor',
+            from: `${runtimeConfig.paths.module}/globals/contributor`,
+        },
+        {
+            name: 'defineSponsor',
+            from: `${runtimeConfig.paths.module}/globals/sponsor`,
+        },
+        {
+            name: 'defineBook',
+            from: `${runtimeConfig.paths.module}/globals/content`,
+        },
+        {
+            name: 'defineTopic',
+            from: `${runtimeConfig.paths.module}/globals/content`,
+        },
+        {
+            name: 'definePage',
+            from: `${runtimeConfig.paths.module}/globals/content`,
+        },
+        {
+            name: 'defineGroup',
+            from: `${runtimeConfig.paths.module}/globals/content`,
+        },
+        {
+            name: 'defineDocument',
+            from: '@jsprose/core',
+        },
     ]);
 }
 
@@ -103,12 +127,12 @@ export async function registerGlobalContentTypes(
             from: `${runtimeConfig.paths.module}/globals/sponsor`,
         },
         {
-            name: 'createProseDocument',
+            name: 'defineDocument',
             from: `${runtimeConfig.paths.module}/globals/prose`,
         },
         {
-            name: 'defineProblemGenerator',
-            from: `${runtimeConfig.paths.module}/globals/problem`,
+            name: 'defineProblemScript',
+            from: `${runtimeConfig.paths.module}/globals/prose`,
         },
     ]);
 

@@ -1,10 +1,18 @@
-import { ProseError } from '../../error';
+export const katexDependency = {
+    katex: {
+        optimise: true,
+        transpile: true,
+    },
+};
+
+export function normalizeKatex(katex: string): string {
+    katex = katex.replace(/[\s\n]+/g, ' ').trim();
+    return katex;
+}
 
 export async function latexToHtml(katex: string, mode: 'block' | 'inline') {
-    ensureKatexNotEmpty(katex);
-
     const katexLib = (await import('katex')).default;
-    const macros = (await import('./macros')).default;
+    const macros = (await import('./macros.js')).default;
 
     const html = katexLib.renderToString(katex, {
         displayMode: mode === 'block',
@@ -13,17 +21,4 @@ export async function latexToHtml(katex: string, mode: 'block' | 'inline') {
     });
 
     return html;
-}
-
-export function normalizeKatex(katex: string): string {
-    katex = katex.replace(/[\s\n]+/g, ' ').trim();
-    return katex;
-}
-
-export function ensureKatexNotEmpty(katex: string) {
-    katex = katex.trim();
-
-    if (!katex) {
-        throw new ProseError('Math expression is empty!');
-    }
 }

@@ -1,10 +1,5 @@
 import chalk from 'chalk';
 
-import {
-    buildServerErudit,
-    closeServerProjectWatcher,
-    setupServerProjectWatcher,
-} from './build';
 import { setupServerLogger } from './logger';
 import { setupServerRuntimeConfig } from './config';
 import { setupServerLanguage } from './language/setup';
@@ -12,6 +7,7 @@ import { setupServerDatabase } from './db/setup';
 import { setupServerImporter } from './importer';
 import { setupServerRepository } from './repository';
 import { setupServerContentNav } from './content/nav/setup';
+import { buildServerErudit, tryServerWatchProject } from './build';
 
 let serverSetupPromise: Promise<void>;
 
@@ -58,23 +54,22 @@ ${escapeHtml(ERUDIT.buildError.stack || '')}
         }
     });
 
-    nitro.hooks.hook('close', async () => {
-        await closeServer();
-    });
+    nitro.hooks.hook('close', async () => {});
 });
 
 async function setupServer() {
     try {
-        await import('#erudit/prose/global');
+        await import('#erudit/prose/core');
         await setupServerRuntimeConfig();
         await setupServerLogger();
         await setupServerImporter();
-        await setupServerProjectWatcher();
         await setupServerLanguage();
         await setupServerDatabase();
         await setupServerRepository();
         await setupServerContentNav();
         ERUDIT.log.success(chalk.green('Setup Complete!'));
+
+        await tryServerWatchProject();
         await buildServerErudit();
     } catch (buildError) {
         if (buildError instanceof Error) {
@@ -90,8 +85,4 @@ async function setupServer() {
             });
         }
     }
-}
-
-async function closeServer() {
-    await closeServerProjectWatcher();
 }

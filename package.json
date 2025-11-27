@@ -7,9 +7,25 @@
         "type": "git",
         "url": "git+https://github.com/erudit-js/erudit.git"
     },
-    "workspaces": [
-        "packages/*"
-    ],
+    "workspaces": {
+        "packages": [
+            "packages/*",
+            "playground"
+        ],
+        "catalog": {
+            "@erudit-js/core": "workspace:3.0.0-dev.23",
+            "@erudit-js/cli": "workspace:3.0.0-dev.23",
+            "@erudit-js/prose": "workspace:3.0.0-dev.23",
+            "erudit": "workspace:3.0.0-dev.23",
+            "@jsprose/core": "link:@jsprose/core",
+            "vue": "latest",
+            "vue-router": "latest",
+            "@floating-ui/vue": "^1.1.9",
+            "image-size": "^2.0.2",
+            "chalk": "^5.6.2",
+            "consola": "^3.4.2"
+        }
+    },
     "scripts": {
         "pretty": "prettier --write .",
         "build": "bun run scripts/build",
@@ -22,14 +38,14 @@
         "play:preview": "bun erudit preview playground"
     },
     "devDependencies": {
-        "@types/jest": "^30.0.0",
-        "@types/node": "^24.9.1",
         "prettier": "^3.6.2",
         "prettier-plugin-classnames": "^0.8.5",
         "prettier-plugin-merge": "^0.8.0",
-        "typescript": "^5.9.3"
+        "prettier-plugin-tailwindcss": "^0.7.1",
+        "typescript": "^5.9.3",
+        "vitest": "^4.0.14"
     },
     "dependencies": {
-        "prettier-plugin-tailwindcss": "^0.7.1"
+        "slash": "^5.1.0"
     }
 }

@@ -2,8 +2,10 @@ import { defineNuxtModule } from 'nuxt/kit';
 
 import { version } from '../../package.json';
 import { moduleLogger } from './logger';
+import { setupWatchers } from './watcher';
 
 // Setup procedures
+import { setupVirtualContributors } from './setup/virtualContributors';
 import { setupEruditRuntimeConfig } from './setup/runtimeConfig';
 import { setupEruditFullRestart } from './setup/fullRestart';
 import { setupEruditAliases } from './setup/aliases';
@@ -26,6 +28,9 @@ export default defineNuxtModule({
 
         const { eruditRuntimeConfig, eruditPublicRuntimeConfig } =
             await setupEruditRuntimeConfig(nuxt);
+
+        await setupWatchers(nuxt, eruditRuntimeConfig);
+        await setupVirtualContributors(nuxt, eruditRuntimeConfig);
 
         await setupEruditFullRestart(nuxt, eruditRuntimeConfig);
         await setupEruditAliases(nuxt, eruditRuntimeConfig);

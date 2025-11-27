@@ -1,44 +1,31 @@
-export const contentFlags = ['dev', 'advanced', 'secondary'] as const;
-export type ContentFlag = (typeof contentFlags)[number];
-export type ContentFlags = Partial<Record<ContentFlag, boolean>>;
+export const contentType = ['book', 'group', 'page', 'topic'] as const;
 
-export enum ContentType {
-    Book = 'book',
-    Group = 'group',
-    Page = 'page',
-    Topic = 'topic',
-}
+export type ContentType = (typeof contentType)[number];
 
 export function isContentType(type: any): type is ContentType {
-    return Object.values(ContentType).includes(type);
+    return contentType.includes(type);
 }
 
-export type ContentConfig = Partial<{
-    title: string;
-    navTitle: string;
-    description: string;
+export interface ContentItem {
     /**
-     * Hidden content items do not appear in aside content navigation
-     * but are still accessible via direct URL.
+     * TypeScript branding to distinguish content items from other objects.
      */
-    hidden: boolean;
-    flags: ContentFlags;
-    contributors: string[];
-    dependencies: string[];
-}>;
+    __ERUDIT_contentItem: true;
 
-// export interface ContentSeo {
-//     title: string;
-//     description: string;
-// }
+    /**
+     * Unique identifier for the content item.
+     */
+    contentId: string;
+    type: ContentType;
 
-// export interface ContentConfig {
-//     title: string;
-//     navTitle: string;
-//     description: string;
-//     hidden: boolean;
-//     flags: Partial<Record<ContentFlag, boolean>>;
-//     seo: Partial<ContentSeo>;
-//     contributors: string[];
-//     dependencies: string[];
-// }
+    /**
+     * Manual list of content items this item depends on with explanations.
+     * Use this to emphasize important dependencies beyond the automatic ones.
+     */
+    dependencies: ContentDependency[];
+}
+
+export interface ContentDependency {
+    content: ContentItem;
+    reason: string;
+}

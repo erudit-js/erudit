@@ -1,1 +1,2 @@
-export { createProseDocument } from '@erudit-js/prose';
+export { defineDocument } from '@jsprose/core';
+export { defineProblemScript } from '@erudit-js/prose/elements/problem/problemScript';

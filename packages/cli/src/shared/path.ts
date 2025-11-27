@@ -1,11 +1,14 @@
-import { consola } from 'consola';
-import chalk from 'chalk';
 import { existsSync, lstatSync } from 'node:fs';
-import { resolvePaths } from '@erudit-js/cog/kit';
+import chalk from 'chalk';
+import { resolve, isAbsolute } from 'node:path';
 
 export function resolvePath(path: string): string {
-    path = resolvePaths(path);
+    path = path.replace(/\\/g, '/');
     path = path.endsWith('/') ? path.slice(0, -1) : path;
+
+    if (!isAbsolute(path)) {
+        path = resolve(process.cwd(), path).replace(/\\/g, '/');
+    }
 
     if (existsSync(path) && !lstatSync(path).isDirectory())
         throw new Error(

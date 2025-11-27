@@ -1,5 +1,21 @@
 import { defineConfig } from 'vitest/config';
 
+function rel(path: string) {
+    return new URL(path, import.meta.url).pathname;
+}
+
 export default defineConfig({
-    cacheDir: '../../node_modules/.vitest',
+    test: {
+        typecheck: {
+            enabled: true,
+            tsconfig: './tsconfig.test.json',
+        },
+    },
+    resolve: {
+        alias: {
+            '@erudit-js/prose/shared/core': rel('./src/shared/core/index.ts'),
+            '@erudit-js/prose/elements': rel('./src/elements'),
+            '@erudit-js/prose': rel('./src/index.ts'),
+        },
+    },
 });

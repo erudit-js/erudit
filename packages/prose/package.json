@@ -3,62 +3,47 @@
     "name": "@erudit-js/prose",
     "version": "3.0.0-dev.23",
     "description": "📝 JSX prose subsystem for Erudit sites",
-    "main": "./dist/index.mjs",
+    "main": "./dist/index.js",
     "types": "./dist/index.d.ts",
     "exports": {
         ".": {
-            "import": "./dist/index.mjs",
+            "import": "./dist/index.js",
             "types": "./dist/index.d.ts"
         },
-        "./app": {
-            "import": "./dist/app/index.mjs",
-            "types": "./dist/app/index.d.ts"
-        },
-        "./default/*": {
-            "import": "./dist/default/*.mjs",
-            "types": "./dist/default/*.d.ts"
-        },
         "./elements/*": {
-            "import": "./dist/elements/*.mjs",
+            "import": "./dist/elements/*.js",
             "types": "./dist/elements/*.d.ts"
         },
-        "./shared/*": {
-            "import": "./dist/shared/*.mjs",
-            "types": "./dist/shared/*.d.ts"
+        "./shared/core": {
+            "import": "./dist/shared/core/index.js",
+            "types": "./dist/shared/core/index.d.ts"
         },
-        "./jsx-runtime": {
-            "import": "./dist/jsx-runtime.mjs",
-            "types": "./dist/jsx-runtime.d.ts"
-        },
-        "./jsx-dev-runtime": {
-            "import": "./dist/jsx-dev-runtime.mjs",
-            "types": "./dist/jsx-dev-runtime.d.ts"
-        },
-        "./types": "./types.d.ts"
+        "./shared/app": {
+            "import": "./dist/shared/app/index.js",
+            "types": "./dist/shared/app/index.d.ts"
+        }
     },
     "files": [
-        "dist",
-        "types.d.ts"
+        "dist"
     ],
+    "license": "MIT",
     "scripts": {
-        "build": "bun run build.ts",
-        "dev": "bun run dev.ts",
-        "test": "vitest run",
-        "test:watch": "vitest"
+        "build": "bun run script/build.ts",
+        "dev": "bun run script/dev.ts",
+        "test": "bun vitest run"
     },
     "dependencies": {
-        "katex": "^0.16.25",
-        "mermaid": "^11.12.0",
-        "photoswipe": "^5.4.4"
-    },
-    "peerDependencies": {
         "@erudit-js/cog": "workspace:3.0.0-dev.23",
-        "vue": "latest",
-        "@floating-ui/vue": "^1.1.9"
+        "@jsprose/core": "catalog:",
+        "vue": "catalog:",
+        "@floating-ui/vue": "catalog:",
+        "image-size": "catalog:",
+        "katex": "^0.16.25",
+        "mermaid": "^11.12.1",
+        "photoswipe": "^5.4.4"
     },
     "devDependencies": {
         "glob": "11.0.3",
-        "oxc-transform": "0.94.0",
-        "vitest": "^3.2.4"
+        "oxc-transform": "0.94.0"
     }
 }

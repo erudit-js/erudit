@@ -133,21 +133,7 @@ export default defineEruditConfig({
             // },
         },
     },
-    elements: [
-        '@erudit-js/prose/elements/list/list', // Use proxy here? Will have to proxy erudit/prose/elements/* somehow...
-        '@erudit-js/prose/elements/list/listItem',
-        '@erudit-js/prose/elements/math/block',
-        '@erudit-js/prose/elements/math/inliner',
-        '@erudit-js/prose/elements/image/image',
-        '@erudit-js/prose/elements/video/video',
-        '@erudit-js/prose/elements/gallery/gallery',
-        '@erudit-js/prose/elements/callout/callout',
-        '@erudit-js/prose/elements/table/table',
-        '@erudit-js/prose/elements/diagram/diagram',
-        './elements/test/element',
-        './elements/statement/element',
-        './elements/term/element',
-    ],
+    elements: ['./elements/term'],
     nuxtAugmentations: [
         async (nuxt) => {
             //nuxt.options.nitro.preset = 'github-pages';

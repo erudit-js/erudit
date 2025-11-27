@@ -1,19 +1,23 @@
-import { ensureHasOneChild } from '../../children';
-import { isTextElement } from '../../default/text';
-import { ProseError } from '../../error';
-import type { ElementSchema } from '../../schema';
-import { defineTag } from '../../tag';
-import { ElementType } from '../../type';
-import { normalizeKatex } from './katex';
+import {
+    defineRegistryItem,
+    defineSchema,
+    ensureTagChild,
+    ProseError,
+    textSchema,
+    type TagChildren,
+} from '@jsprose/core';
 
-export type InlinerMathType = 'katext' | 'text';
+import { defineEruditTag } from '../../tag.js';
+import { latexToHtml, normalizeKatex } from './katex.js';
+
+export type InlinerMathType = 'katex' | 'text';
 
 interface InlinerMathBase {
     type: InlinerMathType;
 }
 
 export interface InlinerMathKatex extends InlinerMathBase {
-    type: 'katext';
+    type: 'katex';
     mathHtml: string;
 }
 
@@ -38,9 +42,9 @@ function prettifyMathString(mathString: string): string {
 }
 
 /**
- * Try to use simple string mode for inline math as it is significantly better for SEO and also faster
+ * Try to use simple text mode for inline math as it is significantly better for SEO, faster and smaller.
  */
-export function tryParseMathString(
+export function tryTextInlinerMath(
     expression: string,
 ): InlinerMathText | undefined {
     if (!expression) return undefined;
@@ -79,39 +83,53 @@ export function tryParseMathString(
 //
 //
 
-export const inlinerMathName = 'inlinerMath';
-
-export type InlinerMathSchema = ElementSchema<{
-    Type: ElementType.Inliner;
-    Name: typeof inlinerMathName;
-    Linkable: true;
-    Data: { katex: string };
+export const inlinerMathSchema = defineSchema({
+    name: 'inlinerMath',
+    type: 'inliner',
+    linkable: true,
+})<{
+    Data: string;
     Storage: InlinerMathStorage;
     Children: undefined;
-}>;
+}>();
 
-export const M = defineTag('M')<InlinerMathSchema, { children: string }>({
-    type: ElementType.Inliner,
-    name: inlinerMathName,
-    linkable: true,
-    initElement({ tagName, element, children }) {
-        ensureHasOneChild(tagName, children);
+export const M = defineEruditTag({
+    tagName: 'M',
+    schema: inlinerMathSchema,
+})<TagChildren>(({ element, tagName, children }) => {
+    ensureTagChild(tagName, children, textSchema);
+    const katex = normalizeKatex(children[0].data);
 
-        const child = children[0];
+    if (!katex) {
+        throw new ProseError(
+            `<${tagName}> tag must contain non-empty KaTeX math expression.`,
+        );
+    }
 
-        if (!isTextElement(child)) {
-            throw new ProseError(
-                `<${tagName}> element can only have text as child!`,
-            );
+    element.data = katex;
+    element.storageKey = `$${katex}$`;
+});
+
+export const inlinerMathRegistryItem = defineRegistryItem({
+    schema: inlinerMathSchema,
+    tags: [M],
+    async createStorage(element) {
+        const tokens = tryTextInlinerMath(element.data);
+
+        if (tokens) {
+            return tokens;
         }
 
-        const katex = normalizeKatex(child.data);
-
-        if (!katex) {
-            throw new ProseError(`<${tagName}> element cannot be empty!`);
+        let mathHtml = '<span style="color: red">KaTeX Error!</span>';
+        try {
+            mathHtml = await latexToHtml(element.data, 'inline');
+        } catch (error) {
+            console.error('Error while rendering math:', error);
         }
 
-        element.data = { katex };
-        element.storageKey = inlinerMathName + ': ' + katex;
+        return {
+            type: 'katex',
+            mathHtml,
+        };
     },
 });

@@ -18,6 +18,8 @@ export default defineNuxtPlugin({
         const routes = ['/robots.txt', '/search.json.gz'];
 
         const routeProviders = [
+            '/api/prerender/files',
+            // Old below:
             '/api/prerender/contributors',
             '/api/prerender/language',
             '/api/prerender/frontNav',

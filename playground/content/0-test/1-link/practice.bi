@@ -1,2 +1,0 @@
-{ #practiceParagraph }
-Practice sample paragraph.

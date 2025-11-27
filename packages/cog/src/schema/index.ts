@@ -6,8 +6,11 @@ export * from './content/page';
 
 export * from './contributor';
 export * from './sponsor';
-
 export * from './cameo';
+
+export * from './prose/type';
+export * from './prose/link';
+export * from './prose/document';
 
 export * from './erudit/debug';
 export * from './erudit/site';

@@ -1,4 +1,4 @@
-import { brandColors, brandLogotype } from '@erudit-js/cog/utils/brand';
+import { brandColors, brandLogotype } from '@erudit-js/core/brand';
 
 const emojies = [
     '😂',

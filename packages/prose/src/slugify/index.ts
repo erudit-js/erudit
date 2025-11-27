@@ -6,18 +6,15 @@ export async function slugify(
         string,
         () => Promise<{ default: (text: string) => string }>
     > = {
-        en: async () => await import('./languages/en'),
-        ru: async () => await import('./languages/ru'),
+        en: async () => await import('./languages/en.js'),
+        ru: async () => await import('./languages/ru.js'),
     };
 
     const slugifyModule =
         language in slugifiers ? await slugifiers[language]() : undefined;
 
     if (slugifyModule) {
-        const slug = slugifyModule
-            .default(text)
-            .replace(/-+/g, '-')
-            .replace(/^-|-$/g, '');
+        const slug = slugifyModule.default(text);
 
         return slug || undefined;
     }

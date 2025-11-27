@@ -1,9 +1,5 @@
-import { count } from 'drizzle-orm';
+import * as contributors from '#erudit/contributors';
 
-export async function countContributors(): Promise<number> {
-    const dbResult = await ERUDIT.db
-        .select({ count: count() })
-        .from(ERUDIT.db.schema.contributors);
-
-    return dbResult?.[0]?.count || 0;
+export function countContributors(): number {
+    return Object.values(contributors).length;
 }

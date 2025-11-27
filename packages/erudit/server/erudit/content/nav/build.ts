@@ -1,9 +1,8 @@
 import chalk from 'chalk';
 import { globSync } from 'glob';
-import { readdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { readdirSync, writeFileSync } from 'node:fs';
 import { ContentType } from '@erudit-js/cog/schema';
 
-import { jiti } from '@erudit/server/importer';
 import type { ContentNavNode, ContentNavMap } from './types';
 
 export async function buildContentNav() {

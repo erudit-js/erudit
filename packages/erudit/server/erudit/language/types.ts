@@ -1,4 +1,4 @@
-import { EruditLanguageCode } from '@erudit-js/cog/schema';
+import type { EruditLanguageCode } from '@erudit-js/cog/schema';
 
 export interface EruditServerLanguage {
     phrases: Record<string, LanguagePhraseValue>;

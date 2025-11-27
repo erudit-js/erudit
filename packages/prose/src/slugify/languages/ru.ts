@@ -45,5 +45,7 @@ export default (text: string): string => {
                   ? char
                   : '-',
         )
-        .join('');
+        .join('')
+        .replace(/-+/g, '-')
+        .replace(/^-|-$/g, '');
 };

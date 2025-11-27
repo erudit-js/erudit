@@ -5,4 +5,5 @@ export { uniques } from './uniques';
 export { pages } from './pages';
 export { groups } from './groups';
 export { snippets } from './snippets';
-export { contentParseData } from './parseData';
+export { files } from './files';
+export { links } from './links';

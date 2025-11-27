@@ -1,12 +1,13 @@
 import chalk from 'chalk';
-import chokidar, { FSWatcher } from 'chokidar';
+import chokidar from 'chokidar';
 import { debounce } from 'perfect-debounce';
 
 // Builders
 import { buildContributors } from './contributors/build';
 import { buildSponsors } from './sponsors/build';
 import { buildContentNav } from './content/nav/build';
-import { parseContent } from './content/parse';
+import slash from 'slash';
+//import { parseContent } from './content/parse';
 
 export type EruditServerChangedFiles = Set<string>;
 export type EruditServerBuildError = Error | undefined;
@@ -20,7 +21,7 @@ export async function buildServerErudit() {
             await buildContributors();
             await buildSponsors();
             await buildContentNav();
-            await parseContent();
+            //await parseContent();
             ERUDIT.log.success(chalk.green('Build Complete!'));
         } catch (buildError) {
             if (buildError instanceof Error) {
@@ -45,32 +46,17 @@ export async function buildServerErudit() {
     await ERUDIT.buildPromise;
 }
 
-let pendingRebuild = false;
-let watcher: FSWatcher;
+//
+// Watcher
+//
 
-export async function setupServerProjectWatcher() {
-    const paths = ERUDIT.config.paths;
+export async function tryServerWatchProject() {
+    if (ERUDIT.config.public.mode === 'generate') {
+        // Generate is single pass so no watching
+        return;
+    }
 
-    const watchTargets: string[] = [
-        paths.project + '/content',
-        paths.project + '/cameos',
-        paths.project + '/contributors',
-        paths.project + '/sponsors',
-    ];
-
-    await watcher?.close();
-
-    watcher ||= chokidar.watch(watchTargets, {
-        ignoreInitial: true,
-        usePolling: true,
-        interval: 300,
-        depth: 99,
-        awaitWriteFinish: {
-            stabilityThreshold: 200,
-            pollInterval: 50,
-        },
-    });
-
+    let pendingRebuild = false;
     ERUDIT.changedFiles = new Set<string>();
 
     const tryRebuildErudit = debounce(async () => {
@@ -94,22 +80,50 @@ export async function setupServerProjectWatcher() {
         }
     }, 300);
 
-    watcher.on('all', (_, filePath) => {
-        filePath = filePath.replaceAll('\\', '/');
+    function isWatched(path: string) {
+        if (path.startsWith(ERUDIT.config.paths.project + '/content/')) {
+            return true;
+        }
+
+        if (path.startsWith(ERUDIT.config.paths.project + '/contributors/')) {
+            // Only watch files inside contributor folders, not the contributors directory itself
+            const relativePath = path.substring(
+                (ERUDIT.config.paths.project + '/contributors/').length,
+            );
+            const pathParts = relativePath.split('/');
+            // Must have at least 2 parts: contributorId/filename
+            return pathParts.length >= 2;
+        }
+
+        if (path.startsWith(ERUDIT.config.paths.project + '/cameos/')) {
+            return true;
+        }
+
+        if (path.startsWith(ERUDIT.config.paths.project + '/sponsors/')) {
+            return true;
+        }
+    }
+
+    const watcher = chokidar.watch(ERUDIT.config.paths.project, {
+        ignoreInitial: true,
+    });
+
+    watcher.on('all', (_, path) => {
+        path = slash(path);
+
+        if (!isWatched(path)) {
+            return;
+        }
 
         if (pendingRebuild) {
             return;
         }
 
-        if (filePath.trim()) {
-            ERUDIT.changedFiles.add(String(filePath));
+        if (path.trim()) {
+            ERUDIT.changedFiles.add(String(path));
             tryRebuildErudit();
         }
     });
 
-    ERUDIT.log.success('Project files watcher setup complete!');
-}
-
-export async function closeServerProjectWatcher() {
-    await watcher?.close();
+    ERUDIT.log.success('Server project watcher is active 👀');
 }

@@ -1,37 +1,21 @@
-import { readdirSync, readFileSync, writeFileSync } from 'node:fs';
-import type { ContributorConfig } from '@erudit-js/cog/schema';
+import { readdirSync } from 'node:fs';
+import { isRawElement, type AnySchema, type ProseElement } from '@jsprose/core';
+import type { ContributorDefinition } from '@erudit-js/core/contributor';
+
+import * as virtualContributors from '#erudit/contributors';
 
 export async function buildContributors() {
     ERUDIT.log.debug.start('Building contributors...');
 
     await ERUDIT.db.delete(ERUDIT.db.schema.contributors);
 
-    let contributorIds: string[] = [];
-
-    try {
-        contributorIds = readdirSync(
-            ERUDIT.config.paths.project + '/contributors',
-            { withFileTypes: true },
-        )
-            .filter((dirent) => dirent.isDirectory())
-            .map((dirent) => dirent.name);
-    } catch {}
+    let contributorIds: string[] = Object.values(virtualContributors).map(
+        (vc) => vc.contributorId,
+    );
 
     for (const contributorId of contributorIds) {
         await buildContributor(contributorId);
     }
-
-    ERUDIT.log.debug.start('Writing contributor TS type hints...');
-
-    writeFileSync(
-        ERUDIT.config.paths.build + '/types/contributors.ts',
-        `
-            export {};
-            declare global {
-                export type RuntimeContributor = ${contributorIds.map((id) => `'${id}'`).join(' | ')};
-            }
-        `,
-    );
 
     ERUDIT.log.success(
         `Contributors build complete! (${ERUDIT.log.stress(contributorIds.length)})`,
@@ -43,50 +27,56 @@ async function buildContributor(contributorId: string) {
         `Building contributor ${ERUDIT.log.stress(contributorId)}...`,
     );
 
-    const contributorDirectory = `${ERUDIT.config.paths.project}/contributors/${contributorId}`;
-    const contributorFiles = readdirSync(contributorDirectory);
+    const directory = `${ERUDIT.config.paths.project}/contributors/${contributorId}`;
+    const files = readdirSync(directory);
 
-    const avatarExtension = contributorFiles
+    const avatarExtension = files
         .find((file) => file.startsWith('avatar.'))
         ?.split('.')
         .pop();
 
-    const hasConfig = contributorFiles.some(
-        (file) => file === 'contributor.ts' || file === 'contributor.js',
-    );
+    if (avatarExtension) {
+        await ERUDIT.db
+            .insert(ERUDIT.db.schema.files)
+            .values({
+                path: `${directory}/avatar.${avatarExtension}`,
+            })
+            .onConflictDoNothing();
+    }
 
-    let contributorConfig: Partial<ContributorConfig> | undefined;
+    let moduleDefault: ContributorDefinition | undefined;
 
-    if (hasConfig) {
-        try {
-            contributorConfig = (await ERUDIT.import(
-                `${contributorDirectory}/contributor`,
-            )) as Partial<ContributorConfig>;
-        } catch (error) {
-            const message =
-                error instanceof Error ? error.message : String(error);
+    try {
+        moduleDefault = await ERUDIT.import(`${directory}/contributor`);
+    } catch (error) {
+        if (!String(error).includes('Cannot find module')) {
             ERUDIT.log.error(
-                `Failed to load config for contributor ${ERUDIT.log.stress(contributorId)}: ${message}`,
+                `Failed to load contributor ${ERUDIT.log.stress(contributorId)} module:\n`,
             );
+            console.log(error);
         }
     }
 
-    let contributorDescription: string | undefined;
+    let description: ProseElement<AnySchema> | undefined;
 
-    try {
-        contributorDescription = readFileSync(
-            `${contributorDirectory}/description.bi`,
-            'utf-8',
+    if (isRawElement(moduleDefault?.description)) {
+        const resolveResult = await ERUDIT.repository.prose.resolve(
+            moduleDefault.description,
+            false,
         );
-    } catch {}
+
+        await ERUDIT.repository.prose.applyResolved.files(resolveResult.files);
+
+        description = resolveResult.proseElement;
+    }
 
     await ERUDIT.db.insert(ERUDIT.db.schema.contributors).values({
         contributorId,
         avatarExtension,
-        displayName: contributorConfig?.displayName,
-        slogan: contributorConfig?.slogan,
-        links: contributorConfig?.links,
-        editor: contributorConfig?.editor,
-        description: contributorDescription,
+        displayName: moduleDefault?.displayName,
+        slogan: moduleDefault?.slogan,
+        links: moduleDefault?.links,
+        editor: moduleDefault?.editor,
+        description: description,
     });
 }

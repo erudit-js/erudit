@@ -1,5 +1,5 @@
 import { createConsola } from 'consola';
-import { brandColorTitle } from '@erudit-js/cog/utils/brandNode';
+import { brandColorTitle } from '@erudit-js/core/brandTerminal';
 
 const tag = brandColorTitle + ' Module';
 

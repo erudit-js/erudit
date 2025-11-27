@@ -16,13 +16,6 @@ export default defineNuxtConfig({
     $meta: { name: 'erudit' },
     modules: [currentDir + '/modules/erudit', 'nuxt-my-icons'],
     css: ['@erudit/app/styles/main.css'],
-    typescript: {
-        tsConfig: {
-            compilerOptions: {
-                types: ['@types/jest'],
-            },
-        },
-    },
     myicons: {
         iconsDir: '@erudit/app/assets/icons',
     },
@@ -49,7 +42,7 @@ export default defineNuxtConfig({
         // },
         rollupConfig: {
             external(source) {
-                const ignore = ['erudit-js/prose', 'jiti'];
+                const ignore = ['jiti'];
 
                 for (const ignoreItem of ignore) {
                     if (source.includes(ignoreItem)) {

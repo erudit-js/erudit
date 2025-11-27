@@ -1,0 +1,24 @@
+{
+    "name": "@erudit-js/core",
+    "version": "3.0.0-dev.23",
+    "type": "module",
+    "description": "Erudit core essentials",
+    "exports": {
+        ".": {},
+        "./*": {
+            "import": "./dist/*.js",
+            "types": "./dist/*.d.ts"
+        }
+    },
+    "files": [
+        "dist"
+    ],
+    "license": "MIT",
+    "scripts": {
+        "test": "bun vitest run",
+        "build": "rm -rf dist && bun tsc --project ./tsconfig.src.json"
+    },
+    "dependencies": {
+        "gradient-string": "^3.0.0"
+    }
+}

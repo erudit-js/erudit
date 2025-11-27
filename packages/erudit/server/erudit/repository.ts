@@ -1,13 +1,14 @@
 import { getContentBreadcrumbs } from './content/repository/breadcrumbs';
 import { getContentLink } from './content/repository/contentLink';
-
 import { getTopicParts } from './content/repository/topicParts';
 import { countContributors } from './contributors/repository/count';
-import { getProseFor } from './prose/repository/get';
-import { parseEruditJsx } from './prose/repository/parseJsx';
-import { resolveProse } from './prose/repository/resolveProse';
-import { getUniqueData } from './prose/repository/unique';
 import { countSponsors } from './sponsors/repository/count';
+import { applyResolvedFiles } from './prose/repository/resolvedFiles';
+import { resolveEruditProse } from './prose/repository/resolve';
+
+// import { getProseFor } from './prose/repository/get';
+// import { parseEruditJsx } from './prose/repository/parseJsx';
+// import { getUniqueData } from './prose/repository/unique';
 
 export const repository = {
     contributors: {
@@ -22,10 +23,13 @@ export const repository = {
         breadcrumbs: getContentBreadcrumbs,
     },
     prose: {
-        resolve: resolveProse,
-        parse: parseEruditJsx,
-        unique: getUniqueData,
-        get: getProseFor,
+        resolve: resolveEruditProse,
+        applyResolved: {
+            files: applyResolvedFiles,
+        },
+        // parse: parseEruditJsx,
+        // unique: getUniqueData,
+        // get: getProseFor,
     },
 } as const;
 

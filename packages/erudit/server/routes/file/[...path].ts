@@ -1,0 +1,17 @@
+import { existsSync } from 'node:fs';
+import { serveStaticFile } from '@erudit/server/staticFile';
+
+export default defineEventHandler(async (event) => {
+    const path = event.context.params?.path;
+    const fullPath = ERUDIT.config.paths.project + '/' + path;
+
+    if (!existsSync(fullPath)) {
+        throw createError({
+            statusCode: 404,
+            statusMessage: `File is missing!`,
+            message: `Failed to find file at "${path}"!`,
+        });
+    }
+
+    return serveStaticFile(event, fullPath);
+});

@@ -19,3 +19,13 @@ export const ERUDIT: {
     contentNav: EruditServerContentNav;
     import: EruditServerImporter;
 } = {} as any;
+
+Object.assign(globalThis, {
+    defineContributor,
+    defineSponsor,
+    defineBook,
+    defineTopic,
+    definePage,
+    defineGroup,
+    defineDocument,
+});

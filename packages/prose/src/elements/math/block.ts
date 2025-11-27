@@ -1,10 +1,14 @@
-import { latexToHtml, normalizeKatex } from './katex';
-import type { ElementSchema } from '../../schema';
-import { ElementType } from '../../type';
-import { defineTag } from '../../tag';
-import { ProseError } from '../../error';
-import { ensureHasOneChild } from '../../children';
-import { isTextElement } from '../../default/text';
+import {
+    defineRegistryItem,
+    defineSchema,
+    ensureTagChild,
+    ProseError,
+    textSchema,
+    type TagChildren,
+} from '@jsprose/core';
+
+import { latexToHtml, normalizeKatex } from './katex.js';
+import { defineEruditTag } from '../../tag.js';
 
 export const mathGroupTypes = ['zero', 'normal', 'big'] as const;
 export type MathGroupGapType = (typeof mathGroupTypes)[number] | 'custom';
@@ -63,15 +67,25 @@ function gapsEqual(gap1: MathGroupGap, gap2: MathGroupGap): boolean {
     return true;
 }
 
-export async function resolveMathGroups(katex: string): Promise<MathGroup> {
+export async function resolveMathGroups(
+    katex: string,
+    isTopLevel = true,
+): Promise<MathGroup | string> {
     // If whole string does not contain any groups, return default group with rendered math
     if (!katex.includes('>>')) {
-        return {
-            gap: { type: 'normal' },
-            parts: [await latexToHtml(katex, 'block')],
-        };
-    }
+        const rendered = await latexToHtml(katex, 'block');
 
+        if (isTopLevel) {
+            // Only top-level should return a group
+            return {
+                gap: { type: 'normal' },
+                parts: [rendered],
+            };
+        }
+
+        // Recursive left side should return a plain string
+        return rendered;
+    }
     // Find the rightmost delimiter and its gap specification
     const delimiterRegex = />>(?:\{([^}]+)\})?/g;
     let match: RegExpExecArray | null;
@@ -96,10 +110,9 @@ export async function resolveMathGroups(katex: string): Promise<MathGroup> {
     const parts: MathGroupPart[] = [await latexToHtml(rightPart, 'block')];
 
     // Resolving left part
-    const leftGroup = await resolveMathGroups(leftPart);
+    const leftGroup = await resolveMathGroups(leftPart, false);
 
     if (typeof leftGroup === 'string') {
-        // It is just a rendered math (just two katex strings with gap in between)
         parts.unshift(leftGroup);
     } else {
         // Left part is a group, meaning it contains gaps
@@ -122,44 +135,62 @@ export async function resolveMathGroups(katex: string): Promise<MathGroup> {
 //
 //
 
-export const blockMathName = 'blockMath';
+export interface BlockMathData {
+    katex: string;
+    freeze?: boolean;
+}
 
-export type BlockMathSchema = ElementSchema<{
-    Type: ElementType.Block;
-    Name: typeof blockMathName;
-    Linkable: true;
-    Data: { freeze: boolean; katex: string };
+export const blockMathSchema = defineSchema({
+    name: 'blockMath',
+    type: 'block',
+    linkable: true,
+})<{
+    Data: BlockMathData;
     Storage: MathGroup;
     Children: undefined;
-}>;
+}>();
 
-export const BlockMath = defineTag('BlockMath')<
-    BlockMathSchema,
-    { freeze?: true; children: string }
->({
-    type: ElementType.Block,
-    name: blockMathName,
-    linkable: true,
-    initElement({ tagName, element, props, children }) {
-        ensureHasOneChild(tagName, children);
+export const BlockMath = defineEruditTag({
+    tagName: 'BlockMath',
+    schema: blockMathSchema,
+})<{ freeze?: boolean } & TagChildren>(({
+    element,
+    tagName,
+    props,
+    children,
+}) => {
+    ensureTagChild(tagName, children, textSchema);
+    const katex = normalizeKatex(children[0].data);
 
-        const child = children[0];
+    if (!katex) {
+        throw new ProseError(
+            `<${tagName}> tag must contain non-empty KaTeX math expression.`,
+        );
+    }
 
-        if (!isTextElement(child)) {
-            throw new ProseError(
-                `<${tagName}> requires exactly one text child element, but received <${children[0].tagName}>!`,
-            );
+    element.data = {
+        katex,
+        freeze: props.freeze === true,
+    };
+
+    element.storageKey = `$$${katex}$$`;
+});
+
+export const blockMathRegistryItem = defineRegistryItem({
+    schema: blockMathSchema,
+    tags: [BlockMath],
+    async createStorage(element) {
+        let result: MathGroup = {
+            gap: { type: 'normal' },
+            parts: ['<span style="color: red">KaTeX Error!</span>'],
+        };
+
+        try {
+            result = (await resolveMathGroups(element.data.katex)) as MathGroup;
+        } catch (error) {
+            console.error('Error while rendering math:', error);
         }
 
-        const katex = normalizeKatex(child.data);
-
-        if (!katex) {
-            throw new ProseError(
-                `<${tagName}> element must have "latex" prop!`,
-            );
-        }
-
-        element.data = { freeze: props.freeze ?? false, katex };
-        element.storageKey = blockMathName + ': ' + katex;
+        return result;
     },
 });

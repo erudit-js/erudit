@@ -1,5 +1,5 @@
 import chalk from 'chalk';
-import { brandColorTitle } from '@erudit-js/cog/utils/brandNode';
+import { brandColorTitle } from '@erudit-js/core/brandTerminal';
 
 interface Logger {
     info(message: any): void;

@@ -1,6 +1,6 @@
-import { default as _appElements } from '#erudit/prose/app';
+//import { default as _appElements } from '#erudit/prose/app';
 
-export const appElements = _appElements;
+export const appElements = {}; //_appElements;
 
 export function useAppElements() {
     for (const [name, element] of Object.entries(appElements)) {
