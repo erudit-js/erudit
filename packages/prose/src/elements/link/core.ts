@@ -16,7 +16,7 @@ import {
     type TagChildren,
 } from '@jsprose/core';
 
-import { type ContentItem } from '@erudit-js/core/content/item';
+import { isContentItem, type ContentItem } from '@erudit-js/core/content/item';
 import { stringifyProseLink } from '@erudit-js/core/prose/link';
 import { parseDocumentId } from '@erudit-js/core/prose/documentId';
 import { parseContentItemId } from '@erudit-js/core/content/itemId';
@@ -115,10 +115,10 @@ function createLinkStorageKey(
         });
     }
 
-    if (to.__ERUDIT_contentItem) {
+    if (isContentItem(to)) {
         return stringifyProseLink({
             type: 'contentItem',
-            itemId: parseContentItemId(to.itemId!)!,
+            itemId: to.itemId,
         });
     }
 

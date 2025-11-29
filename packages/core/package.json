@@ -19,6 +19,7 @@
         "build": "rm -rf dist && bun tsc --project ./tsconfig.src.json"
     },
     "dependencies": {
+        "@jsprose/core": "catalog:",
         "gradient-string": "^3.0.0"
     }
 }

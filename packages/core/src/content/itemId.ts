@@ -1,3 +1,5 @@
+import { injectIdPropertyName } from './item.js';
+import { contentPathToId } from './path.js';
 import { isContentType, type ContentType } from './type.js';
 
 export interface ContentItemId {
@@ -22,7 +24,29 @@ export function parseContentItemId(str: string): ContentItemId | undefined {
     };
 }
 
-export function insertItemId(code: string, itemId: string) {
+export function pathToContentId(
+    path: string,
+    projectPath: string,
+): string | undefined {
+    if (path.startsWith(`${projectPath}/content/`)) {
+        const fullContentId = contentPathToId(path, projectPath, 'full');
+        if (fullContentId) {
+            const lastPart = path.split('/').pop();
+            switch (lastPart) {
+                case 'page.tsx':
+                case 'group.ts':
+                case 'group.tsx':
+                case 'topic.ts':
+                case 'topic.tsx':
+                case 'book.ts':
+                case 'book.tsx':
+                    return fullContentId;
+            }
+        }
+    }
+}
+
+export function insertContentId(code: string, contentId: string) {
     // Match definePage, defineBook, defineGroup, or defineTopic calls
     const definePattern =
         / (definePage|defineBook|defineGroup|defineTopic)\s*\(\s*/g;
@@ -62,7 +86,7 @@ export function insertItemId(code: string, itemId: string) {
         if (foundBrace) {
             // Insert after the opening brace
             const insertPos = braceIndex + 1 + offset;
-            const insertion = ` itemId: '${itemId}',`;
+            const insertion = ` ${injectIdPropertyName}: '${contentId}',`;
             result =
                 result.slice(0, insertPos) +
                 insertion +
@@ -71,7 +95,7 @@ export function insertItemId(code: string, itemId: string) {
         } else {
             // No brace found, insert { itemId: 'itemId' }
             const insertPos = matchEnd + offset;
-            const insertion = `{ itemId: '${itemId}' }`;
+            const insertion = `{ ${injectIdPropertyName}: '${contentId}' }`;
             result =
                 result.slice(0, insertPos) +
                 insertion +

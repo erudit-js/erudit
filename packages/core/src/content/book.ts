@@ -7,5 +7,5 @@ import {
 export type BookContentItem = ContentItem;
 
 export function defineBook(book?: ContentItemArg): BookContentItem {
-    return finalizeContentItem(book ?? {});
+    return finalizeContentItem('book', book ?? {});
 }

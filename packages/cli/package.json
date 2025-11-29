@@ -29,7 +29,6 @@
     ],
     "dependencies": {
         "@erudit-js/core": "catalog:",
-        "@erudit-js/cog": "workspace:3.0.0-dev.23",
         "chalk": "catalog:",
         "consola": "catalog:",
         "citty": "^0.1.6"

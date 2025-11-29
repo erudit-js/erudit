@@ -7,5 +7,5 @@ import {
 export type PageContentItem = ContentItem;
 
 export function definePage(page?: ContentItemArg): PageContentItem {
-    return finalizeContentItem(page ?? {});
+    return finalizeContentItem('page', page ?? {});
 }

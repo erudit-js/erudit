@@ -13,5 +13,5 @@ export type GroupContentItem = ContentItem<GroupData>;
 export function defineGroup(
     group?: ContentItemArg<GroupData>,
 ): GroupContentItem {
-    return finalizeContentItem(group ?? {});
+    return finalizeContentItem('group', group ?? {});
 }

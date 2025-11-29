@@ -7,7 +7,7 @@ import { buildContributors } from './contributors/build';
 import { buildSponsors } from './sponsors/build';
 import { buildContentNav } from './content/nav/build';
 import slash from 'slash';
-//import { parseContent } from './content/parse';
+import { parseContent } from './content/parse';
 
 export type EruditServerChangedFiles = Set<string>;
 export type EruditServerBuildError = Error | undefined;
@@ -21,7 +21,7 @@ export async function buildServerErudit() {
             await buildContributors();
             await buildSponsors();
             await buildContentNav();
-            //await parseContent();
+            await parseContent();
             ERUDIT.log.success(chalk.green('Build Complete!'));
         } catch (buildError) {
             if (buildError instanceof Error) {

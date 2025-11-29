@@ -24,22 +24,10 @@
         "erudit": "bin/erudit-cli.mjs",
       },
       "dependencies": {
-        "@erudit-js/cog": "workspace:3.0.0-dev.23",
         "@erudit-js/core": "catalog:",
         "chalk": "catalog:",
         "citty": "^0.1.6",
         "consola": "catalog:",
-      },
-      "devDependencies": {
-        "unbuild": "^3.6.1",
-      },
-    },
-    "packages/cog": {
-      "name": "@erudit-js/cog",
-      "version": "3.0.0-dev.23",
-      "dependencies": {
-        "@nuxt/schema": "^4.1.2",
-        "gradient-string": "^3.0.0",
       },
       "devDependencies": {
         "unbuild": "^3.6.1",
@@ -60,10 +48,9 @@
         "erudit": "bin/erudit.mjs",
       },
       "dependencies": {
-        "@erudit-js/cli": "workspace:3.0.0-dev.23",
-        "@erudit-js/cog": "workspace:3.0.0-dev.23",
+        "@erudit-js/cli": "catalog:",
         "@erudit-js/core": "catalog:",
-        "@erudit-js/prose": "workspace:3.0.0-dev.23",
+        "@erudit-js/prose": "catalog:",
         "@floating-ui/vue": "catalog:",
         "@jsprose/core": "catalog:",
         "@tailwindcss/vite": "^4.1.17",
@@ -94,7 +81,7 @@
       "name": "@erudit-js/prose",
       "version": "3.0.0-dev.23",
       "dependencies": {
-        "@erudit-js/cog": "workspace:3.0.0-dev.23",
+        "@erudit-js/core": "catalog:",
         "@floating-ui/vue": "catalog:",
         "@jsprose/core": "catalog:",
         "image-size": "catalog:",
@@ -213,8 +200,6 @@
     "@emnapi/wasi-threads": ["@emnapi/wasi-threads@1.1.0", "", { "dependencies": { "tslib": "^2.4.0" } }, "sha512-WI0DdZ8xFSbgMjR1sFsKABJ/C5OnRrjT06JXbZKexJGrDuPTzZdDYfFlsgcCXCyf+suG5QU2e/y1Wo2V/OapLQ=="],
 
     "@erudit-js/cli": ["@erudit-js/cli@workspace:packages/cli"],
-
-    "@erudit-js/cog": ["@erudit-js/cog@workspace:packages/cog"],
 
     "@erudit-js/core": ["@erudit-js/core@workspace:packages/core"],
 

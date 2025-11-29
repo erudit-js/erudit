@@ -33,7 +33,7 @@
         "test": "bun vitest run"
     },
     "dependencies": {
-        "@erudit-js/cog": "workspace:3.0.0-dev.23",
+        "@erudit-js/core": "catalog:",
         "@jsprose/core": "catalog:",
         "vue": "catalog:",
         "@floating-ui/vue": "catalog:",

@@ -11,7 +11,10 @@ export async function pushFile(filepath: string, role: string): Promise<void> {
         });
     }
 
-    const relativePath = filepath.replace(ERUDIT.config.paths.project, '');
+    const relativePath = filepath.replace(
+        ERUDIT.config.paths.project + '/',
+        '',
+    );
 
     await ERUDIT.db.insert(ERUDIT.db.schema.files).values({
         path: relativePath,

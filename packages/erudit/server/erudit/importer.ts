@@ -1,15 +1,20 @@
 import { createJiti, type Jiti, type JitiOptions } from 'jiti';
 import slash from 'slash';
+import { insertDocumentId } from '@jsprose/core';
+import {
+    insertContentId,
+    pathToContentId,
+} from '@erudit-js/core/content/itemId';
 import {
     pathToDocumentId,
     stringifyDocumentId,
 } from '@erudit-js/core/prose/documentId';
+import { insertProblemScriptId } from '@erudit-js/prose/elements/problem/problemScript';
 
 import {
     EXTENSIONS,
     STATIC_ASSET_EXTENSIONS,
 } from './prose/transform/extensions';
-import { insertDocumentId } from '@jsprose/core';
 
 export type EruditServerImporter = Jiti['import'];
 
@@ -37,6 +42,10 @@ export async function setupServerImporter() {
 
             let code = getDefaultCode(opts);
 
+            //
+            // Handle prose documents (defineDocument)
+            //
+
             const documentId = pathToDocumentId(
                 filename,
                 ERUDIT.config.paths.project,
@@ -49,9 +58,24 @@ export async function setupServerImporter() {
                 });
             }
 
-            // @TODO: add ids to defineTopic, definePage, defineBook, defineGroup too
+            //
+            // Handle content items (defineBook|Page|Group|Topic)
+            //
 
-            //console.log(code);
+            const contentId = pathToContentId(
+                filename,
+                ERUDIT.config.paths.project,
+            );
+
+            if (contentId) {
+                code = insertContentId(code, contentId);
+            }
+
+            //
+            // Handle problem scripts
+            //
+
+            code = insertProblemScriptId(filename, code);
 
             return { code };
         },

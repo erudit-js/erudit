@@ -15,5 +15,5 @@ export function isTopicPart(value: string): value is TopicPart {
 export type TopicContentItem = ContentItem;
 
 export function defineTopic(topic?: ContentItemArg): TopicContentItem {
-    return finalizeContentItem(topic ?? {});
+    return finalizeContentItem('topic', topic ?? {});
 }

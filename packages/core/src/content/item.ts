@@ -1,13 +1,17 @@
 import type { VirtualContributors } from '../contributor.js';
 import type { ContentDependency } from './dependency.js';
 import type { ContentFlags } from './flags.js';
+import { type ContentItemId } from './itemId.js';
+import type { ContentType } from './type.js';
 
 export type ContentItemBrand = {
     __ERUDIT_contentItem: true;
+    itemId: ContentItemId;
 };
 
+export const injectIdPropertyName = '__contentId';
+
 export type ContentItemBase = Partial<{
-    itemId: string;
     title: string;
     navTitle: string;
     description: string;
@@ -71,9 +75,36 @@ export type ContentItem<T = {}> = ContentItemBrand & ContentItemBase & T;
 
 export type ContentItemArg<T = {}> = ContentItemBase & T;
 
-export function finalizeContentItem(data: ContentItemArg): ContentItem {
-    return {
+export function finalizeContentItem(
+    type: ContentType,
+    data: ContentItemArg,
+): ContentItem {
+    const contentItem = {
         __ERUDIT_contentItem: true,
+        itemId: {
+            type,
+            contentId: (data as any)[injectIdPropertyName],
+        },
         ...data,
     };
+
+    delete (contentItem as any)[injectIdPropertyName];
+
+    return contentItem as ContentItem;
+}
+
+export function isContentItem(
+    contentItem: unknown,
+    type?: ContentType,
+): contentItem is ContentItem {
+    const isItem =
+        typeof contentItem === 'object' &&
+        contentItem !== null &&
+        '__ERUDIT_contentItem' in contentItem;
+
+    if (type === undefined) {
+        return isItem;
+    }
+
+    return (contentItem as ContentItem).itemId.type === type;
 }

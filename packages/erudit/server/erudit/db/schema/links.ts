@@ -1,10 +1,12 @@
 import { sqliteTable, primaryKey, text } from 'drizzle-orm/sqlite-core';
+import { type ProseLink } from '@erudit-js/core/prose/link';
 
 export const links = sqliteTable(
     'links',
     {
-        linkFrom: text(),
-        linkTo: text(),
+        fromContent: text(),
+        toContent: text(),
+        proseLink: text({ mode: 'json' }).$type<ProseLink>(),
     },
-    (table) => [primaryKey({ columns: [table.linkFrom, table.linkTo] })],
+    (table) => [primaryKey({ columns: [table.fromContent, table.toContent] })],
 );

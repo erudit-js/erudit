@@ -30,9 +30,8 @@
     },
     "dependencies": {
         "@erudit-js/core": "catalog:",
-        "@erudit-js/cli": "workspace:3.0.0-dev.23",
-        "@erudit-js/cog": "workspace:3.0.0-dev.23",
-        "@erudit-js/prose": "workspace:3.0.0-dev.23",
+        "@erudit-js/cli": "catalog:",
+        "@erudit-js/prose": "catalog:",
         "@floating-ui/vue": "catalog:",
         "@jsprose/core": "catalog:",
         "@tailwindcss/vite": "^4.1.17",

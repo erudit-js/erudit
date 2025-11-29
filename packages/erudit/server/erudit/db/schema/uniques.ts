@@ -1,22 +1,24 @@
 import { primaryKey, sqliteTable, text } from 'drizzle-orm/sqlite-core';
 import type { AnySchema, ProseElement } from '@jsprose/core';
-import type { ContentType } from '@erudit-js/core/content/type';
-import type { TopicPart } from '@erudit-js/core/content/topic';
+import type { ContentProseType } from '@erudit-js/core/content/prose';
 
 export const uniques = sqliteTable(
     'uniques',
     {
         contentFullId: text().notNull(),
-        uniqueSlug: text().notNull(),
-        typeOrPart: text().notNull().$type<ContentType | TopicPart>(),
-        domId: text().notNull(),
-        parsedElement: text({ mode: 'json' })
+        contentProseType: text().notNull().$type<ContentProseType>(),
+        uniqueName: text().notNull(),
+        prose: text({ mode: 'json' })
             .$type<ProseElement<AnySchema>>()
             .notNull(),
     },
     (table) => [
         primaryKey({
-            columns: [table.contentFullId, table.uniqueSlug, table.typeOrPart],
+            columns: [
+                table.contentFullId,
+                table.uniqueName,
+                table.contentProseType,
+            ],
         }),
     ],
 );

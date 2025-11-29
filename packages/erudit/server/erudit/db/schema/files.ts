@@ -4,8 +4,8 @@ import { primaryKey } from 'drizzle-orm/sqlite-core';
 export const files = sqliteTable(
     'files',
     {
-        path: text().notNull(),
-        role: text().notNull(),
+        path: text(),
+        role: text(),
     },
     (table) => [primaryKey({ columns: [table.path, table.role] })],
 );
