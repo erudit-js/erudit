@@ -12,15 +12,7 @@ export interface ContentTopicDocumentId {
     topicPart: TopicPart;
 }
 
-export interface NewsItemDocumentId {
-    type: 'newsItem';
-    newsItemId: string; // ? date-based ID ?
-}
-
-export type DocumentId =
-    | ContentPageDocumentId
-    | ContentTopicDocumentId
-    | NewsItemDocumentId;
+export type DocumentId = ContentPageDocumentId | ContentTopicDocumentId;
 
 export function stringifyDocumentId(documentId: DocumentId): string {
     switch (documentId.type) {
@@ -28,8 +20,6 @@ export function stringifyDocumentId(documentId: DocumentId): string {
             return `contentPage/${documentId.contentId}`;
         case 'contentTopic':
             return `contentTopic/${documentId.topicPart}/${documentId.contentId}`;
-        case 'newsItem':
-            throw new Error('To be implemented'); // @TODO: Implement newsItem
     }
 }
 
@@ -51,8 +41,6 @@ export function parseDocumentId(strDocumentId: string): DocumentId {
                 contentId: parts.join('/'),
             };
     }
-
-    // @TODO: implement newsItem
 
     throw new Error(
         `Inable to parse document ID from string: ${strDocumentId}`,
@@ -94,6 +82,4 @@ export function pathToDocumentId(
             }
         }
     }
-
-    // @TODO: implement newsItem
 }

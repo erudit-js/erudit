@@ -1,5 +1,5 @@
 import { defu } from 'defu';
-import type { EruditConfig } from '@erudit-js/cog/schema';
+import type { EruditConfig } from '@erudit-js/core/eruditConfig/config';
 
 export function defineEruditConfig(
     eruditConfig: Partial<EruditConfig> | Partial<EruditConfig>[],

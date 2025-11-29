@@ -1,8 +1,8 @@
-import { drizzle } from 'drizzle-orm/better-sqlite3';
-import Database from 'better-sqlite3';
 import { createRequire } from 'node:module';
 import { readdirSync, unlinkSync } from 'node:fs';
 import { join } from 'node:path';
+import { drizzle } from 'drizzle-orm/better-sqlite3';
+import Database from 'better-sqlite3';
 
 import * as schema from './schema';
 

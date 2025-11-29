@@ -1,14 +1,12 @@
-import { ContentType } from '@erudit-js/cog/schema';
-
 import { getTopicParts } from './topicParts';
 
 export async function getContentLink(fullId: string): Promise<string> {
     const navNode = ERUDIT.contentNav.getNodeOrThrow(fullId);
 
     switch (navNode.type) {
-        case ContentType.Book:
-        case ContentType.Group:
-        case ContentType.Page:
+        case 'book':
+        case 'group':
+        case 'page':
             return PAGES[navNode.type](navNode.shortId);
     }
 

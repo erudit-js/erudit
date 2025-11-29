@@ -21,19 +21,6 @@ export interface VirtualContributor {
     contributorId: string;
 }
 
-/**
- * You can access virtual contributors via `#contributors` virtual module:
- * ```ts
- * import { fooContributor, barContributor } from '#contributors';
- *
- * export default defineTopic({
- *   contributors: {
- *     fooContributor,
- *     barContributor,
- *   },
- * });
- * ```
- */
 export type VirtualContributors = Record<string, VirtualContributor>;
 
 export function virtualContributorsModule(contributorIds: string[]) {

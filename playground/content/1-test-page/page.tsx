@@ -2,12 +2,14 @@ import { testContributor1 } from '#contributors';
 
 import fooTopic from '../2-foo-group/1-foo-topic/article';
 
-export default definePage({
+export const page = definePage({
     title: 'Test Page',
-    contributors: ['testContributor1'],
+    contributors: {
+        testContributor1,
+    },
 });
 
-export const document = defineDocument()(() => (
+export default defineDocument()(() => (
     <>
         <H1>Test Page</H1>
         <P>This is a test page for Erudit.</P>

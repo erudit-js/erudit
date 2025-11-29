@@ -1,5 +1,5 @@
+import type { TopicPart } from '@erudit-js/core/content/topic';
 import { eq, sql } from 'drizzle-orm';
-import { TopicPart } from '@erudit-js/cog/schema';
 
 export async function getTopicParts(fullId: string): Promise<TopicPart[]> {
     const dbResult = await ERUDIT.db
@@ -19,15 +19,15 @@ export async function getTopicParts(fullId: string): Promise<TopicPart[]> {
     const parts: TopicPart[] = [];
 
     if (topic.hasArticle) {
-        parts.push(TopicPart.Article);
+        parts.push('article');
     }
 
     if (topic.hasSummary) {
-        parts.push(TopicPart.Summary);
+        parts.push('summary');
     }
 
     if (topic.hasPractice) {
-        parts.push(TopicPart.Practice);
+        parts.push('practice');
     }
 
     return parts;

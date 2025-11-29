@@ -1,5 +1,4 @@
 import { eq } from 'drizzle-orm';
-import { ContentType } from '@erudit-js/cog/schema';
 
 import type { ContentNavNode } from './types';
 
@@ -26,7 +25,7 @@ export async function getGlobalFrontContentNav(): Promise<FrontGlobalContentNav>
 export async function getBookFrontContentNav(
     bookNavNode: ContentNavNode,
 ): Promise<FrontContentNavBook> {
-    if (bookNavNode.type !== ContentType.Book) {
+    if (bookNavNode.type !== 'book') {
         throw createError({
             status: 400,
             message: `Provided nav node "${bookNavNode.fullId}" is not a book!`,
@@ -56,7 +55,7 @@ async function createFrontContentNavItem(
     }))!;
 
     if (ERUDIT.config.public.mode === 'generate' && dbContentItem.hidden) {
-        if (navNode.type === ContentType.Book) {
+        if (navNode.type === 'book') {
             if (isGlobal) {
                 // We can hide book in global nav.
                 return undefined;
@@ -88,17 +87,17 @@ async function createFrontContentNavItem(
     }
 
     switch (navNode.type) {
-        case ContentType.Topic:
+        case 'topic':
             return {
-                type: ContentType.Topic,
+                type: 'topic',
                 ...baseItem,
             };
-        case ContentType.Page:
+        case 'page':
             return {
-                type: ContentType.Page,
+                type: 'page',
                 ...baseItem,
             };
-        case ContentType.Group: {
+        case 'group': {
             const dbGroup = (await ERUDIT.db.query.groups.findFirst({
                 columns: { separator: true },
                 where: eq(ERUDIT.db.schema.groups.fullId, navNode.fullId),
@@ -108,13 +107,13 @@ async function createFrontContentNavItem(
                 return undefined;
             }
             return {
-                type: ContentType.Group,
+                type: 'group',
                 separator: dbGroup.separator,
                 ...baseItem,
                 children,
             };
         }
-        case ContentType.Book: {
+        case 'book': {
             const children = await processChildren();
             // In global nav we suppress empty books; when directly loading book (includeIfEmpty)
             // we still return it so consumer can show the book shell.
@@ -122,7 +121,7 @@ async function createFrontContentNavItem(
                 return undefined;
             }
             return {
-                type: ContentType.Book,
+                type: 'book',
                 ...baseItem,
                 children: isGlobal ? [] : children,
             };

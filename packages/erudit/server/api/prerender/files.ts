@@ -1,14 +1,10 @@
 export default defineEventHandler(async () => {
     const dbFiles = await ERUDIT.db.query.files.findMany();
-    const routes: string[] = [];
+    const routes = new Set<string>();
 
     for (const dbFile of dbFiles) {
-        const projectRelativePath = dbFile.path.replace(
-            ERUDIT.config.paths.project + '/',
-            '',
-        );
-        routes.push(`/file/${projectRelativePath}`);
+        routes.add(`/file${dbFile.path}`);
     }
 
-    return routes;
+    return Array.from(routes);
 });

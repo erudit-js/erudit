@@ -1,7 +1,7 @@
 import chalk from 'chalk';
 import { globSync } from 'glob';
-import { readdirSync, writeFileSync } from 'node:fs';
-import { ContentType } from '@erudit-js/cog/schema';
+import { readdirSync } from 'node:fs';
+import { contentTypes, type ContentType } from '@erudit-js/core/content/type';
 
 import type { ContentNavNode, ContentNavMap } from './types';
 
@@ -35,7 +35,7 @@ export async function buildContentNav() {
         if (node) {
             ERUDIT.contentNav.id2Node.set(node.fullId, node);
             ERUDIT.contentNav.short2Full.set(node.shortId, node.fullId);
-            if (node.type === ContentType.Book) {
+            if (node.type === 'book') {
                 ERUDIT.contentNav.id2Books.set(node.fullId, node);
             }
         }
@@ -118,14 +118,6 @@ export async function buildContentNav() {
         }
     }
 
-    //
-    // Augmenting TS types and Jiti (import) aliases
-    //
-
-    ERUDIT.log.debug.start(`Augmenting types and import aliases...`);
-    //augmentTypesAndJiti(ERUDIT.contentNav.id2Node);
-    createRuntimeTypes();
-
     const stats = ERUDIT.contentNav.id2Node.size
         ? getContentNavStats(ERUDIT.contentNav.id2Node)
         : chalk.gray('empty');
@@ -152,12 +144,11 @@ async function createStandaloneContentNavNode(
         {},
     );
 
-    for (const contentType of Object.values(ContentType)) {
+    for (const contentType of contentTypes) {
         if (hasJsTsModuleKey(files, contentType)) {
             return {
                 type: contentType,
                 contentRelPath: relPath,
-                hide: 'HIDE' in files,
                 ...parsedContentPath,
             };
         }
@@ -245,101 +236,39 @@ function getContentNavStats(id2Node: ContentNavMap) {
     const firstCapital = (s: string) => s.charAt(0).toUpperCase();
     const parts: string[] = [];
 
-    let totalVisible = 0;
-    let totalHidden = 0;
-    let rootVisible = 0;
-    let rootHidden = 0;
-    const typeCounts = new Map<
-        ContentType,
-        { visible: number; hidden: number }
-    >();
+    let total = 0;
+    let rootTotal = 0;
+    const typeCounts = new Map<ContentType, number>();
 
     for (const node of id2Node.values()) {
-        const isHidden = !!node.hide;
-        if (isHidden) totalHidden++;
-        else totalVisible++;
-
+        total++;
         if (!node.parent) {
-            if (isHidden) rootHidden++;
-            else rootVisible++;
+            rootTotal++;
         }
 
         let tc = typeCounts.get(node.type);
         if (!tc) {
-            tc = { visible: 0, hidden: 0 };
+            tc = 0;
             typeCounts.set(node.type, tc);
         }
-        if (isHidden) tc.hidden++;
-        else tc.visible++;
+        typeCounts.set(node.type, tc + 1);
     }
 
-    const push = (label: string, visible: number, hidden: number) => {
-        if (visible + hidden === 0) return;
-        parts.push(
-            `${label} ${ERUDIT.log.stress(visible)}${hidden ? chalk.gray('|' + String(hidden)) : ''}`,
-        );
+    const push = (label: string, count: number) => {
+        if (count === 0) return;
+        parts.push(`${label} ${ERUDIT.log.stress(count)}`);
     };
 
-    push('All:', totalVisible, totalHidden);
-    push('R:', rootVisible, rootHidden);
+    push('All:', total);
+    push('R:', rootTotal);
 
-    for (const type of Object.values(ContentType)) {
+    for (const type of contentTypes) {
         const tc = typeCounts.get(type as ContentType);
         if (!tc) continue;
-        push(firstCapital(String(type)), tc.visible, tc.hidden);
+        push(firstCapital(String(type)), tc);
     }
 
     return parts.join('; ');
-}
-
-// function augmentTypesAndJiti(id2Node: ContentNavMap) {
-//     const tsconfigPath = ERUDIT.config.paths.build + '/tsconfig.erudit.json';
-//     const tsconfig = JSON.parse(readFileSync(tsconfigPath, 'utf8'));
-//     tsconfig.compilerOptions ||= {};
-//     tsconfig.compilerOptions.paths ||= {};
-//     const paths: Record<string, string[]> = tsconfig.compilerOptions.paths;
-//     const jitiAliases = (jiti.options.alias ||= {});
-
-//     for (const key of Object.keys(paths)) {
-//         if (key.startsWith('#content/') && key !== '#content/*') {
-//             delete paths[key];
-//             delete jitiAliases[key];
-//         }
-//     }
-
-//     for (const navNode of id2Node.values()) {
-//         const key = `#content/${navNode.fullId}`;
-//         const value =
-//             ERUDIT.config.paths.project + '/content/' + navNode.contentRelPath;
-//         paths[key + '/*'] = [value + '/*'];
-//         jitiAliases[key] = value;
-//     }
-
-//     writeFileSync(tsconfigPath, JSON.stringify(tsconfig, null, 4));
-// }
-
-function createRuntimeTypes() {
-    let union = '';
-
-    for (const navNode of ERUDIT.contentNav.id2Node.values()) {
-        let unionPart = `'${navNode.fullId}'`;
-
-        if (navNode.shortId && navNode.shortId !== navNode.fullId) {
-            unionPart += ' | ' + `'${navNode.shortId}'`;
-        }
-
-        union += (union ? ' | ' : '') + unionPart;
-    }
-
-    writeFileSync(
-        ERUDIT.config.paths.build + '/types/contentIds.ts',
-        `
-            export {};
-            declare global {
-                export type RuntimeContentId = ${union};
-            }
-        `,
-    );
 }
 
 //
@@ -381,9 +310,7 @@ const subsetValidator: ContentNavValidator = () => {
     const wrongSubsetIds: string[] = [];
     return {
         step(navNode) {
-            const isGroupLike = [ContentType.Group, ContentType.Book].includes(
-                navNode.type,
-            );
+            const isGroupLike = ['group', 'book'].includes(navNode.type);
             const hasChildren = ERUDIT.contentNav.hasChildren(navNode);
             if (!isGroupLike && hasChildren) {
                 ERUDIT.log.warn(
@@ -405,7 +332,7 @@ const bookCantSkipValidator: ContentNavValidator = () => {
     const wrongBookIds: string[] = [];
     return {
         step(navNode) {
-            if (navNode.type === ContentType.Book && navNode.skip) {
+            if (navNode.type === 'book' && navNode.skip) {
                 ERUDIT.log.warn(
                     `
 Books can not be skipped!
@@ -425,7 +352,7 @@ const topicsWithoutPartsValidator: ContentNavValidator = () => {
     const topicWithoutPartsIds: string[] = [];
     return {
         step(navNode) {
-            if (navNode.type === ContentType.Topic) {
+            if (navNode.type === 'topic') {
                 const files = readdirSync(
                     ERUDIT.config.paths.project +
                         '/content/' +
@@ -452,10 +379,10 @@ const bookInsideBookValidator: ContentNavValidator = () => {
     const subsequentBookIds: string[] = [];
     return {
         step(navNode) {
-            if (navNode.type === ContentType.Book) {
+            if (navNode.type === 'book') {
                 let parent: ContentNavNode | undefined = navNode.parent;
                 while (parent) {
-                    if (parent.type === ContentType.Book) {
+                    if (parent.type === 'book') {
                         subsequentBookIds.push(navNode.fullId);
                         break;
                     }
@@ -474,16 +401,12 @@ const emptyGroupsBooksValidator: ContentNavValidator = () => {
     return {
         step(navNode) {
             const isGroupOrBook =
-                navNode.type === ContentType.Group ||
-                navNode.type === ContentType.Book;
+                navNode.type === 'group' || navNode.type === 'book';
 
             if (!isGroupOrBook) return;
 
             function hasTopicOrPage(node: ContentNavNode): boolean {
-                if (
-                    node.type === ContentType.Topic ||
-                    node.type === ContentType.Page
-                ) {
+                if (node.type === 'topic' || node.type === 'page') {
                     return true;
                 }
                 if (!node.children) return false;

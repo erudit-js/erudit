@@ -1,5 +1,5 @@
 import { integer, sqliteTable, text } from 'drizzle-orm/sqlite-core';
-import { TopicPart } from '@erudit-js/cog/schema';
+import type { TopicPart } from '@erudit-js/core/content/topic';
 
 export const snippets = sqliteTable('snippets', {
     snippedId: integer().primaryKey({ autoIncrement: true }),

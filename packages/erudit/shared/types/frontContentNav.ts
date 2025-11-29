@@ -1,4 +1,4 @@
-import type { ContentFlags, ContentType } from '@erudit-js/cog/schema';
+import type { ContentFlags } from '@erudit-js/core/content/flags';
 
 export interface FrontContentNavItemBase {
     shortId: string;
@@ -8,21 +8,21 @@ export interface FrontContentNavItemBase {
 }
 
 export interface FrontContentNavTopic extends FrontContentNavItemBase {
-    type: ContentType.Topic;
+    type: 'topic';
 }
 
 export interface FrontContentNavPage extends FrontContentNavItemBase {
-    type: ContentType.Page;
+    type: 'page';
 }
 
 export interface FrontContentNavGroup extends FrontContentNavItemBase {
-    type: ContentType.Group;
+    type: 'group';
     separator: boolean;
     children: FrontContentNavItem[];
 }
 
 export interface FrontContentNavBook extends FrontContentNavItemBase {
-    type: ContentType.Book;
+    type: 'book';
     children: FrontContentNavItem[];
 }
 

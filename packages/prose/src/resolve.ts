@@ -3,7 +3,6 @@ import {
     type AnySchema,
     type ProseElement,
 } from '@jsprose/core';
-import type { ResolvedProseLinks } from '@erudit-js/cog/schema';
 
 import type { EruditRawElement } from './rawElement.js';
 import type { EruditProseContext } from './context.js';
@@ -28,7 +27,7 @@ export async function resolveEruditRawElement(args: {
 
     const snippets: ResolvedSnippet[] = [];
     const tocItems: ResolvedTocItem[] = [];
-    const links: ResolvedProseLinks = {};
+    const links: Set<string> = new Set();
     const files: Set<string> = new Set();
     const problemScripts: Set<string> = new Set();
 
@@ -40,7 +39,7 @@ export async function resolveEruditRawElement(args: {
         if (tocItem) tocItems.push(tocItem);
 
         const resolvedLink = linkStep(args);
-        if (resolvedLink) links[resolvedLink[0]] = resolvedLink[1];
+        if (resolvedLink) links.add(resolvedLink);
 
         const imageSrc = imageSrcStep(args);
         if (imageSrc && !files.has(imageSrc)) files.add(imageSrc);
@@ -91,7 +90,7 @@ export interface ResolvedEruditRawElement {
     proseElement: ProseElement<AnySchema>;
     snippets: ResolvedSnippet[];
     tocItems: ResolvedTocItem[];
-    links: ResolvedProseLinks;
+    links: Set<string>;
     files: Set<string>;
     problemScripts: Set<string>;
 }

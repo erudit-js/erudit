@@ -5,12 +5,7 @@ import {
     PROSE_REGISTRY,
     uniqueName2Id,
 } from '@jsprose/core';
-import {
-    stringifyProseLink,
-    TopicPart,
-    type ContentDocumentProseLink,
-    type ProseLink,
-} from '@erudit-js/cog/schema';
+import { stringifyProseLink } from '@erudit-js/core/prose/link';
 
 import { asEruditRaw, resolveEruditRawElement } from '@erudit-js/prose';
 import {
@@ -23,129 +18,18 @@ import {
     P,
     paragraphRegistryItem,
 } from '@erudit-js/prose/elements/paragraph/core';
+import {
+    stringifyDocumentId,
+    type DocumentId,
+} from '@erudit-js/core/prose/documentId';
 
 describe('Link', () => {
-    it('should correctly handle direct link', () => {
+    it('should throw when unable to resolve "to" prop', () => {
         isolateProse(() => {
             PROSE_REGISTRY.setItems(linkRegistryItem);
-
-            const directLink = asEruditRaw(
-                <A to="https://example.com">Example</A>,
-            );
-
-            expect(directLink.data).toStrictEqual({ label: 'Example' });
-            expect(directLink.storageKey).toBe(
-                stringifyProseLink({
-                    type: 'direct',
-                    href: 'https://example.com',
-                }),
-            );
-        });
-    });
-
-    it('should correctly handle document link', () => {
-        isolateProse(() => {
-            PROSE_REGISTRY.setItems(linkRegistryItem);
-
-            const link: ProseLink = {
-                type: 'contentDocument',
-                contentType: TopicPart.Article,
-                fullContentId: 'topic-123/article-456',
-            };
-
-            const targetDocument = defineDocument(
-                stringifyProseLink(link),
-                {},
-            )(() => <>Document content</>);
-
-            const documentLink = asEruditRaw(
-                <A to={targetDocument}>Document Link</A>,
-            );
-
-            expect(documentLink.data).toStrictEqual({ label: 'Document Link' });
-            expect(documentLink.storageKey).toBe(stringifyProseLink(link));
-        });
-    });
-
-    it('should correctly handle unique link', () => {
-        isolateProse(() => {
-            PROSE_REGISTRY.setItems(linkRegistryItem, paragraphRegistryItem);
-
-            const link: ProseLink = {
-                type: 'contentDocument',
-                contentType: TopicPart.Summary,
-                fullContentId: 'topic-123/summary-456',
-            };
-
-            const targetDocument = defineDocument(stringifyProseLink(link), {
-                uniques: {
-                    pUnique: P,
-                },
-            })(({ uniques }) => (
-                <>
-                    <P $={uniques.pUnique}>Unique Paragraph</P>
-                </>
-            ));
-
-            const uniqueLink = asEruditRaw(
-                <A to={targetDocument.uniques.pUnique}>Unique Link</A>,
-            );
-
-            expect(uniqueLink.data).toStrictEqual({ label: 'Unique Link' });
-            expect(uniqueLink.storageKey).toBe(
-                stringifyProseLink({
-                    type: 'contentElement',
-                    isUnique: true,
-                    contentType: TopicPart.Summary,
-                    fullContentId: 'topic-123/summary-456',
-                    elementId: uniqueName2Id('pUnique'),
-                }),
-            );
-        });
-    });
-
-    it('should throw when target non-content document', () => {
-        isolateProse(() => {
-            PROSE_REGISTRY.setItems(linkRegistryItem);
-
-            const link: ProseLink = {
-                type: 'direct',
-                href: 'https://example.com',
-            };
-
-            const targetDocument = defineDocument(
-                stringifyProseLink(link),
-                {},
-            )(() => <>Document content</>);
-
-            expect(() => (
-                <A to={targetDocument}>Invalid Document Link</A>
-            )).toThrow();
-        });
-    });
-
-    it('should throw when target unique is not in content document', () => {
-        isolateProse(() => {
-            PROSE_REGISTRY.setItems(linkRegistryItem, paragraphRegistryItem);
-
-            const link: ProseLink = {
-                type: 'direct',
-                href: 'https://example.com',
-            };
-
-            const targetDocument = defineDocument(stringifyProseLink(link), {
-                uniques: {
-                    pUnique: P,
-                },
-            })(({ uniques }) => (
-                <>
-                    <P $={uniques.pUnique}>Unique Paragraph</P>
-                </>
-            ));
-
-            expect(() => (
-                <A to={targetDocument.uniques.pUnique}>Invalied Unique link</A>
-            )).toThrow();
+            expect(() =>
+                asEruditRaw(<A to={123 as any}>Invalid Link</A>),
+            ).toThrow();
         });
     });
 
@@ -155,10 +39,23 @@ describe('Link', () => {
             expect(() => <A to="direct"> </A>).toThrow();
         });
     });
+
+    it('should create stringified storage key', () => {
+        isolateProse(() => {
+            PROSE_REGISTRY.setItems(linkRegistryItem);
+            const link = asEruditRaw(<A to="https://example.com">Example</A>);
+            expect(link.storageKey).toBe(
+                stringifyProseLink({
+                    type: 'direct',
+                    href: 'https://example.com',
+                }),
+            );
+        });
+    });
 });
 
 describe('linkStep', () => {
-    it('should collet links', async () => {
+    it('should collect links', async () => {
         await isolateProse(async () => {
             PROSE_REGISTRY.setItems(
                 linkRegistryItem,
@@ -166,14 +63,14 @@ describe('linkStep', () => {
                 paragraphRegistryItem,
             );
 
-            const otherDocumentLink: ContentDocumentProseLink = {
-                type: 'contentDocument',
-                contentType: TopicPart.Article,
-                fullContentId: 'topic-999/article-888',
+            const otherDocumentLink: DocumentId = {
+                type: 'contentTopic',
+                topicPart: 'article',
+                contentId: 'topic-999/article-888',
             };
 
             const otherDocument = defineDocument(
-                stringifyProseLink(otherDocumentLink),
+                stringifyDocumentId(otherDocumentLink),
                 {
                     uniques: {
                         externalP: P,
@@ -186,14 +83,13 @@ describe('linkStep', () => {
                 </>
             ));
 
-            const thisDocumentLink: ContentDocumentProseLink = {
-                type: 'contentDocument',
-                contentType: TopicPart.Article,
-                fullContentId: 'topic-123/article-456',
+            const thisDocumentLink: DocumentId = {
+                type: 'contentPage',
+                contentId: 'topic-123/page-456',
             };
 
             const thisDocument = defineDocument(
-                stringifyProseLink(thisDocumentLink),
+                stringifyDocumentId(thisDocumentLink),
                 {
                     uniques: {
                         internalP: P,
@@ -225,41 +121,36 @@ describe('linkStep', () => {
                 rawElement: thisDocument.content,
             });
 
-            expect(Object.keys(links)).toHaveLength(5);
-            expect(links).toStrictEqual({
-                // Direct link
-                [String(proseElement.children?.[1]?.id)]: stringifyProseLink({
-                    type: 'direct',
-                    href: 'https://example.com',
-                }),
-                // Link to document
-                [String(proseElement.children?.[2]?.id)]:
-                    stringifyProseLink(otherDocumentLink),
-                // Link to unique
-                [String(proseElement.children?.[3]?.id)]: stringifyProseLink({
-                    type: 'contentElement',
-                    isUnique: true,
-                    contentType: otherDocumentLink.contentType,
-                    fullContentId: otherDocumentLink.fullContentId,
-                    elementId: uniqueName2Id('externalP'),
-                }),
-                // Link to self unique
-                [String(proseElement.children?.[4]?.id)]: stringifyProseLink({
-                    type: 'contentElement',
-                    isUnique: true,
-                    contentType: thisDocumentLink.contentType,
-                    fullContentId: thisDocumentLink.fullContentId,
-                    elementId: uniqueName2Id('internalP'),
-                }),
-                // Link to internal paragraph
-                [String(proseElement.children?.[5]?.id)]: stringifyProseLink({
-                    type: 'contentElement',
-                    isUnique: true,
-                    contentType: thisDocumentLink.contentType,
-                    fullContentId: thisDocumentLink.fullContentId,
-                    elementId: String(proseElement.children?.[6]?.id),
-                }),
-            });
+            expect(links.size).toBe(4);
+            expect(links).toEqual(
+                new Set<string>([
+                    // Direct link
+                    stringifyProseLink({
+                        type: 'direct',
+                        href: 'https://example.com',
+                    }),
+
+                    // Link to document
+                    stringifyProseLink({
+                        type: 'document',
+                        documentId: otherDocumentLink,
+                    }),
+
+                    // Link to unique
+                    stringifyProseLink({
+                        type: 'unique',
+                        documentId: otherDocumentLink,
+                        uniqueId: uniqueName2Id('externalP'),
+                    }),
+
+                    // Link to self unique
+                    stringifyProseLink({
+                        type: 'unique',
+                        documentId: thisDocumentLink,
+                        uniqueId: uniqueName2Id('internalP'),
+                    }),
+                ]),
+            );
         });
     });
 });

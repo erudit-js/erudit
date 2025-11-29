@@ -1,4 +1,5 @@
 import { readdirSync } from 'node:fs';
+import { like } from 'drizzle-orm';
 import { isRawElement, type AnySchema, type ProseElement } from '@jsprose/core';
 import type { ContributorDefinition } from '@erudit-js/core/contributor';
 
@@ -8,6 +9,9 @@ export async function buildContributors() {
     ERUDIT.log.debug.start('Building contributors...');
 
     await ERUDIT.db.delete(ERUDIT.db.schema.contributors);
+    await ERUDIT.db
+        .delete(ERUDIT.db.schema.files)
+        .where(like(ERUDIT.db.schema.files.role, 'contributor:%'));
 
     let contributorIds: string[] = Object.values(virtualContributors).map(
         (vc) => vc.contributorId,
@@ -36,12 +40,10 @@ async function buildContributor(contributorId: string) {
         .pop();
 
     if (avatarExtension) {
-        await ERUDIT.db
-            .insert(ERUDIT.db.schema.files)
-            .values({
-                path: `${directory}/avatar.${avatarExtension}`,
-            })
-            .onConflictDoNothing();
+        await ERUDIT.repository.db.pushFile(
+            `${directory}/avatar.${avatarExtension}`,
+            `contributor:${contributorId}`,
+        );
     }
 
     let moduleDefault: ContributorDefinition | undefined;
@@ -65,7 +67,12 @@ async function buildContributor(contributorId: string) {
             false,
         );
 
-        await ERUDIT.repository.prose.applyResolved.files(resolveResult.files);
+        for (const file of resolveResult.files) {
+            await ERUDIT.repository.db.pushFile(
+                file,
+                `contributor:${contributorId}`,
+            );
+        }
 
         description = resolveResult.proseElement;
     }

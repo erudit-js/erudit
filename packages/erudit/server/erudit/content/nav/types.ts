@@ -1,5 +1,4 @@
-import { ContentType } from '@erudit-js/cog/schema';
-
+import type { ContentType } from '@erudit-js/core/content/type';
 import * as repository from './repository';
 
 export type ContentNavMap = Map<string, ContentNavNode>;
@@ -19,7 +18,6 @@ export interface ContentNavNode {
     contentRelPath: string;
     position: number;
     skip: boolean;
-    hide: boolean;
     type: ContentType;
     parent?: ContentNavNode;
     children?: ContentNavNode[];
