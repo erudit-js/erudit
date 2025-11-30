@@ -1,8 +1,8 @@
-import {
+import type {
     ResolvedSponsor,
     SponsorTier1,
     SponsorTier2,
-} from '@erudit-js/cog/schema';
+} from '@erudit-js/core/sponsor';
 
 export const SPONSORS = {
     tier1: {} as Record<string, ResolvedSponsor<SponsorTier1>>,

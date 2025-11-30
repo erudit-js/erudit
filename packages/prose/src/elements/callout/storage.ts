@@ -1,4 +1,4 @@
-import { projectRelFilePath } from '../../shared/core/filePath.js';
+import { projectRelFilePath } from '../../shared/filePath.js';
 import type { CalloutStorage } from './core.js';
 
 export function createCalloutStorage(

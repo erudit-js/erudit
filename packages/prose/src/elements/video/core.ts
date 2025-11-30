@@ -5,7 +5,7 @@ import {
     isRawElement,
 } from '@jsprose/core';
 
-import type { Invert } from '../../shared/core/invert.js';
+import type { Invert } from '../../shared/invert.js';
 import { captionSchema } from '../caption/core.js';
 import { defineEruditTag } from '../../tag.js';
 import { defineEruditProseCoreElement } from '../../coreElement.js';

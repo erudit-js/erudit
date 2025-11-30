@@ -10,6 +10,7 @@ import {
 import { captionSchema } from '../caption/core.js';
 import { defineEruditTag } from '../../tag.js';
 import { defineEruditProseCoreElement } from '../../coreElement.js';
+import { photoswipeDependency } from '../../shared/photoswipe.js';
 
 export const diagramSchema = defineSchema({
     name: 'diagram',
@@ -44,6 +45,7 @@ export const diagramRegistryItem = defineRegistryItem({
 export default defineEruditProseCoreElement({
     registryItem: diagramRegistryItem,
     dependencies: {
+        ...photoswipeDependency,
         mermaid: {
             optimize: true,
             transpile: true,

@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { EruditAds } from '@erudit-js/cog/schema';
+import type { EruditAds } from '@erudit-js/core/eruditConfig/ads';
 
 import {
     LazyAdsProviderCustom,

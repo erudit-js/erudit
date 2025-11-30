@@ -34,12 +34,6 @@ export default defineNuxtConfig({
                 },
             },
         },
-        // @see https://github.com/nitrojs/nitro/issues/3565
-        //
-        // externals: {
-        //     trace: true,
-        //     traceInclude: ['@erudit-js/prose'],
-        // },
         rollupConfig: {
             external(source) {
                 const ignore = ['jiti'];

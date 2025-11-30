@@ -9,3 +9,6 @@ export * from './resolveStep.js';
 export * from './slugify/index.js';
 export * from './utils/docs.js';
 export * from './utils/case.js';
+export * from './shared/filePath.js';
+export * from './shared/invert.js';
+export * from './shared/photoswipe.js';

@@ -1,4 +1,8 @@
-<script lang="ts" setup>
+<template>
+    <div>Prose</div>
+</template>
+
+<!-- <script lang="ts" setup>
 import type {
     ElementSchemaAny,
     GenericStorage,
@@ -46,4 +50,4 @@ const context: ProseAppContext = {
         :style="{ '--proseGap': 'var(--_pMainX)' }"
         class="px-[calc(var(--proseGap)-var(--proseAsideWidth))] py-(--_pMainY)"
     />
-</template>
+</template> -->

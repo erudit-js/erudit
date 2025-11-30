@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { EruditAdsYandex } from '@erudit-js/cog/schema';
+import type { EruditAdsYandex } from '@erudit-js/core/eruditConfig/ads';
 
 declare global {
     interface Window {

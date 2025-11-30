@@ -1,7 +1,7 @@
 import { readFileSync, writeFileSync } from 'node:fs';
+import chalk from 'chalk';
 import type { Nuxt } from 'nuxt/schema';
 import { addTemplate, findPath } from 'nuxt/kit';
-import chalk from 'chalk';
 import type { AnyRegistryItem } from '@jsprose/core';
 import { extractTagDocs, type EruditProseCoreElement } from '@erudit-js/prose';
 
@@ -58,6 +58,7 @@ export async function setupProseElements(
     runtimeConfig: EruditRuntimeConfig,
 ) {
     const corePath2Abs = new Map<string, string>();
+    const appPath2Abs = new Map<string, string>();
 
     const tags: Map<string, SetupTag> = new Map();
     const registryItems: Map<string, AnyRegistryItem> = new Map();
@@ -68,6 +69,10 @@ export async function setupProseElements(
     ];
 
     for (const elementPath of elementPaths) {
+        //
+        // Core element
+        //
+
         const corePath = elementPath + '/core';
         const coreAbsPath = await findPath(corePath, {
             cwd: runtimeConfig.paths.project,
@@ -112,10 +117,25 @@ export async function setupProseElements(
                 docsContent,
             );
         }
+
+        //
+        // App element
+        //
+
+        const appPath = elementPath + '/app';
+        const appAbsPath = await findPath(appPath, {
+            cwd: runtimeConfig.paths.project,
+            extensions: ['.ts', '.js'],
+        });
+
+        if (appAbsPath) {
+            appPath2Abs.set(appPath, appAbsPath);
+        }
     }
 
     setupGlobalTagTypes(runtimeConfig, tags);
     setupCoreProseTemplate(nuxt, Array.from(corePath2Abs.values()));
+    setupAppProseTemplate(nuxt, Array.from(appPath2Abs.values()));
 
     const tagTable = formatTagsTable(Array.from(tags.keys()).sort(), 4);
 
@@ -127,10 +147,43 @@ ${chalk.gray(tagTable)}
     );
 }
 
+function setupAppProseTemplate(nuxt: Nuxt, absolutePaths: string[]) {
+    const defautImportName = (i: number) => `app_element_${i}`;
+    const defaultImportNames = absolutePaths.map((_, i) => defautImportName(i));
+    const noExtPaths = absolutePaths.map((p) => p.replace(/\.(?:js|ts)$/, ''));
+
+    const template = `
+import type { AppElement } from '@erudit-js/prose/app';
+
+${defaultImportNames
+    .map((importName, i) => `import ${importName} from '${noExtPaths[i]}';`)
+    .join('\n')}
+
+const appElements: AppElement[] = [
+    ${defaultImportNames.join(',\n    ')}
+].flatMap(e => (Array.isArray(e) ? e : [e]) as any);
+
+export default Object.fromEntries(
+    appElements.map(e => [e.schema.name, e])
+);
+    `.trim();
+
+    addTemplate({
+        write: true,
+        filename: '#erudit/prose/app.ts',
+        getContents() {
+            return template;
+        },
+    });
+
+    const alias = (nuxt.options.alias ||= {});
+    alias['#erudit/prose/app'] =
+        nuxt.options.buildDir + `/#erudit/prose/app.ts`;
+}
+
 function setupCoreProseTemplate(nuxt: Nuxt, absolutePaths: string[]) {
     const defautImportName = (i: number) => `core_element_${i}`;
     const defaultImportNames = absolutePaths.map((_, i) => defautImportName(i));
-
     const noExtPaths = absolutePaths.map((p) => p.replace(/\.(?:js|ts)$/, ''));
 
     const template = `

@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { EruditAdsCustom } from '@erudit-js/cog/schema';
+import type { EruditAdsCustom } from '@erudit-js/core/eruditConfig/ads';
 
 const props = defineProps<{ data: EruditAdsCustom }>();
 

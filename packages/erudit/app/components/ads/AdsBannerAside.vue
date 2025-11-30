@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { EruditAds } from '@erudit-js/cog/schema';
+import type { EruditAds } from '@erudit-js/core/eruditConfig/ads';
 
 const adsData = ref<EruditAds>();
 

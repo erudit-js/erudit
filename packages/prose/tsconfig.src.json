@@ -8,8 +8,8 @@
         "target": "esnext",
         "module": "nodenext",
         "moduleResolution": "nodenext",
-        "lib": ["ESNext"],
-        "outDir": "dist"
+        "outDir": "dist",
+        "types": ["./env.d.ts"]
     },
     "include": ["src/**/*"]
 }

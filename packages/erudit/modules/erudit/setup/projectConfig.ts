@@ -1,5 +1,5 @@
 import type { Nuxt } from '@nuxt/schema';
-import type { EruditConfig } from '@erudit-js/cog/schema';
+import type { EruditConfig } from '@erudit-js/core/eruditConfig/config';
 
 import type {
     EruditRuntimeConfig,
@@ -95,7 +95,7 @@ async function transferConfigData(
             };
         })(),
         customLinks: projectConfig.customLinks,
-        sponsors: projectConfig.sponsors,
+        //sponsors: projectConfig.sponsors,
         ads: projectConfig.ads,
     };
 }

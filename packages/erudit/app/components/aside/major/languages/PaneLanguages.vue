@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { EruditTranslations } from '@erudit-js/cog/schema';
+import type { EruditTranslations } from '@erudit-js/core/eruditConfig/language';
 
 const currentLanguage = ERUDIT.config.project.language.current;
 const translations = ERUDIT.config.project.language.translations;

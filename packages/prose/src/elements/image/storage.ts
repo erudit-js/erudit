@@ -2,7 +2,7 @@ import { imageSizeFromFile } from 'image-size/fromFile';
 import { ProseError } from '@jsprose/core';
 
 import type { ImageStorage } from './core.js';
-import { projectRelFilePath } from '../../shared/core/filePath.js';
+import { projectRelFilePath } from '../../shared/filePath.js';
 
 export async function getImageSize(
     imageAbsoluteSrc: string,

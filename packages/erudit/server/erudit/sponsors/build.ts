@@ -1,5 +1,5 @@
 import { readdirSync } from 'node:fs';
-import { Sponsor } from '@erudit-js/cog/schema';
+import type { Sponsor } from '@erudit-js/core/sponsor';
 
 import { SPONSORS } from '.';
 

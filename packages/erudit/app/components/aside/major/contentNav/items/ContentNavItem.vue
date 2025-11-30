@@ -1,6 +1,4 @@
 <script lang="ts" setup>
-import { ContentType } from '@erudit-js/cog/schema';
-
 import ContentNavTopic from './ContentNavTopic.vue';
 import ContentNavPage from './ContentNavPage.vue';
 import ContentNavBook from './ContentNavBook.vue';
@@ -14,13 +12,13 @@ const { navItem } = defineProps<{
 
 const NavItemComponent = (() => {
     switch (navItem.type) {
-        case ContentType.Topic:
+        case 'topic':
             return ContentNavTopic;
-        case ContentType.Page:
+        case 'page':
             return ContentNavPage;
-        case ContentType.Book:
+        case 'book':
             return ContentNavBook;
-        case ContentType.Group:
+        case 'group':
             return navItem.separator ? ContentNavSeparator : ContentNavFolder;
     }
 })();

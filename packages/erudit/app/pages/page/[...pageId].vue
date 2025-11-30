@@ -1,11 +1,9 @@
 <script setup lang="ts">
-import { ContentType } from '@erudit-js/cog/schema';
-
 const route = useRoute();
 const pageId = Array.isArray(route.params.pageId)
     ? route.params.pageId.join('/')
     : route.params.pageId!;
-const contentPath = createContentPath(ContentType.Page, pageId);
+const contentPath = createContentPath('page', pageId);
 const mainContent = await useMainContent<MainContentPage>(contentPath);
 </script>
 
@@ -18,7 +16,7 @@ const mainContent = await useMainContent<MainContentPage>(contentPath);
         {{ mainContent.breadcrumbs }}
     </div>
     <Prose
-        :element="mainContent.element"
+        :element="mainContent.proseElement"
         :storage="mainContent.storage"
         :urlPath="'/' + contentPath"
         :useHash="true"

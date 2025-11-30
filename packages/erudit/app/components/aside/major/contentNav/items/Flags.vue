@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { ContentFlag, ContentFlags } from '@erudit-js/cog/schema';
+import type { ContentFlags, ContentFlag } from '@erudit-js/core/content/flags';
 
 import type { MyIconName } from '#my-icons';
 

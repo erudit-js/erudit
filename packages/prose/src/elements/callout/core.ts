@@ -7,7 +7,7 @@ import {
     type TagChildren,
 } from '@jsprose/core';
 
-import type { Invert } from '../../shared/core/invert.js';
+import type { Invert } from '../../shared/invert.js';
 import { defineEruditTag } from '../../tag.js';
 import { defineEruditProseCoreElement } from '../../coreElement.js';
 import { defineResolveStep } from '../../resolveStep.js';

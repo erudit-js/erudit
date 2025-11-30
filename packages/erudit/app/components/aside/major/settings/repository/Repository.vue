@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { EruditRepositoryType } from '@erudit-js/cog/schema';
+import type { EruditRepositoryType } from '@erudit-js/core/eruditConfig/repository';
 
 const repository = ERUDIT.config.project.repository;
 const phrase = await usePhrases('content');

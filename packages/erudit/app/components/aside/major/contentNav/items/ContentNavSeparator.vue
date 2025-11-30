@@ -1,6 +1,4 @@
 <script lang="ts" setup>
-import { ContentType } from '@erudit-js/cog/schema';
-
 import ItemTemplate from './ItemTemplate.vue';
 import ContentNavItem from './ContentNavItem.vue';
 
@@ -37,7 +35,7 @@ function checkActiveDescendant(
             return true;
         }
 
-        if (child.type === ContentType.Group) {
+        if (child.type === 'group') {
             if (checkActiveDescendant(child.children, targetShortId)) {
                 return true;
             }
@@ -50,9 +48,9 @@ function checkActiveDescendant(
 
 <template>
     <div
-        class="my-small py-small mx-0 border-y border-[var(--color-border)] px-0
-            first:mt-0 first:border-t-0 first:pt-0 [&+div]:mt-0
-            [&+div]:border-t-0 [&+div]:pt-0"
+        class="my-small py-small border-border mx-0 border-y px-0 first:mt-0
+            first:border-t-0 first:pt-0 [&+div]:mt-0 [&+div]:border-t-0
+            [&+div]:pt-0"
     >
         <ItemTemplate :navItem :state :class="['font-semibold']" />
         <ContentNavItem

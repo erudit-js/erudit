@@ -1,6 +1,7 @@
 <script lang="ts" setup>
+import { isContentType } from '@erudit-js/core/content/type';
+
 import type { MaybeMyIconName, MyIconName } from '#my-icons';
-import { isContentType } from '@erudit-js/cog/schema';
 
 const { result } = defineProps<{ result: SearchEntry }>();
 
@@ -52,7 +53,7 @@ if (isElementCategory) {
                 class="group p-normal text-text-muted hocus:text-text text-sm
                     transition-[color]"
             >
-                <div class="gap-normal flex">
+                <div class="gap-normal flex items-center">
                     <div class="relative h-[1em] w-[1em]">
                         <TransitionFade>
                             <MaybeMyIcon

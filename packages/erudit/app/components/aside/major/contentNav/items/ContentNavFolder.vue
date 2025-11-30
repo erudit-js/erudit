@@ -1,6 +1,4 @@
 <script lang="ts" setup>
-import { ContentType } from '@erudit-js/cog/schema';
-
 import ItemTemplate from './ItemTemplate.vue';
 import ContentNavItem from './ContentNavItem.vue';
 
@@ -44,7 +42,7 @@ function checkActiveDescendant(
             return true;
         }
 
-        if (child.type === ContentType.Group) {
+        if (child.type === 'group') {
             if (checkActiveDescendant(child.children, targetShortId)) {
                 return true;
             }

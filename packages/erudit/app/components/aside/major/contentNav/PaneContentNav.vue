@@ -1,5 +1,6 @@
 <script lang="ts" setup>
-import { isContentType, isTopicPart } from '@erudit-js/cog/schema';
+import { isContentType } from '@erudit-js/core/content/type';
+import { isTopicPart } from '@erudit-js/core/content/topic';
 
 import GlobalNav from './GlobalNav.vue';
 import BookNav from './BookNav.vue';

@@ -10,17 +10,13 @@
             "import": "./dist/index.js",
             "types": "./dist/index.d.ts"
         },
+        "./app": {
+            "import": "./dist/app/index.js",
+            "types": "./dist/app/index.d.ts"
+        },
         "./elements/*": {
             "import": "./dist/elements/*.js",
             "types": "./dist/elements/*.d.ts"
-        },
-        "./shared/core": {
-            "import": "./dist/shared/core/index.js",
-            "types": "./dist/shared/core/index.d.ts"
-        },
-        "./shared/app": {
-            "import": "./dist/shared/app/index.js",
-            "types": "./dist/shared/app/index.d.ts"
         }
     },
     "files": [
