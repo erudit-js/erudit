@@ -1,4 +1,4 @@
-import type { EruditLanguageCode } from '@erudit-js/cog/schema';
+import type { EruditLanguageCode } from '@erudit-js/core/eruditConfig/language';
 
 export type LanguageCode = EruditLanguageCode;
 export type LanguagePhraseKey = keyof LanguagePhrases;

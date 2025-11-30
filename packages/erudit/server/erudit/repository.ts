@@ -5,6 +5,8 @@ import { countContributors } from './contributors/repository/count';
 import { countSponsors } from './sponsors/repository/count';
 import { resolveEruditProse } from './prose/repository/resolve';
 import { pushFile } from './db/repository/pushFile';
+import { pushProblemScript } from './db/repository/pushProblemScript';
+import { pushProseLink } from './db/repository/pushProseLink';
 
 // import { getProseFor } from './prose/repository/get';
 // import { parseEruditJsx } from './prose/repository/parseJsx';
@@ -13,6 +15,8 @@ import { pushFile } from './db/repository/pushFile';
 export const repository = {
     db: {
         pushFile: pushFile,
+        pushProblemScript: pushProblemScript,
+        pushProseLink: pushProseLink,
     },
     contributors: {
         count: countContributors,

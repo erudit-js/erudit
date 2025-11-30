@@ -1,11 +1,12 @@
 import { eq } from 'drizzle-orm';
-import { ContentType } from '@erudit-js/cog/schema';
+import { contentTypes } from '@erudit-js/core/content/type';
 import { headingSchema } from '@erudit-js/prose/elements/heading/core';
+import type { TopicPart } from '@erudit-js/core/content/topic';
 
 export async function searchIndexContentTypes(): Promise<SearchEntriesList[]> {
     const entryLists: SearchEntriesList[] = [];
 
-    for (const contentType of Object.values(ContentType)) {
+    for (const contentType of contentTypes) {
         const dbContentItems = await ERUDIT.db.query.content.findMany({
             columns: {
                 fullId: true,
@@ -24,7 +25,7 @@ export async function searchIndexContentTypes(): Promise<SearchEntriesList[]> {
             entries: await Promise.all(
                 dbContentItems.map(async (dbContentItem) => {
                     const bookTitle: string | undefined = await (async () => {
-                        if (dbContentItem.type === ContentType.Book) {
+                        if (dbContentItem.type === 'book') {
                             return undefined;
                         }
 
@@ -66,19 +67,17 @@ export async function searchIndexContentTypes(): Promise<SearchEntriesList[]> {
 export async function searchIndexSnippets(): Promise<SearchEntriesList[]> {
     const entryLists: Map<string, SearchEntriesList> = new Map();
 
-    const dbSnippets = await ERUDIT.db.query.snippets.findMany({
-        where: eq(ERUDIT.db.schema.snippets.search, true),
+    const dbSnippets = await ERUDIT.db.query.contentSnippets.findMany({
+        where: eq(ERUDIT.db.schema.contentSnippets.search, true),
     });
 
     for (const dbSnippet of dbSnippets) {
-        if (!entryLists.has(dbSnippet.elementName)) {
-            entryLists.set(dbSnippet.elementName, {
+        if (!entryLists.has(dbSnippet.schemaName)) {
+            entryLists.set(dbSnippet.schemaName, {
                 category: {
-                    id: 'element:' + dbSnippet.elementName,
+                    id: 'element:' + dbSnippet.schemaName,
                     priority:
-                        dbSnippet.elementName === headingSchema.name
-                            ? 325
-                            : 350,
+                        dbSnippet.schemaName === headingSchema.name ? 325 : 350,
                 },
                 entries: [],
             });
@@ -102,14 +101,17 @@ export async function searchIndexSnippets(): Promise<SearchEntriesList[]> {
         })();
 
         switch (navNode.type) {
-            case ContentType.Page:
-                link = PAGES[navNode.type](navNode.shortId, dbSnippet.domId);
-                break;
-            case ContentType.Topic:
+            case 'page':
                 link = PAGES[navNode.type](
-                    dbSnippet.topicPart!,
                     navNode.shortId,
-                    dbSnippet.domId,
+                    dbSnippet.elementId,
+                );
+                break;
+            case 'topic':
+                link = PAGES['topic'](
+                    dbSnippet.contentProseType as TopicPart,
+                    navNode.shortId,
+                    dbSnippet.elementId,
                 );
                 break;
             default:
@@ -119,8 +121,8 @@ export async function searchIndexSnippets(): Promise<SearchEntriesList[]> {
                 });
         }
 
-        entryLists.get(dbSnippet.elementName)!.entries.push({
-            category: 'element:' + dbSnippet.elementName,
+        entryLists.get(dbSnippet.schemaName)!.entries.push({
+            category: 'element:' + dbSnippet.schemaName,
             title: dbSnippet.title,
             description: dbSnippet.description || undefined,
             link,

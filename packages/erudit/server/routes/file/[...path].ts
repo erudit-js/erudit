@@ -1,4 +1,5 @@
 import { existsSync } from 'node:fs';
+
 import { serveStaticFile } from '@erudit/server/staticFile';
 
 export default defineEventHandler(async (event) => {

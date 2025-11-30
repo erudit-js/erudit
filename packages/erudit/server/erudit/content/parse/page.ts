@@ -6,6 +6,7 @@ import type { ContentNavNode } from '../nav/types';
 import { logContentError } from './utils/contentError';
 import { insertContentItem } from './utils/insertContentItem';
 import { resolveEruditProse } from '../../prose/repository/resolve';
+import { insertContentResolved } from './utils/insertContentResolved';
 
 export async function parsePage(pageNode: ContentNavNode) {
     ERUDIT.log.debug.start(
@@ -44,27 +45,7 @@ export async function parsePage(pageNode: ContentNavNode) {
             prose: resolveResult.proseElement,
         });
 
-        for (const file of resolveResult.files) {
-            await ERUDIT.repository.db.pushFile(
-                file,
-                `content-item:${pageNode.fullId}`,
-            );
-        }
-
-        for (const [uniqueName, unique] of Object.entries(
-            resolveResult.uniques,
-        )) {
-            await ERUDIT.db.insert(ERUDIT.db.schema.uniques).values({
-                contentFullId: pageNode.fullId,
-                contentProseType: 'page',
-                uniqueName,
-                prose: unique,
-            });
-        }
-
-        // Snippets
-        // Links (возможно при резолве ссылок возвращать elementId и label самой ссылки, чтобы можно было понять, откуда пошел вызов!)
-        // Problem scripts
+        await insertContentResolved(pageNode.fullId, 'page', resolveResult);
     } catch (error) {
         logContentError(pageNode);
         console.log(error);

@@ -4,6 +4,7 @@ import { contentPathToId } from '@erudit-js/core/content/path';
 import { parseGroup } from './group';
 import { parseBook } from './book';
 import { parsePage } from './page';
+import { parseTopic } from './topic';
 
 let initialParse = true;
 
@@ -31,7 +32,7 @@ export async function parseContent() {
             }
         }
 
-        clearOldContentData(Array.from(toParseContentIds));
+        await clearOldContentData(Array.from(toParseContentIds));
     }
 
     for (const contentId of toParseContentIds) {
@@ -45,6 +46,9 @@ export async function parseContent() {
                 break;
             case 'page':
                 await parsePage(navNode);
+                break;
+            case 'topic':
+                await parseTopic(navNode);
                 break;
         }
     }
@@ -75,19 +79,31 @@ export async function clearOldContentData(contentIds: string[]) {
     );
 
     await ERUDIT.db
-        .delete(ERUDIT.db.schema.links)
+        .delete(ERUDIT.db.schema.contentProseLinks)
         .where(
             or(
-                inArray(ERUDIT.db.schema.links.fromContent, contentIds),
-                inArray(ERUDIT.db.schema.links.toContent, contentIds),
+                inArray(
+                    ERUDIT.db.schema.contentProseLinks.fromContentId,
+                    contentIds,
+                ),
             ),
         );
 
     await ERUDIT.db
-        .delete(ERUDIT.db.schema.uniques)
-        .where(inArray(ERUDIT.db.schema.uniques.contentFullId, contentIds));
+        .delete(ERUDIT.db.schema.contentUniques)
+        .where(
+            inArray(ERUDIT.db.schema.contentUniques.contentFullId, contentIds),
+        );
 
     await ERUDIT.db
-        .delete(ERUDIT.db.schema.snippets)
-        .where(inArray(ERUDIT.db.schema.snippets.contentFullId, contentIds));
+        .delete(ERUDIT.db.schema.contentSnippets)
+        .where(
+            inArray(ERUDIT.db.schema.contentSnippets.contentFullId, contentIds),
+        );
+
+    await ERUDIT.db
+        .delete(ERUDIT.db.schema.problemScripts)
+        .where(
+            inArray(ERUDIT.db.schema.problemScripts.contentFullId, contentIds),
+        );
 }

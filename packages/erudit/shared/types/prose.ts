@@ -1,12 +1,6 @@
-import type {
-    ParsedElement,
-    GenericStorage,
-    ElementSchemaAny,
-} from '@erudit-js/prose';
+import type { AnySchema, GenericStorage, ProseElement } from '@jsprose/core';
 
-export interface ResolvedProse<
-    TSchema extends ElementSchemaAny = ElementSchemaAny,
-> {
-    element: ParsedElement<TSchema>;
+export interface ResolvedProse {
+    proseElement: ProseElement<AnySchema>;
     storage: GenericStorage;
 }

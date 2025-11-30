@@ -1,12 +1,10 @@
-import type {
-    EruditAdsBanners,
-    EruditCustomLinks,
-    EruditLanguage,
-    EruditMode,
-    EruditRepository,
-    EruditSiteBrandLayout,
-    EruditSponsors,
-} from '@erudit-js/cog/schema';
+import type { EruditMode } from '@erudit-js/core/mode';
+import type { EruditAdsBanners } from '@erudit-js/core/eruditConfig/ads';
+import type { EruditLanguage } from '@erudit-js/core/eruditConfig/language';
+import type { EruditCustomLinks } from '@erudit-js/core/eruditConfig/links';
+import type { EruditRepository } from '@erudit-js/core/eruditConfig/repository';
+import type { EruditSiteBrandLayout } from '@erudit-js/core/eruditConfig/site';
+import type { EruditSponsors } from '@erudit-js/core/sponsor';
 
 export interface EruditRuntimeConfigPaths {
     package: string;

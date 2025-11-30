@@ -1,9 +1,5 @@
-import {
-    isContentType,
-    isTopicPart,
-    type ContentType,
-    type TopicPart,
-} from '@erudit-js/cog/schema';
+import { type TopicPart, isTopicPart } from '@erudit-js/core/content/topic';
+import { type ContentType, isContentType } from '@erudit-js/core/content/type';
 
 export function parseContentPath(contentPath: string): {
     typeOrPart: ContentType | TopicPart;

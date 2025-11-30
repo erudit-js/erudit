@@ -1,5 +1,5 @@
-import type { ContentType, TopicPart } from '@erudit-js/cog/schema';
-import type { ApiProse } from './prose';
+import type { ContentType } from '@erudit-js/core/content/type';
+import type { TopicPart } from '@erudit-js/core/content/topic';
 
 interface MainContentBase {
     type: ContentType;
@@ -7,14 +7,14 @@ interface MainContentBase {
 }
 
 export type MainContentTopicPart = MainContentBase &
-    ApiProse & {
-        type: ContentType.Topic;
+    ResolvedProse & {
+        type: 'topic';
         part: TopicPart;
     };
 
 export type MainContentPage = MainContentBase &
-    ApiProse & {
-        type: ContentType.Page;
+    ResolvedProse & {
+        type: 'page';
     };
 
 export type MainContent = MainContentTopicPart | MainContentPage;

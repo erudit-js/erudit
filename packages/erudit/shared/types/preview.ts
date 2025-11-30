@@ -1,6 +1,5 @@
-import type { ContentType, TopicPart } from '@erudit-js/cog/schema';
-import type { ElementSchemaAny, ParsedElement } from '@erudit-js/prose';
-import type { BlocksSchema } from '@erudit-js/prose/default/blocks/index';
+import type { ContentProseType } from '@erudit-js/core/content/prose';
+import type { AnySchema, ProseElement } from '@jsprose/core';
 
 export enum PreviewType {
     DirectLink = 'direct-link',
@@ -20,7 +19,7 @@ export type PreviewRequestDirectLink = {
 export type PreviewRequestContentPage = {
     type: PreviewType.ContentPage;
     fullId: string;
-    typeOrPart?: ContentType | TopicPart;
+    contentProseType?: ContentProseType;
 };
 
 export type PreviewRequestUnique = {
@@ -45,8 +44,7 @@ export type PreviewState = {
 //
 
 export type PreviewContentPage = {
-    type: ContentType;
-    topicPart?: TopicPart;
+    contentProseType: ContentProseType;
     title: string;
     description?: string;
     bookTitle?: string;
@@ -57,5 +55,5 @@ export type PreviewContentUnique = {
     href: string;
     documentTitle: string;
     fadeOverlay?: boolean;
-    toRenderElement?: ParsedElement<BlocksSchema>;
+    toRenderElement?: ProseElement<AnySchema>;
 } & ResolvedProse;
