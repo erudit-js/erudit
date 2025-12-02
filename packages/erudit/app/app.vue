@@ -1,7 +1,8 @@
 <script lang="ts" setup>
 useThemeWatcher();
 useAsideMajorPaneWatcher();
-useAppElements();
+await initAppElements();
+console.log(appElements);
 </script>
 
 <template>

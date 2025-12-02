@@ -324,38 +324,3 @@ async function getDocsContent(
         return readFileSync(docsAbsPath, 'utf-8');
     }
 }
-
-// async function setupAppTemplate(
-//     nuxt: Nuxt,
-//     runtimeConfig: EruditRuntimeConfig,
-//     appImports: string[],
-// ) {
-//     const templateImportName = (i: number) => `app_elements_${i}`;
-//     const importNames = appImports.map((_, i) => templateImportName(i));
-
-//     const template = `
-// import type { AppElementDefinitions } from '@erudit-js/prose/app';
-
-// ${importNames.map((importName, i) => `import ${importName} from '${appImports[i]}';`).join('\n')}
-
-// const elements = [
-//     ${importNames.join(',\n    ')}
-// ].flatMap((e: any) => Array.isArray(e) ? e : [e]);
-
-// export default Object.fromEntries(
-//     elements.map((e: any) => [e.name, e])
-// ) as AppElementDefinitions;
-//     `.trim();
-
-//     addTemplate({
-//         write: true,
-//         filename: '#erudit/prose/app.ts',
-//         getContents() {
-//             return template;
-//         },
-//     });
-
-//     const alias = (nuxt.options.alias ||= {});
-//     alias['#erudit/prose/app'] =
-//         runtimeConfig.paths.build + `/nuxt/.nuxt/#erudit/prose/app.ts`;
-// }
