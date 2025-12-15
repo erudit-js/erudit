@@ -29,16 +29,16 @@ export const preview = defineCommand({
 
         const distPath = `${projectPath}/.output/public`;
 
-        if (!existsSync(distPath))
+        if (!existsSync(distPath)) {
             throw new Error(
                 `No ".output/public" folder found! Did you run 'erudit build'?`,
             );
+        }
 
-        spawn('npx http-server . -p 3000', {
+        spawn(`npx http-server ${distPath} -p 3000`, {
             shell: true,
             stdio: 'inherit',
             env: process.env,
-            cwd: distPath,
         });
     },
 });

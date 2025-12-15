@@ -45,7 +45,7 @@ describe('Stringify and parse prose link', () => {
                 type: 'contentPage',
                 contentId: 'baz/qux',
             },
-            uniqueId: 'unique-element-123',
+            uniqueName: 'unique-element-123',
         };
         const strLink = 'unique/contentPage/baz/qux/unique-element-123';
         expect(parseProseLink(strLink)).toEqual(originalLink);

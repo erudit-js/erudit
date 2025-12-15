@@ -1,6 +1,6 @@
 import type { AnySchema, GenericStorage, ProseElement } from '@jsprose/core';
 
-export interface ResolvedProse {
+export interface FinalizedProse {
     proseElement: ProseElement<AnySchema>;
     storage: GenericStorage;
 }

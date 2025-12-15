@@ -19,5 +19,5 @@ export async function getContentBreadcrumbs(fullId: string) {
         });
     }, navNode);
 
-    return breadcrumbs;
+    return breadcrumbs.reverse();
 }

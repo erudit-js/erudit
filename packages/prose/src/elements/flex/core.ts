@@ -18,7 +18,7 @@ export const flexSchema = defineSchema({
     type: 'block',
     linkable: true,
 })<{
-    Data: FlexData;
+    Data: FlexData | undefined;
     Storage: undefined;
     Children: BlockSchema[];
 }>();

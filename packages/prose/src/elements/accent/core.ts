@@ -2,13 +2,17 @@ import {
     defineRegistryItem,
     defineSchema,
     ensureTagChildren,
+    isRawElement,
     ProseError,
     type AnySchema,
+    type BlockSchema,
+    type ProseElement,
     type TagChildren,
 } from '@jsprose/core';
 
 import { defineEruditTag } from '../../tag.js';
 import { uppercaseFirst, type UppercaseFirst } from '../../utils/case.js';
+import { tryParagraphWrap } from '../../shared/paragraphWrap.js';
 
 function validateTitle(tagName: string, title: string) {
     if (!title) {
@@ -26,7 +30,43 @@ export interface AccentDefinition<
     sectionNames: TSectionNames;
 }
 
-export function defineAccent<
+export type AccentMainSchema = Omit<BlockSchema, 'Data' | 'linkable'> & {
+    linkable: false;
+    Data: undefined;
+};
+export type AccentSectionSchema = Omit<BlockSchema, 'Data' | 'linkable'> & {
+    linkable: false;
+    Data: { type: 'named'; name: string } | { type: 'manual'; title: string };
+};
+export type AccentSchema = Omit<
+    BlockSchema,
+    'Data' | 'Children' | 'linkable'
+> & {
+    linkable: true;
+    Data: { title: string; layout: 'column' | 'row' };
+    Children: (AccentMainSchema | AccentSectionSchema)[];
+    SectionNames: string[];
+};
+
+export function isAccentElement(
+    element: ProseElement<AnySchema>,
+): element is ProseElement<AccentSchema> {
+    return element.schemaName.startsWith('accent_');
+}
+
+export function isAccentMainElement(
+    element: ProseElement<AnySchema>,
+): element is ProseElement<AccentMainSchema> {
+    return element.schemaName.startsWith('accentMain_');
+}
+
+export function isAccentSectionElement(
+    element: ProseElement<AnySchema>,
+): element is ProseElement<AccentSectionSchema> {
+    return element.schemaName.startsWith('accentSection_');
+}
+
+export function defineAccentCore<
     const I extends string,
     const J extends string[],
     const TDefinition extends AccentDefinition<I, J>,
@@ -64,7 +104,7 @@ Section names should start with lower case letter.
     //
 
     const mainSchema = defineSchema({
-        name: `${definition.name}Main` as `${TDefinition['name']}Main`,
+        name: `accentMain_${definition.name}` as `accentMain_${TDefinition['name']}`,
         type: 'block',
         linkable: false,
     })<{
@@ -74,59 +114,30 @@ Section names should start with lower case letter.
     }>();
 
     const sectionSchema = defineSchema({
-        name: `${definition.name}Section` as `${TDefinition['name']}Section`,
+        name: `accentSection_${definition.name}` as `accentSection_${TDefinition['name']}`,
         type: 'block',
         linkable: false,
     })<{
-        Data: { title: string };
+        Data:
+            | { type: 'named'; name: string }
+            | { type: 'manual'; title: string };
         Storage: undefined;
         Children: AnySchema[];
     }>();
 
-    const namedSectionsSchemas = Object.fromEntries(
-        definition.sectionNames.map((sectionName) => {
-            const schema = defineSchema({
-                name: `${definition.name}${uppercaseFirst(sectionName)}` as `${TDefinition['name']}${UppercaseFirst<typeof sectionName>}`,
-                type: 'block',
-                linkable: false,
-            })<{
-                Data: { name: typeof sectionName };
-                Storage: undefined;
-                Children: AnySchema[];
-            }>();
-
-            return [sectionName, { schema }];
-        }),
-    ) as {
-        [K in TDefinition['sectionNames'][number]]: {
-            schema: {
-                name: `${TDefinition['name']}${UppercaseFirst<K>}`;
-                type: 'block';
-                linkable: false;
-                Data: { name: K };
-                Storage: undefined;
-                Children: AnySchema[];
-            };
-        };
-    };
-
     const accentSchema = defineSchema({
-        name: definition.name as TDefinition['name'],
+        name: `accent_${definition.name}` as `accent_${TDefinition['name']}`,
         type: 'block',
         linkable: true,
     })<{
-        Data: { title: string };
+        Data: { title: string; layout: 'column' | 'row' };
         Storage: undefined;
-        Children: [
-            typeof mainSchema,
-            ...(
-                | {
-                      [K in number]: (typeof namedSectionsSchemas)[TDefinition['sectionNames'][K]]['schema'];
-                  }[number]
-                | typeof sectionSchema
-            )[],
-        ];
+        Children: [typeof mainSchema, ...(typeof sectionSchema)[]];
     }>();
+
+    const typedAccentSchema = accentSchema as typeof accentSchema & {
+        SectionNames: TDefinition['sectionNames'];
+    };
 
     //
     // Tags
@@ -139,6 +150,11 @@ Section names should start with lower case letter.
     })<TagChildren>(({ tagName, element, children }) => {
         ensureTagChildren(tagName, children);
         element.children = children;
+
+        const paragraphWrap = tryParagraphWrap(children);
+        if (paragraphWrap) {
+            element.children = paragraphWrap;
+        }
     });
 
     const sectionTag = defineEruditTag({
@@ -154,10 +170,15 @@ Section names should start with lower case letter.
         ensureTagChildren(tagName, children);
         element.children = children;
 
+        const paragraphWrap = tryParagraphWrap(children);
+        if (paragraphWrap) {
+            element.children = paragraphWrap;
+        }
+
         const title = props.title.trim();
         validateTitle(tagName, title);
 
-        element.data = { title };
+        element.data = { type: 'manual', title };
     });
 
     function createSuffixSectionTag<const TSuffix extends string>(
@@ -166,12 +187,17 @@ Section names should start with lower case letter.
         return defineEruditTag({
             tagName:
                 `${uppercaseFirst(definition.name)}${uppercaseFirst(suffix)}` as `${UppercaseFirst<TDefinition['name']>}${UppercaseFirst<TSuffix>}`,
-            schema: namedSectionsSchemas[
-                suffix as TDefinition['sectionNames'][number]
-            ].schema,
+            schema: sectionSchema,
         })<TagChildren>(({ tagName, element, children }) => {
             ensureTagChildren(tagName, children);
             element.children = children;
+
+            const paragraphWrap = tryParagraphWrap(children);
+            if (paragraphWrap) {
+                element.children = paragraphWrap;
+            }
+
+            element.data = { type: 'named', name: suffix };
         });
     }
 
@@ -186,27 +212,40 @@ Section names should start with lower case letter.
         >;
     };
 
+    const sectionTags = [sectionTag, ...Object.values(namedSectionTags)] as [
+        typeof sectionTag,
+        ...(typeof namedSectionTags)[TDefinition['sectionNames'][number]][],
+    ];
+
     const accentTag = defineEruditTag({
         tagName:
             `${uppercaseFirst(definition.name)}` as `${UppercaseFirst<TDefinition['name']>}`,
-        schema: accentSchema,
-    })<{ title: string } & TagChildren>(({
-        tagName,
-        children,
-        element,
-        props,
-    }) => {
-        ensureTagChildren(tagName, children, [
-            mainSchema,
-            sectionSchema,
-            ...Object.values(namedSectionsSchemas).map((v: any) => v.schema),
-        ]);
+        schema: typedAccentSchema,
+    })<
+        { title: string } & (
+            | { row?: true; column?: undefined }
+            | { row?: undefined; column?: true }
+        ) &
+            TagChildren
+    >(({ tagName, children, element, props }) => {
+        ensureTagChildren(tagName, children, [mainSchema, sectionSchema]);
         element.children = children as any;
+
+        if (!isRawElement(element.children[0], mainSchema)) {
+            throw new ProseError(
+                `<${tagName}> requires a <${mainTag.tagName}> as the first child element!`,
+            );
+        }
 
         const title = props.title.trim();
         validateTitle(tagName, title);
 
-        element.data = { title };
+        let layout: 'column' | 'row' = 'column';
+        if (props.row === true) {
+            layout = 'row';
+        }
+
+        element.data = { title, layout };
         element.title = title;
     });
 
@@ -221,35 +260,14 @@ Section names should start with lower case letter.
 
     const sectionRegistryItem = defineRegistryItem({
         schema: sectionSchema,
-        tags: [sectionTag],
+        tags: [
+            sectionTag,
+            ...(Object.values(namedSectionTags) as any),
+        ] as typeof sectionTags,
     });
 
-    function createSuffixSectionRegistryItem<const TSuffix extends string>(
-        suffix: TSuffix,
-    ) {
-        return defineRegistryItem({
-            schema: namedSectionsSchemas[
-                suffix as TDefinition['sectionNames'][number]
-            ].schema,
-            tags: [
-                namedSectionTags[suffix as TDefinition['sectionNames'][number]],
-            ],
-        });
-    }
-
-    const namedRegistryItems = Object.fromEntries(
-        definition.sectionNames.map((sectionName) => {
-            const registryItem = createSuffixSectionRegistryItem(sectionName);
-            return [sectionName, { registryItem }];
-        }),
-    ) as unknown as {
-        [K in TDefinition['sectionNames'][number]]: {
-            registryItem: ReturnType<typeof createSuffixSectionRegistryItem>;
-        };
-    };
-
     const accentRegistryItem = defineRegistryItem({
-        schema: accentSchema,
+        schema: typedAccentSchema,
         tags: [accentTag],
     });
 
@@ -257,36 +275,10 @@ Section names should start with lower case letter.
     // Return
     //
 
-    const namedSectionsObjectFinal = Object.fromEntries(
-        definition.sectionNames.map((sectionName) => {
-            return [
-                sectionName,
-                {
-                    schema: namedSectionsSchemas[
-                        sectionName as TDefinition['sectionNames'][number]
-                    ].schema,
-                    tag: namedSectionTags[
-                        sectionName as TDefinition['sectionNames'][number]
-                    ],
-                    registryItem:
-                        namedRegistryItems[
-                            sectionName as TDefinition['sectionNames'][number]
-                        ].registryItem,
-                },
-            ];
-        }),
-    ) as unknown as {
-        [K in TDefinition['sectionNames'][number]]: {
-            schema: (typeof namedSectionsSchemas)[K]['schema'];
-            tag: (typeof namedSectionTags)[K];
-            registryItem: (typeof namedRegistryItems)[K]['registryItem'];
-        };
-    };
-
     return {
         _sectionNames: definition.sectionNames as TDefinition['sectionNames'],
         accent: {
-            schema: accentSchema,
+            schema: typedAccentSchema,
             tag: accentTag,
             registryItem: accentRegistryItem,
         },
@@ -297,9 +289,8 @@ Section names should start with lower case letter.
         },
         section: {
             schema: sectionSchema,
-            tag: sectionTag,
+            tags: sectionTags,
             registryItem: sectionRegistryItem,
         },
-        ...namedSectionsObjectFinal,
     };
 }

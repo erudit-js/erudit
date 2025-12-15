@@ -30,6 +30,7 @@ export async function resolveEruditRawElement(args: {
     const links: Set<string> = new Set();
     const files: Set<string> = new Set();
     const problemScripts: Set<string> = new Set();
+    const uniqueTitles: Record<string, string> = {};
 
     const _step: ResolveStep = async (args) => {
         const snippet = snippetStep(args);
@@ -54,6 +55,10 @@ export async function resolveEruditRawElement(args: {
         const problemScript = problemScriptStep(args);
         if (problemScript && !problemScripts.has(problemScript))
             problemScripts.add(problemScript);
+
+        if (args.rawElement.title && args.rawElement.uniqueName) {
+            uniqueTitles[args.rawElement.uniqueName] = args.rawElement.title;
+        }
 
         if (step) {
             await step(args);
@@ -83,6 +88,7 @@ export async function resolveEruditRawElement(args: {
         links,
         files,
         problemScripts,
+        uniqueTitles,
     };
 }
 
@@ -93,4 +99,5 @@ export interface ResolvedEruditRawElement {
     links: Set<string>;
     files: Set<string>;
     problemScripts: Set<string>;
+    uniqueTitles: Record<string, string>;
 }

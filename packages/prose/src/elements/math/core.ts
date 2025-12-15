@@ -6,14 +6,10 @@ import { katexDependency } from './katex.js';
 export default defineEruditProseCoreElements(
     {
         registryItem: inlinerMathRegistryItem,
-        dependencies: {
-            ...katexDependency,
-        },
+        dependencies: katexDependency,
     },
     {
         registryItem: blockMathRegistryItem,
-        dependencies: {
-            ...katexDependency,
-        },
+        dependencies: katexDependency,
     },
 );

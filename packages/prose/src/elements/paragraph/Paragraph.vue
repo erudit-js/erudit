@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import type { ProseElement } from '@jsprose/core';
 
-import type { paragraphSchema } from './core';
-import Block from '../../app/shared/Block.vue';
+import type { paragraphSchema } from './core.js';
+import Block from '../../app/shared/block/Block.vue';
 import Render from '../../app/shared/Render.vue';
 
 defineProps<{ element: ProseElement<typeof paragraphSchema> }>();

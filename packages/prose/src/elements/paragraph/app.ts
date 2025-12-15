@@ -1,5 +1,5 @@
-import { paragraphSchema } from './core.js';
 import { defineEruditProseAppElement } from '../../app/appElement.js';
+import { paragraphSchema } from './core.js';
 
 export default defineEruditProseAppElement({
     schema: paragraphSchema,

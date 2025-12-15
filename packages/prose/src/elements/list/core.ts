@@ -8,6 +8,7 @@ import {
 
 import { defineEruditTag } from '../../tag.js';
 import { defineEruditProseCoreElements } from '../../coreElement.js';
+import { tryParagraphWrap } from '../../shared/paragraphWrap.js';
 
 export const listItemSchema = defineSchema({
     name: 'listItem',
@@ -25,6 +26,11 @@ export const Li = defineEruditTag({
 })<TagChildren>(({ tagName, element, children }) => {
     ensureTagChildren(tagName, children);
     element.children = children;
+
+    const paragraphWrap = tryParagraphWrap(children);
+    if (paragraphWrap) {
+        element.children = paragraphWrap;
+    }
 });
 
 export interface UlListData {

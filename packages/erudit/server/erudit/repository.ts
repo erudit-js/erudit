@@ -1,16 +1,22 @@
 import { getContentBreadcrumbs } from './content/repository/breadcrumbs';
 import { getContentLink } from './content/repository/contentLink';
-import { getTopicParts } from './content/repository/topicParts';
+import {
+    getDefaultTopicPart,
+    getTopicParts,
+} from './content/repository/topicParts';
 import { countContributors } from './contributors/repository/count';
 import { countSponsors } from './sponsors/repository/count';
 import { resolveEruditProse } from './prose/repository/resolve';
 import { pushFile } from './db/repository/pushFile';
 import { pushProblemScript } from './db/repository/pushProblemScript';
 import { pushProseLink } from './db/repository/pushProseLink';
-
-// import { getProseFor } from './prose/repository/get';
-// import { parseEruditJsx } from './prose/repository/parseJsx';
-// import { getUniqueData } from './prose/repository/unique';
+import { getContentProse, getContributorProse } from './prose/repository/get';
+import { finalizeProse } from './prose/repository/finalize';
+import { getContentTitle } from './content/repository/title';
+import {
+    getContentHeadingUnique,
+    getContentUnique,
+} from './content/repository/unique';
 
 export const repository = {
     db: {
@@ -26,14 +32,18 @@ export const repository = {
     },
     content: {
         topicParts: getTopicParts,
+        defaultTopicPart: getDefaultTopicPart,
+        unique: getContentUnique,
+        uniqueHeading: getContentHeadingUnique,
         link: getContentLink,
         breadcrumbs: getContentBreadcrumbs,
+        title: getContentTitle,
     },
     prose: {
         resolve: resolveEruditProse,
-        // parse: parseEruditJsx,
-        // unique: getUniqueData,
-        // get: getProseFor,
+        getContent: getContentProse,
+        getContributor: getContributorProse,
+        finalize: finalizeProse,
     },
 } as const;
 

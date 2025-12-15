@@ -9,9 +9,14 @@ import {
 import { defineEruditProseCoreElement } from '../../coreElement.js';
 import { defineEruditTag } from '../../tag.js';
 
-export interface EmphasisData {
-    type: 'bold' | 'italic';
-}
+export type EmphasisData =
+    | {
+          type: 'italic';
+      }
+    | {
+          type: 'bold';
+          accent?: boolean;
+      };
 
 export const emphasisSchema = defineSchema({
     name: 'emphasis',
@@ -26,10 +31,20 @@ export const emphasisSchema = defineSchema({
 export const B = defineEruditTag({
     tagName: 'B',
     schema: emphasisSchema,
-})<TagChildren>(({ element, tagName, children, registry }) => {
+})<{ accent?: boolean } & TagChildren>(({
+    element,
+    tagName,
+    props,
+    children,
+    registry,
+}) => {
     ensureTagInlinerChildren(tagName, children, registry);
     element.children = children;
     element.data = { type: 'bold' };
+
+    if (props.accent === true) {
+        element.data.accent = true;
+    }
 });
 
 export const I = defineEruditTag({

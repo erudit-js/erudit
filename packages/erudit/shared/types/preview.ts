@@ -1,36 +1,6 @@
-import type { ContentProseType } from '@erudit-js/core/content/prose';
 import type { AnySchema, ProseElement } from '@jsprose/core';
-
-export enum PreviewType {
-    DirectLink = 'direct-link',
-    ContentPage = 'content-page',
-    Unique = 'unique',
-}
-
-//
-//
-//
-
-export type PreviewRequestDirectLink = {
-    type: PreviewType.DirectLink;
-    href: string;
-};
-
-export type PreviewRequestContentPage = {
-    type: PreviewType.ContentPage;
-    fullId: string;
-    contentProseType?: ContentProseType;
-};
-
-export type PreviewRequestUnique = {
-    type: PreviewType.Unique;
-    contentPathUniqueSlug: string;
-};
-
-export type PreviewRequest =
-    | PreviewRequestDirectLink
-    | PreviewRequestContentPage
-    | PreviewRequestUnique;
+import type { PreviewRequest } from '@erudit-js/core/preview/request';
+import type { ContentType } from '@erudit-js/core/content/type';
 
 export type PreviewState = {
     opened: boolean;
@@ -39,12 +9,10 @@ export type PreviewState = {
     blink: number;
 };
 
-//
-//
-//
-
 export type PreviewContentPage = {
-    contentProseType: ContentProseType;
+    content:
+        | { type: 'topic'; topicPart: string }
+        | { type: Exclude<ContentType, 'topic'> };
     title: string;
     description?: string;
     bookTitle?: string;
@@ -52,8 +20,9 @@ export type PreviewContentPage = {
 };
 
 export type PreviewContentUnique = {
-    href: string;
-    documentTitle: string;
+    link: string;
+    contentTitle: string;
+    elementTitle?: string;
+    schemaName: string;
     fadeOverlay?: boolean;
-    toRenderElement?: ProseElement<AnySchema>;
-} & ResolvedProse;
+} & FinalizedProse;

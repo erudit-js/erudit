@@ -1,8 +1,12 @@
 <script setup lang="ts">
 const route = useRoute();
-const summaryId = route.params.summaryId;
+const summaryId = Array.isArray(route.params.summaryId)
+    ? route.params.summaryId.join('/')
+    : route.params.summaryId!;
+const contentTypePath = stringifyContentTypePath('summary', summaryId);
+const mainContent = await useMainContent<MainContentTopicPart>(contentTypePath);
 </script>
 
 <template>
-    <h1>Summary {{ summaryId }}</h1>
+    <MainTopicPartPage :mainContent />
 </template>

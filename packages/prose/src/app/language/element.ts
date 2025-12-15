@@ -25,8 +25,15 @@ export type ElementLanguages<T extends ElementPhrases> = Record<
 >;
 
 export function resolveElementLanguages<T extends ElementPhrases<T>>(
-    rawLanguages: ElementLanguagesRaw<T>,
+    schemaName: string,
+    rawLanguages?: ElementLanguagesRaw<T>,
 ): ElementLanguages<T> {
+    if (!rawLanguages) {
+        return new Proxy({} as ElementLanguages<T>, {
+            get: () => async () => ({ element_name: schemaName }) as T,
+        });
+    }
+
     return Object.fromEntries(
         Object.entries(rawLanguages).map(([languageCode, loadPhrases]) => [
             languageCode,

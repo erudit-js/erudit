@@ -3,4 +3,8 @@ export const photoswipeDependency = {
         optimize: true,
         transpile: true,
     },
+    'photoswipe/lightbox': {
+        optimize: true,
+        transpile: true,
+    },
 };

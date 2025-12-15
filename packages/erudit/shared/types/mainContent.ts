@@ -4,17 +4,30 @@ import type { TopicPart } from '@erudit-js/core/content/topic';
 interface MainContentBase {
     type: ContentType;
     breadcrumbs: Breadcrumbs;
+    fullId: string;
 }
 
 export type MainContentTopicPart = MainContentBase &
-    ResolvedProse & {
+    FinalizedProse & {
         type: 'topic';
         part: TopicPart;
     };
 
 export type MainContentPage = MainContentBase &
-    ResolvedProse & {
+    FinalizedProse & {
         type: 'page';
     };
 
-export type MainContent = MainContentTopicPart | MainContentPage;
+export type MainContentGroup = MainContentBase & {
+    type: 'group';
+};
+
+export type MainContentBook = MainContentBase & {
+    type: 'book';
+};
+
+export type MainContent =
+    | MainContentTopicPart
+    | MainContentPage
+    | MainContentGroup
+    | MainContentBook;

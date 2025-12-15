@@ -28,15 +28,15 @@ export default defineEruditConfig({
     // seo: {
     //     title: 'Открытая математика',
     // },
-    sponsors: {
-        addLink: 'https://google.com',
-        tier1Label: 'Помощники',
-        tier2Label: 'Меценаты',
-        // defaultCameoMessages: [
-        //     'Я поддерживаю Открытую Математику!',
-        //     'Кто в лес, а кто по математике!',
-        // ],
-    },
+    // sponsors: {
+    //     addLink: 'https://google.com',
+    //     tier1Label: 'Помощники',
+    //     tier2Label: 'Меценаты',
+    //     // defaultCameoMessages: [
+    //     //     'Я поддерживаю Открытую Математику!',
+    //     //     'Кто в лес, а кто по математике!',
+    //     // ],
+    // },
     index: {
         logotype: {
             src: projectPublic('index-logo.png'),
@@ -133,7 +133,11 @@ export default defineEruditConfig({
             // },
         },
     },
-    elements: ['./elements/term'],
+    elements: [
+        '@erudit-js/prose/elements/math',
+        '@erudit-js/prose/elements/diagram',
+        './elements/term',
+    ],
     nuxtAugmentations: [
         async (nuxt) => {
             //nuxt.options.nitro.preset = 'github-pages';

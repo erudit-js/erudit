@@ -107,7 +107,7 @@ export const M = defineEruditTag({
     }
 
     element.data = katex;
-    element.storageKey = `$${katex}$`;
+    element.storageKey = `$ ${katex} $`;
 });
 
 export const inlinerMathRegistryItem = defineRegistryItem({

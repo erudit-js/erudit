@@ -1,8 +1,11 @@
 import {
     defineRegistryItem,
     defineSchema,
-    ensureTagChildren,
+    ensureTagBlockChildren,
+    isRawElement,
     ProseError,
+    type BlockSchema,
+    type RawElement,
     type TagChildren,
 } from '@jsprose/core';
 
@@ -22,7 +25,6 @@ import {
     type ProblemInfo,
     type ProblemInfoProps,
 } from './shared.js';
-import type { EruditRawElement } from '../../rawElement.js';
 import { defineEruditProseCoreElement } from '../../coreElement.js';
 
 //
@@ -75,7 +77,7 @@ export const SubProblem = defineEruditTag({
         element.storageKey = problemScriptStrorageKey(props.script.scriptSrc);
     } else {
         validateProblemContent(tagName, children);
-        element.children = children as EruditRawElement<ProblemContentChild>[];
+        element.children = children as any;
     }
 });
 
@@ -99,15 +101,39 @@ export const problemsSchema = defineSchema({
 })<{
     Data: ProblemInfo;
     Storage: undefined;
-    Children: (typeof subProblemSchema)[];
+    Children: (typeof subProblemSchema | BlockSchema)[];
 }>();
 
 export const Problems = defineEruditTag({
     tagName: 'Problems',
     schema: problemsSchema,
-})<ProblemInfoProps & TagChildren>(({ element, tagName, props, children }) => {
-    ensureTagChildren(tagName, children, subProblemSchema);
-    element.children = children;
+})<ProblemInfoProps & TagChildren>(({
+    element,
+    tagName,
+    props,
+    children,
+    registry,
+}) => {
+    ensureTagBlockChildren(tagName, children, registry);
+
+    const subProblemChildren: RawElement<typeof subProblemSchema>[] = [];
+    const otherChildren: RawElement<BlockSchema>[] = [];
+
+    for (const child of children) {
+        if (isRawElement(child, subProblemSchema)) {
+            subProblemChildren.push(child);
+        } else {
+            otherChildren.push(child);
+        }
+    }
+
+    if (subProblemChildren.length === 0) {
+        throw new ProseError(
+            `<${tagName}> must have at least one <SubProblem> child!`,
+        );
+    }
+
+    element.children = [...otherChildren, ...subProblemChildren];
     element.data = problemProps2Info(props);
 
     element.title = element.data.title;

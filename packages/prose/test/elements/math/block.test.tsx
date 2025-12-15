@@ -130,7 +130,7 @@ describe('Block Math', () => {
                 katex: 'x + y = z >> \\sin',
                 freeze: true,
             });
-            expect(blockMath.storageKey).toBe('$$x + y = z >> \\sin$$');
+            expect(blockMath.storageKey).toBe('$$ x + y = z >> \\sin $$');
         });
     });
 

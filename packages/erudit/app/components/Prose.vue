@@ -1,53 +1,52 @@
-<template>
-    <div>Prose</div>
-</template>
+<script lang="ts" setup>
+import type { AnySchema, GenericStorage, ProseElement } from '@jsprose/core';
+import { Prose, type ProseContext } from '@erudit-js/prose/app';
 
-<!-- <script lang="ts" setup>
-import type {
-    ElementSchemaAny,
-    GenericStorage,
-    ParsedElement,
-} from '@erudit-js/prose';
-import { Prose, type ProseAppContext } from '@erudit-js/prose/app';
+import { EruditLink, MaybeMyIcon, TransitionFade } from '#components';
 
-import { MaybeMyIcon, TransitionFade, EruditLink } from '#components';
-
-const { element, storage, urlPath, useHash } = defineProps<{
-    element: ParsedElement<ElementSchemaAny>;
+const { element, storage, useHashUrl } = defineProps<{
+    element: ProseElement<AnySchema>;
     storage: GenericStorage;
-    urlPath: string;
-    useHash: boolean;
+    useHashUrl: boolean;
 }>();
 
 const route = useRoute();
+const formatText = await useFormatText();
 
-const hashId = computed(() => {
-    return useHash ? (route.hash ? route.hash.slice(1) : undefined) : undefined;
+const hashUrl = computed(() => {
+    return useHashUrl
+        ? route.hash
+            ? route.hash.slice(1)
+            : undefined
+        : undefined;
 });
 
-const context: ProseAppContext = {
-    mode: ERUDIT.config.mode,
-    sitePath: withBaseUrl(urlPath),
-    siteBaseUrl: ERUDIT.config.project.baseUrl,
-    languageCode: ERUDIT.config.project.language.current,
-    storage,
+const { setPreview, closePreview } = usePreview();
+
+const context: ProseContext = {
     appElements,
-    loadingSvg,
-    hashId,
-    formatText: await useFormatText(),
-    MaybeMyIcon,
-    TransitionFade,
-    usePreview,
-    icons: ICONS,
+    mode: ERUDIT.config.mode,
+    languageCode: ERUDIT.config.project.language.current,
+    formatText,
+    pathUrl: route.path,
+    baseUrl: ERUDIT.config.project.baseUrl,
+    hashUrl,
+    eruditIcons: ICONS,
+    EruditIcon: MaybeMyIcon,
+    EruditTransition: TransitionFade,
     EruditLink,
+    setPreview,
+    closePreview,
+    loadingSvg,
 };
 </script>
 
 <template>
     <Prose
         :element
+        :storage
         :context
-        :style="{ '--proseGap': 'var(--_pMainX)' }"
-        class="px-[calc(var(--proseGap)-var(--proseAsideWidth))] py-(--_pMainY)"
+        class="px-[calc(var(--proseGap)-var(--proseAsideWidth))] py-(--_pMainY)
+            [--proseGap:var(--_pMainX)]"
     />
-</template> -->
+</template>

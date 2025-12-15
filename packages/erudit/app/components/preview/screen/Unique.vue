@@ -1,47 +1,51 @@
 <script lang="ts" setup>
+import type { PreviewRequestUnique } from '@erudit-js/core/preview/request';
+
 const { request } = defineProps<{ request: PreviewRequestUnique }>();
 
-const uniqueContent = await $fetch<PreviewContentUnique>(
-    `/api/preview/contentUnique/${request.contentPathUniqueSlug}` + '.json',
+const contentTypeKey =
+    request.contentType === 'topic' ? request.topicPart : request.contentType;
+
+const previewData = await $fetch<PreviewContentUnique>(
+    `/api/preview/contentUnique/${stringifyContentTypePath(contentTypeKey, request.contentFullId)}/${request.uniqueName}` +
+        '.json',
     {
         responseType: 'json',
     },
 );
 
-const elementIcon = await getElementIcon(uniqueContent.element.name);
-const elementPhrase = await getElementPhrase(uniqueContent.element.name);
+const elementIcon = await getElementIcon(previewData.schemaName);
+const elementPhrase = await getElementPhrase(previewData.schemaName);
 
-const main = uniqueContent.element.title || elementPhrase.element_name;
+const main = previewData.elementTitle || elementPhrase.element_name;
 const secondary = (() => {
-    if (!uniqueContent.element.title) {
-        return uniqueContent.documentTitle;
+    if (!previewData.elementTitle) {
+        return previewData.contentTitle;
     }
 
-    return `${elementPhrase.element_name} • ${uniqueContent.documentTitle}`;
+    return `${elementPhrase.element_name} • ${previewData.contentTitle}`;
 })();
-
-const element = uniqueContent.toRenderElement ?? uniqueContent.element;
 </script>
 
 <template>
     <PreviewScreen
         :icon="elementIcon"
-        :main
-        :secondary
-        :link="uniqueContent.href"
+        :main="main"
+        :secondary="secondary"
+        :link="previewData.link"
     >
         <div
             class="nice-scrollbars relative max-h-[inherit] overflow-auto
                 py-(--_pMainY)"
         >
             <Prose
-                :element
-                :storage="uniqueContent.storage"
-                :urlPath="'/' + uniqueContent.href.split('#')[0]"
-                :useHash="false"
+                :element="previewData.proseElement"
+                :storage="previewData.storage"
+                :urlPath="'/' + previewData.link.split('#')[0]"
+                :useHashUrl="false"
             />
             <div
-                v-if="uniqueContent.fadeOverlay"
+                v-if="previewData.fadeOverlay"
                 class="to-bg-main pointer-events-none absolute bottom-0 left-0
                     h-full w-full touch-none bg-linear-to-b from-transparent"
             ></div>

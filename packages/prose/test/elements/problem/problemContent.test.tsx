@@ -44,7 +44,7 @@ export const prepareRegistry = () =>
         paragraphRegistryItem,
     );
 
-const ProblemAnswer = problemAnswer.tag;
+export const ProblemAnswer = problemAnswer.tag;
 
 describe('Problem Description', () => {
     it('should create description correctly', () => {

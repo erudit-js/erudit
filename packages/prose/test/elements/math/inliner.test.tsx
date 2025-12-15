@@ -143,7 +143,7 @@ describe('Inliner Math', () => {
 
             expect(isRawElement(inlinerMath, inlinerMathSchema)).toBe(true);
             expect(inlinerMath.data).toBe('A + b');
-            expect(inlinerMath.storageKey).toBe('$A + b$');
+            expect(inlinerMath.storageKey).toBe('$ A + b $');
         });
     });
 

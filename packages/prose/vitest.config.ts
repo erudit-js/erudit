@@ -13,7 +13,7 @@ export default defineConfig({
     },
     resolve: {
         alias: {
-            '@erudit-js/prose/shared/core': rel('./src/shared/core/index.ts'),
+            '@erudit-js/prose/shared/': rel('./src/shared/'),
             '@erudit-js/prose/elements': rel('./src/elements'),
             '@erudit-js/prose': rel('./src/index.ts'),
         },

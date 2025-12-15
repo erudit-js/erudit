@@ -98,7 +98,9 @@ const flush = () => {
     if (changed.length || deleted.length) {
         console.log('📝 Refreshing declarations via bun tsc...');
         try {
-            execSync('bun tsc', { stdio: 'inherit' });
+            execSync('bun tsc --project ./tsconfig.src.json', {
+                stdio: 'inherit',
+            });
             console.log('✅ Declarations refreshed');
         } catch (e) {
             console.error('❌ bun tsc failed', e);

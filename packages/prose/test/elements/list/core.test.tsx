@@ -46,7 +46,7 @@ describe('List Item', () => {
             expect(ulList.children![1].schemaName).toBe(listItemSchema.name);
 
             expect(
-                isRawElement(ulList.children![0].children![0], textSchema),
+                isRawElement(ulList.children![0].children![0], paragraphSchema),
             ).toBe(true);
             expect(
                 isRawElement(ulList.children![1].children![0], paragraphSchema),
@@ -56,7 +56,11 @@ describe('List Item', () => {
 
     it('should correctly create ol list with/without start attribute', () => {
         isolateProse(() => {
-            PROSE_REGISTRY.setItems(listRegistryItem, listItemRegistryItem);
+            PROSE_REGISTRY.setItems(
+                listRegistryItem,
+                listItemRegistryItem,
+                paragraphRegistryItem,
+            );
 
             expect(
                 asEruditRaw(

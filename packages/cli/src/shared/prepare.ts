@@ -77,7 +77,7 @@ export async function prepare({
                     allowSyntheticDefaultImports: true,
                     jsx: 'react-jsx',
                     jsxImportSource: '@jsprose/core',
-                    types: ['@jsprose/core/types'],
+                    types: ['@jsprose/core/types', '@erudit-js/prose/types'],
                     lib: ['ESNext'],
                 },
                 include: [`${projectPath}/**/*`, `${eruditBuildDir}/**/*`],

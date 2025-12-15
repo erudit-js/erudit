@@ -1,9 +1,9 @@
 import { defineEruditProseCoreElements } from '@erudit-js/prose';
-import { defineAccent } from '@erudit-js/prose/elements/accent/core';
+import { defineAccentCore } from '@erudit-js/prose/elements/accent/core';
 
-const termAccent = defineAccent({
+export const termAccent = defineAccentCore({
     name: 'term',
-    sectionNames: [],
+    sectionNames: ['bar'],
 });
 
 export default defineEruditProseCoreElements(

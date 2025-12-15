@@ -6,9 +6,10 @@ export function resolveElementIcon(
     rawIcon?: ElementIconRaw,
 ): ElementIcon {
     const iconLoader =
-        (rawIcon ?? isBlock)
+        rawIcon ??
+        (isBlock
             ? () => import('./shared/assets/block.svg?raw')
-            : () => import('./shared/assets/inliner.svg?raw');
+            : () => import('./shared/assets/inliner.svg?raw'));
 
     return async () => {
         const iconModule = await iconLoader();

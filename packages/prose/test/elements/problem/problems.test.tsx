@@ -14,7 +14,7 @@ import {
     ProblemDescription,
     problemDescriptionSchema,
 } from '@erudit-js/prose/elements/problem/problemContent';
-import { P } from '@erudit-js/prose/elements/paragraph/core';
+import { P, paragraphSchema } from '@erudit-js/prose/elements/paragraph/core';
 import {
     constructProblemScriptId,
     defineProblemScript,
@@ -104,7 +104,7 @@ describe('SubProblem', () => {
 });
 
 describe('Problems', () => {
-    it('should throw when children are invalid', () => {
+    it('should throw when there are no sub problems', () => {
         isolateProse(() => {
             _prepareRegistry();
 
@@ -122,6 +122,7 @@ describe('Problems', () => {
 
             const problems = asEruditRaw(
                 <Problems title="Sample Problems" level="easy">
+                    <P>Paragraph 1</P>
                     <SubProblem label="first">
                         <ProblemDescription>
                             <P>First paragraph</P>
@@ -146,11 +147,14 @@ describe('Problems', () => {
                 level: 'easy',
                 attributes: [],
             });
-            expect(problems.children!.length).toBe(2);
-            expect(isRawElement(problems.children![0], subProblemSchema)).toBe(
+            expect(problems.children!.length).toBe(3);
+            expect(isRawElement(problems.children![0], paragraphSchema)).toBe(
                 true,
             );
             expect(isRawElement(problems.children![1], subProblemSchema)).toBe(
+                true,
+            );
+            expect(isRawElement(problems.children![2], subProblemSchema)).toBe(
                 true,
             );
             expect(problems.title).toBe('Sample Problems');

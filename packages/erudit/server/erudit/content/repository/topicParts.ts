@@ -32,3 +32,8 @@ export async function getTopicParts(fullId: string): Promise<TopicPart[]> {
 
     return parts;
 }
+
+export async function getDefaultTopicPart(fullId: string): Promise<TopicPart> {
+    const parts = await getTopicParts(fullId);
+    return parts[0];
+}

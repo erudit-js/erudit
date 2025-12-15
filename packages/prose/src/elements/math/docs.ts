@@ -41,6 +41,8 @@ let M;
  * * `\red{...}`
  * * `\default{...}` (to reset to default color)
  *
+ * Use `freeze` prop to prevent line breaks in the rendered math (scrollbars will appear if the content overflows).
+ *
  * @title Block Math
  * @layout block
  * @example
@@ -49,7 +51,7 @@ let M;
  *   A^2 + \\green{B^2} = \\brand{C^2}
  * `}</BlockMath>
  *
- * <BlockMath>{`
+ * <BlockMath freeze>{`
  *   \\lim\\limits_{x \\to \\infty} \\frac{1}{x} = 0
  * `}</BlockMath>
  * ```

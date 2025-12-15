@@ -7,7 +7,6 @@ import {
     isUnique,
     ProseError,
     textSchema,
-    uniqueName2Id,
     type AnyDocument,
     type AnySchema,
     type AnyUnique,
@@ -15,11 +14,12 @@ import {
     type ProseElement,
     type TagChildren,
 } from '@jsprose/core';
-
+import type { PreviewRequest } from '@erudit-js/core/preview/request';
 import { isContentItem, type ContentItem } from '@erudit-js/core/content/item';
 import { stringifyProseLink } from '@erudit-js/core/prose/link';
 import { parseDocumentId } from '@erudit-js/core/prose/documentId';
-import { parseContentItemId } from '@erudit-js/core/content/itemId';
+import type { ContentType } from '@erudit-js/core/content/type';
+import type { TopicPart } from '@erudit-js/core/content/topic';
 
 import { defineEruditTag, type NoSnippet, type NoToc } from '../../tag.js';
 import type { EruditProseContext } from '../../context.js';
@@ -33,8 +33,7 @@ export const linkSchema = defineSchema({
     linkable: true,
 })<{
     Data: LinkData;
-    Storage: string; // TODO
-    //Storage: LinkStorage;
+    Storage: LinkStorage;
     Children: undefined;
 }>();
 
@@ -44,8 +43,7 @@ export const blockLinkSchema = defineSchema({
     linkable: true,
 })<{
     Data: LinkData;
-    Storage: string; // TODO
-    //Storage: ContentDocumentLinkStorage | ContentElementLinkStorage;
+    Storage: LinkStorage;
     Children: undefined;
 }>();
 
@@ -104,7 +102,7 @@ function createLinkStorageKey(
         return stringifyProseLink({
             type: 'unique',
             documentId: parseDocumentId(to.documentId)!,
-            uniqueId: uniqueName2Id(to.name),
+            uniqueName: to.name,
         });
     }
 
@@ -156,36 +154,46 @@ export interface LinkData {
 // Storage
 //
 
-// interface LinkStorageBase {
-//     type: ProseLinkType;
-//     resolvedHref: string;
-// }
+export type StorageLinkType = 'direct' | 'contentItem' | 'unique';
 
-// export interface DirectLinkStorage extends LinkStorageBase {
-//     type: 'direct';
-// }
+interface LinkStorageBase {
+    type: StorageLinkType;
+    resolvedHref: string;
+    previewRequest: PreviewRequest;
+}
 
-// export interface ContentDocumentLinkStorage extends LinkStorageBase {
-//     type: 'contentDocument';
-//     contentType: ContentProseType;
-//     contentFullId: string;
-//     contentTitle: string;
-// }
+export type LinkStorageContent = {
+    contentTitle: string;
+} & (
+    | {
+          contentType: 'topic';
+          topicPart: TopicPart;
+      }
+    | {
+          contentType: Exclude<ContentType, 'topic'>;
+      }
+);
 
-// export interface ContentElementLinkStorage extends LinkStorageBase {
-//     type: 'contentElement';
-//     isUnique: boolean;
-//     schemaName: string;
-//     elementTitle?: string;
-//     contentType: ContentProseType;
-//     contentFullId: string;
-//     contentTitle: string;
-// }
+export interface DirectLinkStorage extends LinkStorageBase {
+    type: 'direct';
+}
 
-// export type LinkStorage =
-//     | DirectLinkStorage
-//     | ContentDocumentLinkStorage
-//     | ContentElementLinkStorage;
+export interface ContentItemLinkStorage extends LinkStorageBase {
+    type: 'contentItem';
+    content: LinkStorageContent;
+}
+
+export interface UniqueLinkStorage extends LinkStorageBase {
+    type: 'unique';
+    schemaName: string;
+    elementTitle?: string;
+    content: LinkStorageContent;
+}
+
+export type LinkStorage =
+    | DirectLinkStorage
+    | ContentItemLinkStorage
+    | UniqueLinkStorage;
 
 //
 // Resolve

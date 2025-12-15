@@ -11,7 +11,7 @@ export default defineNuxtPlugin({
         // Forgive me God for doing this but this is necessary because Nuxt App server side shares
         // same globalThis with Nitro server but same imports are done again causing @jsprose/core to throw "multipe singleton instances" error.
         // @ts-ignore
-        delete globalThis['__JSPROSE__'];
+        //delete globalThis['__JSPROSE__'];
 
         await setupAppRuntimeConfig();
     },

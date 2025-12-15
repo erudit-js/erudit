@@ -30,8 +30,8 @@
     "dependencies": {
         "@erudit-js/core": "catalog:",
         "chalk": "catalog:",
-        "consola": "catalog:",
-        "citty": "^0.1.6"
+        "citty": "^0.1.6",
+        "consola": "catalog:"
     },
     "devDependencies": {
         "unbuild": "^3.6.1"

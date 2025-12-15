@@ -1,8 +1,12 @@
 <script setup lang="ts">
 const route = useRoute();
-const practiceId = route.params.practiceId;
+const practiceId = Array.isArray(route.params.practiceId)
+    ? route.params.practiceId.join('/')
+    : route.params.practiceId!;
+const contentTypePath = stringifyContentTypePath('practice', practiceId);
+const mainContent = await useMainContent<MainContentTopicPart>(contentTypePath);
 </script>
 
 <template>
-    <h1>Practice {{ practiceId }}</h1>
+    <MainTopicPartPage :mainContent />
 </template>

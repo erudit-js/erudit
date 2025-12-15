@@ -4,10 +4,10 @@
 /* Tailwind CSS Config */
 @import 'tailwindcss' source(none);
 @source '../..';
-@source '../../../prose/src/app/front';
-@source '../../../prose/src/default';
-@source '../../../prose/src/elements';
-@source '../../../prose/src/shared';
+/* /packages/erudit/app/styles/main.css -> /packages/prose/src */
+@source '../../../prose/src';
+/* /node_modules/erudit/app/styles/main.css -> /node_modules/@erudit-js/prose/dist */
+@source '../../../@erudit-js/prose/dist';
 
 @custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
 
@@ -45,7 +45,7 @@
     --color-bg-main: light-dark(#ffffff, #212121);
     --color-bg-accent: light-dark(#e6e6e6, #2e2e2e);
     --color-text: light-dark(#373737, #b9b9b9);
-    --color-text-deep: light-dark(#232323, #e1e1e1);
+    --color-text-deep: light-dark(#181818, #fff);
     --color-text-muted: light-dark(#696969, #7f7f7f);
     --color-text-dimmed: light-dark(#969696, #616161);
     --color-text-disabled: light-dark(#b9b9b9, #4f4f4f);

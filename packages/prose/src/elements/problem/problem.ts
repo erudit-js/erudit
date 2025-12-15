@@ -16,7 +16,6 @@ import {
     type ProblemContentChild,
 } from './problemContent.js';
 import { defineEruditTag } from '../../tag.js';
-import type { EruditRawElement } from '../../rawElement.js';
 import { defineEruditProseCoreElement } from '../../coreElement.js';
 
 export interface ProblemData {
@@ -63,9 +62,19 @@ export const Problem = defineEruditTag({
         );
 
         element.storageKey = problemScriptStrorageKey(props.script.scriptSrc);
+
+        const generatedChildren = props.script.createProblemContent(123, {
+            language: 'en',
+            linkable: true,
+        }) as any;
+
+        console.log(generatedChildren);
+
+        validateProblemContent(tagName, generatedChildren.children);
+        element.children = generatedChildren.children;
     } else {
         validateProblemContent(tagName, children);
-        element.children = children as EruditRawElement<ProblemContentChild>[];
+        element.children = children as any;
     }
 });
 

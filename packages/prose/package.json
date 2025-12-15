@@ -17,10 +17,12 @@
         "./elements/*": {
             "import": "./dist/elements/*.js",
             "types": "./dist/elements/*.d.ts"
-        }
+        },
+        "./types": "./types.d.ts"
     },
     "files": [
-        "dist"
+        "dist",
+        "types.d.ts"
     ],
     "license": "MIT",
     "scripts": {

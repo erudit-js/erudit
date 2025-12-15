@@ -2,7 +2,6 @@
 useThemeWatcher();
 useAsideMajorPaneWatcher();
 await initAppElements();
-console.log(appElements);
 </script>
 
 <template>

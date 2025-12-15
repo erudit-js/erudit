@@ -15,6 +15,12 @@ describe('Emphasis', () => {
             expect(asEruditRaw(<B>Bold Text</B>).data).toStrictEqual({
                 type: 'bold',
             });
+            expect(
+                asEruditRaw(<B accent={true}>Bold Accent Text</B>).data,
+            ).toStrictEqual({
+                type: 'bold',
+                accent: true,
+            });
             expect(asEruditRaw(<I>Italic Text</I>).data).toStrictEqual({
                 type: 'italic',
             });

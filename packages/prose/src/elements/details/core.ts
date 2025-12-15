@@ -51,6 +51,7 @@ export const Details = defineEruditTag({
     if (title) {
         element.data = { title };
         element.slug = title;
+        element.title = title;
     }
 });
 

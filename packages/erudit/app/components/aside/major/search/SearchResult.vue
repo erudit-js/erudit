@@ -53,13 +53,13 @@ if (isElementCategory) {
                 class="group p-normal text-text-muted hocus:text-text text-sm
                     transition-[color]"
             >
-                <div class="gap-normal flex items-center">
+                <div class="gap-small flex items-center">
                     <div class="relative h-[1em] w-[1em]">
                         <TransitionFade>
                             <MaybeMyIcon
                                 :name="icon"
                                 :key="iconKey"
-                                class="absolute top-[1px] left-0"
+                                class="absolute top-px left-0"
                             />
                         </TransitionFade>
                     </div>

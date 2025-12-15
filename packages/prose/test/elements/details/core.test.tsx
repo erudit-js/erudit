@@ -57,6 +57,7 @@ describe('Details', () => {
 
             expect(detailsWithTitle.data.title).toBe('More Info');
             expect(detailsWithTitle.slug).toBe('More Info');
+            expect(detailsWithTitle.title).toBe('More Info');
         });
     });
 });

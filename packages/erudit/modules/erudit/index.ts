@@ -24,6 +24,8 @@ import { setupProseElements } from './setup/elements';
 export default defineNuxtModule({
     meta: { name: 'Erudit', configKey: 'erudit', version },
     async setup(_, nuxt) {
+        // const transpile = (nuxt.options.build.transpile ||= []);
+        // transpile.push('katex');
         moduleLogger.start('Setting up Erudit module...');
 
         const { eruditRuntimeConfig, eruditPublicRuntimeConfig } =
@@ -31,7 +33,6 @@ export default defineNuxtModule({
 
         await setupWatchers(nuxt, eruditRuntimeConfig);
         await setupVirtualContributors(nuxt, eruditRuntimeConfig);
-
         await setupEruditFullRestart(nuxt, eruditRuntimeConfig);
         await setupEruditAliases(nuxt, eruditRuntimeConfig);
         await registerModuleGlobals();

@@ -8,6 +8,7 @@ export const contentUniques = sqliteTable(
         contentFullId: text().notNull(),
         contentProseType: text().notNull().$type<ContentProseType>(),
         uniqueName: text().notNull(),
+        title: text(),
         prose: text({ mode: 'json' })
             .$type<ProseElement<AnySchema>>()
             .notNull(),

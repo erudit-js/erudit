@@ -12,7 +12,7 @@
         "jsx": "react-jsx",
         "jsxImportSource": "@jsprose/core",
         "paths": {
-            "@erudit-js/prose/shared/core": ["./src/shared/core/index.ts"],
+            "@erudit-js/prose/shared/*": ["./src/shared/*"],
             "@erudit-js/prose/elements/*": ["./src/elements/*"],
             "@erudit-js/prose": ["./src/index.ts"]
         }

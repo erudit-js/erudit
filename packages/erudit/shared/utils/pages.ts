@@ -13,10 +13,12 @@ export const PAGES = {
     ['group']: (shortId: string) => {
         return slasher(`/group/${shortId}/`);
     },
-    ['page']: (shortId: string, domId?: string) => {
-        return slasher(`/page/${shortId}/${domId ? '#' + domId : ''}`);
+    ['page']: (shortId: string, elementId?: string) => {
+        return slasher(`/page/${shortId}/${elementId ? '#' + elementId : ''}`);
     },
-    ['topic']: (part: TopicPart, shortId: string, domId?: string) => {
-        return slasher(`/${part}/${shortId}/${domId ? '#' + domId : ''}`);
+    ['topic']: (part: TopicPart, shortId: string, elementId?: string) => {
+        return slasher(
+            `/${part}/${shortId}/${elementId ? '#' + elementId : ''}`,
+        );
     },
 };

@@ -4,7 +4,7 @@ type PayloadMainContent = {
 };
 
 export async function useMainContent<TMainContent extends MainContent>(
-    contentPath: string,
+    contentTypePath: string,
 ) {
     const nuxtApp = useNuxtApp();
     const payloadKey = 'main-content';
@@ -14,10 +14,10 @@ export async function useMainContent<TMainContent extends MainContent>(
             {});
 
     let mainContentPromise = async () => {
-        if (payloadMainContent.contentPath !== contentPath) {
-            payloadMainContent.contentPath = contentPath;
+        if (payloadMainContent.contentPath !== contentTypePath) {
+            payloadMainContent.contentPath = contentTypePath;
             payloadMainContent.mainContent = await $fetch(
-                '/api/mainContent/' + contentPath,
+                '/api/main/content/' + contentTypePath,
                 {
                     responseType: 'json',
                 },

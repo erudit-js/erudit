@@ -173,7 +173,7 @@ export const BlockMath = defineEruditTag({
         freeze: props.freeze === true,
     };
 
-    element.storageKey = `$$${katex}$$`;
+    element.storageKey = `$$ ${katex} $$`;
 });
 
 export const blockMathRegistryItem = defineRegistryItem({

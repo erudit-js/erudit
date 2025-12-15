@@ -19,11 +19,14 @@ export async function getImageSize(
 
 export async function createImageStorage(
     projectAbsPath: string,
+    projectBaseUrl: string,
     imageAbsoluteSrc: string,
 ): Promise<ImageStorage> {
     const size = await getImageSize(imageAbsoluteSrc);
     const resolvedSrc =
-        'file/' + projectRelFilePath(projectAbsPath, imageAbsoluteSrc);
+        projectBaseUrl +
+        'file/' +
+        projectRelFilePath(projectAbsPath, imageAbsoluteSrc);
 
     return {
         resolvedSrc,

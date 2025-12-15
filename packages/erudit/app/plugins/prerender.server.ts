@@ -20,11 +20,9 @@ export default defineNuxtPlugin({
         const routeProviders = [
             '/api/prerender/files',
             '/api/prerender/frontNav',
-            // Old below:
             '/api/prerender/contributors',
             '/api/prerender/language',
             '/api/prerender/content',
-            '/api/prerender/uniques',
         ];
 
         for (const provider of routeProviders) {

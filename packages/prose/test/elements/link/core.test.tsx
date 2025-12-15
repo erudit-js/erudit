@@ -140,14 +140,14 @@ describe('linkStep', () => {
                     stringifyProseLink({
                         type: 'unique',
                         documentId: otherDocumentLink,
-                        uniqueId: uniqueName2Id('externalP'),
+                        uniqueName: 'externalP',
                     }),
 
                     // Link to self unique
                     stringifyProseLink({
                         type: 'unique',
                         documentId: thisDocumentLink,
-                        uniqueId: uniqueName2Id('internalP'),
+                        uniqueName: 'internalP',
                     }),
                 ]),
             );

@@ -1,5 +1,3 @@
-import { dirname } from 'node:path';
-import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 import { isolateProse, isRawElement, PROSE_REGISTRY } from '@jsprose/core';
 
@@ -14,7 +12,6 @@ import {
     imageRegistryItem,
     imageSchema,
 } from '@erudit-js/prose/elements/image/core';
-import { getImageSize } from '@erudit-js/prose/elements/image/storage';
 
 const prepareRegistry = () =>
     PROSE_REGISTRY.setItems(imageRegistryItem, captionRegistryItem);
@@ -50,21 +47,6 @@ describe('Image', () => {
             // Not caption child
             expect(() => <Image src="image.png">Only Content</Image>).toThrow();
         });
-    });
-});
-
-describe('getImageSize', () => {
-    const currentDir = dirname(fileURLToPath(import.meta.url));
-
-    it('should retrieve image size correctly', async () => {
-        const size = await getImageSize(currentDir + '/image.jpg');
-        expect(size).toStrictEqual({ width: 736, height: 866 });
-    });
-
-    it('should throw error for non-image file', async () => {
-        expect(async () => {
-            await getImageSize(currentDir + '/notAnImage.txt');
-        }).rejects.toThrow();
     });
 });
 

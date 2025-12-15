@@ -20,7 +20,6 @@
 import {
     defineRegistryItem,
     defineSchema,
-    ensureTagBlockChildren,
     ensureTagChildren,
     ensureTagNoChildren,
     isRawElement,

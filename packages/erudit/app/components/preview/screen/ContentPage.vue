@@ -1,16 +1,21 @@
 <script lang="ts" setup>
+import type { PreviewRequestContentPage } from '@erudit-js/core/preview/request';
+
 const { request } = defineProps<{ request: PreviewRequestContentPage }>();
+
+const contentTypeKey =
+    request.contentType === 'topic' ? request.topicPart : request.contentType;
 
 const previewData: PreviewContentPage = await $fetch(
     '/api/preview/contentPage/' +
-        createContentPath(request.typeOrPart!, request.fullId) +
+        stringifyContentTypePath(contentTypeKey, request.fullId) +
         '.json',
     {
         responseType: 'json',
     },
 );
 
-const icon = ICONS[previewData.topicPart ?? previewData.type];
+const icon = ICONS[contentTypeKey];
 
 const phrase = await usePhrases(
     'book',
@@ -24,7 +29,7 @@ const phrase = await usePhrases(
 );
 
 const secondary =
-    phrase[previewData.topicPart ?? previewData.type] +
+    phrase[contentTypeKey] +
     (previewData.bookTitle ? ` • ${previewData.bookTitle}` : '');
 </script>
 

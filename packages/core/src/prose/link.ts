@@ -42,7 +42,7 @@ export interface DocumentProseLink extends BaseProseLink {
 export interface UniqueProseLink extends BaseProseLink {
     type: 'unique';
     documentId: DocumentId;
-    uniqueId: string;
+    uniqueName: string;
 }
 
 export interface ContentItemProseLink extends BaseProseLink {
@@ -65,7 +65,7 @@ export function stringifyProseLink(proseLink: ProseLink): string {
         case 'unique':
             return `unique/${stringifyDocumentId(
                 proseLink.documentId,
-            )}/${proseLink.uniqueId}`;
+            )}/${proseLink.uniqueName}`;
         case 'contentItem':
             return `contentItem/${stringifyContentItemId(proseLink.itemId)}`;
     }
@@ -91,11 +91,11 @@ export function parseProseLink(strProseLink: string): ProseLink | undefined {
                 documentId: parseDocumentId(parts.join('/')),
             };
         case 'unique':
-            const uniqueId = parts.pop()!;
+            const uniqueName = parts.pop()!;
             return {
                 type: 'unique',
                 documentId: parseDocumentId(parts.join('/')),
-                uniqueId,
+                uniqueName,
             };
         case 'contentItem':
             return {

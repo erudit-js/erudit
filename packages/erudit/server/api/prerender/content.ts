@@ -1,0 +1,65 @@
+export default defineEventHandler(async () => {
+    const routes: string[] = [];
+
+    routes.push(...(await pages()));
+    routes.push(...(await contentUniques()));
+    routes.push(...(await problemScripts()));
+
+    return routes;
+});
+
+export async function pages() {
+    const routes: string[] = [];
+
+    for (const navNode of ERUDIT.contentNav.id2Node.values()) {
+        if (navNode.type === 'topic') {
+            const topicParts = await ERUDIT.repository.content.topicParts(
+                navNode.fullId,
+            );
+
+            for (const part of topicParts) {
+                routes.push(PAGES.topic(part, navNode.shortId));
+                routes.push(
+                    `/api/preview/contentPage/${stringifyContentTypePath(part, navNode.fullId)}.json`,
+                );
+            }
+        } else {
+            routes.push(PAGES[navNode.type](navNode.shortId));
+            routes.push(
+                `/api/preview/contentPage/${stringifyContentTypePath(
+                    navNode.type,
+                    navNode.fullId,
+                )}.json`,
+            );
+        }
+    }
+    return routes;
+}
+
+export async function contentUniques() {
+    const routes: string[] = [];
+
+    const dbUniques = await ERUDIT.db.query.contentUniques.findMany({
+        columns: {
+            contentFullId: true,
+            contentProseType: true,
+            uniqueName: true,
+        },
+    });
+
+    for (const dbUnique of dbUniques) {
+        routes.push(
+            `/api/preview/contentUnique/${stringifyContentTypePath(dbUnique.contentProseType, dbUnique.contentFullId)}/${dbUnique.uniqueName}.json`,
+        );
+    }
+
+    return routes;
+}
+
+export async function problemScripts() {
+    //
+    // Problem scripts for each node (they can intersect, check this!)
+    //
+
+    return [];
+}

@@ -1,4 +1,7 @@
 <script lang="ts" setup>
+import type { PreviewType } from '@erudit-js/core/preview/type';
+import type { PreviewRequest } from '@erudit-js/core/preview/request';
+
 import {
     LazyPreviewScreenContentPage,
     LazyPreviewScreenDirectLink,
@@ -14,9 +17,9 @@ const screenKey = ref(0);
 const loading = ref(true);
 
 const screenComponents: Record<PreviewType, Component> = {
-    [PreviewType.DirectLink]: LazyPreviewScreenDirectLink,
-    [PreviewType.ContentPage]: LazyPreviewScreenContentPage,
-    [PreviewType.Unique]: LazyPreviewScreenUnique,
+    ['direct-link']: LazyPreviewScreenDirectLink,
+    ['content-page']: LazyPreviewScreenContentPage,
+    ['unique']: LazyPreviewScreenUnique,
 };
 
 const currentRequest = shallowRef<PreviewRequest>();
