@@ -27,15 +27,12 @@ export default defineEventHandler<Promise<string>>(async (event) => {
         },
         charset: 'utf8',
         bundle: true,
-        platform: 'neutral',
         treeShaking: true,
+        platform: 'neutral',
         format: 'esm',
         write: false,
-        keepNames: true,
         jsx: 'automatic',
-        jsxImportSource: '@jsprose/core',
-        external: ['@jsprose/core/jsx-runtime'],
-        plugins: [staticFilesPlugin],
+        plugins: [jsxRuntimePlugin, staticFilesPlugin],
         alias: {
             '#project': ERUDIT.config.paths.project + '/',
             '#content': ERUDIT.config.paths.project + '/content/',
@@ -45,15 +42,29 @@ export default defineEventHandler<Promise<string>>(async (event) => {
     });
 
     let code = buildResult.outputFiles[0].text;
-    // Remove jsx-runtime import since jsx and Fragment are globally available
-    code = code.replace(
-        /import\s*{[^}]*}\s*from\s*["']@jsprose\/core\/jsx-runtime["'];?\s*/g,
-        '',
-    );
 
     setHeader(event, 'Content-Type', 'text/javascript');
     return code;
 });
+
+const jsxRuntimePlugin: Plugin = {
+    name: 'jsx-runtime',
+    setup(build) {
+        build.onResolve({ filter: /^react\/jsx-runtime$/ }, () => ({
+            path: 'jsx-runtime-shim',
+            namespace: 'jsx-runtime-shim',
+        }));
+
+        build.onLoad({ filter: /.*/, namespace: 'jsx-runtime-shim' }, () => ({
+            contents: `
+                export const jsx = globalThis.jsx;
+                export const jsxs = globalThis.jsxs;
+                export const Fragment = globalThis.Fragment;
+            `,
+            loader: 'js',
+        }));
+    },
+};
 
 const staticFilesPlugin: Plugin = {
     name: 'static-files',

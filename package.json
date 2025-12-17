@@ -43,7 +43,7 @@
         "prettier-plugin-merge": "^0.8.0",
         "prettier-plugin-tailwindcss": "^0.7.2",
         "typescript": "^5.9.3",
-        "vitest": "^4.0.15"
+        "vitest": "^4.0.16"
     },
     "dependencies": {
         "slash": "^5.1.0"

@@ -50,7 +50,6 @@
         "nuxt": "4.2.2",
         "nuxt-my-icons": "1.2.2",
         "perfect-debounce": "^2.0.0",
-        "rollup": "^4.53.5",
         "tailwindcss": "^4.1.17",
         "vue": "catalog:",
         "vue-router": "catalog:"
