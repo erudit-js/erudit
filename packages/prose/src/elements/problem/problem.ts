@@ -63,15 +63,8 @@ export const Problem = defineEruditTag({
 
         element.storageKey = problemScriptStrorageKey(props.script.scriptSrc);
 
-        const generatedChildren = props.script.createProblemContent(123, {
-            language: 'en',
-            linkable: true,
-        }) as any;
-
-        console.log(generatedChildren);
-
-        validateProblemContent(tagName, generatedChildren.children);
-        element.children = generatedChildren.children;
+        const generatedChildren = props.script.createProblemContent() as any;
+        element.children = generatedChildren;
     } else {
         validateProblemContent(tagName, children);
         element.children = children as any;

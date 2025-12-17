@@ -8,6 +8,7 @@ import {
     problemSchema,
 } from '@erudit-js/prose/elements/problem/problem';
 import {
+    problemAnswer,
     ProblemDescription,
     problemDescriptionSchema,
 } from '@erudit-js/prose/elements/problem/problemContent';
@@ -18,6 +19,21 @@ import {
 } from '@erudit-js/prose/elements/problem/problemScript';
 
 import { prepareRegistry, ProblemAnswer } from './problemContent.test';
+
+export const problemScript = defineProblemScript(
+    constructProblemScriptId('myScriptSrc', 'myScriptName'),
+    {
+        isGenerator: false,
+        initialSeed: 'my-seed!',
+    },
+)(() => (
+    <>
+        <ProblemDescription>Hello World!</ProblemDescription>
+        <ProblemAnswer>
+            <P>This is my answer!</P>
+        </ProblemAnswer>
+    </>
+));
 
 const _prepareRegistry = () => {
     prepareRegistry();
@@ -55,21 +71,6 @@ describe('Problem', () => {
         isolateProse(() => {
             _prepareRegistry();
 
-            const problemScript = defineProblemScript(
-                constructProblemScriptId('myScriptSrc', 'myScriptName'),
-                {
-                    isGenerator: false,
-                    initialSeed: 'my-seed!',
-                },
-            )(() => (
-                <>
-                    <ProblemDescription>Hello World!</ProblemDescription>
-                    <ProblemAnswer>
-                        <P>This is my answer!</P>
-                    </ProblemAnswer>
-                </>
-            ));
-
             const scriptProblem = asEruditRaw(
                 <Problem
                     title="Script Problem"
@@ -80,7 +81,19 @@ describe('Problem', () => {
             );
 
             expect(isRawElement(scriptProblem, problemSchema)).toBe(true);
-            expect(scriptProblem.data.script).toEqual('scriptSrc ↦ scriptName');
+            expect(scriptProblem.data.script).toEqual(
+                'myScriptSrc/myScriptName',
+            );
+            expect(scriptProblem.children!.length).toBe(2);
+            expect(
+                isRawElement(
+                    scriptProblem.children![0],
+                    problemDescriptionSchema,
+                ),
+            ).toBe(true);
+            expect(
+                isRawElement(scriptProblem.children![1], problemAnswer.schema),
+            ).toBe(true);
             expect(scriptProblem.data.info).toStrictEqual({
                 title: 'Script Problem',
                 level: 'example',
@@ -130,38 +143,31 @@ describe('Problem', () => {
     });
 });
 
-// describe('problemScriptStep', () => {
-//     it('should collect problem scripts', async () => {
-//         await isolateProse(async () => {
-//             _prepareRegistry();
+describe('problemScriptStep', () => {
+    it('should collect problem scripts', async () => {
+        await isolateProse(async () => {
+            _prepareRegistry();
 
-//             const { problemScripts } = await resolveEruditRawElement({
-//                 context: {
-//                     language: 'en',
-//                     linkable: true,
-//                 },
-//                 rawElement: (
-//                     <>
-//                         <Problem
-//                             title="Script Problem"
-//                             level="example"
-//                             applied
-//                             script={defineProblemScript(
-//                                 constructProblemScriptId(
-//                                     'scriptSrc',
-//                                     'scriptName',
-//                                 ),
-//                                 {
-//                                     isGenerator: true,
-//                                     initialSeed: 123,
-//                                 },
-//                             )(() => 42 as any)}
-//                         />
-//                     </>
-//                 ),
-//             });
+            const { problemScripts } = await resolveEruditRawElement({
+                context: {
+                    language: 'en',
+                    linkable: true,
+                },
+                rawElement: (
+                    <>
+                        <Problem
+                            title="Script Problem"
+                            level="example"
+                            applied
+                            script={problemScript}
+                        />
+                    </>
+                ),
+            });
 
-//             expect(problemScripts).toEqual(new Set(['scriptSrc ↦ scriptName']));
-//         });
-//     });
-// });
+            expect(problemScripts).toEqual(
+                new Set(['myScriptSrc/myScriptName']),
+            );
+        });
+    });
+});

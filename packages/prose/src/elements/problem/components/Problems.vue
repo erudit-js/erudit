@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, watchEffect } from 'vue';
 import {
     isProseElement,
     type BlockSchema,
@@ -8,6 +8,7 @@ import {
 
 import { subProblemSchema, type problemsSchema } from '../problems.js';
 import { useFormatText } from '../../../app/composables/formatText.js';
+import { useArrayContainsAnchor } from '../../../app/composables/anchor.js';
 import SubProblem from './SubProblem.vue';
 import Block from '../../../app/shared/block/Block.vue';
 import ProblemContainer from './ProblemContainer.vue';
@@ -38,6 +39,14 @@ function getUnlabeledOrdinal(index: number) {
     }
     return count;
 }
+
+const containsAnchorI = useArrayContainsAnchor(subProblems);
+
+watchEffect(() => {
+    if (containsAnchorI.value !== undefined) {
+        activeSubProblemI.value = containsAnchorI.value;
+    }
+});
 </script>
 
 <template>
@@ -67,10 +76,12 @@ function getUnlabeledOrdinal(index: number) {
                     }}
                 </ProblemButton>
             </div>
-            <SubProblem
-                :key="activeSubProblemI"
-                :element="subProblems[activeSubProblemI]"
-            />
+            <Suspense>
+                <SubProblem
+                    :key="activeSubProblemI"
+                    :element="subProblems[activeSubProblemI]"
+                />
+            </Suspense>
         </ProblemContainer>
     </Block>
 </template>

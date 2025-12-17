@@ -12,6 +12,24 @@ export const myScript = defineProblemScript({
 })(() => (
     <>
         <ProblemDescription>Hello World!</ProblemDescription>
+        <ProblemHint>
+            <P>This is a hint for the problem.</P>
+        </ProblemHint>
+        <ProblemHint>
+            <P>Another hint for the problem.</P>
+        </ProblemHint>
+
+        <ProblemNote>
+            <P>Общие положения</P>
+            <BlockMath>{`
+                E = mc^2
+            `}</BlockMath>
+            <ProblemSection title='Привет, "мир"!'>
+                <P>Это секция внутри заметки.</P>
+            </ProblemSection>
+        </ProblemNote>
+
+        <ProblemCheck answer={42} label="Какой ответ?" />
     </>
 ));
 

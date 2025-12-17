@@ -71,9 +71,9 @@ function linkClick() {
             @click.capture.prevent="linkClick"
             :to="linkStorage.resolvedHref"
             :style="{ '--tGap': '1px', '--xGap': '4px', '--bGap': '4px' }"
-            class="text-brand hocus:bg-brand/15 relative -mx-(--xGap)
-                -mt-(--tGap) -mb-(--bGap) rounded-sm bg-transparent px-(--xGap)
-                pt-(--tGap) pb-(--bGap) underline
+            class="text-brand hocus:bg-brand/15 relative
+                -mx-[calc(var(--xGap)-3px)] -mt-(--tGap) -mb-(--bGap) rounded-sm
+                bg-transparent px-(--xGap) pt-(--tGap) pb-(--bGap) underline
                 decoration-[color-mix(in_srgb,var(--color-brand)30%,transparent)]
                 decoration-2 underline-offset-2 transition-[color,background]"
         >

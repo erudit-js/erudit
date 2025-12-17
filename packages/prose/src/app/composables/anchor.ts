@@ -11,7 +11,7 @@ import type { AnySchema, ProseElement } from '@jsprose/core';
 
 export interface AnchorState {
     anchorResolving: Ref<boolean>;
-    jumpedToAnchor: Ref<boolean>;
+    allowJumpToAnchor: Ref<boolean>;
     anchorElement: Ref<ProseElement<AnySchema> | undefined>;
     containsAnchorElements: Ref<Set<ProseElement<AnySchema>>>;
 }
@@ -21,7 +21,7 @@ export function useAnchorState(
     element: ProseElement<AnySchema>,
 ): AnchorState {
     const anchorResolving = shallowRef(false);
-    const jumpedToAnchor = shallowRef(false);
+    const allowJumpToAnchor = shallowRef(false);
     const anchorElement = shallowRef<ProseElement<AnySchema>>();
     const containsAnchorElements = shallowRef<Set<ProseElement<AnySchema>>>(
         new Set(),
@@ -32,7 +32,7 @@ export function useAnchorState(
             hashId,
             () => {
                 anchorResolving.value = true;
-                jumpedToAnchor.value = false;
+                allowJumpToAnchor.value = true;
                 anchorElement.value = undefined;
                 containsAnchorElements.value = new Set();
 
@@ -81,7 +81,7 @@ export function useAnchorState(
 
     return {
         anchorResolving,
-        jumpedToAnchor,
+        allowJumpToAnchor,
         anchorElement,
         containsAnchorElements,
     };
@@ -121,17 +121,23 @@ export function useAnchorResolving() {
     return anchorResolving;
 }
 
-export function useResolveAnchor() {
-    const { jumpedToAnchor, anchorResolving } = inject(anchorStateSymbol)!;
+export function useJumpToAnchor() {
+    const { allowJumpToAnchor } = inject(anchorStateSymbol)!;
 
     return (element: HTMLElement) => {
-        if (!jumpedToAnchor.value) {
+        if (allowJumpToAnchor.value) {
             element.scrollIntoView({
                 block: 'center',
             });
         }
+    };
+}
 
-        jumpedToAnchor.value = true;
+export function useResolveAnchor() {
+    const { allowJumpToAnchor, anchorResolving } = inject(anchorStateSymbol)!;
+
+    return () => {
+        allowJumpToAnchor.value = false;
         anchorResolving.value = false;
     };
 }

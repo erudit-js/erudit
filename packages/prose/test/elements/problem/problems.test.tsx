@@ -15,12 +15,9 @@ import {
     problemDescriptionSchema,
 } from '@erudit-js/prose/elements/problem/problemContent';
 import { P, paragraphSchema } from '@erudit-js/prose/elements/paragraph/core';
-import {
-    constructProblemScriptId,
-    defineProblemScript,
-} from '@erudit-js/prose/elements/problem/problemScript';
 
 import { prepareRegistry } from './problemContent.test';
+import { problemScript } from './problem.test';
 
 const _prepareRegistry = () => {
     prepareRegistry();
@@ -60,22 +57,13 @@ describe('SubProblem', () => {
             _prepareRegistry();
 
             const scriptSubProblem = asEruditRaw(
-                <SubProblem
-                    label="foo"
-                    script={defineProblemScript(
-                        constructProblemScriptId('scriptSrc', 'scriptName'),
-                        {
-                            isGenerator: true,
-                            initialSeed: 123,
-                        },
-                    )(() => 42 as any)}
-                />,
+                <SubProblem label="foo" script={problemScript} />,
             );
 
             expect(isRawElement(scriptSubProblem, subProblemSchema)).toBe(true);
             expect(scriptSubProblem.data).toStrictEqual({
                 label: 'foo',
-                script: 'scriptSrc ↦ scriptName',
+                script: 'myScriptSrc/myScriptName',
             });
         });
     });
@@ -129,15 +117,7 @@ describe('Problems', () => {
                             <P>Second paragraph</P>
                         </ProblemDescription>
                     </SubProblem>
-                    <SubProblem
-                        script={defineProblemScript(
-                            constructProblemScriptId('scriptSrc', 'scriptName'),
-                            {
-                                isGenerator: true,
-                                initialSeed: 123,
-                            },
-                        )(() => 42 as any)}
-                    />
+                    <SubProblem script={problemScript} />
                 </Problems>,
             );
 
@@ -185,24 +165,15 @@ describe('problemScriptStep', () => {
                                     First paragraph
                                 </ProblemDescription>
                             </SubProblem>
-                            <SubProblem
-                                script={defineProblemScript(
-                                    constructProblemScriptId(
-                                        'scriptSrc',
-                                        'scriptName',
-                                    ),
-                                    {
-                                        isGenerator: true,
-                                        initialSeed: 123,
-                                    },
-                                )(() => 42 as any)}
-                            />
+                            <SubProblem script={problemScript} />
                         </Problems>
                     </>
                 ),
             });
 
-            expect(problemScripts).toEqual(new Set(['scriptSrc ↦ scriptName']));
+            expect(problemScripts).toEqual(
+                new Set(['myScriptSrc/myScriptName']),
+            );
         });
     });
 });

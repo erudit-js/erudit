@@ -35,6 +35,7 @@ import { defineEruditTag } from '../../tag.js';
 import { defineEruditProseCoreElement } from '../../coreElement.js';
 import { uppercaseFirst, type UppercaseFirst } from '../../utils/case.js';
 import type { EruditRawElement } from '../../rawElement.js';
+import { tryParagraphWrap } from '../../shared/paragraphWrap.js';
 
 //
 // Description
@@ -56,6 +57,11 @@ export const ProblemDescription = defineEruditTag({
 })<TagChildren>(({ element, tagName, children }) => {
     ensureTagChildren(tagName, children);
     element.children = children;
+
+    const paragraphWrap = tryParagraphWrap(children);
+    if (paragraphWrap) {
+        element.children = paragraphWrap;
+    }
 });
 
 export const problemDescriptionRegistryItem = defineRegistryItem({
@@ -87,6 +93,11 @@ export const ProblemHint = defineEruditTag({
 })<TagChildren>(({ element, tagName, children }) => {
     ensureTagChildren(tagName, children);
     element.children = children;
+
+    const paragraphWrap = tryParagraphWrap(children);
+    if (paragraphWrap) {
+        element.children = paragraphWrap;
+    }
 });
 
 export const problemHintRegistryItem = defineRegistryItem({
@@ -118,6 +129,11 @@ export const ProblemSection = defineEruditTag({
 })<{ title: string } & TagChildren>(({ element, tagName, props, children }) => {
     ensureTagChildren(tagName, children);
     element.children = children;
+
+    const paragraphWrap = tryParagraphWrap(children);
+    if (paragraphWrap) {
+        element.children = paragraphWrap;
+    }
 
     const title = props.title.trim();
     if (!title) {

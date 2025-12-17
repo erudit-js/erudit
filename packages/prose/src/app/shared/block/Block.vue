@@ -12,7 +12,11 @@ import type { BlockSchema, ProseElement } from '@jsprose/core';
 
 import { useProseContext } from '../../composables/context.js';
 import { useElementIcon } from '../../composables/elementIcon.js';
-import { useIsAnchor, useResolveAnchor } from '../../composables/anchor.js';
+import {
+    useIsAnchor,
+    useJumpToAnchor,
+    useResolveAnchor,
+} from '../../composables/anchor.js';
 import AsideMenu from './AsideMenu.vue';
 
 const { element } = defineProps<{ element: ProseElement<BlockSchema> }>();
@@ -45,7 +49,82 @@ const outsideClickHandler = (e: MouseEvent) => {
 };
 
 const isAnchor = useIsAnchor(element);
+const jumpToAnchor = useJumpToAnchor();
 const resolveAnchor = useResolveAnchor();
+
+/**
+ * Waits for the element's position to be stable in the viewport before resolving the anchor.
+ * Stability is defined as the element remaining in the same position for some duration.
+ * If the element moves during this period, the timer is reset.
+ *
+ * @param element - The DOM element to monitor for position stability
+ * @param onStable - Callback to execute once the element is stable
+ * @param onCleanup - Vue's cleanup callback to register cleanup handlers
+ */
+const waitForStablePosition = (
+    element: HTMLElement,
+    onStable: () => void,
+    onCleanup: (fn: () => void) => void,
+) => {
+    const stableDuration = 300;
+
+    let lastPosition = { top: 0, left: 0 };
+    let stableTimer: number | undefined;
+    let animationFrameId: number | undefined;
+    let resolved = false;
+
+    /**
+     * Continuously checks if the element's position has changed.
+     * If a change is detected, the stability timer is reset.
+     * Uses requestAnimationFrame for efficient, synchronized position monitoring.
+     */
+    const checkStability = () => {
+        if (resolved) return;
+
+        const rect = element.getBoundingClientRect();
+        const currentPosition = { top: rect.top, left: rect.left };
+
+        // Detect position changes and reset stability timer
+        if (
+            lastPosition.top !== currentPosition.top ||
+            lastPosition.left !== currentPosition.left
+        ) {
+            lastPosition = currentPosition;
+            clearTimeout(stableTimer);
+
+            // Start new 200ms countdown for stability
+            stableTimer = window.setTimeout(() => {
+                resolved = true;
+                onStable();
+            }, stableDuration);
+        }
+
+        // Continue monitoring on next frame
+        animationFrameId = requestAnimationFrame(checkStability);
+    };
+
+    // Initialize tracking with current position
+    const initialRect = element.getBoundingClientRect();
+    lastPosition = { top: initialRect.top, left: initialRect.left };
+
+    // Start initial stability timer
+    stableTimer = window.setTimeout(() => {
+        resolved = true;
+        cancelAnimationFrame(animationFrameId!);
+        onStable();
+    }, stableDuration);
+
+    // Begin position monitoring
+    animationFrameId = requestAnimationFrame(checkStability);
+
+    // Cleanup timers and animation frames when effect is disposed
+    onCleanup(() => {
+        clearTimeout(stableTimer);
+        if (animationFrameId !== undefined) {
+            cancelAnimationFrame(animationFrameId);
+        }
+    });
+};
 
 watch(menuVisible, (visible) => {
     if (visible) {
@@ -56,10 +135,17 @@ watch(menuVisible, (visible) => {
 });
 
 onMounted(() => {
-    watchEffect(async () => {
+    watchEffect(async (onCleanup) => {
         if (isAnchor.value) {
-            await new Promise((resolve) => setTimeout(resolve, 50));
-            resolveAnchor(blockElement.value!);
+            jumpToAnchor(blockElement.value!);
+            waitForStablePosition(
+                blockElement.value!,
+                () => {
+                    jumpToAnchor(blockElement.value!);
+                    resolveAnchor();
+                },
+                onCleanup,
+            );
         }
     });
 

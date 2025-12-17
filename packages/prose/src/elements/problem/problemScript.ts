@@ -1,19 +1,18 @@
 import {
+    isRawElement,
+    mixSchema,
     ProseError,
     type AnySchema,
-    type mixSchema,
     type NormalizedChildren,
-    type ProseElement,
     type RawElement,
 } from '@jsprose/core';
 
 import { normalizeSeed, Random, type ProblemSeed } from './rng.js';
-import type { EruditProseContext } from '../../context.js';
 import {
     validateProblemContent,
     type ProblemContentChild,
 } from './problemContent.js';
-import { resolveEruditRawElement } from '../../resolve.js';
+import { projectRelFilePath } from '../../shared/filePath.js';
 
 /**
  * Static seed not random for SEO reasons.
@@ -21,20 +20,20 @@ import { resolveEruditRawElement } from '../../resolve.js';
  */
 const DEFAULT_SEED = '3141592653';
 
-const scriptSrcNameSeparator = ' ↦ ';
-
 export function constructProblemScriptId(
     scriptSrc: string,
     scriptName: string,
 ): string {
-    return `${scriptSrc}${scriptSrcNameSeparator}${scriptName}`;
+    return `${scriptSrc}/${scriptName}`;
 }
 
 export function parseProblemScriptId(scriptId: string): {
     scriptSrc: string;
     scriptName: string;
 } {
-    const [scriptSrc, scriptName] = scriptId.split(scriptSrcNameSeparator);
+    const lastSlashIndex = scriptId.lastIndexOf('/');
+    const scriptSrc = scriptId.substring(0, lastSlashIndex);
+    const scriptName = scriptId.substring(lastSlashIndex + 1);
     return { scriptSrc, scriptName };
 }
 
@@ -48,17 +47,14 @@ export interface ProblemScript {
     scriptName: string;
     isGenerator: boolean;
     createProblemContent: (
-        seed: ProblemSeed,
-        context: EruditProseContext,
-    ) =>
-        | ProseElement<ProblemContentChild>[]
-        | Promise<ProseElement<ProblemContentChild>[]>;
+        seed?: ProblemSeed,
+    ) => RawElement<ProblemContentChild>[];
 }
 
 export type BuildProblemContentFunction = (args: {
     initial: boolean;
     random: Random;
-}) => RawElement<AnySchema> | Promise<RawElement<AnySchema>>;
+}) => RawElement<AnySchema>;
 
 export type DefineProblemScriptReturn = (
     buildProblemContent: BuildProblemContentFunction,
@@ -97,7 +93,7 @@ When using defineProblemScript, you must either provide ID explicitly or insert 
         );
     }
 
-    const [scriptSrc, scriptName] = scriptId.split(scriptSrcNameSeparator);
+    const { scriptSrc, scriptName } = parseProblemScriptId(scriptId);
     const isGenerator = definition.isGenerator ?? false;
     const initialSeed = definition.initialSeed ?? DEFAULT_SEED;
 
@@ -105,35 +101,32 @@ When using defineProblemScript, you must either provide ID explicitly or insert 
         buildProblemContent: (args: {
             initial: boolean;
             random: Random;
-        }) => RawElement<AnySchema> | Promise<RawElement<AnySchema>>,
+        }) => RawElement<AnySchema>,
     ): ProblemScript {
         return {
             scriptSrc,
             scriptName,
             isGenerator,
-            async createProblemContent(
-                seed: ProblemSeed,
-                context: EruditProseContext,
-            ) {
-                const normalizedSeed = normalizeSeed(seed);
+            createProblemContent(seed?: ProblemSeed) {
+                const normalizedSeed = normalizeSeed(seed ?? initialSeed);
                 const random = new Random(normalizedSeed);
-                const problemContentMix = (await buildProblemContent({
-                    initial: normalizedSeed === normalizeSeed(initialSeed),
+                const problemContentMix = buildProblemContent({
+                    initial: seed === undefined,
                     random,
-                })) as RawElement<typeof mixSchema>;
+                });
+
+                if (!isRawElement(problemContentMix, mixSchema)) {
+                    throw new ProseError(
+                        `Problem script must return a <Mix> of problem content tags!`,
+                    );
+                }
 
                 validateProblemContent(
                     `[Problem Script: ${scriptId}]`,
                     problemContentMix.children as NormalizedChildren,
                 );
 
-                const proseProblemContent = await resolveEruditRawElement({
-                    context: { ...context, linkable: false },
-                    rawElement: problemContentMix,
-                });
-
-                return proseProblemContent.proseElement
-                    .children as ProseElement<ProblemContentChild>[];
+                return problemContentMix.children as any;
             },
         };
     }
@@ -180,4 +173,18 @@ export type ProblemScriptStorage = {
 
 export function problemScriptStrorageKey(scriptSrc: string): string {
     return `problemScript:${scriptSrc}`;
+}
+
+export function createProblemScriptStorage(
+    projectAbsPath: string,
+    projectBaseUrl: string,
+    scriptAbsoluteSrc: string,
+): ProblemScriptStorage {
+    const resolvedSrc =
+        projectBaseUrl +
+        'api/problemScript/' +
+        projectRelFilePath(projectAbsPath, scriptAbsoluteSrc);
+    return {
+        resolvedScriptSrc: resolvedSrc,
+    };
 }

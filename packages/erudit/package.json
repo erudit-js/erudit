@@ -29,8 +29,8 @@
         "test": "bun vitest run"
     },
     "dependencies": {
-        "@erudit-js/core": "catalog:",
         "@erudit-js/cli": "catalog:",
+        "@erudit-js/core": "catalog:",
         "@erudit-js/prose": "catalog:",
         "@floating-ui/vue": "catalog:",
         "@jsprose/core": "catalog:",
@@ -50,6 +50,7 @@
         "nuxt": "4.2.2",
         "nuxt-my-icons": "1.2.2",
         "perfect-debounce": "^2.0.0",
+        "rollup": "^4.53.5",
         "tailwindcss": "^4.1.17",
         "vue": "catalog:",
         "vue-router": "catalog:"

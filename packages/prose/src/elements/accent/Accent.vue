@@ -18,7 +18,6 @@ import Block from '../../app/shared/block/Block.vue';
 import Render from '../../app/shared/Render.vue';
 import AccentColumnSection from './AccentColumnSection.vue';
 import AccentRowSections from './AccentRowSections.vue';
-import { useContainsAnchor } from '../../app/composables/anchor.js';
 
 const { element } = defineProps<{ element: ProseElement<AccentSchema> }>();
 

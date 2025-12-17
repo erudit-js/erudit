@@ -75,6 +75,9 @@ export const SubProblem = defineEruditTag({
         );
 
         element.storageKey = problemScriptStrorageKey(props.script.scriptSrc);
+
+        const generatedChildren = props.script.createProblemContent() as any;
+        element.children = generatedChildren;
     } else {
         validateProblemContent(tagName, children);
         element.children = children as any;
@@ -135,7 +138,6 @@ export const Problems = defineEruditTag({
 
     element.children = [...otherChildren, ...subProblemChildren];
     element.data = problemProps2Info(props);
-
     element.title = element.data.title;
     element.snippet = { search: true };
     element.toc = { add: true };

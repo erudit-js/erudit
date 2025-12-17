@@ -6,6 +6,7 @@ import {
     problemDescriptionCoreElement,
     problemHintCoreElement,
     problemNote,
+    problemSectionCoreElement,
     problemSolution,
 } from './problemContent.js';
 import { problemsCoreElement, subProblemCoreElement } from './problems.js';
@@ -17,6 +18,7 @@ export default defineEruditProseCoreElements(
     problemSolution.coreElement,
     problemNote.coreElement,
     problemCheckCoreElement,
+    problemSectionCoreElement,
     //
     problemCoreElement,
     subProblemCoreElement,

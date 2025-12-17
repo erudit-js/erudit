@@ -50,14 +50,16 @@ watchEffect(() => {
             ]"
         ></div>
     </div>
-    <div
-        v-if="openedSectionI !== undefined"
-        :key="openedSectionI"
-        class="py-(--proseAsideWidth)"
-    >
-        <Render
-            v-for="child of sections[openedSectionI].children"
-            :element="child"
-        />
-    </div>
+    <Suspense>
+        <div
+            v-if="openedSectionI !== undefined"
+            :key="openedSectionI"
+            class="py-(--proseAsideWidth)"
+        >
+            <Render
+                v-for="child of sections[openedSectionI].children"
+                :element="child"
+            />
+        </div>
+    </Suspense>
 </template>

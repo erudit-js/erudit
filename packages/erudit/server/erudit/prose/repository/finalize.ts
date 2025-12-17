@@ -18,6 +18,9 @@ import { createImageStorage } from '../storage/image';
 import { createVideoStorage } from '../storage/video';
 import { createCalloutStorage } from '../storage/callout';
 import { createLinkStorage } from '../storage/link';
+import { problemSchema } from '@erudit-js/prose/elements/problem/problem';
+import { subProblemSchema } from '@erudit-js/prose/elements/problem/problems';
+import { createProblemScriptStorage } from '../storage/problemScript';
 
 export async function finalizeProse(
     proseElement: ProseElement<AnySchema>,
@@ -42,6 +45,10 @@ export async function finalizeProse(
                 case isProseElement(element, linkSchema):
                 case isProseElement(element, blockLinkSchema):
                     await createLinkStorage(element, storage);
+                    break;
+                case isProseElement(element, problemSchema):
+                case isProseElement(element, subProblemSchema):
+                    await createProblemScriptStorage(element, storage);
                     break;
             }
         },

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { isolateProse, isProseElement } from '@jsprose/core';
+import { isolateProse, isProseElement, isRawElement } from '@jsprose/core';
 
 import { P } from '@erudit-js/prose/elements/paragraph/core';
 import {
@@ -40,11 +40,9 @@ describe('Problem Script', () => {
                 );
             });
 
-            await expect(
-                problemScript.createProblemContent(42, {
-                    language: 'en',
-                }),
-            ).rejects.toThrow(/script1 ↦ TestScript/);
+            expect(() => problemScript.createProblemContent()).toThrow(
+                /script1\/TestScript/,
+            );
         });
     });
 
@@ -68,18 +66,13 @@ describe('Problem Script', () => {
                 );
             });
 
-            const problemContent = await problemScript.createProblemContent(
-                42,
-                {
-                    language: 'en',
-                },
-            );
+            const problemContent = problemScript.createProblemContent(42);
 
             expect(problemContent).toHaveLength(2);
             expect(
-                isProseElement(problemContent[0], problemDescriptionSchema),
+                isRawElement(problemContent[0], problemDescriptionSchema),
             ).toBe(true);
-            expect(isProseElement(problemContent[1], problemCheckSchema)).toBe(
+            expect(isRawElement(problemContent[1], problemCheckSchema)).toBe(
                 true,
             );
         });
@@ -107,7 +100,7 @@ const myScript = exports.myScript = defineProblemScript()(() => <></>);
 
         expect(transformedCode).toBe(
             `
-export const A = defineProblemScript('myScriptSource ↦ A', {
+export const A = defineProblemScript('myScriptSource/A', {
   foo: 1
 });
 
@@ -115,18 +108,18 @@ export const C = defineProblemScript("already:here", {
   c: 3
 });
 
-export const D = defineProblemScript('myScriptSource ↦ D', { d: 4 });
+export const D = defineProblemScript('myScriptSource/D', { d: 4 });
 
-export const E = defineProblemScript('myScriptSource ↦ E', )(() => <></>);
+export const E = defineProblemScript('myScriptSource/E', )(() => <></>);
 
-const myScript = exports.myScript = defineProblemScript('myScriptSource ↦ myScript', )(() => <></>);
+const myScript = exports.myScript = defineProblemScript('myScriptSource/myScript', )(() => <></>);
         `.trim(),
         );
     });
 
     it('should not throw when defining problem script without arg object', () => {
         expect(() => {
-            defineProblemScript('scriptSrc ↦ scriptName')(() => (
+            defineProblemScript('scriptSrc/scriptName')(() => (
                 <ProblemDescription>Description</ProblemDescription>
             ));
         }).not.toThrow();
