@@ -257,7 +257,8 @@ function setupGlobalTagTypes(
             .map((line) => '    ' + line)
             .join('\n');
 
-    const dtsCode = `
+    const dtsCode = `export {};
+
 declare global {
 ${Array.from(tags.values())
     .map(
@@ -266,8 +267,6 @@ ${Array.from(tags.values())
     )
     .join('\n')}
 }
-
-export {};
     `.trim();
 
     writeFileSync(runtimeConfig.paths.build + '/types/tags.d.ts', dtsCode);

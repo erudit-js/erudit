@@ -53,6 +53,14 @@ export async function registerServerGlobals(
             from: `${runtimeConfig.paths.server}/global`,
         },
         {
+            name: '$CONTRIBUTOR',
+            from: `${runtimeConfig.paths.server}/contributors/global`,
+        },
+        {
+            name: '$LINK',
+            from: `${runtimeConfig.paths.server}/link/global`,
+        },
+        {
             name: 'defineContributor',
             from: `${runtimeConfig.paths.module}/globals/contributor`,
         },

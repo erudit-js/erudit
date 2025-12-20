@@ -1,13 +1,14 @@
 import chalk from 'chalk';
 import chokidar from 'chokidar';
 import { debounce } from 'perfect-debounce';
+import slash from 'slash';
 
 // Builders
 import { buildContributors } from './contributors/build';
 import { buildSponsors } from './sponsors/build';
 import { buildContentNav } from './content/nav/build';
-import slash from 'slash';
 import { resolveContent } from './content/resolve';
+import { buildLink } from './link/build';
 
 export type EruditServerChangedFiles = Set<string>;
 export type EruditServerBuildError = Error | undefined;
@@ -21,6 +22,7 @@ export async function buildServerErudit() {
             await buildContributors();
             await buildSponsors();
             await buildContentNav();
+            await buildLink();
             await resolveContent();
             ERUDIT.log.success(chalk.green('Build Complete!'));
         } catch (buildError) {
@@ -86,13 +88,7 @@ export async function tryServerWatchProject() {
         }
 
         if (path.startsWith(ERUDIT.config.paths.project + '/contributors/')) {
-            // Only watch files inside contributor folders, not the contributors directory itself
-            const relativePath = path.substring(
-                (ERUDIT.config.paths.project + '/contributors/').length,
-            );
-            const pathParts = relativePath.split('/');
-            // Must have at least 2 parts: contributorId/filename
-            return pathParts.length >= 2;
+            return true;
         }
 
         if (path.startsWith(ERUDIT.config.paths.project + '/cameos/')) {

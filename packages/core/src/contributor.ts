@@ -13,29 +13,49 @@ export function defineContributor(contributor: ContributorDefinition) {
 }
 
 //
-// Virtual Contributors
+// Contributors Global
 //
 
-export interface VirtualContributor {
-    __ERUDIT_virtualContributor: true;
-    contributorId: string;
+export function contributorIdToPropertyName(contributorId: string): string {
+    return contributorId
+        .split('-')
+        .map((p, i) => (i === 0 ? p : p.charAt(0).toUpperCase() + p.slice(1)))
+        .join('');
 }
 
-export type VirtualContributors = Record<string, VirtualContributor>;
-
-export function virtualContributorsModule(contributorIds: string[]) {
-    let module = 'export {};\n';
+export function globalContributorsObject(
+    contributorIds: string[],
+): Record<string, string> {
+    const contributors: Record<string, string> = {};
 
     for (const contributorId of contributorIds) {
-        const exportName = contributorId
-            .split('-')
-            .map((p, i) =>
-                i === 0 ? p : p.charAt(0).toUpperCase() + p.slice(1),
-            )
-            .join('');
+        const exportName = contributorIdToPropertyName(contributorId);
 
-        module += `export const ${exportName} = { __ERUDIT_virtualContributor: true, contributorId: '${contributorId}' } as const;\n`;
+        if (contributors[exportName]) {
+            throw new Error(
+                `Duplicate contributor export name detected: "${exportName}" (from contributor ID: "${contributorId}")!`,
+            );
+        }
+
+        contributors[exportName] = contributorId;
     }
 
-    return module;
+    return contributors;
+}
+
+export function globalContributorsTypes(
+    contributors: Record<string, string>,
+): string {
+    const entries = Object.keys(contributors)
+        .map((key) => `        ${key}: ${JSON.stringify(contributors[key])};`)
+        .join('\n');
+
+    return `export {};
+
+declare global {
+    const $CONTRIBUTOR: {
+${entries}
+    };
+}
+`;
 }

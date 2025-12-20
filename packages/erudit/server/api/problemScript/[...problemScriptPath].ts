@@ -31,13 +31,14 @@ export default defineEventHandler<Promise<string>>(async (event) => {
         platform: 'neutral',
         format: 'esm',
         write: false,
+        define: {
+            $CONTRIBUTOR: '{}',
+        },
         jsx: 'automatic',
         plugins: [jsxRuntimePlugin, staticFilesPlugin],
         alias: {
             '#project': ERUDIT.config.paths.project + '/',
             '#content': ERUDIT.config.paths.project + '/content/',
-            '#contributors':
-                ERUDIT.config.paths.build + '/nuxt/.nuxt/#erudit/contributors',
         },
     });
 

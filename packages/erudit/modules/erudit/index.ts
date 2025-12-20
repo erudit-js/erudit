@@ -5,7 +5,6 @@ import { moduleLogger } from './logger';
 import { setupWatchers } from './watcher';
 
 // Setup procedures
-import { setupVirtualContributors } from './setup/virtualContributors';
 import { setupEruditRuntimeConfig } from './setup/runtimeConfig';
 import { setupEruditFullRestart } from './setup/fullRestart';
 import { setupEruditAliases } from './setup/aliases';
@@ -32,7 +31,6 @@ export default defineNuxtModule({
             await setupEruditRuntimeConfig(nuxt);
 
         await setupWatchers(nuxt, eruditRuntimeConfig);
-        await setupVirtualContributors(nuxt, eruditRuntimeConfig);
         await setupEruditFullRestart(nuxt, eruditRuntimeConfig);
         await setupEruditAliases(nuxt, eruditRuntimeConfig);
         await registerModuleGlobals();

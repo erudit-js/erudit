@@ -1,44 +1,15 @@
-import { testContributor1 } from '#contributors';
-
 import shady from '#project/contributors/test-contributor-1/shady.jpg';
 import nuxtSchemeDark from './nuxt-scheme-dark.png';
 
 import fooTopic from '../2-foo-group/1-foo-topic/article';
 import fooGroup from '../2-foo-group/group';
 
-export const myScript = defineProblemScript({
-    initialSeed: 'aboba',
-    isGenerator: true,
-})(() => (
-    <>
-        <ProblemDescription>Hello World!</ProblemDescription>
-        <ProblemHint>
-            <P>This is a hint for the problem.</P>
-        </ProblemHint>
-        <ProblemHint>
-            <P>Another hint for the problem.</P>
-        </ProblemHint>
-
-        <ProblemNote>
-            <P>Общие положения</P>
-            <BlockMath>{`
-                E = mc^2
-            `}</BlockMath>
-            <ProblemSection title='Привет, "мир"!'>
-                <P>Это секция внутри заметки.</P>
-            </ProblemSection>
-        </ProblemNote>
-
-        <ProblemCheck answer={42} label="Какой ответ?" />
-    </>
-));
+import { myScript } from '#project/content/2-foo-group/1-foo-topic/problems/myProblem/problem';
 
 export const page = definePage({
     title: 'Test Page',
     description: 'This is a test page for Erudit.',
-    contributors: {
-        testContributor1,
-    },
+    contributors: [$CONTRIBUTOR.testContributor1],
 });
 
 export default defineDocument({

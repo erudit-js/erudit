@@ -1,10 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import {
-    defineDocument,
-    isolateProse,
-    PROSE_REGISTRY,
-    uniqueName2Id,
-} from '@jsprose/core';
+import { defineDocument, isolateProse, PROSE_REGISTRY } from '@jsprose/core';
 import { stringifyProseLink } from '@erudit-js/core/prose/link';
 
 import { asEruditRaw, resolveEruditRawElement } from '@erudit-js/prose';

@@ -2,6 +2,8 @@ import mobEffect from './mob-effect.png';
 import ds2 from './ds2.mp4';
 import blonde from './blonde.png';
 
+import { myScript } from '#project/content/2-foo-group/1-foo-topic/problems/myProblem/problem';
+
 export default defineDocument({
     uniques: {
         tastyHeading: H1,
@@ -11,6 +13,9 @@ export default defineDocument({
 })(({ uniques }) => (
     <>
         <H1 $={uniques.tastyHeading}>Foo "Article"</H1>
+
+        <Problem title="Моя задача" level="medium" script={myScript} />
+
         <P $={uniques.myP} toc="My Life!">
             This is a foo
             <Br />
@@ -34,7 +39,7 @@ export default defineDocument({
             </Caption>
         </Image>
         <BlockMath freeze>{`
-            A^2 + \\brand{B^{\\default{2}}} = C^2 \\ (a+b)^1 \\ (a+b)^5 \\ (a+b)^10
+            A^2 + \\brand{B^{\\default{2}}} = C^2 >> (a+b)^1 >> (a+b)^5 >> (a+b)^10
         `}</BlockMath>
         <Term title="My Term Title" row>
             <TermMain>
@@ -111,8 +116,8 @@ export default defineDocument({
     </>
 ));
 
-export const myScript = defineProblemScript()(() => (
-    <>
-        <ProblemDescription>Здесь мой путь и кончается</ProblemDescription>
-    </>
-));
+// export const myScript = defineProblemScript()(() => (
+//     <>
+//         <ProblemDescription>Здесь мой путь и кончается</ProblemDescription>
+//     </>
+// ));

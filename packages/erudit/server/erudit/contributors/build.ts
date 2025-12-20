@@ -1,9 +1,15 @@
-import { readdirSync } from 'node:fs';
+import { readdirSync, writeFileSync } from 'node:fs';
 import { like } from 'drizzle-orm';
+import { globSync } from 'glob';
 import { isRawElement, type AnySchema, type ProseElement } from '@jsprose/core';
-import type { ContributorDefinition } from '@erudit-js/core/contributor';
+import {
+    globalContributorsObject,
+    globalContributorsTypes,
+    type ContributorDefinition,
+} from '@erudit-js/core/contributor';
 
-import * as virtualContributors from '#erudit/contributors';
+// Trigger globalThis update
+$CONTRIBUTOR;
 
 export async function buildContributors() {
     ERUDIT.log.debug.start('Building contributors...');
@@ -13,8 +19,20 @@ export async function buildContributors() {
         .delete(ERUDIT.db.schema.files)
         .where(like(ERUDIT.db.schema.files.role, 'contributor:%'));
 
-    let contributorIds: string[] = Object.values(virtualContributors).map(
-        (vc) => vc.contributorId,
+    const contributorIds = globSync(
+        `${ERUDIT.config.paths.project}/contributors/*/`,
+        { posix: true },
+    ).map((dirPath) => dirPath.split('/').pop() as string);
+
+    for (const key in $CONTRIBUTOR) {
+        delete $CONTRIBUTOR[key];
+    }
+
+    Object.assign($CONTRIBUTOR, globalContributorsObject(contributorIds));
+
+    writeFileSync(
+        `${ERUDIT.config.paths.build}/types/contributors.d.ts`,
+        globalContributorsTypes($CONTRIBUTOR),
     );
 
     for (const contributorId of contributorIds) {

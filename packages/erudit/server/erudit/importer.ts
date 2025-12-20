@@ -93,8 +93,6 @@ function createBaseJitiOptions(): JitiOptions {
         alias: {
             '#project/': ERUDIT.config.paths.project + '/',
             '#content/': ERUDIT.config.paths.project + '/content/',
-            '#contributors':
-                ERUDIT.config.paths.build + '/nuxt/.nuxt/#erudit/contributors',
         },
         jsx: {
             runtime: 'automatic',

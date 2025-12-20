@@ -58,9 +58,6 @@ export async function prepare({
             {
                 compilerOptions: {
                     paths: {
-                        '#contributors': [
-                            `${eruditBuildDir}/nuxt/.nuxt/#erudit/contributors`,
-                        ],
                         '#project/*': [`${projectPath}/*`],
                         '#content/*': [`${projectPath}/content/*`],
                     },

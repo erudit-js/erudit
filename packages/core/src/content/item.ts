@@ -1,4 +1,3 @@
-import type { VirtualContributors } from '../contributor.js';
 import type { ContentDependency } from './dependency.js';
 import type { ContentFlags } from './flags.js';
 import { type ContentItemId } from './itemId.js';
@@ -23,17 +22,15 @@ export type ContentItemBase = Partial<{
     hidden: boolean;
 
     /**
-     * You can access virtual contributors via `#contributors` virtual module:
+     * You can access contributors via `$CONTRIBUTOR` global variable:
      * ```ts
-     * import { fooContributor, barContributor } from '#contributors';
-     *
-     * contributors: {
-     *   fooContributor,
-     *   barContributor,
-     * },
+     * contributors: [
+     *   $CONTRIBUTOR.fooContributor,
+     *   $CONTRIBUTOR.barContributor,
+     * ],
      * ```
      */
-    contributors: VirtualContributors;
+    contributors: string[];
 
     /**
      * Mark content with specific flags.
