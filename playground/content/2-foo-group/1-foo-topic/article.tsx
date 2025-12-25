@@ -3,18 +3,31 @@ import ds2 from './ds2.mp4';
 import blonde from './blonde.png';
 
 import { myScript } from '#project/content/2-foo-group/1-foo-topic/problems/myProblem/problem';
+import { sumProblem } from './problems/sumProblem';
 
 export default defineDocument({
     uniques: {
         tastyHeading: H1,
         myP: P,
-        mathDeatils: Details,
+        _mathDetails: Details,
     },
-})(({ uniques }) => (
+})(({ uniques, autoUnique }) => (
     <>
         <H1 $={uniques.tastyHeading}>Foo "Article"</H1>
 
-        <Problem title="Моя задача" level="medium" script={myScript} />
+        <Problem
+            title="Моя задача"
+            level="medium"
+            script={myScript({ superFormula: autoUnique })}
+        />
+
+        <Problems title="Сложение" level="hard">
+            <SubProblem>
+                <ProblemDescription>Сколько будет 2 + 3?</ProblemDescription>
+                <ProblemAnswer>5</ProblemAnswer>
+            </SubProblem>
+            <SubProblem script={sumProblem()} />
+        </Problems>
 
         <P $={uniques.myP} toc="My Life!">
             This is a foo
@@ -56,11 +69,11 @@ export default defineDocument({
                         <P>First</P>
                         <P>
                             Second. Here is a little{' '}
-                            <A to={uniques.mathDeatils}>explanation</A> to help
+                            <A to={uniques._mathDetails}>explanation</A> to help
                             you understand.
                         </P>
                         <Details
-                            $={uniques.mathDeatils}
+                            $={uniques._mathDetails}
                             title="Объяснение формулы"
                         >
                             <P>This is what I always wanted to say!</P>

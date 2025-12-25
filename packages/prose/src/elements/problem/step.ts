@@ -12,7 +12,7 @@ export const problemScriptStep = defineResolveStep(({ rawElement }) => {
         return;
     }
 
-    const script = rawElement.data.script;
+    const script = rawElement.storageKey?.replace('problemScript:', '');
     if (script) {
         return script;
     }

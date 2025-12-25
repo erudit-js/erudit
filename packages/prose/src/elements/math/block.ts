@@ -180,17 +180,23 @@ export const blockMathRegistryItem = defineRegistryItem({
     schema: blockMathSchema,
     tags: [BlockMath],
     async createStorage(element) {
-        let result: MathGroup = {
-            gap: { type: 'normal' },
-            parts: ['<span style="color: red">KaTeX Error!</span>'],
-        };
-
-        try {
-            result = (await resolveMathGroups(element.data.katex)) as MathGroup;
-        } catch (error) {
-            console.error('Error while rendering math:', error);
-        }
-
-        return result;
+        return createBlockMathStorage(element.data.katex);
     },
 });
+
+export async function createBlockMathStorage(
+    katex: string,
+): Promise<MathGroup> {
+    let result: MathGroup = {
+        gap: { type: 'normal' },
+        parts: ['<span style="color: red">KaTeX Error!</span>'],
+    };
+
+    try {
+        result = (await resolveMathGroups(katex)) as MathGroup;
+    } catch (error) {
+        console.error('Error while rendering math:', error);
+    }
+
+    return result;
+}

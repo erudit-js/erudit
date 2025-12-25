@@ -1,9 +1,6 @@
 import shady from '#project/contributors/test-contributor-1/shady.jpg';
 import nuxtSchemeDark from './nuxt-scheme-dark.png';
 
-import fooTopic from '../2-foo-group/1-foo-topic/article';
-import fooGroup from '../2-foo-group/group';
-
 import { myScript } from '#project/content/2-foo-group/1-foo-topic/problems/myProblem/problem';
 
 export const page = definePage({
@@ -15,19 +12,20 @@ export const page = definePage({
 export default defineDocument({
     uniques: {
         //shadyImage: Image,
+        someMath: BlockMath,
     },
 })(({ uniques }) => (
     <>
         <H1>Test Page</H1>
         <P>
-            This is a <A to={fooTopic}>test page</A> for Erudit.
+            This is a <A to={$LINK.fooGroup.fooTopic}>test page</A> for Erudit.
         </P>
         <P>
-            Самое <A to={fooGroup}>обязательное время</A> сослаться на{' '}
-            <A to={fooTopic.uniques.tastyHeading}>заголовок</A>!
+            Самое <A to={$LINK.fooGroup}>обязательное время</A> сослаться на{' '}
+            <A to={$LINK.fooGroup.fooTopic.article.$tastyHeading}>заголовок</A>!
         </P>
-        <BlockLink to={fooGroup}>I love Foo Group!</BlockLink>
-        <BlockLink to={fooTopic.uniques.tastyHeading}>
+        <BlockLink to={$LINK.fooGroup}>I love Foo Group!</BlockLink>
+        <BlockLink to={$LINK.fooGroup.fooTopic.article.$tastyHeading}>
             Очень вам рекомендую ознамиться!
         </BlockLink>
         <Gallery>
@@ -75,15 +73,18 @@ export default defineDocument({
                 class rules,configurations,arrangement,combination,permutation fill
         `}</Diagram>
 
-        <P>{fooTopic.documentId}</P>
-
-        <Problem title="Aboba" level="hard" script={myScript} inter />
+        <Problem
+            title="Aboba"
+            level="hard"
+            script={myScript({ superFormula: uniques.someMath })}
+            inter
+        />
 
         <Problems title="Много разных задач" pretty level="example">
             <P>Это моя радость!</P>
             <SubProblem label="Первая задача">
                 <ProblemDescription>
-                    Это текст первой задачи.
+                    Это текст <A to={uniques.someMath}>первой</A> задачи.
                 </ProblemDescription>
             </SubProblem>
             <SubProblem>

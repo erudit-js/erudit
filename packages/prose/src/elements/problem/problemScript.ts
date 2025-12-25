@@ -1,137 +1,41 @@
 import {
     isRawElement,
-    mixSchema,
     ProseError,
     type AnySchema,
-    type NormalizedChildren,
+    type AnyUnique,
+    type AutoUnique,
+    type LinkableTag,
     type RawElement,
+    type Unique,
+    type WrapSchemas,
 } from '@jsprose/core';
 
-import { normalizeSeed, Random, type ProblemSeed } from './rng.js';
+import { DEFAULT_SEED, type ProblemSeed, Random } from './rng.js';
 import {
     validateProblemContent,
+    type CheckFunction,
     type ProblemContentChild,
 } from './problemContent.js';
-import { projectRelFilePath } from '../../shared/filePath.js';
 
-/**
- * Static seed not random for SEO reasons.
- * It ensures that initial problem content is always the same on each build, helping search engines to index the problem consistently.
- */
-const DEFAULT_SEED = '3141592653';
+//
+// Problem Script ID
+//
 
-export function constructProblemScriptId(
+export function stringifyProblemScriptId(
     scriptSrc: string,
-    scriptName: string,
+    exportName: string,
 ): string {
-    return `${scriptSrc}/${scriptName}`;
+    return `${scriptSrc}/${exportName}`;
 }
 
 export function parseProblemScriptId(scriptId: string): {
     scriptSrc: string;
-    scriptName: string;
+    exportName: string;
 } {
     const lastSlashIndex = scriptId.lastIndexOf('/');
     const scriptSrc = scriptId.substring(0, lastSlashIndex);
-    const scriptName = scriptId.substring(lastSlashIndex + 1);
-    return { scriptSrc, scriptName };
-}
-
-export interface ProblemScriptDefinition {
-    isGenerator?: boolean;
-    initialSeed?: ProblemSeed;
-}
-
-export interface ProblemScript {
-    scriptSrc: string;
-    scriptName: string;
-    isGenerator: boolean;
-    createProblemContent: (
-        seed?: ProblemSeed,
-    ) => RawElement<ProblemContentChild>[];
-}
-
-export type BuildProblemContentFunction = (args: {
-    initial: boolean;
-    random: Random;
-}) => RawElement<AnySchema>;
-
-export type DefineProblemScriptReturn = (
-    buildProblemContent: BuildProblemContentFunction,
-) => ProblemScript;
-
-export function defineProblemScript(): DefineProblemScriptReturn;
-
-export function defineProblemScript(
-    scriptId: string,
-    definition?: ProblemScriptDefinition,
-): DefineProblemScriptReturn;
-
-export function defineProblemScript(
-    definition: ProblemScriptDefinition,
-): DefineProblemScriptReturn;
-
-export function defineProblemScript(
-    idOrDefinition?: string | ProblemScriptDefinition,
-    maybeDefinition?: ProblemScriptDefinition,
-): DefineProblemScriptReturn {
-    let scriptId: string;
-    let definition: ProblemScriptDefinition;
-
-    if (typeof idOrDefinition === 'string') {
-        scriptId = idOrDefinition;
-        definition = maybeDefinition ?? {};
-    } else if (maybeDefinition) {
-        scriptId = idOrDefinition as string;
-        definition = maybeDefinition;
-    } else {
-        throw new ProseError(
-            `
-Problem script ID was not inserted!
-When using defineProblemScript, you must either provide ID explicitly or insert it at transform/bundle time.
-            `.trim(),
-        );
-    }
-
-    const { scriptSrc, scriptName } = parseProblemScriptId(scriptId);
-    const isGenerator = definition.isGenerator ?? false;
-    const initialSeed = definition.initialSeed ?? DEFAULT_SEED;
-
-    function createProblemContent(
-        buildProblemContent: (args: {
-            initial: boolean;
-            random: Random;
-        }) => RawElement<AnySchema>,
-    ): ProblemScript {
-        return {
-            scriptSrc,
-            scriptName,
-            isGenerator,
-            createProblemContent(seed?: ProblemSeed) {
-                const normalizedSeed = normalizeSeed(seed ?? initialSeed);
-                const random = new Random(normalizedSeed);
-                const problemContentMix = buildProblemContent({
-                    initial: seed === undefined,
-                    random,
-                });
-
-                if (!isRawElement(problemContentMix, mixSchema)) {
-                    throw new ProseError(
-                        `Problem script must return a <Mix> of problem content tags!`,
-                    );
-                }
-
-                validateProblemContent(
-                    `[Problem Script: ${scriptId}]`,
-                    problemContentMix.children as NormalizedChildren,
-                );
-
-                return problemContentMix.children as any;
-            },
-        };
-    }
-
-    return createProblemContent;
+    const exportName = scriptId.substring(lastSlashIndex + 1);
+    return { scriptSrc, exportName };
 }
 
 export function insertProblemScriptId(scriptSrc: string, code: string): string {
@@ -157,7 +61,7 @@ export function insertProblemScriptId(scriptSrc: string, code: string): string {
 
             const needsNoSpace = /^\s*\n/.test(argsContent);
             const comma = needsNoSpace ? ',' : ', ';
-            const newArgs = `'${constructProblemScriptId(scriptSrc, name)}'${comma}${argsContent}`;
+            const newArgs = `'${stringifyProblemScriptId(scriptSrc, name)}'${comma}${argsContent}`;
 
             return fullMatch.replace(
                 /defineProblemScript\(([\s\S]*?)\)/,
@@ -167,24 +71,147 @@ export function insertProblemScriptId(scriptSrc: string, code: string): string {
     );
 }
 
-export type ProblemScriptStorage = {
-    resolvedScriptSrc: string;
-};
+//
+// Problem Script
+//
 
-export function problemScriptStrorageKey(scriptSrc: string): string {
-    return `problemScript:${scriptSrc}`;
+export interface ProblemScriptDefinition {
+    uniques?: Record<string, LinkableTag>;
+    isGenerator?: boolean;
 }
 
-export function createProblemScriptStorage(
-    projectAbsPath: string,
-    projectBaseUrl: string,
-    scriptAbsoluteSrc: string,
-): ProblemScriptStorage {
-    const resolvedSrc =
-        projectBaseUrl +
-        'api/problemScript/' +
-        projectRelFilePath(projectAbsPath, scriptAbsoluteSrc);
-    return {
-        resolvedScriptSrc: resolvedSrc,
+export function defineProblemScript<
+    const TDefinition extends ProblemScriptDefinition,
+>(scriptIdOrDefinition?: string | TDefinition, maybeDefinition?: TDefinition) {
+    let scriptId: string;
+    let definition: TDefinition;
+
+    if (typeof scriptIdOrDefinition === 'string') {
+        scriptId = scriptIdOrDefinition;
+        definition = maybeDefinition!;
+    } else {
+        throw new ProseError(
+            `Problem script requires script ID to be manually specified or inserted at transform time!`,
+        );
+    }
+
+    const { scriptSrc, exportName } = parseProblemScriptId(scriptId);
+
+    type ProblemContentFn = (
+        args: (TDefinition['uniques'] extends Record<string, LinkableTag>
+            ? {
+                  uniques: {
+                      [K in keyof NonNullable<TDefinition['uniques']>]: Unique<
+                          NonNullable<TDefinition['uniques']>[K]
+                      >;
+                  };
+              }
+            : {}) &
+            (TDefinition['isGenerator'] extends true
+                ? { initial: boolean; random: Random }
+                : {}),
+    ) =>
+        | RawElement<AnySchema>
+        | {
+              problemContent: RawElement<AnySchema>;
+              check?: CheckFunction;
+          };
+
+    function defineProblemContent(problemContentFn: ProblemContentFn) {
+        function createProblemScriptInstance(
+            ...args: TDefinition['uniques'] extends Record<string, LinkableTag>
+                ? [
+                      uniquesMapping:
+                          | (() => AutoUnique)
+                          | {
+                                [K in keyof NonNullable<
+                                    TDefinition['uniques']
+                                >]:
+                                    | Unique<
+                                          NonNullable<TDefinition['uniques']>[K]
+                                      >
+                                    | (() => AutoUnique);
+                            },
+                  ]
+                : []
+        ) {
+            const finalizedUniques: Record<string, AnyUnique> = {};
+
+            if (definition.uniques) {
+                const uniquesMapping = args[0];
+                if (typeof uniquesMapping === 'function') {
+                    for (const key in definition.uniques) {
+                        finalizedUniques[key] = uniquesMapping() as any;
+                    }
+                } else {
+                    for (const key in uniquesMapping) {
+                        const mapping = uniquesMapping[key];
+                        if (typeof mapping === 'function') {
+                            finalizedUniques[key] = mapping() as any;
+                        } else {
+                            finalizedUniques[key] = mapping;
+                            // @ts-expect-error
+                            delete finalizedUniques[key].rawElement;
+                            // @ts-expect-error
+                            delete finalizedUniques[key].tag;
+                        }
+                    }
+                }
+            }
+
+            return {
+                scriptSrc,
+                exportName,
+                uniques: finalizedUniques,
+                isGenerator: definition.isGenerator ?? false,
+                generate: (seed?: ProblemSeed) => {
+                    const finalizedSeed = seed ?? DEFAULT_SEED;
+
+                    const problemContentResult = problemContentFn({
+                        uniques: finalizedUniques,
+                        ...(definition.isGenerator
+                            ? {
+                                  initial: finalizedSeed === DEFAULT_SEED,
+                                  random: new Random(finalizedSeed),
+                              }
+                            : {}),
+                    } as any);
+
+                    const problemContent = isRawElement(problemContentResult)
+                        ? problemContentResult
+                        : problemContentResult.problemContent;
+
+                    validateProblemContent(
+                        '[Problem Script]',
+                        problemContent.children as any,
+                    );
+
+                    return {
+                        problemContent: problemContent.children as WrapSchemas<
+                            'raw-prose',
+                            ProblemContentChild
+                        >[],
+                        check: !isRawElement(problemContentResult)
+                            ? problemContentResult.check
+                            : undefined,
+                    };
+                },
+            } as ProblemScriptInstance;
+        }
+
+        return createProblemScriptInstance;
+    }
+
+    return defineProblemContent;
+}
+
+export interface ProblemScriptInstance {
+    scriptSrc: string;
+    exportName: string;
+    uniques: Record<string, AnyUnique>;
+    isGenerator: boolean;
+    generate: (seed?: ProblemSeed) => {
+        problemContent: WrapSchemas<'raw-prose', ProblemContentChild>[];
+        check?: CheckFunction;
     };
 }

@@ -55,7 +55,11 @@ function linkClick() {
     if (doubleClick.timeout) {
         doubleClick.reset();
         closePreview();
-        window.open(baseUrl + linkStorage.resolvedHref, '_blank');
+        const openUrl =
+            linkStorage.type === 'direct'
+                ? linkStorage.resolvedHref
+                : baseUrl + linkStorage.resolvedHref.slice(1);
+        window.open(openUrl, '_blank');
         return false;
     }
 

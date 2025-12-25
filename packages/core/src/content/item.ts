@@ -1,14 +1,6 @@
-import type { ContentDependency } from './dependency.js';
 import type { ContentFlags } from './flags.js';
-import { type ContentItemId } from './itemId.js';
+import type { ContentDependency } from './dependencies.js';
 import type { ContentType } from './type.js';
-
-export type ContentItemBrand = {
-    __ERUDIT_contentItem: true;
-    itemId: ContentItemId;
-};
-
-export const injectIdPropertyName = '__contentId';
 
 export type ContentItemBase = Partial<{
     title: string;
@@ -22,6 +14,7 @@ export type ContentItemBase = Partial<{
     hidden: boolean;
 
     /**
+     * List of contributors to this content item.
      * You can access contributors via `$CONTRIBUTOR` global variable:
      * ```ts
      * contributors: [
@@ -50,16 +43,13 @@ export type ContentItemBase = Partial<{
      * Use this to emphasize important dependencies beyond the automatic ones.
      * @example
      * ```ts
-     * import combinatoricsBook from '1-combinatorics/book';
-     * import productRuleArticle from '1-combinatorics/2-product-rule/article';
-     *
      * dependencies: [
      *   {
-     *     dependency: combinatoricsBook,
+     *     dependency: $LINK.combinatorics,
      *     reason: 'Provides foundational concepts used in this topic.'
      *   },
      *   {
-     *     dependency: productRuleArticle,
+     *     dependency: $LINK.combinatorics.baseRules.product.$productRule,
      *     reason: 'This topic builds upon the product rule explained in that article.'
      *   },
      * ];
@@ -68,40 +58,25 @@ export type ContentItemBase = Partial<{
     dependencies: ContentDependency[];
 }>;
 
-export type ContentItem<T = {}> = ContentItemBrand & ContentItemBase & T;
-
-export type ContentItemArg<T = {}> = ContentItemBase & T;
+export type ContentItem = ContentItemBase & {
+    type: ContentType;
+};
 
 export function finalizeContentItem(
     type: ContentType,
-    data: ContentItemArg,
+    item: ContentItemBase,
 ): ContentItem {
-    const contentItem = {
-        __ERUDIT_contentItem: true,
-        itemId: {
-            type,
-            contentId: (data as any)[injectIdPropertyName],
-        },
-        ...data,
+    return {
+        ...item,
+        type,
     };
-
-    delete (contentItem as any)[injectIdPropertyName];
-
-    return contentItem as ContentItem;
 }
 
 export function isContentItem(
-    contentItem: unknown,
-    type?: ContentType,
-): contentItem is ContentItem {
-    const isItem =
-        typeof contentItem === 'object' &&
-        contentItem !== null &&
-        '__ERUDIT_contentItem' in contentItem;
-
-    if (type === undefined) {
-        return isItem;
-    }
-
-    return (contentItem as ContentItem).itemId.type === type;
+    item: any,
+    type: ContentType,
+): item is ContentItem {
+    return (
+        item && typeof item === 'object' && 'type' in item && item.type === type
+    );
 }

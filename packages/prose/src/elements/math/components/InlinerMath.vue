@@ -3,15 +3,20 @@ import 'katex/dist/katex.min.css';
 import type { ProseElement } from '@jsprose/core';
 
 import Inliner from '../../../app/shared/inliner/Inliner.vue';
-import type { inlinerMathSchema } from '../inliner.js';
+import {
+    createInlinerMathStorage,
+    type inlinerMathSchema,
+} from '../inliner.js';
 import { useElementStorage } from '../../../app/composables/storage.js';
 import Katex from './Katex.vue';
 
 const { element } = defineProps<{
     element: ProseElement<typeof inlinerMathSchema>;
 }>();
+
 const inlinerMathStorage =
-    await useElementStorage<typeof inlinerMathSchema>(element);
+    (await useElementStorage<typeof inlinerMathSchema>(element)) ??
+    (await createInlinerMathStorage(element.data));
 </script>
 
 <template>

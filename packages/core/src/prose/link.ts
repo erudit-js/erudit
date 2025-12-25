@@ -1,19 +1,10 @@
-import {
-    parseContentItemId,
-    stringifyContentItemId,
-    type ContentItemId,
-} from '../content/itemId.js';
-import {
-    parseDocumentId,
-    stringifyDocumentId,
-    type DocumentId,
-} from './documentId.js';
+import type { ContentPointer } from '../content/pointer.js';
 
 export const proseLinkTypes = [
     'direct',
-    'document',
-    'unique',
     'contentItem',
+    'unique',
+    // 'anonymousUnique' TODO! Passing anonymous uniques directly to the <A> tag
 ] as const;
 
 export type ProseLinkType = (typeof proseLinkTypes)[number];
@@ -34,73 +25,35 @@ export interface DirectProseLink extends BaseProseLink {
     href: string;
 }
 
-export interface DocumentProseLink extends BaseProseLink {
-    type: 'document';
-    documentId: DocumentId;
+export interface ContentItemProseLink extends BaseProseLink {
+    type: 'contentItem';
+    contentPointer: ContentPointer;
 }
 
 export interface UniqueProseLink extends BaseProseLink {
     type: 'unique';
-    documentId: DocumentId;
+    contentPointer: ContentPointer;
     uniqueName: string;
-}
-
-export interface ContentItemProseLink extends BaseProseLink {
-    type: 'contentItem';
-    itemId: ContentItemId;
 }
 
 export type ProseLink =
     | DirectProseLink
-    | DocumentProseLink
-    | UniqueProseLink
-    | ContentItemProseLink;
+    | ContentItemProseLink
+    | UniqueProseLink;
 
-export function stringifyProseLink(proseLink: ProseLink): string {
-    switch (proseLink.type) {
-        case 'direct':
-            return `direct/${proseLink.href}`;
-        case 'document':
-            return `document/${stringifyDocumentId(proseLink.documentId)}`;
-        case 'unique':
-            return `unique/${stringifyDocumentId(
-                proseLink.documentId,
-            )}/${proseLink.uniqueName}`;
-        case 'contentItem':
-            return `contentItem/${stringifyContentItemId(proseLink.itemId)}`;
-    }
+//
+//
+//
+
+declare const globalLinkBrand: unique symbol;
+
+/**
+ * Use only on type level to typeguard allowed values (for example, the "to" prop of <A> and <BlockLink> tags).
+ */
+export interface GlobalLinkTypeguard {
+    [globalLinkBrand]: true;
 }
 
-export function parseProseLink(strProseLink: string): ProseLink | undefined {
-    const parts = strProseLink.split('/');
-    const type = parts.shift()!;
-
-    if (!isProseLinkType(type)) {
-        return undefined;
-    }
-
-    switch (type) {
-        case 'direct':
-            return {
-                type: 'direct',
-                href: parts.join('/'),
-            };
-        case 'document':
-            return {
-                type: 'document',
-                documentId: parseDocumentId(parts.join('/')),
-            };
-        case 'unique':
-            const uniqueName = parts.pop()!;
-            return {
-                type: 'unique',
-                documentId: parseDocumentId(parts.join('/')),
-                uniqueName,
-            };
-        case 'contentItem':
-            return {
-                type: 'contentItem',
-                itemId: parseContentItemId(parts.join('/'))!,
-            };
-    }
+export interface GlobalLink {
+    __link: string;
 }

@@ -2,10 +2,6 @@ import { createJiti, type Jiti, type JitiOptions } from 'jiti';
 import slash from 'slash';
 import { insertDocumentId } from '@jsprose/core';
 import {
-    insertContentId,
-    pathToContentId,
-} from '@erudit-js/core/content/itemId';
-import {
     pathToDocumentId,
     stringifyDocumentId,
 } from '@erudit-js/core/prose/documentId';
@@ -43,7 +39,7 @@ export async function setupServerImporter() {
             let code = getDefaultCode(opts);
 
             //
-            // Handle prose documents (defineDocument)
+            // Insert IDs in `defineDocument(...)` calls
             //
 
             const documentId = pathToDocumentId(
@@ -59,20 +55,7 @@ export async function setupServerImporter() {
             }
 
             //
-            // Handle content items (defineBook|Page|Group|Topic)
-            //
-
-            const contentId = pathToContentId(
-                filename,
-                ERUDIT.config.paths.project,
-            );
-
-            if (contentId) {
-                code = insertContentId(code, contentId);
-            }
-
-            //
-            // Handle problem scripts
+            // Problem Scripts
             //
 
             code = insertProblemScriptId(filename, code);

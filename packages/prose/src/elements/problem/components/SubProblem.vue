@@ -4,12 +4,11 @@ import type { ProseElement } from '@jsprose/core';
 import type { subProblemSchema } from '../problems.js';
 import ProblemContent from './ProblemContent.vue';
 
-defineProps<{ element: ProseElement<typeof subProblemSchema> }>();
+const { element } = defineProps<{
+    element: ProseElement<typeof subProblemSchema>;
+}>();
 </script>
 
 <template>
-    <ProblemContent
-        :scriptUrl="element.data.script"
-        :initialElements="element.children"
-    />
+    <ProblemContent :element :initialElements="element.children" />
 </template>

@@ -1,5 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import { isolateProse, isRawElement, PROSE_REGISTRY } from '@jsprose/core';
+import {
+    defineUnique,
+    isolateProse,
+    isRawElement,
+    PROSE_REGISTRY,
+} from '@jsprose/core';
 
 import { P } from '@erudit-js/prose/elements/paragraph/core';
 import {
@@ -14,14 +19,14 @@ import {
 } from '@erudit-js/prose/elements/problem/problemContent';
 import { asEruditRaw, resolveEruditRawElement } from '@erudit-js/prose';
 import {
-    constructProblemScriptId,
     defineProblemScript,
+    stringifyProblemScriptId,
 } from '@erudit-js/prose/elements/problem/problemScript';
 
 import { prepareRegistry, ProblemAnswer } from './problemContent.test';
 
 export const problemScript = defineProblemScript(
-    constructProblemScriptId('myScriptSrc', 'myScriptName'),
+    stringifyProblemScriptId('myScriptSrc', 'myScriptName'),
     {
         isGenerator: false,
         initialSeed: 'my-seed!',
@@ -76,14 +81,11 @@ describe('Problem', () => {
                     title="Script Problem"
                     level="example"
                     applied
-                    script={problemScript}
+                    script={problemScript()}
                 />,
             );
 
             expect(isRawElement(scriptProblem, problemSchema)).toBe(true);
-            expect(scriptProblem.data.script).toEqual(
-                'myScriptSrc/myScriptName',
-            );
             expect(scriptProblem.children!.length).toBe(2);
             expect(
                 isRawElement(
@@ -105,6 +107,44 @@ describe('Problem', () => {
                 title: 'Script Problem',
             });
             expect(scriptProblem.toc).toEqual({ title: 'Script Problem' });
+        });
+    });
+
+    it('should store script uniques in problem data', () => {
+        const pUnique = defineUnique({
+            documentId: 'docId',
+            name: 'testUnique',
+            tag: P,
+        });
+
+        const problemScript = defineProblemScript('script-id', {
+            uniques: {
+                myP: P,
+            },
+        })(({ uniques }) => {
+            return (
+                <>
+                    <ProblemDescription>
+                        <P $={uniques.myP}>This is paragraph</P>
+                    </ProblemDescription>
+                </>
+            );
+        });
+
+        isolateProse(() => {
+            _prepareRegistry();
+
+            const scriptProblem = asEruditRaw(
+                <Problem
+                    title="Script Problem with Uniques"
+                    level="example"
+                    script={problemScript({
+                        myP: pUnique,
+                    })}
+                />,
+            );
+
+            expect(scriptProblem.data.scriptUniques!['myP']).toBe(pUnique);
         });
     });
 
@@ -159,7 +199,7 @@ describe('problemScriptStep', () => {
                             title="Script Problem"
                             level="example"
                             applied
-                            script={problemScript}
+                            script={problemScript()}
                         />
                     </>
                 ),

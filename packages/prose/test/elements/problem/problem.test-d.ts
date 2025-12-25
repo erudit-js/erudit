@@ -1,7 +1,7 @@
 import { describe, it } from 'vitest';
 
 import { Problem } from '@erudit-js/prose/elements/problem/problem';
-import type { ProblemScript } from '@erudit-js/prose/elements/problem/problemScript';
+import type { ProblemScriptInstance } from '@erudit-js/prose/elements/problem/problemScript';
 
 describe('Problem', () => {
     it('should allow only script or problem content children', () => {
@@ -9,7 +9,7 @@ describe('Problem', () => {
         Problem({
             title: 'Sample Problem',
             level: 'hard',
-            script: {} as ProblemScript,
+            script: undefined as any as ProblemScriptInstance,
             children: 3,
         });
     });

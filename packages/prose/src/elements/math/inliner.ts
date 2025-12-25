@@ -114,22 +114,28 @@ export const inlinerMathRegistryItem = defineRegistryItem({
     schema: inlinerMathSchema,
     tags: [M],
     async createStorage(element) {
-        const tokens = tryTextInlinerMath(element.data);
-
-        if (tokens) {
-            return tokens;
-        }
-
-        let mathHtml = '<span style="color: red">KaTeX Error!</span>';
-        try {
-            mathHtml = await latexToHtml(element.data, 'inline');
-        } catch (error) {
-            console.error('Error while rendering math:', error);
-        }
-
-        return {
-            type: 'katex',
-            mathHtml,
-        };
+        return createInlinerMathStorage(element.data);
     },
 });
+
+export async function createInlinerMathStorage(
+    katex: string,
+): Promise<InlinerMathStorage> {
+    const tokens = tryTextInlinerMath(katex);
+
+    if (tokens) {
+        return tokens;
+    }
+
+    let mathHtml = '<span style="color: red">KaTeX Error!</span>';
+    try {
+        mathHtml = await latexToHtml(katex, 'inline');
+    } catch (error) {
+        console.error('Error while rendering math:', error);
+    }
+
+    return {
+        type: 'katex',
+        mathHtml,
+    };
+}

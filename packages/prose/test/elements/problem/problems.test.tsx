@@ -57,13 +57,13 @@ describe('SubProblem', () => {
             _prepareRegistry();
 
             const scriptSubProblem = asEruditRaw(
-                <SubProblem label="foo" script={problemScript} />,
+                <SubProblem label="foo" script={problemScript()} />,
             );
 
             expect(isRawElement(scriptSubProblem, subProblemSchema)).toBe(true);
             expect(scriptSubProblem.data).toStrictEqual({
                 label: 'foo',
-                script: 'myScriptSrc/myScriptName',
+                scriptUniques: {},
             });
         });
     });
@@ -117,7 +117,7 @@ describe('Problems', () => {
                             <P>Second paragraph</P>
                         </ProblemDescription>
                     </SubProblem>
-                    <SubProblem script={problemScript} />
+                    <SubProblem script={problemScript()} />
                 </Problems>,
             );
 
@@ -165,7 +165,7 @@ describe('problemScriptStep', () => {
                                     First paragraph
                                 </ProblemDescription>
                             </SubProblem>
-                            <SubProblem script={problemScript} />
+                            <SubProblem script={problemScript()} />
                         </Problems>
                     </>
                 ),

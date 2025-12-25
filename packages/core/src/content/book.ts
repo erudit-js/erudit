@@ -1,11 +1,7 @@
-import {
-    finalizeContentItem,
-    type ContentItem,
-    type ContentItemArg,
-} from './item.js';
+import { finalizeContentItem, type ContentItemBase } from './item.js';
 
-export type BookContentItem = ContentItem;
+export type BookContentItem = ContentItemBase;
 
-export function defineBook(book?: ContentItemArg): BookContentItem {
+export function defineBook(book?: BookContentItem) {
     return finalizeContentItem('book', book ?? {});
 }

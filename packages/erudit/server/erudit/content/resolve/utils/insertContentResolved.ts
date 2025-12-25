@@ -1,6 +1,5 @@
 import type { ResolvedRawElement } from '@jsprose/core';
 import type { ContentProseType } from '@erudit-js/core/content/prose';
-import { parseProseLink } from '@erudit-js/core/prose/link';
 import type { ResolvedEruditRawElement } from '@erudit-js/prose';
 
 export async function insertContentResolved(
@@ -49,11 +48,11 @@ export async function insertContentResolved(
         );
     }
 
-    for (const link of resolveResult.links) {
-        await ERUDIT.repository.db.pushProseLink(
-            contentFullId,
-            contentProseType,
-            parseProseLink(link)!,
-        );
-    }
+    // for (const link of resolveResult.links) {
+    //     await ERUDIT.repository.db.pushProseLink(
+    //         contentFullId,
+    //         contentProseType,
+    //         parseProseLink(link)!,
+    //     );
+    // }
 }

@@ -1,6 +1,5 @@
 import { describe, expect, it } from 'vitest';
 import { defineDocument, isolateProse, PROSE_REGISTRY } from '@jsprose/core';
-import { stringifyProseLink } from '@erudit-js/core/prose/link';
 
 import { asEruditRaw, resolveEruditRawElement } from '@erudit-js/prose';
 import {
@@ -39,12 +38,7 @@ describe('Link', () => {
         isolateProse(() => {
             PROSE_REGISTRY.setItems(linkRegistryItem);
             const link = asEruditRaw(<A to="https://example.com">Example</A>);
-            expect(link.storageKey).toBe(
-                stringifyProseLink({
-                    type: 'direct',
-                    href: 'https://example.com',
-                }),
-            );
+            expect(link.storageKey).toBe('<link:direct>/https://example.com');
         });
     });
 });
@@ -96,7 +90,6 @@ describe('linkStep', () => {
 
                     <A to="https://example.com">Direct Link</A>
 
-                    <A to={otherDocument}>Document Link</A>
                     <BlockLink to={otherDocument.uniques.externalP}>
                         Link to External Unique
                     </BlockLink>
@@ -116,34 +109,17 @@ describe('linkStep', () => {
                 rawElement: thisDocument.content,
             });
 
-            expect(links.size).toBe(4);
+            expect(links.size).toBe(3);
             expect(links).toEqual(
                 new Set<string>([
                     // Direct link
-                    stringifyProseLink({
-                        type: 'direct',
-                        href: 'https://example.com',
-                    }),
-
-                    // Link to document
-                    stringifyProseLink({
-                        type: 'document',
-                        documentId: otherDocumentLink,
-                    }),
+                    '<link:direct>/https://example.com',
 
                     // Link to unique
-                    stringifyProseLink({
-                        type: 'unique',
-                        documentId: otherDocumentLink,
-                        uniqueName: 'externalP',
-                    }),
+                    '<link:global>/topic-123/page-456/$internalP',
 
                     // Link to self unique
-                    stringifyProseLink({
-                        type: 'unique',
-                        documentId: thisDocumentLink,
-                        uniqueName: 'internalP',
-                    }),
+                    '<link:global>/topic-999/article-888/article/$externalP',
                 ]),
             );
         });

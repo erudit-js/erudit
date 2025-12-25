@@ -2,12 +2,10 @@ import {
     defineRegistryItem,
     defineSchema,
     ensureTagChild,
-    isDocument,
     isRawElement,
     isUnique,
     ProseError,
     textSchema,
-    type AnyDocument,
     type AnySchema,
     type AnyUnique,
     type NormalizedChildren,
@@ -15,11 +13,13 @@ import {
     type TagChildren,
 } from '@jsprose/core';
 import type { PreviewRequest } from '@erudit-js/core/preview/request';
-import { isContentItem, type ContentItem } from '@erudit-js/core/content/item';
-import { stringifyProseLink } from '@erudit-js/core/prose/link';
-import { parseDocumentId } from '@erudit-js/core/prose/documentId';
 import type { ContentType } from '@erudit-js/core/content/type';
 import type { TopicPart } from '@erudit-js/core/content/topic';
+import type {
+    GlobalLink,
+    GlobalLinkTypeguard,
+} from '@erudit-js/core/prose/link';
+import { parseDocumentId } from '@erudit-js/core/prose/documentId';
 
 import { defineEruditTag, type NoSnippet, type NoToc } from '../../tag.js';
 import type { EruditProseContext } from '../../context.js';
@@ -51,7 +51,7 @@ export const A = defineEruditTag({
     tagName: 'A',
     schema: linkSchema,
 })<
-    { to: string | AnyUnique | AnyDocument | ContentItem } & TagChildren &
+    { to: string | GlobalLinkTypeguard | AnyUnique } & TagChildren &
         NoSnippet &
         NoToc
 >(({ element, tagName, props, children }) => {
@@ -61,18 +61,19 @@ export const A = defineEruditTag({
 export const BlockLink = defineEruditTag({
     tagName: 'BlockLink',
     schema: blockLinkSchema,
-})<
-    { to: AnyUnique | AnyDocument | ContentItem } & TagChildren &
-        NoSnippet &
-        NoToc
->(({ element, tagName, props, children }) => {
+})<{ to: GlobalLinkTypeguard | AnyUnique } & TagChildren & NoSnippet & NoToc>(({
+    element,
+    tagName,
+    props,
+    children,
+}) => {
     handleLinkTag(element, tagName, props, children);
 });
 
 function handleLinkTag(
     element: EruditRawElement<typeof linkSchema | typeof blockLinkSchema>,
     tagName: string,
-    props: { to: string | AnyUnique | AnyDocument | ContentItem },
+    props: { to: string | GlobalLinkTypeguard | AnyUnique },
     children: NormalizedChildren,
 ) {
     ensureTagChild(tagName, children, [textSchema]);
@@ -88,36 +89,27 @@ function handleLinkTag(
 }
 
 function createLinkStorageKey(
-    to: string | AnyUnique | AnyDocument | ContentItem,
+    to: string | GlobalLinkTypeguard | AnyUnique,
     tagName: string,
 ): string {
-    if (typeof to === 'string') {
-        return stringifyProseLink({
-            type: 'direct',
-            href: to,
-        });
-    }
-
     if (isUnique(to)) {
-        return stringifyProseLink({
-            type: 'unique',
-            documentId: parseDocumentId(to.documentId)!,
-            uniqueName: to.name,
-        });
+        const documentId = parseDocumentId(to.documentId);
+
+        if (documentId.type === 'contentPage') {
+            return `<link:global>/${documentId.contentId}/$${to.name}`;
+        } else if (documentId.type === 'contentTopic') {
+            return `<link:global>/${documentId.contentId}/${documentId.topicPart}/$${to.name}`;
+        }
     }
 
-    if (isDocument(to)) {
-        return stringifyProseLink({
-            type: 'document',
-            documentId: parseDocumentId(to.documentId)!,
-        });
+    if (typeof to === 'string') {
+        return `<link:direct>/${to}`;
     }
 
-    if (isContentItem(to)) {
-        return stringifyProseLink({
-            type: 'contentItem',
-            itemId: to.itemId,
-        });
+    const toLink = to as unknown as GlobalLink;
+
+    if (toLink.__link) {
+        return `<link:global>/${toLink.__link}`;
     }
 
     throw new ProseError(`<${tagName}> is unable to resolve "to" prop value!`);

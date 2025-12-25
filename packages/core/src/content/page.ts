@@ -1,11 +1,7 @@
-import {
-    finalizeContentItem,
-    type ContentItem,
-    type ContentItemArg,
-} from './item.js';
+import { finalizeContentItem, type ContentItemBase } from './item.js';
 
-export type PageContentItem = ContentItem;
+export type PageContentItem = ContentItemBase;
 
-export function definePage(page?: ContentItemArg): PageContentItem {
+export function definePage(page?: PageContentItem) {
     return finalizeContentItem('page', page ?? {});
 }

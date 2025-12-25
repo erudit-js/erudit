@@ -191,7 +191,12 @@ function defineProblemSectionContainer<TName extends string>(name: TName) {
             }
         }
 
-        element.children = [...nonSectionChildren, ...sectionChildren];
+        const paragraphWrap = tryParagraphWrap(
+            nonSectionChildren as NormalizedChildren,
+        );
+        const wrappedNonSectionChildren = paragraphWrap ?? nonSectionChildren;
+
+        element.children = [...wrappedNonSectionChildren, ...sectionChildren];
     });
 
     const registryItem = defineRegistryItem({
@@ -224,17 +229,17 @@ export const problemAnswer = defineProblemSectionContainer('answer');
 //
 
 export type CheckFunction = (args: {
-    answer: string;
-    index: number;
-    answers: (string | undefined)[];
-}) => boolean | Promise<boolean>;
+    answer: string | undefined;
+    i: number;
+    answers: Record<number | string, string | undefined>;
+}) => boolean;
 
 export interface ProblemCheckData {
     label?: string;
     hint?: string;
     placeholder?: string;
-    answers?: string[];
-    checkFunction?: CheckFunction;
+    answers?: (string | undefined)[];
+    script?: true;
 }
 
 export const problemCheckSchema = defineSchema({
@@ -252,13 +257,13 @@ export const ProblemCheck = defineEruditTag({
     schema: problemCheckSchema,
 })<
     { label?: string; hint?: string; placeholder?: string } & (
-        | { answer: string | number; answers?: undefined; check?: undefined }
+        | { answer: string | number; answers?: undefined; script?: undefined }
         | {
               answers: (string | number)[];
               answer?: undefined;
-              check?: undefined;
+              script?: undefined;
           }
-        | { check: CheckFunction; answers?: undefined; answer?: undefined }
+        | { script: true; answers?: undefined; answer?: undefined }
     ) &
         NoTagChildren
 >(({ element, tagName, props, children }) => {
@@ -274,10 +279,31 @@ export const ProblemCheck = defineEruditTag({
             ...element.data,
             answers: props.answers.map(String),
         };
-    } else if (props.check !== undefined) {
+    } else if (props.script !== undefined) {
         element.data = {
             ...element.data,
-            checkFunction: props.check,
+            script: true,
+        };
+    }
+
+    if (props.label !== undefined) {
+        element.data = {
+            ...element.data,
+            label: props.label,
+        };
+    }
+
+    if (props.hint !== undefined) {
+        element.data = {
+            ...element.data,
+            hint: props.hint,
+        };
+    }
+
+    if (props.placeholder !== undefined) {
+        element.data = {
+            ...element.data,
+            placeholder: props.placeholder,
         };
     }
 });

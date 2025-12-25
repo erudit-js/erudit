@@ -1,6 +1,17 @@
 <script lang="ts" setup>
-import { computed, ref, shallowRef, watchEffect, type Component } from 'vue';
-import { isProseElement, type ProseElement } from '@jsprose/core';
+import {
+    computed,
+    onMounted,
+    ref,
+    shallowRef,
+    watchEffect,
+    type Component,
+} from 'vue';
+import {
+    isProseElement,
+    resolveRawElement,
+    type ProseElement,
+} from '@jsprose/core';
 
 import {
     problemAnswer,
@@ -9,24 +20,34 @@ import {
     problemHintSchema,
     problemNote,
     problemSolution,
+    type CheckFunction,
     type ProblemContentChild,
 } from '../problemContent.js';
 import { useProseContext } from '../../../app/composables/context.js';
 import { useProblemPhrase } from '../composables/phrase.js';
 import type { ProblemAction } from '../shared.js';
 import { useArrayContainsAnchor } from '../../../app/composables/anchor.js';
+import type { ProblemScriptInstance } from '../problemScript.js';
+import type { problemSchema } from '../problem.js';
+import type { subProblemSchema } from '../problems.js';
+import { useElementStorage } from '../../../app/composables/storage.js';
+import type { ProblemScriptStorage } from '../storage.js';
+import { createProblemScriptInstance } from '../composables/problemScript.js';
+import { DEFAULT_SEED } from '../rng.js';
 import Render from '../../../app/shared/Render.vue';
 import Hint from './expanders/Hint.vue';
 import DefaultPlusSections from './expanders/DefaultPlusSections.vue';
 import ProblemButton from './ProblemButton.vue';
 import Checks from './expanders/Checks.vue';
 
-const { scriptUrl, initialElements } = defineProps<{
-    scriptUrl?: string;
+const { element, initialElements } = defineProps<{
+    element:
+        | ProseElement<typeof problemSchema>
+        | ProseElement<typeof subProblemSchema>;
     initialElements: ProseElement<ProblemContentChild>[];
 }>();
 
-const { EruditIcon, languageCode } = useProseContext();
+const { EruditIcon } = useProseContext();
 const phrase = await useProblemPhrase();
 
 const actionIcons: Record<ProblemAction, string> = Object.fromEntries(
@@ -75,14 +96,20 @@ const expandableActions = computed(() => {
         answer?: ProseElement<typeof problemAnswer.schema>;
         solution?: ProseElement<typeof problemSolution.schema>;
         note?: ProseElement<typeof problemNote.schema>;
-        check?: ProseElement<typeof problemCheckSchema>[];
+        check?: {
+            checkElements: ProseElement<typeof problemCheckSchema>[];
+            checkFunction?: CheckFunction;
+        };
     }> = {};
 
     const checks = elements.value.filter((element) =>
         isProseElement(element, problemCheckSchema),
     );
     if (checks.length > 0) {
-        actionMap.check = checks;
+        actionMap.check = {
+            checkElements: checks,
+            checkFunction: scriptCheck.value,
+        };
     }
 
     const hints = elements.value.filter((element) =>
@@ -142,13 +169,37 @@ watchEffect(() => {
 });
 
 //
+// Problem Script
 //
-//
+
+const scriptInstance = shallowRef<ProblemScriptInstance>();
+const scriptStorage = (await useElementStorage(
+    element as any,
+)) as ProblemScriptStorage;
+const isGenerator = computed(() => Boolean(scriptInstance.value?.isGenerator));
+const scriptCheck = shallowRef<CheckFunction>();
+
+onMounted(async () => {
+    scriptInstance.value = await createProblemScriptInstance(
+        scriptStorage?.resolvedScriptSrc,
+        element.data.scriptUniques,
+    );
+
+    if (scriptInstance.value) {
+        const initialGenerateResult =
+            scriptInstance.value!.generate(DEFAULT_SEED);
+        scriptCheck.value = initialGenerateResult.check;
+    }
+});
 
 const generateRotation = ref(0);
 const generating = ref(false);
 
 async function doGenerate() {
+    if (!scriptInstance.value) {
+        return;
+    }
+
     generateRotation.value += 180;
 
     if (generating.value) {
@@ -157,22 +208,34 @@ async function doGenerate() {
 
     generating.value = true;
 
-    // const problemGenerator = (await import(/* @vite-ignore */ generatorUrl!))
-    //     .default as ProblemGenerator;
+    const generateResult = scriptInstance.value.generate(
+        Math.floor(Math.random() * 1000000000) + 1,
+    );
 
-    const newSeed = Math.floor(Math.random() * 1000000000) + 1;
+    if (generateResult.check) {
+        scriptCheck.value = generateResult.check;
+    }
 
-    // elements.value = await problemGenerator.createProblemContent(newSeed, {
-    //     language: languageCode,
-    // });
+    const rawElements = generateResult.problemContent;
+    const proseElements: ProseElement<ProblemContentChild>[] = [];
+    for (const rawElement of rawElements) {
+        const resolveResult = await resolveRawElement({
+            rawElement,
+            linkable: false,
+        });
+        proseElements.push(resolveResult.proseElement as any);
+    }
 
+    elements.value = proseElements;
+
+    key.value++;
     generating.value = false;
 }
 </script>
 
 <template>
     <div>
-        <Suspense>
+        <Suspense suspensible>
             <div class="py-(--proseAsideWidth)" :key>
                 <Render
                     v-for="child of description.children"
@@ -182,13 +245,13 @@ async function doGenerate() {
         </Suspense>
 
         <div
-            v-if="Object.values(expandableActions).some(Boolean) || scriptUrl"
+            v-if="Object.values(expandableActions).some(Boolean) || isGenerator"
             class="gap-small micro:gap-normal flex flex-wrap
                 p-(--proseAsideWidth) pt-0"
         >
             <ProblemButton
                 v-for="(_, actionKey) in expandableActions"
-                :key
+                :key="actionKey"
                 @click="
                     currentAction =
                         actionKey === currentAction ? undefined : actionKey
@@ -203,7 +266,7 @@ async function doGenerate() {
                 <span>{{ phrase[`action_${actionKey}`] }}</span>
             </ProblemButton>
             <ProblemButton
-                v-if="scriptUrl"
+                v-if="isGenerator"
                 @click="doGenerate"
                 class="flex items-center gap-[7px]"
             >
@@ -216,7 +279,7 @@ async function doGenerate() {
             </ProblemButton>
         </div>
 
-        <Suspense>
+        <Suspense suspensible>
             <component
                 v-if="currentAction"
                 :key

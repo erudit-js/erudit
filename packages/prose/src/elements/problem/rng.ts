@@ -1,3 +1,9 @@
+/**
+ * Static seed not random for SEO reasons.
+ * It ensures that initial problem content is always the same on each build, helping search engines to index initial problem content consistently.
+ */
+export const DEFAULT_SEED = '3141592653';
+
 export type ProblemSeed = string | number;
 
 export function normalizeSeed(seed: ProblemSeed) {

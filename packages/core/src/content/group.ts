@@ -1,17 +1,9 @@
-import {
-    finalizeContentItem,
-    type ContentItem,
-    type ContentItemArg,
-} from './item.js';
+import { finalizeContentItem, type ContentItemBase } from './item.js';
 
-export type GroupData = Partial<{
-    type: 'folder' | 'separator';
-}>;
+export interface GroupContentItem extends ContentItemBase {
+    type?: 'folder' | 'separator';
+}
 
-export type GroupContentItem = ContentItem<GroupData>;
-
-export function defineGroup(
-    group?: ContentItemArg<GroupData>,
-): GroupContentItem {
+export function defineGroup(group?: GroupContentItem) {
     return finalizeContentItem('group', group ?? {});
 }

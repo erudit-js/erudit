@@ -49,11 +49,15 @@ function linkObjectToTypes(linkObject: any): string {
                 Object.keys(value).some((k) => k !== '__jsdoc');
 
             if (hasNestedProps) {
-                lines.push(indent(level) + `${camelKey}: {`);
+                lines.push(
+                    indent(level) + `${camelKey}: GlobalLinkTypeguard & {`,
+                );
                 lines.push(processObject(value, level + 1));
                 lines.push(indent(level) + `}`);
             } else {
-                lines.push(indent(level) + `${camelKey}: {}`);
+                lines.push(
+                    indent(level) + `${camelKey}: GlobalLinkTypeguard & {}`,
+                );
             }
         }
 
@@ -62,7 +66,9 @@ function linkObjectToTypes(linkObject: any): string {
 
     const body = processObject(linkObject, 2);
 
-    return `export {};
+    return `import { GlobalLinkTypeguard } from '@erudit-js/core/prose/link';
+
+export {};
 
 declare global {
     const $LINK: {
@@ -219,6 +225,11 @@ function tryGetUniquesObject(
     for (const line of lines) {
         // Skip commented out lines
         if (line.trim().startsWith('//')) {
+            continue;
+        }
+
+        // Skip uniques starting with underscore
+        if (line.trim().startsWith('_')) {
             continue;
         }
 

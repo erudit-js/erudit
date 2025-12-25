@@ -1,9 +1,14 @@
 import { describe, expect, it } from 'vitest';
-import { isolateProse, isProseElement, isRawElement } from '@jsprose/core';
+import {
+    defineUnique,
+    isolateProse,
+    isProseElement,
+    isRawElement,
+} from '@jsprose/core';
 
 import { P } from '@erudit-js/prose/elements/paragraph/core';
 import {
-    constructProblemScriptId,
+    stringifyProblemScriptId,
     defineProblemScript,
     insertProblemScriptId,
 } from '@erudit-js/prose/elements/problem/problemScript';
@@ -23,26 +28,38 @@ describe('Problem Script', () => {
         }).toThrow();
     });
 
+    const createUniqueP = () => {
+        return defineUnique({
+            documentId: 'doc1',
+            name: 'myP',
+            tag: P,
+        });
+    };
+
     it('should throw when incorrect problem content builder is provided', async () => {
         isolateProse(async () => {
             prepareRegistry();
 
             const problemScript = defineProblemScript(
-                constructProblemScriptId('script1', 'TestScript'),
+                stringifyProblemScriptId('script1', 'TestScript'),
                 {
-                    initialSeed: 42,
+                    uniques: {
+                        myP: P,
+                    },
                 },
-            )(({ initial, random }) => {
+            )(({ uniques }) => {
                 return (
                     <>
-                        <P>This is paragraph</P>
+                        <P $={uniques.myP}>This is paragraph</P>
                     </>
                 );
             });
 
-            expect(() => problemScript.createProblemContent()).toThrow(
-                /script1\/TestScript/,
-            );
+            expect(() =>
+                problemScript({
+                    myP: createUniqueP(),
+                }).createProblemContent(),
+            ).toThrow(/\[Problem Script\]/);
         });
     });
 
@@ -50,23 +67,27 @@ describe('Problem Script', () => {
         isolateProse(async () => {
             prepareRegistry();
             const problemScript = defineProblemScript(
-                constructProblemScriptId('script1', 'TestScript'),
+                stringifyProblemScriptId('script1', 'TestScript'),
                 {
                     isGenerator: true,
-                    initialSeed: 42,
+                    uniques: {
+                        myP: P,
+                    },
                 },
-            )(({ initial, random }) => {
+            )(({ uniques, initial, random }) => {
                 return (
                     <>
                         <ProblemDescription>
-                            <P>Problem Description</P>
+                            <P $={uniques.myP}>Problem Description</P>
                         </ProblemDescription>
                         <ProblemCheck answer={42} />
                     </>
                 );
             });
 
-            const problemContent = problemScript.createProblemContent(42);
+            const problemContent = problemScript({
+                myP: createUniqueP(),
+            }).createProblemContent(1337);
 
             expect(problemContent).toHaveLength(2);
             expect(

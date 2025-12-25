@@ -1,6 +1,6 @@
 import { defineEruditProseAppElement } from '../../app/appElement.js';
 import { problemSchema } from './problem.js';
-import { problemsSchema } from './problems.js';
+import { problemsSchema, subProblemSchema } from './problems.js';
 
 export default [
     defineEruditProseAppElement({
@@ -11,6 +11,10 @@ export default [
             ru: () => import('./languages/ru.js'),
         },
         icon: () => import('./assets/icon.svg?raw'),
+    }),
+    defineEruditProseAppElement({
+        schema: subProblemSchema,
+        component: () => import('./components/SubProblem.vue'),
     }),
     defineEruditProseAppElement({
         schema: problemsSchema,

@@ -19,8 +19,12 @@ type CheckState = {
     buttonClass: string;
 };
 
-const { check } = defineProps<{
+const { check, script } = defineProps<{
     check: ProseElement<typeof problemCheckSchema>;
+    script?: {
+        check: (answer: string | undefined) => boolean;
+        clear: () => void;
+    };
 }>();
 
 const states: Record<CheckStatus, CheckState> = {
@@ -57,15 +61,20 @@ const answerInput = ref<string>('');
 
 watch(answerInput, () => {
     state.value = 'default';
+    script?.clear();
 });
 
 function doCheck() {
-    const newInput = answerInput.value.trim().replace(/\s+/g, ' ');
-    if (check.data.answers?.includes(newInput)) {
-        state.value = 'correct';
-    } else {
-        state.value = 'wrong';
+    let newInput = answerInput.value.trim().replace(/\s+/g, ' ') || undefined;
+
+    if (script) {
+        const isCorrect = script.check(newInput);
+        state.value = isCorrect ? 'correct' : 'wrong';
+        return;
     }
+
+    const isCorrect = check.data.answers?.includes(newInput);
+    state.value = isCorrect ? 'correct' : 'wrong';
 }
 </script>
 

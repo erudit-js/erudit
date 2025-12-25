@@ -4,15 +4,13 @@ import {
     type GenericStorage,
     type ProseElement,
 } from '@jsprose/core';
-import { parseProseLink } from '@erudit-js/core/prose/link';
 import type {
     blockLinkSchema,
-    ContentItemLinkStorage,
-    DirectLinkStorage,
     linkSchema,
     LinkStorage,
-    UniqueLinkStorage,
 } from '@erudit-js/prose/elements/link/core';
+import { isTopicPart } from '@erudit-js/core/content/topic';
+import type { ContentPointer } from '@erudit-js/core/content/pointer';
 
 export async function createLinkStorage(
     element:
@@ -20,163 +18,139 @@ export async function createLinkStorage(
         | ProseElement<typeof blockLinkSchema>,
     storage: GenericStorage,
 ) {
-    const proseLink = parseProseLink(element.storageKey!)!;
     let linkStorage: LinkStorage | undefined;
 
-    if (proseLink.type === 'direct') {
+    const storageKeyParts = element.storageKey!.split('/');
+    const linkType = storageKeyParts[0];
+    const strProseLink = storageKeyParts.slice(1).join('/');
+
+    if (linkType === '<link:direct>') {
         linkStorage = {
             type: 'direct',
-            resolvedHref: proseLink.href,
+            resolvedHref: strProseLink,
             previewRequest: {
                 type: 'direct-link',
-                href: proseLink.href,
+                href: strProseLink,
             },
-        } satisfies DirectLinkStorage;
-    } else if (proseLink.type === 'contentItem') {
-        const contentItemId = proseLink.itemId;
-        const contentNavNode = ERUDIT.contentNav.getNodeOrThrow(
-            contentItemId.contentId,
-        );
-        const shortId = contentNavNode.shortId;
-        const contentTitle = await ERUDIT.repository.content.title(
-            contentNavNode.fullId,
-        );
+        };
+    } else if (linkType === '<link:global>') {
+        const proseLinkParts = strProseLink.split('/');
+        const uniquePart = proseLinkParts.pop();
 
-        if (contentItemId.type === 'topic') {
-            const defaultTopicPart =
-                await ERUDIT.repository.content.defaultTopicPart(
-                    contentNavNode.fullId,
-                );
+        if (uniquePart?.startsWith('$')) {
+            //
+            // Unique link
+            //
 
-            linkStorage = {
-                type: 'contentItem',
-                resolvedHref: PAGES.topic(defaultTopicPart, shortId),
-                previewRequest: {
-                    type: 'content-page',
-                    contentType: 'topic',
-                    topicPart: defaultTopicPart,
-                    fullId: contentNavNode.fullId,
-                },
-                content: {
-                    contentType: 'topic',
-                    topicPart: defaultTopicPart,
-                    contentTitle,
-                },
-            } satisfies ContentItemLinkStorage;
+            const contentPointer = await getContentPointerFor(
+                proseLinkParts.join('/'),
+            );
+
+            const shortId = ERUDIT.contentNav.getNodeOrThrow(
+                contentPointer.id,
+            ).shortId;
+
+            const contentTitle = await ERUDIT.repository.content.title(
+                contentPointer.id,
+            );
+
+            const uniqueName = uniquePart.slice(1);
+            const unique = await ERUDIT.repository.content.unique(
+                contentPointer.id,
+                contentPointer.type === 'topic' ? contentPointer.part : 'page',
+                uniqueName,
+            );
+
+            if (contentPointer.type === 'topic') {
+                linkStorage = {
+                    type: 'unique',
+                    schemaName: unique.prose.schemaName,
+                    elementTitle: unique.title || undefined,
+                    content: {
+                        contentType: 'topic',
+                        contentTitle,
+                        topicPart: contentPointer.part,
+                    },
+                    resolvedHref: PAGES.topic(
+                        contentPointer.part,
+                        shortId,
+                        uniqueName2Id(uniqueName),
+                    ),
+                    previewRequest: {
+                        type: 'unique',
+                        contentFullId: contentPointer.id,
+                        contentType: 'topic',
+                        topicPart: contentPointer.part,
+                        uniqueName: uniqueName,
+                    },
+                };
+            } else {
+                linkStorage = {
+                    type: 'unique',
+                    schemaName: unique.prose.schemaName,
+                    elementTitle: unique.title || undefined,
+                    content: {
+                        contentType: contentPointer.type,
+                        contentTitle,
+                    },
+                    resolvedHref: PAGES.page(
+                        shortId,
+                        uniqueName2Id(uniqueName),
+                    ),
+                    previewRequest: {
+                        type: 'unique',
+                        contentFullId: contentPointer.id,
+                        contentType: 'page',
+                        uniqueName: uniqueName,
+                    },
+                };
+            }
         } else {
-            linkStorage = {
-                type: 'contentItem',
-                resolvedHref: PAGES[contentItemId.type](shortId),
-                previewRequest: {
-                    type: 'content-page',
-                    contentType: contentItemId.type,
-                    fullId: contentNavNode.fullId,
-                },
-                content: {
-                    contentType: contentItemId.type,
-                    contentTitle,
-                },
-            } satisfies ContentItemLinkStorage;
-        }
-    } else if (proseLink.type === 'document') {
-        const documentId = proseLink.documentId;
-        const contentNavNode = ERUDIT.contentNav.getNodeOrThrow(
-            documentId.contentId,
-        );
-        const shortId = contentNavNode.shortId;
-        const contentTitle = await ERUDIT.repository.content.title(
-            contentNavNode.fullId,
-        );
+            //
+            // Content item link
+            //
 
-        if (documentId.type === 'contentPage') {
-            linkStorage = {
-                type: 'contentItem',
-                resolvedHref: PAGES.page(shortId),
-                previewRequest: {
-                    type: 'content-page',
-                    contentType: 'page',
-                    fullId: contentNavNode.fullId,
-                },
-                content: {
-                    contentType: 'page',
-                    contentTitle,
-                },
-            } satisfies ContentItemLinkStorage;
-        } else if (documentId.type === 'contentTopic') {
-            linkStorage = {
-                type: 'contentItem',
-                resolvedHref: PAGES.topic(documentId.topicPart, shortId),
-                previewRequest: {
-                    type: 'content-page',
-                    contentType: 'topic',
-                    topicPart: documentId.topicPart,
-                    fullId: contentNavNode.fullId,
-                },
-                content: {
-                    contentType: 'topic',
-                    topicPart: documentId.topicPart,
-                    contentTitle,
-                },
-            } satisfies ContentItemLinkStorage;
-        }
-    } else if (proseLink.type === 'unique') {
-        const documentId = proseLink.documentId;
-        const contentNavNode = ERUDIT.contentNav.getNodeOrThrow(
-            documentId.contentId,
-        );
-        const shortId = contentNavNode.shortId;
-        const contentTitle = await ERUDIT.repository.content.title(
-            contentNavNode.fullId,
-        );
-        const contentUnique = await ERUDIT.repository.content.unique(
-            contentNavNode.fullId,
-            documentId.type === 'contentPage' ? 'page' : documentId.topicPart,
-            proseLink.uniqueName,
-        );
+            const contentPointer = await getContentPointerFor(strProseLink);
 
-        if (documentId.type === 'contentPage') {
-            linkStorage = {
-                type: 'unique',
-                resolvedHref: PAGES.page(
-                    shortId,
-                    uniqueName2Id(proseLink.uniqueName),
-                ),
-                previewRequest: {
-                    type: 'unique',
-                    contentFullId: contentNavNode.fullId,
-                    contentType: 'page',
-                    uniqueName: proseLink.uniqueName,
-                },
-                schemaName: contentUnique.prose.schemaName,
-                elementTitle: contentUnique.title || undefined,
-                content: {
-                    contentType: 'page',
-                    contentTitle,
-                },
-            } satisfies UniqueLinkStorage;
-        } else if (documentId.type === 'contentTopic') {
-            linkStorage = {
-                type: 'unique',
-                resolvedHref: PAGES.topic(
-                    documentId.topicPart,
-                    shortId,
-                    uniqueName2Id(proseLink.uniqueName),
-                ),
-                previewRequest: {
-                    type: 'unique',
-                    contentFullId: contentNavNode.fullId,
-                    contentType: 'topic',
-                    topicPart: documentId.topicPart,
-                    uniqueName: proseLink.uniqueName,
-                },
-                schemaName: contentUnique.prose.schemaName,
-                elementTitle: contentUnique.title || undefined,
-                content: {
-                    contentType: 'topic',
-                    topicPart: documentId.topicPart,
-                    contentTitle,
-                },
-            } satisfies UniqueLinkStorage;
+            const shortId = ERUDIT.contentNav.getNodeOrThrow(
+                contentPointer.id,
+            ).shortId;
+
+            const contentTitle = await ERUDIT.repository.content.title(
+                contentPointer.id,
+            );
+
+            if (contentPointer.type === 'topic') {
+                linkStorage = {
+                    type: 'contentItem',
+                    content: {
+                        contentType: 'topic',
+                        contentTitle,
+                        topicPart: contentPointer.part,
+                    },
+                    resolvedHref: PAGES.topic(contentPointer.part, shortId),
+                    previewRequest: {
+                        type: 'content-page',
+                        contentType: 'topic',
+                        topicPart: contentPointer.part,
+                        fullId: contentPointer.id,
+                    },
+                };
+            } else {
+                linkStorage = {
+                    type: 'contentItem',
+                    content: {
+                        contentType: contentPointer.type,
+                        contentTitle,
+                    },
+                    resolvedHref: PAGES[contentPointer.type](shortId),
+                    previewRequest: {
+                        type: 'content-page',
+                        contentType: contentPointer.type,
+                        fullId: contentPointer.id,
+                    },
+                };
+            }
         }
     }
 
@@ -187,4 +161,59 @@ export async function createLinkStorage(
     }
 
     storage[element.storageKey!] = linkStorage;
+}
+
+async function getContentPointerFor(
+    contentId: string,
+): Promise<ContentPointer> {
+    if (!contentId) {
+        throw new ProseError(`Invalid content ID: "${contentId}"!`);
+    }
+
+    const contentNavNode = ERUDIT.contentNav.getNode(contentId);
+
+    if (contentNavNode) {
+        if (contentNavNode.type === 'topic') {
+            const defaultTopicPart =
+                await ERUDIT.repository.content.defaultTopicPart(
+                    contentNavNode.fullId,
+                );
+
+            return {
+                type: 'topic',
+                id: contentNavNode.fullId,
+                part: defaultTopicPart,
+            };
+        } else {
+            return {
+                type: contentNavNode.type,
+                id: contentNavNode.fullId,
+            };
+        }
+    }
+
+    const contentIdParts = contentId.split('/');
+    const maybeTopicPart = contentIdParts.pop()!;
+
+    if (!isTopicPart(maybeTopicPart)) {
+        throw new ProseError(
+            `Prose link part "${contentId}" must be a valid topic part!`,
+        );
+    }
+
+    const shortenedContentNavNode = ERUDIT.contentNav.getNode(
+        contentIdParts.join('/'),
+    );
+
+    if (shortenedContentNavNode) {
+        return {
+            type: 'topic',
+            id: shortenedContentNavNode.fullId,
+            part: maybeTopicPart,
+        };
+    }
+
+    throw new ProseError(
+        `Unable to find content for prose link: "${contentId}"!`,
+    );
 }

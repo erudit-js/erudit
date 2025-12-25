@@ -3,6 +3,7 @@ import { build, type Plugin } from 'esbuild';
 import { parseProblemScriptId } from '@erudit-js/prose/elements/problem/problemScript';
 
 import { STATIC_ASSET_EXTENSIONS } from '@erudit/server/prose/transform/extensions';
+import { tranformGlobalLinkString } from '@erudit/server/link/global';
 
 export default defineEventHandler<Promise<string>>(async (event) => {
     // <filepathToScriptFile>/<scriptExportName>.js
@@ -11,15 +12,13 @@ export default defineEventHandler<Promise<string>>(async (event) => {
         -3,
     ); // remove .js
 
-    let { scriptSrc, scriptName } = parseProblemScriptId(problemScriptPath);
-
-    //scriptSrc = ERUDIT.config.paths.project + '/' + scriptSrc;
+    let { scriptSrc, exportName } = parseProblemScriptId(problemScriptPath);
 
     const buildResult = await build({
         stdin: {
             contents: `
-                import { ${scriptName} } from '#project/${scriptSrc}';
-                export default ${scriptName};
+                import { ${exportName} } from '#project/${scriptSrc}';
+                export default ${exportName};
             `,
             resolveDir: scriptSrc.split('/').slice(0, -1).join('/'),
             sourcefile: scriptSrc.split('/').slice(-1)[0],
@@ -43,6 +42,21 @@ export default defineEventHandler<Promise<string>>(async (event) => {
     });
 
     let code = buildResult.outputFiles[0].text;
+
+    // Transform $LINK patterns to link objects
+    code = code.replace(/\$LINK(\.[a-zA-Z_$][\w$]*)+/g, (match) => {
+        const path = match
+            .slice(6) // Remove '$LINK.'
+            .split('.')
+            .join('/');
+        return `{ __link: '${tranformGlobalLinkString(path)}' }`;
+    });
+
+    // Insert script ID
+    code = code.replace(
+        ' = defineProblemScript(',
+        ` = defineProblemScript('__auto_generated__',`,
+    );
 
     setHeader(event, 'Content-Type', 'text/javascript');
     return code;
