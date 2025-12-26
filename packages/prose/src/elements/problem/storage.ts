@@ -13,12 +13,12 @@ export function problemScriptStorageKey(scriptId: string): string {
 export function createProblemScriptStorage(
     projectAbsPath: string,
     projectBaseUrl: string,
-    scriptId: string,
+    scriptSrc: string,
 ): ProblemScriptStorage {
     const resolvedSrc =
         projectBaseUrl +
         'api/problemScript/' +
-        projectRelFilePath(projectAbsPath, scriptId) +
+        projectRelFilePath(projectAbsPath, scriptSrc.replace('.tsx', '')) +
         '.js';
     return {
         resolvedScriptSrc: resolvedSrc,

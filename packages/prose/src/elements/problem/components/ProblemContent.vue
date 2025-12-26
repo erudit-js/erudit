@@ -4,9 +4,11 @@ import {
     onMounted,
     ref,
     shallowRef,
+    useTemplateRef,
     watchEffect,
     type Component,
 } from 'vue';
+import { autoUpdate, offset, useFloating } from '@floating-ui/vue';
 import {
     isProseElement,
     resolveRawElement,
@@ -33,7 +35,8 @@ import type { subProblemSchema } from '../problems.js';
 import { useElementStorage } from '../../../app/composables/storage.js';
 import type { ProblemScriptStorage } from '../storage.js';
 import { createProblemScriptInstance } from '../composables/problemScript.js';
-import { DEFAULT_SEED } from '../rng.js';
+import { DEFAULT_SEED, type ProblemSeed } from '../rng.js';
+import plusIcon from '../../../app/shared/assets/plus.svg?raw';
 import Render from '../../../app/shared/Render.vue';
 import Hint from './expanders/Hint.vue';
 import DefaultPlusSections from './expanders/DefaultPlusSections.vue';
@@ -47,7 +50,7 @@ const { element, initialElements } = defineProps<{
     initialElements: ProseElement<ProblemContentChild>[];
 }>();
 
-const { EruditIcon } = useProseContext();
+const { EruditIcon, EruditTransition } = useProseContext();
 const phrase = await useProblemPhrase();
 
 const actionIcons: Record<ProblemAction, string> = Object.fromEntries(
@@ -194,6 +197,8 @@ onMounted(async () => {
 
 const generateRotation = ref(0);
 const generating = ref(false);
+const seed = ref<ProblemSeed>(DEFAULT_SEED);
+const usingCustomSeed = ref(false);
 
 async function doGenerate() {
     if (!scriptInstance.value) {
@@ -208,9 +213,13 @@ async function doGenerate() {
 
     generating.value = true;
 
-    const generateResult = scriptInstance.value.generate(
-        Math.floor(Math.random() * 1000000000) + 1,
-    );
+    if (usingCustomSeed.value) {
+        usingCustomSeed.value = false;
+    } else {
+        seed.value = Math.floor(Math.random() * 1000000000) + 1;
+    }
+
+    const generateResult = scriptInstance.value.generate(seed.value);
 
     if (generateResult.check) {
         scriptCheck.value = generateResult.check;
@@ -231,6 +240,23 @@ async function doGenerate() {
     key.value++;
     generating.value = false;
 }
+
+//
+// Seed Popup
+//
+
+const seedPopupVisible = ref(false);
+const seedReferenceElement = useTemplateRef('seedReference');
+const seedPopupElement = useTemplateRef('seedPopup');
+
+const { floatingStyles: seedFloatingStyles } = useFloating(
+    seedReferenceElement,
+    seedPopupElement,
+    {
+        whileElementsMounted: autoUpdate,
+        placement: 'top',
+    },
+);
 </script>
 
 <template>
@@ -265,18 +291,70 @@ async function doGenerate() {
                 />
                 <span>{{ phrase[`action_${actionKey}`] }}</span>
             </ProblemButton>
-            <ProblemButton
+            <div
                 v-if="isGenerator"
-                @click="doGenerate"
-                class="flex items-center gap-[7px]"
+                ref="seedReference"
+                @touchstart="seedPopupVisible = true"
+                @mouseenter="seedPopupVisible = true"
+                @mouseleave="seedPopupVisible = false"
             >
-                <EruditIcon
-                    :name="actionIcons.generate"
-                    :style="{ transform: `rotate(${generateRotation}deg)` }"
-                    class="text-[15px] transition-[transform] backface-hidden"
-                />
-                <span>{{ phrase.action_generate }}</span>
-            </ProblemButton>
+                <ProblemButton
+                    @click="doGenerate"
+                    class="flex items-center gap-[7px]"
+                >
+                    <EruditIcon
+                        :name="actionIcons.generate"
+                        :style="{ transform: `rotate(${generateRotation}deg)` }"
+                        class="text-[15px] transition-[transform]
+                            backface-hidden"
+                    />
+                    <span>{{ phrase.action_generate }}</span>
+                </ProblemButton>
+                <EruditTransition>
+                    <div
+                        v-if="seedPopupVisible"
+                        ref="seedPopup"
+                        :style="seedFloatingStyles"
+                        class="pb-2.5"
+                    >
+                        <form
+                            class="shadow-border text-main-xs flex rounded
+                                bg-neutral-900 text-white shadow-lg
+                                dark:bg-neutral-200 dark:text-black"
+                            @submit.prevent="doGenerate"
+                        >
+                            <input
+                                type="text"
+                                v-model="seed"
+                                @input="usingCustomSeed = true"
+                                :title="phrase.seed_explain"
+                                @focus="($event as any).target.select()"
+                                class="max-w-[100px] flex-1 p-[5px] text-center
+                                    outline-none"
+                            />
+                            <button
+                                v-if="seed !== DEFAULT_SEED"
+                                type="button"
+                                @click="
+                                    seed = DEFAULT_SEED;
+                                    usingCustomSeed = true;
+                                    doGenerate();
+                                "
+                                class="cursor-pointer py-[5px] pr-2"
+                            >
+                                <EruditIcon
+                                    :name="plusIcon"
+                                    class="hocus:text-white
+                                        dark:hocus:text-black rotate-45
+                                        text-[15px] text-neutral-400
+                                        transition-[color]
+                                        dark:text-neutral-600"
+                                />
+                            </button>
+                        </form>
+                    </div>
+                </EruditTransition>
+            </div>
         </div>
 
         <Suspense suspensible>

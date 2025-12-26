@@ -27,5 +27,5 @@ export default defineElementLanguage<ProblemPhrases>({
     action_check: 'Check',
     action_generate: 'Similar',
     seed_explain:
-        'Seed to calculate all random numbers in the problem. Same seed = same numbers.',
+        'The seed from which all random values in the problem are calculated. Same seeds = completely identical problems.',
 });

@@ -25,10 +25,7 @@ import {
     problemScriptStorageKey,
     type ProblemScriptStorage,
 } from './storage.js';
-import {
-    stringifyProblemScriptId,
-    type ProblemScriptInstance,
-} from './problemScript.js';
+import { type ProblemScriptInstance } from './problemScript.js';
 
 //
 // SubProblem
@@ -74,12 +71,7 @@ export const SubProblem = defineEruditTag({
     if (props.script) {
         element.data.scriptUniques = props.script.uniques;
 
-        element.storageKey = problemScriptStorageKey(
-            stringifyProblemScriptId(
-                props.script.scriptSrc,
-                props.script.exportName,
-            ),
-        );
+        element.storageKey = problemScriptStorageKey(props.script.scriptSrc);
 
         element.children = props.script.generate().problemContent;
     } else {

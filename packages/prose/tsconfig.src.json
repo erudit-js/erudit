@@ -3,6 +3,7 @@
         "strict": true,
         "forceConsistentCasingInFileNames": true,
         "declaration": true,
+        "emitDeclarationOnly": true,
         "verbatimModuleSyntax": true,
         "skipLibCheck": true,
         "target": "esnext",

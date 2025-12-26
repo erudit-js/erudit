@@ -41,7 +41,7 @@ describe('Problem Script', () => {
 
         const instance = minimalScript();
 
-        expectTypeOf(instance.createProblemContent()).toEqualTypeOf<
+        expectTypeOf(instance.generate().problemContent).toEqualTypeOf<
             WrapSchemas<'raw-prose', ProblemContentChild>[]
         >();
     });
@@ -79,8 +79,8 @@ describe('Problem Script', () => {
             myVideo: autoUnique,
         });
 
-        expectTypeOf(instance.createProblemContent('some-seed')).toEqualTypeOf<
-            WrapSchemas<'raw-prose', ProblemContentChild>[]
-        >();
+        expectTypeOf(
+            instance.generate('some-seed').problemContent,
+        ).toEqualTypeOf<WrapSchemas<'raw-prose', ProblemContentChild>[]>();
     });
 });

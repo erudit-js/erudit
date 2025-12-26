@@ -18,34 +18,14 @@ import {
 } from './problemContent.js';
 
 //
-// Problem Script ID
+// Problem Script Src
 //
 
-export function stringifyProblemScriptId(
-    scriptSrc: string,
-    exportName: string,
-): string {
-    return `${scriptSrc}/${exportName}`;
-}
-
-export function parseProblemScriptId(scriptId: string): {
-    scriptSrc: string;
-    exportName: string;
-} {
-    const lastSlashIndex = scriptId.lastIndexOf('/');
-    const scriptSrc = scriptId.substring(0, lastSlashIndex);
-    const exportName = scriptId.substring(lastSlashIndex + 1);
-    return { scriptSrc, exportName };
-}
-
 export function insertProblemScriptId(scriptSrc: string, code: string): string {
-    // Match: const NAME = ... = defineProblemScript(...)
-    // Handles both:
-    // - export const NAME = defineProblemScript(...)
-    // - const NAME = exports.NAME = defineProblemScript(...)
+    // Match: export default defineProblemScript(...)
     return code.replace(
-        /\bconst\s+([A-Za-z0-9_$]+)(?:\s*=\s*[A-Za-z0-9_$.]+)*\s*=\s*defineProblemScript\(([\s\S]*?)\)/g,
-        (fullMatch, firstName, argsContent) => {
+        /\bdefineProblemScript\(([\s\S]*?)\)/g,
+        (fullMatch, argsContent) => {
             const trimmed = argsContent.trim();
 
             // If the first argument already looks like a string literal, skip.
@@ -53,20 +33,11 @@ export function insertProblemScriptId(scriptSrc: string, code: string): string {
                 return fullMatch;
             }
 
-            // Extract the actual name (the one right before defineProblemScript)
-            const nameMatch = fullMatch.match(
-                /=\s*([A-Za-z0-9_$]+)\s*=\s*defineProblemScript/,
-            );
-            const name = nameMatch ? nameMatch[1] : firstName;
-
             const needsNoSpace = /^\s*\n/.test(argsContent);
             const comma = needsNoSpace ? ',' : ', ';
-            const newArgs = `'${stringifyProblemScriptId(scriptSrc, name)}'${comma}${argsContent}`;
+            const newArgs = `'${scriptSrc}'${comma}${argsContent}`;
 
-            return fullMatch.replace(
-                /defineProblemScript\(([\s\S]*?)\)/,
-                `defineProblemScript(${newArgs})`,
-            );
+            return `defineProblemScript(${newArgs})`;
         },
     );
 }
@@ -82,20 +53,18 @@ export interface ProblemScriptDefinition {
 
 export function defineProblemScript<
     const TDefinition extends ProblemScriptDefinition,
->(scriptIdOrDefinition?: string | TDefinition, maybeDefinition?: TDefinition) {
-    let scriptId: string;
+>(scriptSrcOrDefinition?: string | TDefinition, maybeDefinition?: TDefinition) {
+    let scriptSrc: string;
     let definition: TDefinition;
 
-    if (typeof scriptIdOrDefinition === 'string') {
-        scriptId = scriptIdOrDefinition;
+    if (typeof scriptSrcOrDefinition === 'string') {
+        scriptSrc = scriptSrcOrDefinition;
         definition = maybeDefinition!;
     } else {
         throw new ProseError(
             `Problem script requires script ID to be manually specified or inserted at transform time!`,
         );
     }
-
-    const { scriptSrc, exportName } = parseProblemScriptId(scriptId);
 
     type ProblemContentFn = (
         args: (TDefinition['uniques'] extends Record<string, LinkableTag>
@@ -161,7 +130,6 @@ export function defineProblemScript<
 
             return {
                 scriptSrc,
-                exportName,
                 uniques: finalizedUniques,
                 isGenerator: definition.isGenerator ?? false,
                 generate: (seed?: ProblemSeed) => {
@@ -207,7 +175,6 @@ export function defineProblemScript<
 
 export interface ProblemScriptInstance {
     scriptSrc: string;
-    exportName: string;
     uniques: Record<string, AnyUnique>;
     isGenerator: boolean;
     generate: (seed?: ProblemSeed) => {

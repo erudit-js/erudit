@@ -159,10 +159,8 @@ describe('Problem Check', () => {
                 'baz',
             ]);
 
-            const functionCheck = asEruditRaw(
-                <ProblemCheck check={({ answer, answers, index }) => false} />,
-            );
-            expect(typeof functionCheck.data.checkFunction).toBe('function');
+            const scriptCheck = asEruditRaw(<ProblemCheck script />);
+            expect(scriptCheck.data.script).toBe(true);
         });
     });
 });

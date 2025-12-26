@@ -1,7 +1,7 @@
 import shady from '#project/contributors/test-contributor-1/shady.jpg';
 import nuxtSchemeDark from './nuxt-scheme-dark.png';
 
-import { myScript } from '#project/content/2-foo-group/1-foo-topic/problems/myProblem/problem';
+import myScript from '#project/content/2-foo-group/1-foo-topic/problems/myProblem/problem';
 
 export const page = definePage({
     title: 'Test Page',

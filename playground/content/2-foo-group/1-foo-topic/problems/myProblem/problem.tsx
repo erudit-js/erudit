@@ -1,4 +1,4 @@
-export const myScript = defineProblemScript({
+export default defineProblemScript({
     uniques: {
         superFormula: BlockMath,
     },

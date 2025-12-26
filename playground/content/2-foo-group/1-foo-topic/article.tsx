@@ -2,8 +2,8 @@ import mobEffect from './mob-effect.png';
 import ds2 from './ds2.mp4';
 import blonde from './blonde.png';
 
-import { myScript } from '#project/content/2-foo-group/1-foo-topic/problems/myProblem/problem';
-import { sumProblem } from './problems/sumProblem';
+import myScript from '#project/content/2-foo-group/1-foo-topic/problems/myProblem/problem';
+import sumProblem from './problems/sumProblem';
 
 export default defineDocument({
     uniques: {
@@ -13,7 +13,7 @@ export default defineDocument({
     },
 })(({ uniques, autoUnique }) => (
     <>
-        <H1 $={uniques.tastyHeading}>Foo "Article"</H1>
+        <H1 $={uniques.tastyHeading}>Foo Lol "Article"</H1>
 
         <Problem
             title="Моя задача"
@@ -23,10 +23,12 @@ export default defineDocument({
 
         <Problems title="Сложение" level="hard">
             <SubProblem>
-                <ProblemDescription>Сколько будет 2 + 3?</ProblemDescription>
+                <ProblemDescription>
+                    Сколько будет 2 + 3? Не знаю!
+                </ProblemDescription>
                 <ProblemAnswer>5</ProblemAnswer>
             </SubProblem>
-            <SubProblem script={sumProblem()} />
+            <SubProblem script={sumProblem(autoUnique)} />
         </Problems>
 
         <P $={uniques.myP} toc="My Life!">

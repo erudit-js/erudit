@@ -8,7 +8,6 @@ import {
 
 import { P } from '@erudit-js/prose/elements/paragraph/core';
 import {
-    stringifyProblemScriptId,
     defineProblemScript,
     insertProblemScriptId,
 } from '@erudit-js/prose/elements/problem/problemScript';
@@ -40,14 +39,11 @@ describe('Problem Script', () => {
         isolateProse(async () => {
             prepareRegistry();
 
-            const problemScript = defineProblemScript(
-                stringifyProblemScriptId('script1', 'TestScript'),
-                {
-                    uniques: {
-                        myP: P,
-                    },
+            const problemScript = defineProblemScript('script1/TestScript', {
+                uniques: {
+                    myP: P,
                 },
-            )(({ uniques }) => {
+            })(({ uniques }) => {
                 return (
                     <>
                         <P $={uniques.myP}>This is paragraph</P>
@@ -58,7 +54,7 @@ describe('Problem Script', () => {
             expect(() =>
                 problemScript({
                     myP: createUniqueP(),
-                }).createProblemContent(),
+                }).generate(),
             ).toThrow(/\[Problem Script\]/);
         });
     });
@@ -66,15 +62,12 @@ describe('Problem Script', () => {
     it('should create problem script correctly', async () => {
         isolateProse(async () => {
             prepareRegistry();
-            const problemScript = defineProblemScript(
-                stringifyProblemScriptId('script1', 'TestScript'),
-                {
-                    isGenerator: true,
-                    uniques: {
-                        myP: P,
-                    },
+            const problemScript = defineProblemScript('script1/TestScript', {
+                isGenerator: true,
+                uniques: {
+                    myP: P,
                 },
-            )(({ uniques, initial, random }) => {
+            })(({ uniques, initial, random }) => {
                 return (
                     <>
                         <ProblemDescription>
@@ -87,7 +80,7 @@ describe('Problem Script', () => {
 
             const problemContent = problemScript({
                 myP: createUniqueP(),
-            }).createProblemContent(1337);
+            }).generate(1337).problemContent;
 
             expect(problemContent).toHaveLength(2);
             expect(
@@ -101,19 +94,18 @@ describe('Problem Script', () => {
 
     it('should insert script ID correctly', () => {
         const code = `
-export const A = defineProblemScript({
+export default defineProblemScript({
   foo: 1
 });
 
-export const C = defineProblemScript("already:here", {
+export default defineProblemScript("already:here", {
   c: 3
 });
 
-export const D = defineProblemScript({ d: 4 });
+export default defineProblemScript({ d: 4 });
 
-export const E = defineProblemScript()(() => <></>);
+export default defineProblemScript()(() => <></>);
 
-const myScript = exports.myScript = defineProblemScript()(() => <></>);
         `.trim();
 
         const scriptSrc = 'myScriptSource';
@@ -121,19 +113,17 @@ const myScript = exports.myScript = defineProblemScript()(() => <></>);
 
         expect(transformedCode).toBe(
             `
-export const A = defineProblemScript('myScriptSource/A', {
+export default defineProblemScript('myScriptSource', {
   foo: 1
 });
 
-export const C = defineProblemScript("already:here", {
+export default defineProblemScript("already:here", {
   c: 3
 });
 
-export const D = defineProblemScript('myScriptSource/D', { d: 4 });
+export default defineProblemScript('myScriptSource', { d: 4 });
 
-export const E = defineProblemScript('myScriptSource/E', )(() => <></>);
-
-const myScript = exports.myScript = defineProblemScript('myScriptSource/myScript', )(() => <></>);
+export default defineProblemScript('myScriptSource', )(() => <></>);
         `.trim(),
         );
     });

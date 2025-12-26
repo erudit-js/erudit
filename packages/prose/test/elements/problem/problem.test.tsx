@@ -18,20 +18,14 @@ import {
     problemDescriptionSchema,
 } from '@erudit-js/prose/elements/problem/problemContent';
 import { asEruditRaw, resolveEruditRawElement } from '@erudit-js/prose';
-import {
-    defineProblemScript,
-    stringifyProblemScriptId,
-} from '@erudit-js/prose/elements/problem/problemScript';
+import { defineProblemScript } from '@erudit-js/prose/elements/problem/problemScript';
 
 import { prepareRegistry, ProblemAnswer } from './problemContent.test';
 
-export const problemScript = defineProblemScript(
-    stringifyProblemScriptId('myScriptSrc', 'myScriptName'),
-    {
-        isGenerator: false,
-        initialSeed: 'my-seed!',
-    },
-)(() => (
+export const problemScript = defineProblemScript('myScriptSrc/myScriptName', {
+    isGenerator: false,
+    initialSeed: 'my-seed!',
+})(() => (
     <>
         <ProblemDescription>Hello World!</ProblemDescription>
         <ProblemAnswer>

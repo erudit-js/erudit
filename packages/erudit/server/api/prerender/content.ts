@@ -57,9 +57,26 @@ export async function contentUniques() {
 }
 
 export async function problemScripts() {
-    //
-    // Problem scripts for each node (they can intersect, check this!)
-    //
+    const routes: string[] = [];
 
-    return [];
+    const dbProblemScripts = await ERUDIT.db
+        .selectDistinct({
+            problemScript: ERUDIT.db.schema.problemScripts.problemScriptSrc,
+        })
+        .from(ERUDIT.db.schema.problemScripts);
+
+    for (const dbProblemScript of dbProblemScripts) {
+        routes.push(
+            `/api/problemScript/` +
+                dbProblemScript
+                    .problemScript!.replace(
+                        ERUDIT.config.paths.project + '/',
+                        '',
+                    )
+                    .replace('.tsx', '') +
+                '.js',
+        );
+    }
+
+    return routes;
 }

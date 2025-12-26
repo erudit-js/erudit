@@ -58,14 +58,22 @@ const phrase = await useProblemPhrase();
 
 const answerInputElement = useTemplateRef('answer');
 const answerInput = ref<string>('');
+const lastCheckedInput = ref<string | undefined | null>(null);
 
 watch(answerInput, () => {
     state.value = 'default';
+    lastCheckedInput.value = null;
     script?.clear();
 });
 
 function doCheck() {
     let newInput = answerInput.value.trim().replace(/\s+/g, ' ') || undefined;
+
+    if (newInput === lastCheckedInput.value) {
+        return;
+    }
+
+    lastCheckedInput.value = newInput;
 
     if (script) {
         const isCorrect = script.check(newInput);

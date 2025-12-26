@@ -1,6 +1,9 @@
-export const sumProblem = defineProblemScript({
+export default defineProblemScript({
     isGenerator: true,
-})(({ initial, random }) => {
+    uniques: {
+        explanation: Details,
+    },
+})(({ uniques, initial, random }) => {
     const a = initial ? 2 : random.integer(5, 10);
     const b = initial ? 3 : random.integer(5, 10);
 
@@ -19,8 +22,17 @@ export const sumProblem = defineProblemScript({
         problemContent: (
             <>
                 <ProblemDescription>
-                    What is <M>{a}</M> + <M>{b}</M>? Also be sure to{' '}
-                    <A to={$LINK.fooGroup.fooTopic}>check this</A> page!
+                    <P>
+                        What is <M>{a}</M> + <M>{b}</M>?{' '}
+                        <A to={uniques.explanation}>Also be</A> sure to{' '}
+                        <A to={$LINK.fooGroup.fooTopic}>check this</A> page!
+                    </P>
+                    <Details
+                        $={uniques.explanation}
+                        title="Немного больше инфы"
+                    >
+                        <BlockMath>{`${a} + ${b} = ${a + b}`}</BlockMath>
+                    </Details>
                 </ProblemDescription>
                 {hints}
                 <ProblemNote>Привет</ProblemNote>

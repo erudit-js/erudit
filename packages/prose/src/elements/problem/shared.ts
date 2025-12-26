@@ -1,5 +1,3 @@
-import { isProseElement } from '@jsprose/core';
-
 //
 // Problem Levels
 //

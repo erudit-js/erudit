@@ -1,29 +1,20 @@
 import { resolve } from 'node:path';
 import { build, type Plugin } from 'esbuild';
-import { parseProblemScriptId } from '@erudit-js/prose/elements/problem/problemScript';
 
 import { STATIC_ASSET_EXTENSIONS } from '@erudit/server/prose/transform/extensions';
 import { tranformGlobalLinkString } from '@erudit/server/link/global';
 
 export default defineEventHandler<Promise<string>>(async (event) => {
-    // <filepathToScriptFile>/<scriptExportName>.js
+    // <filepathToScriptFile>.js
     const problemScriptPath = event.context.params!.problemScriptPath.slice(
         0,
         -3,
     ); // remove .js
 
-    let { scriptSrc, exportName } = parseProblemScriptId(problemScriptPath);
-
     const buildResult = await build({
-        stdin: {
-            contents: `
-                import { ${exportName} } from '#project/${scriptSrc}';
-                export default ${exportName};
-            `,
-            resolveDir: scriptSrc.split('/').slice(0, -1).join('/'),
-            sourcefile: scriptSrc.split('/').slice(-1)[0],
-            loader: 'ts',
-        },
+        entryPoints: [
+            ERUDIT.config.paths.project + '/' + problemScriptPath + '.tsx',
+        ],
         charset: 'utf8',
         bundle: true,
         treeShaking: true,
@@ -54,11 +45,11 @@ export default defineEventHandler<Promise<string>>(async (event) => {
 
     // Insert script ID
     code = code.replace(
-        ' = defineProblemScript(',
-        ` = defineProblemScript('__auto_generated__',`,
+        'defineProblemScript(',
+        `defineProblemScript('__auto_generated__',`,
     );
 
-    setHeader(event, 'Content-Type', 'text/javascript');
+    setHeader(event, 'Content-Type', 'text/javascript; charset=utf-8');
     return code;
 });
 
