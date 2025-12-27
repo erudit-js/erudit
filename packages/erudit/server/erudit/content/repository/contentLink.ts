@@ -1,4 +1,4 @@
-import { getTopicParts } from './topicParts';
+import { getDefaultTopicPart, getTopicParts } from './topicParts';
 
 export async function getContentLink(fullId: string): Promise<string> {
     const navNode = ERUDIT.contentNav.getNodeOrThrow(fullId);
@@ -10,7 +10,7 @@ export async function getContentLink(fullId: string): Promise<string> {
             return PAGES[navNode.type](navNode.shortId);
     }
 
-    const topicParts = await getTopicParts(fullId);
+    const defaultTopicPart = await getDefaultTopicPart(fullId);
 
-    return PAGES.topic(topicParts[0], navNode.shortId);
+    return PAGES.topic(defaultTopicPart, navNode.shortId);
 }

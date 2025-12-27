@@ -25,7 +25,7 @@ export async function resolveTopic(topicNode: ContentNavNode) {
                 '/topic',
         );
 
-        if (!isContentItem(topicModule?.default, 'topic')) {
+        if (!isContentItem<TopicContentItem>(topicModule?.default, 'topic')) {
             throw new Error(
                 'Topic default export must be a topic content item!',
             );

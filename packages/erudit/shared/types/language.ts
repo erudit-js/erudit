@@ -52,6 +52,7 @@ export type LanguagePhrases = Phrases<{
     practice: string;
     page: string;
     preview_content_page_description: string;
+    begin_learning: string;
 
     // _language_title: string;
     // _language_code: string;

@@ -43,7 +43,7 @@ export default defineProblemScript({
                 <ProblemCheck script label="Your answer?" />
             </>
         ),
-        check({ answer }) {
+        check({ answer, i, answers }) {
             return answer === String(a + b);
         },
     };

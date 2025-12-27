@@ -17,6 +17,7 @@ import {
     getContentHeadingUnique,
     getContentUnique,
 } from './content/repository/unique';
+import { getContentDecoration } from './content/repository/decoration';
 
 export const repository = {
     db: {
@@ -38,6 +39,7 @@ export const repository = {
         link: getContentLink,
         breadcrumbs: getContentBreadcrumbs,
         title: getContentTitle,
+        decoration: getContentDecoration,
     },
     prose: {
         resolve: resolveEruditProse,

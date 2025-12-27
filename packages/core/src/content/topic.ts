@@ -1,4 +1,8 @@
-import { finalizeContentItem, type ContentItemBase } from './item.js';
+import {
+    finalizeContentItem,
+    type ContentItem,
+    type TypelessContentItem,
+} from './item.js';
 
 export const topicParts = ['article', 'summary', 'practice'] as const;
 
@@ -8,8 +12,10 @@ export function isTopicPart(value: unknown): value is TopicPart {
     return topicParts.includes(value as TopicPart);
 }
 
-export type TopicContentItem = ContentItemBase;
+export interface TopicContentItem extends ContentItem {
+    type: 'topic';
+}
 
-export function defineTopic(topic?: TopicContentItem) {
+export function defineTopic(topic?: TypelessContentItem<TopicContentItem>) {
     return finalizeContentItem('topic', topic ?? {});
 }

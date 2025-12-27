@@ -5,11 +5,12 @@ defineProps<{
 </script>
 
 <template>
-    <h1>Topic Part {{ mainContent.part }}</h1>
-    <div>
-        {{ mainContent.breadcrumbs }}
-    </div>
-    <div>This is common page content for topic parts.</div>
+    <MainGlow />
+    <MainDecoration :decoration="mainContent.decoration" />
+    <MainBreadcrumbs :breadcrumbs="mainContent.breadcrumbs" />
+    <MainTitle :icon="ICONS[mainContent.part]" :title="mainContent.title" />
+    <MainDescription :description="mainContent.description" />
+
     <Prose
         :element="mainContent.proseElement"
         :storage="mainContent.storage"

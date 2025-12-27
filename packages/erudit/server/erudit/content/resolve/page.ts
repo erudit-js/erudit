@@ -24,7 +24,7 @@ export async function resolvePage(pageNode: ContentNavNode) {
                 '/page',
         );
 
-        if (!isContentItem(pageModule?.page, 'page')) {
+        if (!isContentItem<PageContentItem>(pageModule?.page, 'page')) {
             throw new Error('Page `page` export must be a page content item!');
         }
 

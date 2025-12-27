@@ -47,6 +47,7 @@ const ru: LanguagePhrases = {
     page: 'Страница',
     preview_content_page_description:
         'Вы собираетесь перейти на страницу контента:',
+    begin_learning: 'Начать изучение!',
 
     // _language_title: 'Русский',
     // _language_code: 'ru',

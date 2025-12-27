@@ -1,3 +1,4 @@
+import { globSync } from 'glob';
 import type { ContentItem } from '@erudit-js/core/content/item';
 
 import type { ContentNavNode } from '../../nav/types';
@@ -19,6 +20,30 @@ export async function insertContentItem(
         }
     }
 
+    const decorationExtension = globSync(
+        ERUDIT.config.paths.project +
+            '/content/' +
+            navNode.contentRelPath +
+            '/decoration.*',
+        {
+            posix: true,
+        },
+    )
+        .shift()
+        ?.split('.')
+        ?.pop();
+
+    if (decorationExtension) {
+        await ERUDIT.repository.db.pushFile(
+            ERUDIT.config.paths.project +
+                '/content/' +
+                navNode.contentRelPath +
+                '/decoration.' +
+                decorationExtension,
+            'content-decoration:' + navNode.fullId,
+        );
+    }
+
     await ERUDIT.db.insert(ERUDIT.db.schema.content).values({
         fullId: navNode.fullId,
         type: navNode.type,
@@ -27,5 +52,6 @@ export async function insertContentItem(
         description: contentItem.description,
         hidden: Boolean(contentItem.hidden) || false,
         flags: contentItem.flags,
+        decorationExtension,
     });
 }

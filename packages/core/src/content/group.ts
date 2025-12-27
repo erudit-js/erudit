@@ -1,9 +1,14 @@
-import { finalizeContentItem, type ContentItemBase } from './item.js';
+import {
+    finalizeContentItem,
+    type ContentItem,
+    type TypelessContentItem,
+} from './item.js';
 
-export interface GroupContentItem extends ContentItemBase {
-    type?: 'folder' | 'separator';
+export interface GroupContentItem extends ContentItem {
+    type: 'group';
+    separator?: boolean;
 }
 
-export function defineGroup(group?: GroupContentItem) {
+export function defineGroup(group?: TypelessContentItem<GroupContentItem>) {
     return finalizeContentItem('group', group ?? {});
 }

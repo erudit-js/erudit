@@ -9,13 +9,11 @@
 
 -->
 
-        <!-- ДОБАВИТЬ ПОЛУКРУГ или ЛИНЕЙНЫЙ ГРАДИЕНТ ИЗ БРЕНД ЦВЕТА В ПРОЗРАЧНЫЙ КАК НА NUXT ЗЕЛЕНОЕ ЗАРЕВО СВЕРХУ-->
-
         <div class="text-main">
             <Preview />
             <div
-                class="bg-bg-main py-small min-h-dvh transition-[background]
-                    dark:bg-[#212121]"
+                class="bg-bg-main min-h-dvh py-(--_pMainY)
+                    transition-[background] dark:bg-[#212121]"
             >
                 <slot></slot>
                 <AdsBannerBottom v-if="adsBottomAllowed()" />

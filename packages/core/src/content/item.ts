@@ -2,7 +2,7 @@ import type { ContentFlags } from './flags.js';
 import type { ContentDependency } from './dependencies.js';
 import type { ContentType } from './type.js';
 
-export type ContentItemBase = Partial<{
+export type ContentItem = { type: ContentType } & Partial<{
     title: string;
     navTitle: string;
     description: string;
@@ -58,13 +58,18 @@ export type ContentItemBase = Partial<{
     dependencies: ContentDependency[];
 }>;
 
-export type ContentItem = ContentItemBase & {
-    type: ContentType;
-};
+export type TypelessContentItem<TContentItem extends ContentItem> = Omit<
+    TContentItem,
+    'type'
+>;
+
+// export interface ContentItem extends ContentItemBase {
+//     type: ContentType;
+// }
 
 export function finalizeContentItem(
     type: ContentType,
-    item: ContentItemBase,
+    item: TypelessContentItem<ContentItem>,
 ): ContentItem {
     return {
         ...item,
@@ -72,10 +77,10 @@ export function finalizeContentItem(
     };
 }
 
-export function isContentItem(
+export function isContentItem<TContentItem extends ContentItem>(
     item: any,
-    type: ContentType,
-): item is ContentItem {
+    type: TContentItem['type'],
+): item is TContentItem {
     return (
         item && typeof item === 'object' && 'type' in item && item.type === type
     );

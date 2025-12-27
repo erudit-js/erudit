@@ -74,7 +74,10 @@ export async function clearOldContentData(contentIds: string[]) {
     await ERUDIT.db.delete(ERUDIT.db.schema.files).where(
         inArray(
             ERUDIT.db.schema.files.role,
-            contentIds.map((id) => `content-item:${id}`),
+            contentIds.flatMap((id) => [
+                `content-item:${id}`,
+                `content-decoration:${id}`,
+            ]),
         ),
     );
 

@@ -10,4 +10,5 @@ export const content = sqliteTable('content', {
     description: text(),
     hidden: integer({ mode: 'boolean' }).notNull(),
     flags: text({ mode: 'json' }).$type<ContentFlags>(),
+    decorationExtension: text(),
 });

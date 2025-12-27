@@ -8,10 +8,12 @@ const mainContent = await useMainContent<MainContentPage>(contentTypePath);
 </script>
 
 <template>
-    <h1>Page {{ pageId }}</h1>
-    <div>
-        {{ mainContent.breadcrumbs }}
-    </div>
+    <MainGlow />
+    <MainDecoration :decoration="mainContent.decoration" />
+    <MainBreadcrumbs :breadcrumbs="mainContent.breadcrumbs" />
+    <MainTitle icon="lines" :title="mainContent.title" />
+    <MainDescription :description="mainContent.description" />
+
     <Prose
         :element="mainContent.proseElement"
         :storage="mainContent.storage"

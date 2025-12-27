@@ -84,7 +84,7 @@
 @layer base {
     :root {
         --_pMainX: 18px;
-        --_pMainY: var(--spacing-small);
+        --_pMainY: 22px;
         background: var(--color-bg-root);
         color: var(--color-text);
         font-size: 18px;
@@ -123,7 +123,7 @@
 @variant micro {
     :root {
         --_pMainX: 34px;
-        --_pMainY: var(--spacing-normal);
+        --_pMainY: 24px;
     }
 }
 

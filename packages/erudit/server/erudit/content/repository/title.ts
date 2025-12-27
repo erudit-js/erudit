@@ -15,5 +15,5 @@ export async function getContentTitle(fullContentId: string) {
         });
     }
 
-    return dbContentItem.title;
+    return dbContentItem.title || fullContentId.split('/').pop()!;
 }

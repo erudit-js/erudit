@@ -1,7 +1,13 @@
-import { finalizeContentItem, type ContentItemBase } from './item.js';
+import {
+    finalizeContentItem,
+    type ContentItem,
+    type TypelessContentItem,
+} from './item.js';
 
-export type BookContentItem = ContentItemBase;
+export interface BookContentItem extends ContentItem {
+    type: 'book';
+}
 
-export function defineBook(book?: BookContentItem) {
+export function defineBook(book?: TypelessContentItem<BookContentItem>) {
     return finalizeContentItem('book', book ?? {});
 }

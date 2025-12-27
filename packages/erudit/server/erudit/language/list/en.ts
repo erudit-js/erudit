@@ -46,6 +46,7 @@ const en: LanguagePhrases = {
     practice: 'Practice',
     page: 'Page',
     preview_content_page_description: 'You are about to open a content page:',
+    begin_learning: 'Begin Learning!',
 
     // _language_title: 'English',
     // _language_code: 'en',

@@ -18,7 +18,7 @@ export async function resolveBook(bookNode: ContentNavNode) {
                 '/book',
         );
 
-        if (!isContentItem(bookModule?.default, 'book')) {
+        if (!isContentItem<BookContentItem>(bookModule?.default, 'book')) {
             throw new Error('Book default export must be a book content item!');
         }
 

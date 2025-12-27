@@ -14,7 +14,7 @@ export default defineDocument({
         //shadyImage: Image,
         someMath: BlockMath,
     },
-})(({ uniques }) => (
+})(({ uniques, autoUnique }) => (
     <>
         <H1>Test Page</H1>
         <P>

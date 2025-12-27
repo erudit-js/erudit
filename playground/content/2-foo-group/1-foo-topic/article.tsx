@@ -15,6 +15,11 @@ export default defineDocument({
     <>
         <H1 $={uniques.tastyHeading}>Foo Lol "Article"</H1>
 
+        <P>
+            Это моя <A to={$LINK.testPage.$someMath}>ссылка</A> на формулу
+            внутри задачи в page.
+        </P>
+
         <Problem
             title="Моя задача"
             level="medium"
@@ -28,6 +33,7 @@ export default defineDocument({
                 </ProblemDescription>
                 <ProblemAnswer>5</ProblemAnswer>
             </SubProblem>
+
             <SubProblem script={sumProblem(autoUnique)} />
         </Problems>
 

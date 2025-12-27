@@ -18,7 +18,7 @@ export async function resolveGroup(groupNode: ContentNavNode) {
                 '/group',
         );
 
-        if (!isContentItem(groupModule?.default, 'group')) {
+        if (!isContentItem<GroupContentItem>(groupModule?.default, 'group')) {
             throw new Error(
                 'Group default export must be a group content item!',
             );
@@ -30,7 +30,7 @@ export async function resolveGroup(groupNode: ContentNavNode) {
 
         await ERUDIT.db.insert(ERUDIT.db.schema.groups).values({
             fullId: groupNode.fullId,
-            separator: groupContentItem.type === 'separator',
+            separator: groupContentItem.separator ?? false,
         });
     } catch (error) {
         logContentError(groupNode);
