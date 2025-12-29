@@ -6,4 +6,8 @@ export default defineTopic({
         Но все равно статья будет полезной для очень большого количества людей!
     `,
     contributors: [$CONTRIBUTOR.KirichenkoAM],
+    flags: {
+        secondary: true,
+        advanced: true,
+    },
 });

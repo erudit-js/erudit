@@ -21,6 +21,18 @@ export async function useFormatText(): Promise<FormatText> {
 
     function formatText(text: string): string {
         //
+        // Normalize spacing (new lines, spaces)
+        //
+
+        {
+            text = text
+                .trim()
+                .replace(/\r\n/gm, '\n')
+                .replace(/\n{3,}/gm, '\n\n')
+                .replace(/[ \t]+/gm, ' ');
+        }
+
+        //
         // Normalize dashes
         //
 

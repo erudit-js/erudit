@@ -294,11 +294,13 @@ const { floatingStyles: seedFloatingStyles } = useFloating(
             <div
                 v-if="isGenerator"
                 ref="seedReference"
-                @touchstart="seedPopupVisible = true"
                 @mouseenter="seedPopupVisible = true"
                 @mouseleave="seedPopupVisible = false"
             >
                 <ProblemButton
+                    @touchstart="
+                        seedPopupVisible = seedPopupVisible ? false : true
+                    "
                     @click="doGenerate"
                     class="flex items-center gap-[7px]"
                 >

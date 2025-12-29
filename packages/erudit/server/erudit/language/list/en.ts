@@ -47,6 +47,17 @@ const en: LanguagePhrases = {
     page: 'Page',
     preview_content_page_description: 'You are about to open a content page:',
     begin_learning: 'Begin Learning!',
+    flag_dev: 'Development',
+    flag_dev_description:
+        'This material is in development! It may change in the future and even contain errors!',
+    flag_advanced: 'Advanced',
+    flag_advanced_description:
+        'This material is for learners with a high level of knowledge. It contains information that is not suitable for beginners!',
+    flag_secondary: 'Additional',
+    flag_secondary_description:
+        'This is an optional material is for learners who want to dive deeper and gain additional knowledge and context.',
+    key_elements: 'Key elements',
+    element_stats: 'Element statistics',
 
     // _language_title: 'English',
     // _language_code: 'en',
@@ -89,15 +100,7 @@ const en: LanguagePhrases = {
     // editor: 'Editor',
     // add_translation: 'Add translation',
     // empty_nav: 'Empty navigation',
-    // flag_dev: 'Development',
-    // flag_dev_description:
-    //     'This material is in development! It may change in the future and even contain errors!',
-    // flag_advanced: 'Advanced',
-    // flag_advanced_description:
-    //     'This material is for learners with a high level of knowledge. It contains information that is not suitable for beginners!',
-    // flag_secondary: 'Additional',
-    // flag_secondary_description:
-    //     'This is an optional material is for learners who want to dive deeper and gain additional knowledge and context.',
+
     // popover_dependencies: 'Dependencies',
     // popover_dependencies_description:
     //     'There is no royal way into this topic! You can only figure it out if you know the following topics:',

@@ -14,7 +14,9 @@ const phrase = await usePhrases('begin_learning');
     <MainDecoration :decoration="mainContent.decoration" />
     <MainBreadcrumbs :breadcrumbs="mainContent.breadcrumbs" />
     <MainTitle icon="folder-open" :title="mainContent.title" />
+    <MainFlags :flags="mainContent.flags" />
     <MainDescription :description="mainContent.description" />
+    <MainElementCounts :elementCounts="mainContent.elementCounts" />
     <MainAction
         icon="rocket"
         :label="formatText(phrase.begin_learning)"

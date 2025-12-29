@@ -18,6 +18,12 @@ import {
     getContentUnique,
 } from './content/repository/unique';
 import { getContentDecoration } from './content/repository/decoration';
+import { getContentQuickLinks } from './content/repository/quickLinks';
+import { getContentFlags } from './content/repository/flags';
+import {
+    getContentElementCounts,
+    addContentElementCount,
+} from './content/repository/elementCount';
 
 export const repository = {
     db: {
@@ -40,6 +46,10 @@ export const repository = {
         breadcrumbs: getContentBreadcrumbs,
         title: getContentTitle,
         decoration: getContentDecoration,
+        quickLinks: getContentQuickLinks,
+        flags: getContentFlags,
+        addElementCount: addContentElementCount,
+        elementCounts: getContentElementCounts,
     },
     prose: {
         resolve: resolveEruditProse,

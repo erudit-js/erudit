@@ -12,7 +12,10 @@ const mainContent = await useMainContent<MainContentPage>(contentTypePath);
     <MainDecoration :decoration="mainContent.decoration" />
     <MainBreadcrumbs :breadcrumbs="mainContent.breadcrumbs" />
     <MainTitle icon="lines" :title="mainContent.title" />
+    <MainFlags :flags="mainContent.flags" />
     <MainDescription :description="mainContent.description" />
+    <MainQuickLinks mode="single" :quickLinks="mainContent.quickLinks" />
+    <MainElementCounts :elementCounts="mainContent.elementCounts" />
 
     <Prose
         :element="mainContent.proseElement"

@@ -6,7 +6,14 @@ import { useFormatText } from '../composables/formatText.js';
 
 const { element } = defineProps<{ element: ProseElement<typeof textSchema> }>();
 const formatText = useFormatText();
-const TextComponent = h(Text, formatText(element.data));
+
+const originalText = element.data;
+const leadingSpace = originalText.match(/^(\s*)/)?.[1] ? ' ' : '';
+const trailingSpace = originalText.match(/(\s*)$/)?.[1] ? ' ' : '';
+const formattedText = formatText(originalText);
+const textWithSpaces = leadingSpace + formattedText + trailingSpace;
+
+const TextComponent = h(Text, textWithSpaces);
 </script>
 
 <template>

@@ -1,5 +1,6 @@
 import type { ContentType } from '@erudit-js/core/content/type';
 import type { TopicPart } from '@erudit-js/core/content/topic';
+import type { ContentFlags } from '@erudit-js/core/content/flags';
 
 export interface MainContentBase {
     type: ContentType;
@@ -8,6 +9,8 @@ export interface MainContentBase {
     title: string;
     description?: string;
     decoration?: string;
+    flags?: ContentFlags;
+    elementCounts?: Record<string, number>;
 }
 
 export interface MainContentChildrenItem {
@@ -15,7 +18,7 @@ export interface MainContentChildrenItem {
     link: string;
     title: string;
     description?: string;
-    /* TODO: Quick Links */
+    quickLinks?: QuickLink[];
 }
 
 //
@@ -26,11 +29,13 @@ export type MainContentTopicPart = MainContentBase &
     FinalizedProse & {
         type: 'topic';
         part: TopicPart;
+        quickLinks?: QuickLink[];
     };
 
 export type MainContentPage = MainContentBase &
     FinalizedProse & {
         type: 'page';
+        quickLinks?: QuickLink[];
     };
 
 export type MainContentGroup = MainContentBase & {

@@ -15,10 +15,7 @@ export default defineDocument({
     <>
         <H1 $={uniques.tastyHeading}>Foo Lol "Article"</H1>
 
-        <P>
-            Это моя <A to={$LINK.testPage.$someMath}>ссылка</A> на формулу
-            внутри задачи в page.
-        </P>
+        <P>Это моя ссылка на формулу внутри задачи в page.</P>
 
         <Problem
             title="Моя задача"
@@ -26,7 +23,7 @@ export default defineDocument({
             script={myScript({ superFormula: autoUnique })}
         />
 
-        <Problems title="Сложение" level="hard">
+        <Problems title="Сложение" level="hard" snippet={{ quick: true }}>
             <SubProblem>
                 <ProblemDescription>
                     Сколько будет 2 + 3? Не знаю!
@@ -53,7 +50,15 @@ export default defineDocument({
             nulla id risus mollis lacinia. Nunc rhoncus dignissim tempor.
         </P>
         <Hr />
-        <Image src={mobEffect} width="600px">
+        <Image
+            src={mobEffect}
+            width="600px"
+            snippet={{
+                quick: true,
+                title: 'Моя картиночка',
+                description: 'Что-то большое и важное можно тут сказать.',
+            }}
+        >
             <Caption>
                 Mob Effect Image
                 <CaptionSecondary>Some additional info!</CaptionSecondary>

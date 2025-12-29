@@ -42,6 +42,7 @@ export interface EruditPublicRuntimeConfig {
                 repository: boolean;
             };
         };
+        countElements: (string | string[])[];
         repository?: EruditRepository & { _link: string };
         style?: {
             brandColor?: string;

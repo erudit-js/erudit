@@ -34,11 +34,31 @@ export async function resolvePage(pageNode: ContentNavNode) {
 
         await insertContentItem(pageNode, pageModule.page);
 
+        const elementsCount: Record<string, number> = {};
+
         const proseDocument = pageModule.default;
         const resolveResult = await resolveEruditProse(
             proseDocument.content,
             true,
+            async ({ rawElement }) => {
+                if (
+                    ERUDIT.config.public.project.countElements
+                        .flat()
+                        .includes(rawElement.schemaName)
+                ) {
+                    elementsCount[rawElement.schemaName] =
+                        (elementsCount[rawElement.schemaName] || 0) + 1;
+                }
+            },
         );
+
+        for (const [schemaName, count] of Object.entries(elementsCount)) {
+            await ERUDIT.repository.content.addElementCount(
+                pageNode.fullId,
+                schemaName,
+                count,
+            );
+        }
 
         await ERUDIT.db.insert(ERUDIT.db.schema.pages).values({
             fullId: pageNode.fullId,

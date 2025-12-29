@@ -9,6 +9,11 @@ export default defineEventHandler<Promise<MainContent>>(async (event) => {
     const description = await getContentDescription(fullContentId);
     const decoration =
         await ERUDIT.repository.content.decoration(fullContentId);
+    const quickLinks =
+        await ERUDIT.repository.content.quickLinks(fullContentId);
+    const flags = await ERUDIT.repository.content.flags(fullContentId);
+    const elementCounts =
+        await ERUDIT.repository.content.elementCounts(fullContentId);
 
     //
     // Base
@@ -27,6 +32,14 @@ export default defineEventHandler<Promise<MainContent>>(async (event) => {
         mainContentBase.decoration = decoration;
     }
 
+    if (flags) {
+        mainContentBase.flags = flags;
+    }
+
+    if (elementCounts) {
+        mainContentBase.elementCounts = elementCounts;
+    }
+
     if (contentTypePath.type === 'page' || contentTypePath.type === 'topic') {
         const proseElement = await ERUDIT.repository.prose.getContent(
             contentTypePath.type === 'topic'
@@ -42,24 +55,37 @@ export default defineEventHandler<Promise<MainContent>>(async (event) => {
         // Topic
         //
         if (contentTypePath.type === 'topic') {
-            return {
+            const mainContentTopicPart: MainContentTopicPart = {
                 ...mainContentBase,
                 type: 'topic',
                 part: contentTypePath.topicPart,
                 proseElement,
                 storage,
-            } satisfies MainContentTopicPart;
+            };
+
+            if (quickLinks) {
+                mainContentTopicPart.quickLinks = quickLinks;
+            }
+
+            return mainContentTopicPart;
         }
 
         //
         // Page
         //
-        return {
+
+        const mainContentPage: MainContentPage = {
             ...mainContentBase,
-            type: contentTypePath.type,
+            type: 'page',
             proseElement,
             storage,
-        } satisfies MainContentPage;
+        };
+
+        if (quickLinks) {
+            mainContentPage.quickLinks = quickLinks;
+        }
+
+        return mainContentPage;
     }
 
     //
@@ -83,6 +109,9 @@ async function getContentChildren(
         const link = await ERUDIT.repository.content.link(childNode.fullId);
         const title = await ERUDIT.repository.content.title(childNode.fullId);
         const description = await getContentDescription(childNode.fullId);
+        const quickLinks = await ERUDIT.repository.content.quickLinks(
+            childNode.fullId,
+        );
 
         const child: MainContentChildrenItem = {
             type,
@@ -92,6 +121,10 @@ async function getContentChildren(
 
         if (description) {
             child.description = description;
+        }
+
+        if (quickLinks) {
+            child.quickLinks = quickLinks;
         }
 
         children.push(child);

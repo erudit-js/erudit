@@ -36,6 +36,8 @@ export async function resolveTopic(topicNode: ContentNavNode) {
             fullId: topicNode.fullId,
         });
 
+        const elementsCount: Record<string, number> = {};
+
         for (const topicPart of topicParts) {
             const topicPartDocument = await ERUDIT.import<{
                 default: AnyDocument;
@@ -52,6 +54,20 @@ export async function resolveTopic(topicNode: ContentNavNode) {
                 const resolvedTopicPart = await resolveEruditProse(
                     topicPartDocument.default.content,
                     true,
+                    async ({ rawElement }) => {
+                        if (topicPart === 'summary') {
+                            return;
+                        }
+
+                        if (
+                            ERUDIT.config.public.project.countElements
+                                .flat()
+                                .includes(rawElement.schemaName)
+                        ) {
+                            elementsCount[rawElement.schemaName] =
+                                (elementsCount[rawElement.schemaName] || 0) + 1;
+                        }
+                    },
                 );
 
                 await ERUDIT.db
@@ -69,6 +85,14 @@ export async function resolveTopic(topicNode: ContentNavNode) {
                     resolvedTopicPart,
                 );
             }
+        }
+
+        for (const [schemaName, count] of Object.entries(elementsCount)) {
+            await ERUDIT.repository.content.addElementCount(
+                topicNode.fullId,
+                schemaName,
+                count,
+            );
         }
     } catch (error) {
         logContentError(topicNode);

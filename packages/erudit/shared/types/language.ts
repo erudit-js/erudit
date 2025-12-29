@@ -53,6 +53,14 @@ export type LanguagePhrases = Phrases<{
     page: string;
     preview_content_page_description: string;
     begin_learning: string;
+    flag_dev: string;
+    flag_dev_description: string;
+    flag_advanced: string;
+    flag_advanced_description: string;
+    flag_secondary: string;
+    flag_secondary_description: string;
+    key_elements: string;
+    element_stats: string;
 
     // _language_title: string;
     // _language_code: string;

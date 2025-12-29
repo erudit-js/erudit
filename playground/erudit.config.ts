@@ -138,6 +138,12 @@ export default defineEruditConfig({
         '@erudit-js/prose/elements/diagram',
         './elements/term',
     ],
+    countElements: [
+        'accent_term',
+        'statement',
+        'important',
+        ['problem', 'problems'],
+    ],
     nuxtAugmentations: [
         async (nuxt) => {
             //nuxt.options.nitro.preset = 'github-pages';

@@ -10,10 +10,7 @@ export const page = definePage({
 });
 
 export default defineDocument({
-    uniques: {
-        //shadyImage: Image,
-        someMath: BlockMath,
-    },
+    uniques: {},
 })(({ uniques, autoUnique }) => (
     <>
         <H1>Test Page</H1>
@@ -72,26 +69,5 @@ export default defineDocument({
 
                 class rules,configurations,arrangement,combination,permutation fill
         `}</Diagram>
-
-        <Problem
-            title="Aboba"
-            level="hard"
-            script={myScript({ superFormula: uniques.someMath })}
-            inter
-        />
-
-        <Problems title="Много разных задач" pretty level="example">
-            <P>Это моя радость!</P>
-            <SubProblem label="Первая задача">
-                <ProblemDescription>
-                    Это текст <A to={uniques.someMath}>первой</A> задачи.
-                </ProblemDescription>
-            </SubProblem>
-            <SubProblem>
-                <ProblemDescription>
-                    Это текст второй задачи.
-                </ProblemDescription>
-            </SubProblem>
-        </Problems>
     </>
 ));

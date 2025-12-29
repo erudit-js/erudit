@@ -40,8 +40,8 @@
     --h-min-aside-item: 60px;
 
     --color-brand: light-dark(#00b886, #00dcb5);
-    --color-bg-root: light-dark(#ebebeb, #171717);
-    --color-bg-aside: light-dark(#f7f7f7, #1d1d1d);
+    --color-bg-root: light-dark(#ebebeb, #141414);
+    --color-bg-aside: light-dark(#f7f7f7, #1b1b1b);
     --color-bg-main: light-dark(#ffffff, #212121);
     --color-bg-accent: light-dark(#e6e6e6, #2e2e2e);
     --color-text: light-dark(#373737, #b9b9b9);

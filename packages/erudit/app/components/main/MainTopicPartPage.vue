@@ -9,7 +9,10 @@ defineProps<{
     <MainDecoration :decoration="mainContent.decoration" />
     <MainBreadcrumbs :breadcrumbs="mainContent.breadcrumbs" />
     <MainTitle :icon="ICONS[mainContent.part]" :title="mainContent.title" />
+    <MainFlags :flags="mainContent.flags" />
     <MainDescription :description="mainContent.description" />
+    <MainQuickLinks mode="single" :quickLinks="mainContent.quickLinks" />
+    <MainElementCounts :elementCounts="mainContent.elementCounts" />
 
     <Prose
         :element="mainContent.proseElement"

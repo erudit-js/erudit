@@ -27,6 +27,7 @@ export interface EruditConfig {
     repository?: EruditRepository;
     customLinks?: EruditCustomLinks;
     elements?: EruditElements;
+    countElements?: (string | string[])[];
     /**
      * Erudit uses Nuxt under the hood.
      * Use this to alter Nuxt configuration.

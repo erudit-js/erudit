@@ -1,0 +1,77 @@
+<script lang="ts" setup>
+import { autoUpdate, shift, useFloating } from '@floating-ui/vue';
+
+const { quickLink } = defineProps<{ quickLink: QuickLink }>();
+
+const referenceElement = useTemplateRef('reference');
+const popupElement = useTemplateRef('popup');
+const popupVisible = ref(false);
+const showTimeout = ref<ReturnType<typeof setTimeout> | null>(null);
+
+const { floatingStyles } = useFloating(referenceElement, popupElement, {
+    placement: 'bottom',
+    whileElementsMounted: autoUpdate,
+    middleware: [
+        shift({
+            boundary:
+                document?.querySelector('[data-erudit-main]') || undefined,
+        }),
+    ],
+});
+
+const showPopup = () => {
+    showTimeout.value = setTimeout(() => {
+        popupVisible.value = true;
+    }, 400);
+};
+
+const hidePopup = () => {
+    if (showTimeout.value) {
+        clearTimeout(showTimeout.value);
+        showTimeout.value = null;
+    }
+    popupVisible.value = false;
+};
+
+onUnmounted(() => {
+    if (showTimeout.value) {
+        clearTimeout(showTimeout.value);
+    }
+});
+
+const elementIcon = await getElementIcon(quickLink.schemaName);
+const formatText = await useFormatText();
+</script>
+
+<template>
+    <div ref="reference" @mouseenter="showPopup" @mouseleave="hidePopup">
+        <EruditLink
+            @touchstart="popupVisible ? hidePopup() : showPopup()"
+            :to="quickLink.link"
+            class="gap-small border-border px-small bg-bg-aside text-text-muted
+                text-main-sm hocus:text-brand hocus:border-brand
+                hocus:ring-brand/25 flex items-center rounded border py-1 ring-2
+                ring-transparent
+                transition-[background,color,border,box-shadow]"
+        >
+            <MaybeMyIcon :name="elementIcon" />
+            <span>{{ formatText(quickLink.title) }}</span>
+        </EruditLink>
+        <TransitionFade>
+            <div
+                v-if="quickLink.description && popupVisible"
+                :style="floatingStyles"
+                ref="popup"
+                class="z-10 max-w-[300px] p-2"
+            >
+                <div
+                    class="px-small text-main-xs rounded bg-neutral-900 py-1
+                        text-white shadow-lg/30 dark:bg-neutral-400
+                        dark:text-black dark:shadow-neutral-500"
+                >
+                    {{ formatText(quickLink.description) }}
+                </div>
+            </div>
+        </TransitionFade>
+    </div>
+</template>

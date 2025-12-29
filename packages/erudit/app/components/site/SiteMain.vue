@@ -9,7 +9,7 @@
 
 -->
 
-        <div class="text-main">
+        <div class="text-main" data-erudit-main>
             <Preview />
             <div
                 class="bg-bg-main min-h-dvh py-(--_pMainY)
