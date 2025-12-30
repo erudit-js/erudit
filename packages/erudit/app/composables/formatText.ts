@@ -6,7 +6,9 @@ const formatTextLoaders: Partial<
     ru: () => import('../formatters/ru'),
 };
 
-export async function useFormatText(): Promise<FormatText> {
+export let formatText: FormatText;
+
+export async function useFormatText() {
     const languageCode = ERUDIT.config.project.language.current;
 
     const formatTextLoader =
@@ -19,7 +21,7 @@ export async function useFormatText(): Promise<FormatText> {
         languageFormatText = (await formatTextLoader()).default;
     }
 
-    function formatText(text: string): string {
+    function _formatText(text: string): string {
         //
         // Normalize spacing (new lines, spaces)
         //
@@ -77,5 +79,5 @@ export async function useFormatText(): Promise<FormatText> {
         return languageFormatText(text);
     }
 
-    return formatText;
+    formatText = _formatText;
 }

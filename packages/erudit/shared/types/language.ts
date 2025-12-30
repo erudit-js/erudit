@@ -61,6 +61,11 @@ export type LanguagePhrases = Phrases<{
     flag_secondary_description: string;
     key_elements: string;
     element_stats: string;
+    connections: string;
+    need_to_know: string;
+    depends_on: string;
+    used_by: string;
+    externals: string;
 
     // _language_title: string;
     // _language_code: string;

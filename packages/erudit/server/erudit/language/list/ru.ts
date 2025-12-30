@@ -59,6 +59,11 @@ const ru: LanguagePhrases = {
         'Это дополнительный материал для тех, кто хочет глубже погрузиться предмет и получить дополнительные знания и контекст.',
     key_elements: 'Ключевые элементы',
     element_stats: 'Статистика элементов',
+    connections: 'Связи',
+    need_to_know: 'Надо знать',
+    depends_on: 'Зависит от',
+    used_by: 'Используется в',
+    externals: 'Внешние',
 
     // _language_title: 'Русский',
     // _language_code: 'ru',

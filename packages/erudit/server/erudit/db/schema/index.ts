@@ -9,3 +9,4 @@ export { files } from './files';
 export { contentProseLinks } from './contentProseLinks';
 export { problemScripts } from './problemScripts';
 export { contentElementCount } from './contentElementCount';
+export { contentDeps } from './contentDeps';

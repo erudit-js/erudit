@@ -1,22 +1,23 @@
 import { readFileSync, writeFileSync } from 'node:fs';
 import { topicParts, type TopicPart } from '@erudit-js/core/content/topic';
+import { $CONTENT } from './singleton';
 
-// Trigger globalThis update
-$LINK;
+// Call singleton to trigger initialization
+$CONTENT;
 
-export async function buildLink() {
-    ERUDIT.log.debug.start('Building global link...');
+export async function buildGlobalContent() {
+    ERUDIT.log.debug.start('Building global content...');
 
     const linkObject = await buildLinkObject();
 
     const linkTypes = linkObjectToTypes(linkObject);
     writeFileSync(
-        ERUDIT.config.paths.build + '/types/link.d.ts',
+        ERUDIT.config.paths.build + '/types/content.d.ts',
         linkTypes,
         'utf-8',
     );
 
-    ERUDIT.log.success('Global link built successfully!');
+    ERUDIT.log.success('Global content built successfully!');
 }
 
 function linkObjectToTypes(linkObject: any): string {
@@ -30,7 +31,7 @@ function linkObjectToTypes(linkObject: any): string {
         const lines: string[] = [];
 
         for (const [key, value] of Object.entries(obj) as [string, any][]) {
-            if (key === '__jsdoc') continue;
+            if (key === '__jsdoc' || key === '__typeguard') continue;
 
             const camelKey = toCamelCase(key);
 
@@ -42,22 +43,24 @@ function linkObjectToTypes(linkObject: any): string {
                 });
             }
 
-            // Determine if value has nested properties (excluding __jsdoc)
+            // Determine if value has nested properties (excluding __jsdoc and __typeguard)
             const hasNestedProps =
                 value &&
                 typeof value === 'object' &&
-                Object.keys(value).some((k) => k !== '__jsdoc');
+                Object.keys(value).some(
+                    (k) => k !== '__jsdoc' && k !== '__typeguard',
+                );
+
+            // Get the typeguard from the object, default to GlobalContentItemTypeguard
+            const typeguard =
+                value?.__typeguard || 'GlobalContentItemTypeguard';
 
             if (hasNestedProps) {
-                lines.push(
-                    indent(level) + `${camelKey}: GlobalLinkTypeguard & {`,
-                );
+                lines.push(indent(level) + `${camelKey}: ${typeguard} & {`);
                 lines.push(processObject(value, level + 1));
                 lines.push(indent(level) + `}`);
             } else {
-                lines.push(
-                    indent(level) + `${camelKey}: GlobalLinkTypeguard & {}`,
-                );
+                lines.push(indent(level) + `${camelKey}: ${typeguard} & {}`);
             }
         }
 
@@ -66,12 +69,16 @@ function linkObjectToTypes(linkObject: any): string {
 
     const body = processObject(linkObject, 2);
 
-    return `import { GlobalLinkTypeguard } from '@erudit-js/core/prose/link';
+    return `import type {
+    GlobalContentItemTypeguard,
+    GlobalContentTopicPartTypeguard,
+    GlobalContentUniqueTypeguard,
+} from '@erudit-js/core/content/global';
 
 export {};
 
 declare global {
-    const $LINK: {
+    const $CONTENT: {
 ${body}
     }
 }`;
@@ -109,6 +116,7 @@ async function buildLinkObject() {
             ]);
 
             cursor[navItem.idPart] = {
+                __typeguard: 'GlobalContentItemTypeguard',
                 __jsdoc: `
 /**
 ${jsdoc}
@@ -132,6 +140,7 @@ ${jsdoc}
             ]);
 
             cursor[navItem.idPart] = {
+                __typeguard: 'GlobalContentItemTypeguard',
                 __jsdoc: `
 /**
 ${jsdoc}
@@ -152,6 +161,7 @@ ${jsdoc}
                     ]);
 
                     cursor[navItem.idPart][part as TopicPart] = {
+                        __typeguard: 'GlobalContentTopicPartTypeguard',
                         __jsdoc: `
 /**
 ${jsdoc}
@@ -177,6 +187,7 @@ ${jsdoc}
             ]);
 
             cursor[navItem.idPart] = {
+                __typeguard: 'GlobalContentItemTypeguard',
                 __jsdoc: `
 /**
 ${jsdoc}
@@ -247,6 +258,7 @@ function tryGetUniquesObject(
         ]);
 
         result[`$${uniqueName}`] = {
+            __typeguard: 'GlobalContentUniqueTypeguard',
             __jsdoc: `
 /**
 ${jsdoc}

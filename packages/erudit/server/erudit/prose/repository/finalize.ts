@@ -10,16 +10,20 @@ import { imageSchema } from '@erudit-js/prose/elements/image/core';
 import { videoSchema } from '@erudit-js/prose/elements/video/core';
 import { calloutSchema } from '@erudit-js/prose/elements/callout/core';
 import {
-    blockLinkSchema,
-    linkSchema,
-} from '@erudit-js/prose/elements/link/core';
+    referenceSchema,
+    refSchema,
+} from '@erudit-js/prose/elements/link/reference/core';
+import {
+    dependencySchema,
+    depSchema,
+} from '@erudit-js/prose/elements/link/dependency/core';
+import { problemSchema } from '@erudit-js/prose/elements/problem/problem';
+import { subProblemSchema } from '@erudit-js/prose/elements/problem/problems';
 
 import { createImageStorage } from '../storage/image';
 import { createVideoStorage } from '../storage/video';
 import { createCalloutStorage } from '../storage/callout';
 import { createLinkStorage } from '../storage/link';
-import { problemSchema } from '@erudit-js/prose/elements/problem/problem';
-import { subProblemSchema } from '@erudit-js/prose/elements/problem/problems';
 import { createProblemScriptStorage } from '../storage/problemScript';
 
 export async function finalizeProse(
@@ -42,8 +46,10 @@ export async function finalizeProse(
                 case isProseElement(element, calloutSchema):
                     await createCalloutStorage(element, storage);
                     break;
-                case isProseElement(element, linkSchema):
-                case isProseElement(element, blockLinkSchema):
+                case isProseElement(element, refSchema):
+                case isProseElement(element, referenceSchema):
+                case isProseElement(element, depSchema):
+                case isProseElement(element, dependencySchema):
                     await createLinkStorage(element, storage);
                     break;
                 case isProseElement(element, problemSchema):

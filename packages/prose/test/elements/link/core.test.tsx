@@ -1,13 +1,23 @@
 import { describe, expect, it } from 'vitest';
-import { defineDocument, isolateProse, PROSE_REGISTRY } from '@jsprose/core';
+import {
+    defineDocument,
+    isolateProse,
+    isProseElement,
+    PROSE_REGISTRY,
+} from '@jsprose/core';
 
 import { asEruditRaw, resolveEruditRawElement } from '@erudit-js/prose';
 import {
-    A,
-    BlockLink,
-    blockLinkRegistryItem,
-    linkRegistryItem,
-} from '@erudit-js/prose/elements/link/core';
+    Ref,
+    refRegistryItem,
+} from '@erudit-js/prose/elements/link/reference/core';
+import {
+    Dep,
+    Dependency,
+    depRegistryItem,
+    depSchema,
+    dependencyRegistryItem,
+} from '@erudit-js/prose/elements/link/dependency/core';
 import {
     P,
     paragraphRegistryItem,
@@ -17,45 +27,47 @@ import {
     type DocumentId,
 } from '@erudit-js/core/prose/documentId';
 
-describe('Link', () => {
+describe('Reference Links', () => {
     it('should throw when unable to resolve "to" prop', () => {
         isolateProse(() => {
-            PROSE_REGISTRY.setItems(linkRegistryItem);
+            PROSE_REGISTRY.setItems(refRegistryItem);
             expect(() =>
-                asEruditRaw(<A to={123 as any}>Invalid Link</A>),
+                asEruditRaw(<Ref to={123 as any}>Invalid Link</Ref>),
             ).toThrow();
         });
     });
 
     it('should throw when label is empty', () => {
         isolateProse(() => {
-            PROSE_REGISTRY.setItems(linkRegistryItem);
-            expect(() => <A to="direct"> </A>).toThrow();
+            PROSE_REGISTRY.setItems(refRegistryItem);
+            expect(() => <Ref to="direct"> </Ref>).toThrow();
         });
     });
 
     it('should create stringified storage key', () => {
         isolateProse(() => {
-            PROSE_REGISTRY.setItems(linkRegistryItem);
-            const link = asEruditRaw(<A to="https://example.com">Example</A>);
+            PROSE_REGISTRY.setItems(refRegistryItem);
+            const link = asEruditRaw(
+                <Ref to="https://example.com">Example</Ref>,
+            );
             expect(link.storageKey).toBe('<link:direct>/https://example.com');
         });
     });
 });
 
-describe('linkStep', () => {
-    it('should collect links', async () => {
+describe('Dependency Links', () => {
+    it('should collect dependencies', async () => {
         await isolateProse(async () => {
             PROSE_REGISTRY.setItems(
-                linkRegistryItem,
-                blockLinkRegistryItem,
+                depRegistryItem,
+                dependencyRegistryItem,
                 paragraphRegistryItem,
             );
 
             const otherDocumentLink: DocumentId = {
                 type: 'contentTopic',
                 topicPart: 'article',
-                contentId: 'topic-999/article-888',
+                contentId: 'topic-111/article-222',
             };
 
             const otherDocument = defineDocument(
@@ -74,7 +86,7 @@ describe('linkStep', () => {
 
             const thisDocumentLink: DocumentId = {
                 type: 'contentPage',
-                contentId: 'topic-123/page-456',
+                contentId: 'topic-456/page-789',
             };
 
             const thisDocument = defineDocument(
@@ -88,38 +100,110 @@ describe('linkStep', () => {
                 <>
                     <P>Regular Paragraph</P>
 
-                    <A to="https://example.com">Direct Link</A>
+                    <Dependency to={otherDocument.uniques.externalP}>
+                        Dependency to External Unique
+                    </Dependency>
 
-                    <BlockLink to={otherDocument.uniques.externalP}>
-                        Link to External Unique
-                    </BlockLink>
+                    <Dep to={uniques.internalP}>Dependency to Self Unique</Dep>
 
-                    <A to={uniques.internalP}>Link to Self Unique</A>
-
-                    <A to={uniques.internalP}>Link to internal paragraph</A>
+                    <Dep to={uniques.internalP}>
+                        Dependency to internal paragraph
+                    </Dep>
                     <P $={uniques.internalP}>Internal Paragraph</P>
                 </>
             ));
 
-            const { links, proseElement } = await resolveEruditRawElement({
-                context: {
-                    language: 'en',
-                    linkable: true,
-                },
-                rawElement: thisDocument.content,
-            });
+            const { dependencies: links, proseElement } =
+                await resolveEruditRawElement({
+                    context: {
+                        language: 'en',
+                        linkable: true,
+                    },
+                    rawElement: thisDocument.content,
+                });
 
-            expect(links.size).toBe(3);
+            expect(links.size).toBe(2);
             expect(links).toEqual(
                 new Set<string>([
-                    // Direct link
-                    '<link:direct>/https://example.com',
-
                     // Link to unique
-                    '<link:global>/topic-123/page-456/$internalP',
+                    '<link:global>/topic-456/page-789/$internalP',
 
-                    // Link to self unique
-                    '<link:global>/topic-999/article-888/article/$externalP',
+                    // Link to external unique
+                    '<link:global>/topic-111/article-222/article/$externalP',
+                ]),
+            );
+        });
+    });
+
+    it('should execute dependencyStep resolve step', async () => {
+        await isolateProse(async () => {
+            PROSE_REGISTRY.setItems(
+                depRegistryItem,
+                dependencyRegistryItem,
+                paragraphRegistryItem,
+            );
+
+            const otherDocumentLink: DocumentId = {
+                type: 'contentTopic',
+                topicPart: 'article',
+                contentId: 'topic-333/article-444',
+            };
+
+            const otherDocument = defineDocument(
+                stringifyDocumentId(otherDocumentLink),
+                {
+                    uniques: {
+                        externalP: P,
+                    },
+                },
+            )(({ uniques }) => (
+                <>
+                    <P>Other Document Paragraph</P>
+                    <P $={uniques.externalP}>External Unique Paragraph</P>
+                </>
+            ));
+
+            const thisDocumentLink: DocumentId = {
+                type: 'contentPage',
+                contentId: 'topic-555/page-666',
+            };
+
+            const thisDocument = defineDocument(
+                stringifyDocumentId(thisDocumentLink),
+                {
+                    uniques: {
+                        internalP: P,
+                    },
+                },
+            )(({ uniques }) => (
+                <>
+                    <P>Regular Paragraph</P>
+                    <P>
+                        This is a <Dep to={uniques.internalP}>dependency</Dep>!
+                    </P>
+                    <P $={uniques.internalP}>Internal Paragraph</P>
+                </>
+            ));
+
+            const { proseElement, dependencies } =
+                await resolveEruditRawElement({
+                    context: {
+                        language: 'en',
+                        linkable: true,
+                    },
+                    rawElement: thisDocument.content,
+                });
+
+            const depElement = proseElement.children!.at(1)?.children!.at(1)!;
+            expect(isProseElement(depElement, depSchema)).toBe(true);
+            expect(depElement.storageKey).toBe(
+                '<link:global>/topic-555/page-666/$internalP',
+            );
+
+            expect(dependencies.size).toBe(1);
+            expect(dependencies).toEqual(
+                new Set<string>([
+                    '<link:global>/topic-555/page-666/$internalP',
                 ]),
             );
         });

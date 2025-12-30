@@ -24,6 +24,7 @@ import {
     getContentElementCounts,
     addContentElementCount,
 } from './content/repository/elementCount';
+import { getContentConnections } from './content/repository/connections';
 
 export const repository = {
     db: {
@@ -50,6 +51,7 @@ export const repository = {
         flags: getContentFlags,
         addElementCount: addContentElementCount,
         elementCounts: getContentElementCounts,
+        connections: getContentConnections,
     },
     prose: {
         resolve: resolveEruditProse,

@@ -57,8 +57,8 @@ export async function registerServerGlobals(
             from: `${runtimeConfig.paths.server}/contributors/global`,
         },
         {
-            name: '$LINK',
-            from: `${runtimeConfig.paths.server}/link/global`,
+            name: '$CONTENT',
+            from: `${runtimeConfig.paths.server}/content/global`,
         },
         {
             name: 'defineContributor',

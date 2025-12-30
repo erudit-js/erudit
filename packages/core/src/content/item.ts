@@ -1,6 +1,7 @@
 import type { ContentFlags } from './flags.js';
 import type { ContentDependency } from './dependencies.js';
 import type { ContentType } from './type.js';
+import type { ContentExternal } from './externals.js';
 
 export type ContentItem = { type: ContentType } & Partial<{
     title: string;
@@ -45,17 +46,34 @@ export type ContentItem = { type: ContentType } & Partial<{
      * ```ts
      * dependencies: [
      *   {
-     *     dependency: $LINK.combinatorics,
+     *     dependency: $CONTENT.combinatorics,
      *     reason: 'Provides foundational concepts used in this topic.'
      *   },
      *   {
-     *     dependency: $LINK.combinatorics.baseRules.product.$productRule,
+     *     dependency: $CONTENT.combinatorics.baseRules.product,
      *     reason: 'This topic builds upon the product rule explained in that article.'
      *   },
      * ];
      * ```
      */
     dependencies: ContentDependency[];
+
+    /**
+     * List of **important** external resources related to this content item.
+     * It is not a reference list!
+     * Add only resources that can provide significant additional value to the reader and relate directly to the content.
+     * @example
+     * ```ts
+     * externals: [
+     *   {
+     *     type: 'physical',
+     *     title: 'Combinatorial Mathematics',
+     *     description: 'A comprehensive guide to combinatorial principles and applications.',
+     *     reason: 'Great amount of problems to practice combinatorial concepts.'
+     *   },
+     * ];
+     */
+    externals: ContentExternal[];
 }>;
 
 export type TypelessContentItem<TContentItem extends ContentItem> = Omit<

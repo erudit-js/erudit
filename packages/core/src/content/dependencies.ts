@@ -1,6 +1,6 @@
-import type { GlobalLinkTypeguard } from '../prose/link.js';
+import type { GlobalContentItemTypeguard } from './global.js';
 
 export interface ContentDependency {
-    dependency: GlobalLinkTypeguard;
+    dependency: GlobalContentItemTypeguard;
     reason: string;
 }

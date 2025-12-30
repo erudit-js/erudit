@@ -20,8 +20,8 @@ export default defineProblemScript({
                 E = mc^2
             `}</BlockMath>
                     <ProblemSection title='Привет, "мир"!'>
-                        Это <A to={$LINK.testPage}>секция</A>{' '}
-                        <A to={uniques.superFormula}>внутри</A> заметки.
+                        Это <Dep to={$CONTENT.testPage}>секция</Dep>{' '}
+                        <Dep to={uniques.superFormula}>внутри</Dep> заметки.
                     </ProblemSection>
                 </ProblemNote>
 

@@ -8,7 +8,7 @@ import { buildContributors } from './contributors/build';
 import { buildSponsors } from './sponsors/build';
 import { buildContentNav } from './content/nav/build';
 import { resolveContent } from './content/resolve';
-import { buildLink } from './link/build';
+import { buildGlobalContent } from './content/global/build';
 
 export type EruditServerChangedFiles = Set<string>;
 export type EruditServerBuildError = Error | undefined;
@@ -22,7 +22,7 @@ export async function buildServerErudit() {
             await buildContributors();
             await buildSponsors();
             await buildContentNav();
-            await buildLink();
+            await buildGlobalContent();
             await resolveContent();
             ERUDIT.log.success(chalk.green('Build Complete!'));
         } catch (buildError) {

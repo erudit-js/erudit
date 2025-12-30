@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 useThemeWatcher();
 useAsideMajorPaneWatcher();
+await useFormatText();
 await initAppElements();
 </script>
 

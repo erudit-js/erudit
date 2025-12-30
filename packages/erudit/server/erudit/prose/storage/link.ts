@@ -4,18 +4,25 @@ import {
     type GenericStorage,
     type ProseElement,
 } from '@jsprose/core';
-import type {
-    blockLinkSchema,
-    linkSchema,
-    LinkStorage,
-} from '@erudit-js/prose/elements/link/core';
+
 import { isTopicPart } from '@erudit-js/core/content/topic';
 import type { ContentPointer } from '@erudit-js/core/content/pointer';
+import type {
+    referenceSchema,
+    refSchema,
+} from '@erudit-js/prose/elements/link/reference/core';
+import type {
+    dependencySchema,
+    depSchema,
+} from '@erudit-js/prose/elements/link/dependency/core';
+import type { LinkStorage } from '@erudit-js/prose/elements/link/storage';
 
 export async function createLinkStorage(
     element:
-        | ProseElement<typeof linkSchema>
-        | ProseElement<typeof blockLinkSchema>,
+        | ProseElement<typeof refSchema>
+        | ProseElement<typeof referenceSchema>
+        | ProseElement<typeof depSchema>
+        | ProseElement<typeof dependencySchema>,
     storage: GenericStorage,
 ) {
     let linkStorage: LinkStorage | undefined;

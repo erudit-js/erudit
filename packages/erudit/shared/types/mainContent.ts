@@ -11,6 +11,7 @@ export interface MainContentBase {
     decoration?: string;
     flags?: ContentFlags;
     elementCounts?: Record<string, number>;
+    connections?: ContentConnections;
 }
 
 export interface MainContentChildrenItem {

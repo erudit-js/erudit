@@ -10,4 +10,12 @@ export default defineTopic({
         secondary: true,
         advanced: true,
     },
+    externals: [
+        {
+            type: 'physical',
+            title: 'Combinatorial Mathematics',
+            info: 'A comprehensive guide to combinatorial principles and applications.',
+            reason: 'Great amount of problems to practice combinatorial concepts.',
+        },
+    ],
 });

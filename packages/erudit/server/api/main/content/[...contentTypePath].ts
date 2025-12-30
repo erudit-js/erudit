@@ -14,6 +14,8 @@ export default defineEventHandler<Promise<MainContent>>(async (event) => {
     const flags = await ERUDIT.repository.content.flags(fullContentId);
     const elementCounts =
         await ERUDIT.repository.content.elementCounts(fullContentId);
+    const connections =
+        await ERUDIT.repository.content.connections(fullContentId);
 
     //
     // Base
@@ -38,6 +40,10 @@ export default defineEventHandler<Promise<MainContent>>(async (event) => {
 
     if (elementCounts) {
         mainContentBase.elementCounts = elementCounts;
+    }
+
+    if (connections) {
+        mainContentBase.connections = connections;
     }
 
     if (contentTypePath.type === 'page' || contentTypePath.type === 'topic') {

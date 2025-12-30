@@ -1,7 +1,9 @@
 <script lang="ts" setup>
 import type { ProseElement } from '@jsprose/core';
 
-import type { linkSchema } from './core.js';
+import type { depSchema } from './dependency/core.js';
+import type { refSchema } from './reference/core.js';
+import type { LinkStorage } from './storage.js';
 import { useProseContext } from '../../app/composables/context.js';
 import { useFormatText } from '../../app/composables/formatText.js';
 import { useElementStorage } from '../../app/composables/storage.js';
@@ -9,7 +11,7 @@ import { useElementIcon } from '../../app/composables/elementIcon.js';
 import Inliner from '../../app/shared/inliner/Inliner.vue';
 
 const { element } = defineProps<{
-    element: ProseElement<typeof linkSchema>;
+    element: ProseElement<typeof refSchema> | ProseElement<typeof depSchema>;
 }>();
 
 const {
@@ -21,7 +23,7 @@ const {
     baseUrl,
 } = useProseContext();
 const formatText = useFormatText();
-const linkStorage = await useElementStorage(element);
+const linkStorage = (await useElementStorage(element as any)) as LinkStorage;
 
 const icon = await (async () => {
     switch (linkStorage.type) {

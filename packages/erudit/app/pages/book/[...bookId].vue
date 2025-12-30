@@ -16,6 +16,7 @@ const phrase = await usePhrases('begin_learning');
     <MainTitle icon="book" :title="mainContent.title" />
     <MainFlags :flags="mainContent.flags" />
     <MainDescription :description="mainContent.description" />
+    <MainConnections :connections="mainContent.connections" />
     <MainElementCounts :elementCounts="mainContent.elementCounts" />
     <MainAction
         icon="rocket"

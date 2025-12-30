@@ -1,11 +1,15 @@
 import shady from '#project/contributors/test-contributor-1/shady.jpg';
 import nuxtSchemeDark from './nuxt-scheme-dark.png';
 
-import myScript from '#project/content/2-foo-group/1-foo-topic/problems/myProblem/problem';
-
 export const page = definePage({
     title: 'Test Page',
     description: 'This is a test page for Erudit.',
+    dependencies: [
+        {
+            dependency: $CONTENT.fooGroup.fooTopic,
+            reason: 'Без этой темы невозможно понять, что расписано на этой странице!',
+        },
+    ],
     contributors: [$CONTRIBUTOR.testContributor1],
 });
 
@@ -15,16 +19,21 @@ export default defineDocument({
     <>
         <H1>Test Page</H1>
         <P>
-            This is a <A to={$LINK.fooGroup.fooTopic}>test page</A> for Erudit.
+            This is a <Ref to={$CONTENT.fooGroup.fooTopic}>test page</Ref> for
+            Erudit.
         </P>
         <P>
-            Самое <A to={$LINK.fooGroup}>обязательное время</A> сослаться на{' '}
-            <A to={$LINK.fooGroup.fooTopic.article.$tastyHeading}>заголовок</A>!
+            Самое <Ref to={$CONTENT.fooGroup}>обязательное время</Ref> сослаться
+            на{' '}
+            <Dep to={$CONTENT.fooGroup.fooTopic.article.$tastyHeading}>
+                заголовок
+            </Dep>
+            !
         </P>
-        <BlockLink to={$LINK.fooGroup}>I love Foo Group!</BlockLink>
-        <BlockLink to={$LINK.fooGroup.fooTopic.article.$tastyHeading}>
+        <Reference to={$CONTENT.fooGroup}>I love Foo Group!</Reference>
+        <Dependency to={$CONTENT.fooGroup.fooTopic.article.$tastyHeading}>
             Очень вам рекомендую ознамиться!
-        </BlockLink>
+        </Dependency>
         <Gallery>
             <Image src={shady} width="400px">
                 <Caption>My lovely Shadowheart</Caption>

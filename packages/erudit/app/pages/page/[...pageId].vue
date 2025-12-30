@@ -15,6 +15,7 @@ const mainContent = await useMainContent<MainContentPage>(contentTypePath);
     <MainFlags :flags="mainContent.flags" />
     <MainDescription :description="mainContent.description" />
     <MainQuickLinks mode="single" :quickLinks="mainContent.quickLinks" />
+    <MainConnections :connections="mainContent.connections" />
     <MainElementCounts :elementCounts="mainContent.elementCounts" />
 
     <Prose

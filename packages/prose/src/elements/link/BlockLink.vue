@@ -2,7 +2,9 @@
 import { shallowRef } from 'vue';
 import { ProseError, type ProseElement } from '@jsprose/core';
 
-import type { blockLinkSchema } from './core.js';
+import type { dependencySchema } from './dependency/core.js';
+import type { referenceSchema } from './reference/core.js';
+import type { LinkStorage } from './storage.js';
 import { useProseContext } from '../../app/composables/context.js';
 import { useElementStorage } from '../../app/composables/storage.js';
 import { useFormatText } from '../../app/composables/formatText.js';
@@ -11,11 +13,13 @@ import { useElementIcon } from '../../app/composables/elementIcon.js';
 import Block from '../../app/shared/block/Block.vue';
 
 const { element } = defineProps<{
-    element: ProseElement<typeof blockLinkSchema>;
+    element:
+        | ProseElement<typeof referenceSchema>
+        | ProseElement<typeof dependencySchema>;
 }>();
 
 const { EruditLink, EruditIcon, eruditIcons } = useProseContext();
-const linkStorage = await useElementStorage(element);
+const linkStorage = (await useElementStorage(element as any)) as LinkStorage;
 const formatText = useFormatText();
 
 interface UIData {

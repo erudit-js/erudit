@@ -2,7 +2,7 @@ import { resolve } from 'node:path';
 import { build, type Plugin } from 'esbuild';
 
 import { STATIC_ASSET_EXTENSIONS } from '@erudit/server/prose/transform/extensions';
-import { tranformGlobalLinkString } from '@erudit/server/link/global';
+import { createGlobalContent } from '@erudit-js/core/content/global';
 
 export default defineEventHandler<Promise<string>>(async (event) => {
     // <filepathToScriptFile>.js
@@ -34,13 +34,14 @@ export default defineEventHandler<Promise<string>>(async (event) => {
 
     let code = buildResult.outputFiles[0].text;
 
-    // Transform $LINK patterns to link objects
-    code = code.replace(/\$LINK(\.[a-zA-Z_$][\w$]*)+/g, (match) => {
+    // Transform $CONTENT patterns to link objects
+    code = code.replace(/\$CONTENT(\.[a-zA-Z_$][\w$]*)+/g, (match) => {
         const path = match
-            .slice(6) // Remove '$LINK.'
+            .slice(8) // Remove '$CONTENT.'
             .split('.')
             .join('/');
-        return `{ __link: '${tranformGlobalLinkString(path)}' }`;
+
+        return JSON.stringify(createGlobalContent(path));
     });
 
     // Insert script ID

@@ -1,6 +1,7 @@
 import type { ResolvedRawElement } from '@jsprose/core';
 import type { ContentProseType } from '@erudit-js/core/content/prose';
 import type { ResolvedEruditRawElement } from '@erudit-js/prose';
+import { getGlobalContentPath } from '@erudit-js/core/content/global';
 
 export async function insertContentResolved(
     contentFullId: string,
@@ -48,11 +49,43 @@ export async function insertContentResolved(
         );
     }
 
-    // for (const link of resolveResult.links) {
-    //     await ERUDIT.repository.db.pushProseLink(
-    //         contentFullId,
-    //         contentProseType,
-    //         parseProseLink(link)!,
-    //     );
-    // }
+    const fromFullIds = new Set(
+        Array.from(resolveResult.dependencies)
+            .map((dependency) => {
+                if (dependency.startsWith('<link:')) {
+                    const navNode = globalContentToNavNode(
+                        dependency.replace(/^<link:.+>\//, ''),
+                    );
+                    return navNode.fullId;
+                }
+            })
+            .filter((id): id is string => id !== undefined),
+    );
+
+    await ERUDIT.db
+        .insert(ERUDIT.db.schema.contentDeps)
+        .values(
+            Array.from(fromFullIds)
+                .filter((fromFullId) => fromFullId !== contentFullId)
+                .map((fromFullId) => ({
+                    fromFullId,
+                    toFullId: contentFullId,
+                    hard: false,
+                })),
+        )
+        .onConflictDoNothing();
+}
+
+function globalContentToNavNode(globalContentPath: string) {
+    const parts = globalContentPath.split('/');
+
+    if (parts.at(-1)?.startsWith('$')) {
+        parts.pop();
+    }
+
+    const navNode =
+        ERUDIT.contentNav.getNode(parts.join('/')) ??
+        ERUDIT.contentNav.getNodeOrThrow(parts.slice(0, -1).join('/'));
+
+    return navNode;
 }

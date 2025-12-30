@@ -40,20 +40,3 @@ export type ProseLink =
     | DirectProseLink
     | ContentItemProseLink
     | UniqueProseLink;
-
-//
-//
-//
-
-declare const globalLinkBrand: unique symbol;
-
-/**
- * Use only on type level to typeguard allowed values (for example, the "to" prop of <A> and <BlockLink> tags).
- */
-export interface GlobalLinkTypeguard {
-    [globalLinkBrand]: true;
-}
-
-export interface GlobalLink {
-    __link: string;
-}

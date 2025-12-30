@@ -4,4 +4,12 @@ export default defineGroup({
     flags: {
         dev: true,
     },
+    externals: [
+        {
+            type: 'site',
+            title: 'Wikipedia - Combinatorics',
+            link: 'https://en.wikipedia.org/wiki/Combinatorics',
+            reason: 'A broad overview of combinatorial topics and links to further resources.',
+        },
+    ],
 });

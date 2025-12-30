@@ -41,10 +41,10 @@ export default defineDocument({
         </P>
         <P>
             Aenean dictum mauris ligula, vitae{' '}
-            <A to="https://google.com">varius nunc</A> rhoncus non. Aenean nec
-            ipsum a lacus lobortis mollis. Aliquam erat volutpat. Aliquam sed
-            turpis et ex <A to={uniques.myP}>lobortis cursus</A> non sed diam.
-            Sed commodo porta hendrerit. Praesent non elementum est. Sed
+            <Ref to="https://google.com">varius nunc</Ref> rhoncus non. Aenean
+            nec ipsum a lacus lobortis mollis. Aliquam erat volutpat. Aliquam
+            sed turpis et ex <Dep to={uniques.myP}>lobortis cursus</Dep> non sed
+            diam. Sed commodo porta hendrerit. Praesent non elementum est. Sed
             facilisis purus nec ex auctor dignissim. Etiam ultrices enim non
             mauris egestas, eget pellentesque orci condimentum. Etiam vehicula
             nulla id risus mollis lacinia. Nunc rhoncus dignissim tempor.
@@ -82,8 +82,8 @@ export default defineDocument({
                         <P>First</P>
                         <P>
                             Second. Here is a little{' '}
-                            <A to={uniques._mathDetails}>explanation</A> to help
-                            you understand.
+                            <Dep to={uniques._mathDetails}>explanation</Dep> to
+                            help you understand.
                         </P>
                         <Details
                             $={uniques._mathDetails}

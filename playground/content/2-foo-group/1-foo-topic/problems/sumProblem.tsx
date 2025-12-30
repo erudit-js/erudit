@@ -24,8 +24,9 @@ export default defineProblemScript({
                 <ProblemDescription>
                     <P>
                         What is <M>{a}</M> + <M>{b}</M>?{' '}
-                        <A to={uniques.explanation}>Also be</A> sure to{' '}
-                        <A to={$LINK.fooGroup.fooTopic}>check this</A> page!
+                        <Ref to={uniques.explanation}>Also be</Ref> sure to{' '}
+                        <Ref to={$CONTENT.fooGroup.fooTopic}>check this</Ref>{' '}
+                        page!
                     </P>
                     <Details
                         $={uniques.explanation}

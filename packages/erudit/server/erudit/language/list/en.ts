@@ -58,6 +58,11 @@ const en: LanguagePhrases = {
         'This is an optional material is for learners who want to dive deeper and gain additional knowledge and context.',
     key_elements: 'Key elements',
     element_stats: 'Element statistics',
+    connections: 'Connections',
+    need_to_know: 'Need to know',
+    depends_on: 'Depends on',
+    used_by: 'Used by',
+    externals: 'Externals',
 
     // _language_title: 'English',
     // _language_code: 'en',
