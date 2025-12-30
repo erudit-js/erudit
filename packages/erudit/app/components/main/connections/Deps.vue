@@ -2,8 +2,6 @@
 import ScrollPane from './ScrollPane.vue';
 
 defineProps<{ deps: ContentDep[] }>();
-
-const formatText = await useFormatText();
 </script>
 
 <template>
@@ -13,18 +11,14 @@ const formatText = await useFormatText();
                 :name="ICONS[dep.contentType]"
                 class="relative top-1 shrink-0"
             />
-            <div class="flex flex-col gap-1">
+            <div class="flex flex-col gap-0.5">
                 <div>
-                    <EruditLink
-                        :to="dep.link"
-                        class="gap-small text-hover-underline inline-flex
-                            items-center"
-                    >
-                        <span>{{ formatText(dep.title) }}</span>
+                    <EruditLink :to="dep.link" class="text-hover-underline">
+                        {{ formatText(dep.title) }}
                         <MyIcon
                             name="arrow/outward"
-                            class="text-text-disabled relative -top-1 shrink-0
-                                text-[8px]"
+                            class="text-text-disabled relative -top-1 -right-1
+                                inline text-[8px]"
                         />
                     </EruditLink>
                 </div>

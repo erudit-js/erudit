@@ -6,8 +6,6 @@ const { color = 'var(--color-brand)' } = defineProps<{
     title: string;
     color?: string;
 }>();
-
-const formatText = await useFormatText();
 </script>
 
 <template>

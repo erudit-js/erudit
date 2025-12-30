@@ -1,6 +1,7 @@
 import { isDocument, type AnyDocument } from '@jsprose/core';
 import { isContentItem } from '@erudit-js/core/content/item';
 import type { PageContentItem } from '@erudit-js/core/content/page';
+import { isIncludedRawElement } from '@erudit-js/prose';
 
 import type { ContentNavNode } from '../nav/types';
 import { logContentError } from './utils/contentError';
@@ -41,6 +42,12 @@ export async function resolvePage(pageNode: ContentNavNode) {
             proseDocument.content,
             true,
             async ({ rawElement }) => {
+                // Counting elements for statistics
+
+                if (isIncludedRawElement(rawElement)) {
+                    return;
+                }
+
                 if (
                     ERUDIT.config.public.project.countElements
                         .flat()

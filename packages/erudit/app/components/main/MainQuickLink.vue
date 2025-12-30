@@ -40,7 +40,6 @@ onUnmounted(() => {
 });
 
 const elementIcon = await getElementIcon(quickLink.schemaName);
-const formatText = await useFormatText();
 </script>
 
 <template>

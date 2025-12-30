@@ -3,8 +3,6 @@ import type { ContentExternal } from '@erudit-js/core/content/externals';
 import ScrollPane from './ScrollPane.vue';
 
 defineProps<{ externals: ContentExternal[] }>();
-
-const formatText = await useFormatText();
 </script>
 
 <template>
@@ -14,25 +12,27 @@ const formatText = await useFormatText();
                 :name="external.type === 'physical' ? 'book' : 'globe'"
                 class="relative top-1 shrink-0"
             />
-            <div class="flex flex-col gap-1">
+            <div class="flex flex-col gap-0.5">
                 <div>
-                    <EruditLink
-                        external
-                        target="_blank"
-                        :to="external.link"
-                        :class="[
-                            'gap-small inline-flex items-center',
-                            external.link && 'text-hover-underline',
-                        ]"
-                    >
+                    <template v-if="external.type === 'web'">
+                        <EruditLink
+                            external
+                            target="_blank"
+                            :to="external.link"
+                            :class="[external.link && 'text-hover-underline']"
+                        >
+                            {{ formatText(external.title) }}
+                            <MyIcon
+                                v-if="external.link"
+                                name="arrow/outward"
+                                class="text-text-disabled relative -top-1
+                                    -right-1 inline text-[8px]"
+                            />
+                        </EruditLink>
+                    </template>
+                    <template v-else>
                         <span>{{ formatText(external.title) }}</span>
-                        <MyIcon
-                            v-if="external.link"
-                            name="arrow/outward"
-                            class="text-text-disabled relative -top-1 shrink-0
-                                text-[8px]"
-                        />
-                    </EruditLink>
+                    </template>
                 </div>
                 <div v-if="external.info" class="text-text-muted text-main-sm">
                     {{ formatText(external.info) }}

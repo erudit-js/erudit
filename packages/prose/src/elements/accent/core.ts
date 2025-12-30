@@ -2,7 +2,9 @@ import {
     defineRegistryItem,
     defineSchema,
     ensureTagChildren,
+    ensureTagInlinerChildren,
     isRawElement,
+    PROSE_REGISTRY,
     ProseError,
     type AnySchema,
     type BlockSchema,
@@ -227,14 +229,23 @@ Section names should start with lower case letter.
             | { row?: undefined; column?: true }
         ) &
             TagChildren
-    >(({ tagName, children, element, props }) => {
-        ensureTagChildren(tagName, children, [mainSchema, sectionSchema]);
-        element.children = children as any;
+    >(({ tagName, children, element, props, registry }) => {
+        try {
+            ensureTagChildren(tagName, children, [mainSchema, sectionSchema]);
+            element.children = children as any;
 
-        if (!isRawElement(element.children[0], mainSchema)) {
-            throw new ProseError(
-                `<${tagName}> requires a <${mainTag.tagName}> as the first child element!`,
-            );
+            if (!isRawElement(element.children[0], mainSchema)) {
+                throw new ProseError(
+                    `<${tagName}> requires a <${mainTag.tagName}> as the first child element!`,
+                );
+            }
+        } catch {
+            element.children = [
+                mainTag({
+                    __JSPROSE_registryProp: PROSE_REGISTRY,
+                    children: children as any,
+                } as any),
+            ];
         }
 
         const title = props.title.trim();

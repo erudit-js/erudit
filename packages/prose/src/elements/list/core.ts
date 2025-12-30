@@ -65,10 +65,7 @@ export const List = defineEruditTag({
     element.children = children;
 
     if (props.type === 'ol') {
-        element.data = { type: 'ol' };
-        if (props.start !== undefined) {
-            element.data.start = props.start;
-        }
+        element.data = { type: 'ol', start: props.start ?? 1 };
     } else {
         element.data = { type: 'ul' };
     }

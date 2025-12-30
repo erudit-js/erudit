@@ -31,14 +31,15 @@ defineProps<{ element: ProseElement<typeof listSchema> }>();
             >
                 <div class="shrink-0">
                     <div
-                        class="micro:top-[1.5px] relative flex size-[23px]
-                            items-center justify-center rounded-full border
+                        class="micro:top-[1.5px] micro:size-[23px] relative
+                            top-[3px] flex size-[20px] items-center
+                            justify-center rounded-full border
                             border-(--liBorder) bg-(--liBackground)
                             font-semibold text-(--liText)
                             transition-[border,background,color]"
                     >
                         <template v-if="element.data.type === 'ol'">
-                            <div class="text-[13px]">
+                            <div class="micro:text-[13px] text-[10px]">
                                 {{ i + (element.data.start ?? 0) }}
                             </div>
                         </template>

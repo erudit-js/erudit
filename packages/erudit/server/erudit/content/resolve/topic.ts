@@ -5,6 +5,7 @@ import {
     type TopicContentItem,
 } from '@erudit-js/core/content/topic';
 import { isContentItem } from '@erudit-js/core/content/item';
+import { isIncludedRawElement } from '@erudit-js/prose';
 
 import type { ContentNavNode } from '../nav/types';
 import { logContentError } from './utils/contentError';
@@ -55,7 +56,9 @@ export async function resolveTopic(topicNode: ContentNavNode) {
                     topicPartDocument.default.content,
                     true,
                     async ({ rawElement }) => {
-                        if (topicPart === 'summary') {
+                        // Counting elements for statistics
+
+                        if (isIncludedRawElement(rawElement)) {
                             return;
                         }
 

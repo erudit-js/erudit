@@ -1,7 +1,6 @@
-import type { ResolvedRawElement } from '@jsprose/core';
+import { type ResolvedRawElement } from '@jsprose/core';
 import type { ContentProseType } from '@erudit-js/core/content/prose';
 import type { ResolvedEruditRawElement } from '@erudit-js/prose';
-import { getGlobalContentPath } from '@erudit-js/core/content/global';
 
 export async function insertContentResolved(
     contentFullId: string,
@@ -62,18 +61,20 @@ export async function insertContentResolved(
             .filter((id): id is string => id !== undefined),
     );
 
-    await ERUDIT.db
-        .insert(ERUDIT.db.schema.contentDeps)
-        .values(
-            Array.from(fromFullIds)
-                .filter((fromFullId) => fromFullId !== contentFullId)
-                .map((fromFullId) => ({
-                    fromFullId,
-                    toFullId: contentFullId,
-                    hard: false,
-                })),
-        )
-        .onConflictDoNothing();
+    const contentDeps = Array.from(fromFullIds)
+        .filter((fromFullId) => fromFullId !== contentFullId)
+        .map((fromFullId) => ({
+            fromFullId,
+            toFullId: contentFullId,
+            hard: false,
+        }));
+
+    if (contentDeps.length > 0) {
+        await ERUDIT.db
+            .insert(ERUDIT.db.schema.contentDeps)
+            .values(contentDeps)
+            .onConflictDoNothing();
+    }
 }
 
 function globalContentToNavNode(globalContentPath: string) {

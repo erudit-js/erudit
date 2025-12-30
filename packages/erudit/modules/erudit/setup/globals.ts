@@ -88,6 +88,10 @@ export async function registerServerGlobals(
             name: 'defineDocument',
             from: '@jsprose/core',
         },
+        {
+            name: 'Include',
+            from: `@erudit-js/prose`,
+        },
     ]);
 }
 
@@ -157,6 +161,10 @@ export async function registerGlobalContentTypes(
         {
             name: 'defineGroup',
             from: `${runtimeConfig.paths.module}/globals/content`,
+        },
+        {
+            name: 'Include',
+            from: `@erudit-js/prose`,
         },
     ]);
 

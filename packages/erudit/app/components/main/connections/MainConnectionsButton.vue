@@ -57,8 +57,6 @@ const dynamicClasses = computed(() => {
         return 'border-border bg-bg-aside text-text-muted hocus:ring-(--activeColor)/25 hocus:text-(--activeColor) hocus:border-(--activeColor)';
     }
 });
-
-const formatText = await useFormatText();
 </script>
 
 <template>

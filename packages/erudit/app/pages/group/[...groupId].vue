@@ -5,7 +5,6 @@ const groupId = Array.isArray(route.params.groupId)
     : route.params.groupId!;
 const contentTypePath = stringifyContentTypePath('group', groupId);
 const mainContent = await useMainContent<MainContentGroup>(contentTypePath);
-const formatText = await useFormatText();
 const phrase = await usePhrases('begin_learning');
 </script>
 
@@ -18,9 +17,12 @@ const phrase = await usePhrases('begin_learning');
     <MainDescription :description="mainContent.description" />
     <MainConnections :connections="mainContent.connections" />
     <MainElementCounts :elementCounts="mainContent.elementCounts" />
+    <div class="h-(--_pMainY)"></div>
     <MainAction
         icon="rocket"
         :label="formatText(phrase.begin_learning)"
         :link="mainContent.children[0]!.link"
     />
+    <div class="h-(--_pMainY)"></div>
+    <MainSection> Nav </MainSection>
 </template>

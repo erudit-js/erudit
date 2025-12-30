@@ -8,13 +8,14 @@ export async function getContentBreadcrumbs(fullId: string) {
         const dbContent = (await ERUDIT.db.query.content.findFirst({
             columns: {
                 title: true,
+                navTitle: true,
             },
             where: eq(ERUDIT.db.schema.content.fullId, stepNode.fullId),
         }))!;
 
         breadcrumbs.push({
             icon: ICONS[stepNode.type],
-            title: dbContent.title,
+            title: dbContent.navTitle ?? dbContent.title,
             link: await ERUDIT.repository.content.link(stepNode.fullId),
         });
     }, navNode);

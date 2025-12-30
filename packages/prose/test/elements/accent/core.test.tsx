@@ -136,15 +136,22 @@ describe('Accent', () => {
         });
     });
 
-    it('should throw when accent root tag has not accent-related children', () => {
+    it('should autowrap non-accent children into accentMain', () => {
         isolateProse(() => {
             PROSE_REGISTRY.setItems(paragraphRegistryItem, ...registryItems);
 
-            expect(() => (
+            const element = (
                 <Foo title="Accent Title">
                     <P>Invalid child</P>
                 </Foo>
-            )).toThrow();
+            );
+
+            expect(element.children?.length).toBe(1);
+            expect(element.children?.[0].schemaName).toBe('accentMain_foo');
+            expect(element.children?.[0].children?.length).toBe(1);
+            expect(element.children?.[0].children?.[0].schemaName).toBe(
+                'paragraph',
+            );
         });
     });
 
@@ -170,17 +177,24 @@ describe('Accent', () => {
         });
     });
 
-    it('should throw when main section is missing', () => {
+    it('should autowrap section-only children into accentMain', () => {
         isolateProse(() => {
             PROSE_REGISTRY.setItems(paragraphRegistryItem, ...registryItems);
 
-            expect(() => (
+            const element = (
                 <Foo title="Accent Title">
                     <FooSection title="Section Title">
                         <P>Some section content.</P>
                     </FooSection>
                 </Foo>
-            )).toThrow(/FooMain/);
+            );
+
+            expect(element.children?.length).toBe(1);
+            expect(element.children?.[0].schemaName).toBe('accentMain_foo');
+            expect(element.children?.[0].children?.length).toBe(1);
+            expect(element.children?.[0].children?.[0].schemaName).toBe(
+                'accentSection_foo',
+            );
         });
     });
 

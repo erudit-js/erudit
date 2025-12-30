@@ -1,4 +1,4 @@
 /**
- * Some docs for Term element.
+ * The Term element
  */
 let Term;

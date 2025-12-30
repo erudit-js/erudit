@@ -137,11 +137,13 @@ export default defineEruditConfig({
         '@erudit-js/prose/elements/math',
         '@erudit-js/prose/elements/diagram',
         './elements/term',
+        './elements/statement',
+        './elements/important',
     ],
     countElements: [
         'accent_term',
-        'statement',
-        'important',
+        'accent_statement',
+        'accent_important',
         ['problem', 'problems'],
     ],
     nuxtAugmentations: [

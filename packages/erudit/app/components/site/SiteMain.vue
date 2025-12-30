@@ -16,7 +16,9 @@
                     transition-[background] dark:bg-[#212121]"
             >
                 <slot></slot>
-                <AdsBannerBottom v-if="adsBottomAllowed()" />
+                <MainSection>
+                    <AdsBannerBottom v-if="adsBottomAllowed()" />
+                </MainSection>
             </div>
         </div>
     </main>

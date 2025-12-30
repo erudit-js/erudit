@@ -1,7 +1,5 @@
 <script lang="ts" setup>
 defineProps<{ breadcrumbs: Breadcrumbs }>();
-
-const formatText = await useFormatText();
 </script>
 
 <template>

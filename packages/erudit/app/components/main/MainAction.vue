@@ -2,8 +2,6 @@
 import type { MaybeMyIconName } from '#my-icons';
 
 defineProps<{ icon: MaybeMyIconName; label: string; link: string }>();
-
-const formatText = await useFormatText();
 </script>
 
 <template>

@@ -74,7 +74,6 @@ function imageClick() {
     <Caption
         v-if="element.children"
         @captionMounted="(element) => (captionElement = element)"
-        :fallbackWidth="element.data.width"
         :caption="element.children[0]"
     />
 </template>

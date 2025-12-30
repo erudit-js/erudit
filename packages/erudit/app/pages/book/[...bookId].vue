@@ -5,7 +5,6 @@ const bookId = Array.isArray(route.params.bookId)
     : route.params.bookId!;
 const contentTypePath = stringifyContentTypePath('book', bookId);
 const mainContent = await useMainContent<MainContentBook>(contentTypePath);
-const formatText = await useFormatText();
 const phrase = await usePhrases('begin_learning');
 </script>
 
@@ -18,9 +17,12 @@ const phrase = await usePhrases('begin_learning');
     <MainDescription :description="mainContent.description" />
     <MainConnections :connections="mainContent.connections" />
     <MainElementCounts :elementCounts="mainContent.elementCounts" />
+    <div class="h-(--_pMainY)"></div>
     <MainAction
         icon="rocket"
         :label="formatText(phrase.begin_learning)"
         :link="mainContent.children[0]!.link"
     />
+    <div class="h-(--_pMainY)"></div>
+    <MainSection> Nav </MainSection>
 </template>

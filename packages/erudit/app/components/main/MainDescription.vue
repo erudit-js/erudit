@@ -1,7 +1,5 @@
 <script lang="ts" setup>
 defineProps<{ description: string | undefined }>();
-
-const formatText = await useFormatText();
 </script>
 
 <template>

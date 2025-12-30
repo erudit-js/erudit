@@ -95,11 +95,7 @@ onUnmounted(() => {
                     : {}
             "
         ></video>
-        <Caption
-            v-if="element.children"
-            :fallbackWidth="element.data.width"
-            :caption="element.children[0]"
-        />
+        <Caption v-if="element.children" :caption="element.children[0]" />
     </Block>
 </template>
 

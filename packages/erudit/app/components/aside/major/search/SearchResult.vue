@@ -53,7 +53,7 @@ if (isElementCategory) {
                 class="group p-normal text-text-muted hocus:text-text text-sm
                     transition-[color]"
             >
-                <div class="gap-small flex items-center">
+                <div class="gap-small text-text flex items-center">
                     <div class="relative h-[1em] w-[1em]">
                         <TransitionFade>
                             <MaybeMyIcon
@@ -63,18 +63,18 @@ if (isElementCategory) {
                             />
                         </TransitionFade>
                     </div>
-                    <div>{{ result.title }}</div>
+                    <div>{{ formatText(result.title) }}</div>
                 </div>
                 <div>
                     <div
                         v-if="result.description"
                         class="text-text-dimmed pt-small text-xs"
                     >
-                        {{ result.description }}
+                        {{ formatText(result.description) }}
                     </div>
                     <div
                         v-if="result.synonyms?.length"
-                        class="pt-small flex flex-wrap gap-[8px] text-xs"
+                        class="pt-small flex flex-wrap gap-2 text-xs"
                     >
                         <span
                             v-for="synonym in result.synonyms"
@@ -82,7 +82,7 @@ if (isElementCategory) {
                                 rounded bg-neutral-200 px-[5px] py-[3px]
                                 transition-[background] dark:bg-neutral-800"
                         >
-                            {{ synonym }}
+                            {{ formatText(synonym) }}
                         </span>
                     </div>
                     <div
@@ -91,7 +91,7 @@ if (isElementCategory) {
                             items-center text-xs italic"
                     >
                         <MyIcon name="arrow/up-to-right" class="shrink-0" />
-                        {{ result.location }}
+                        {{ formatText(result.location) }}
                     </div>
                 </div>
             </div>

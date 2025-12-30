@@ -68,7 +68,7 @@ describe('List Item', () => {
                         <Li>Item</Li>
                     </List>,
                 ).data,
-            ).toStrictEqual({ type: 'ol' });
+            ).toStrictEqual({ type: 'ol', start: 1 });
 
             expect(
                 asEruditRaw(

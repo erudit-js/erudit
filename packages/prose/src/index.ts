@@ -6,6 +6,7 @@ export * from './snippet.js';
 export * from './toc.js';
 export * from './title.js';
 export * from './resolveStep.js';
+export * from './include.js';
 export * from './slugify/index.js';
 export * from './utils/docs.js';
 export * from './utils/case.js';

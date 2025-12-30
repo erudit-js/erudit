@@ -11,7 +11,6 @@ const { element, storage, useHashUrl } = defineProps<{
 }>();
 
 const route = useRoute();
-const formatText = await useFormatText();
 
 const hashUrl = computed(() => {
     return useHashUrl

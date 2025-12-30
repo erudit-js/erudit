@@ -21,8 +21,6 @@ const phrase = await usePhrases(
     'flag_secondary_description',
 );
 
-const formatText = await useFormatText();
-
 const flagsData: Record<ContentFlag, FlagData> = {
     dev: {
         icon: 'construction',

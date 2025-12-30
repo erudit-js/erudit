@@ -1,5 +1,5 @@
-import type { TopicPart } from '@erudit-js/core/content/topic';
 import { eq, sql } from 'drizzle-orm';
+import type { TopicPart } from '@erudit-js/core/content/topic';
 
 export async function getTopicParts(fullId: string): Promise<TopicPart[]> {
     const dbResult = await ERUDIT.db

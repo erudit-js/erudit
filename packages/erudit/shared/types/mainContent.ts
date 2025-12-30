@@ -29,7 +29,9 @@ export interface MainContentChildrenItem {
 export type MainContentTopicPart = MainContentBase &
     FinalizedProse & {
         type: 'topic';
+        shortContentId: string;
         part: TopicPart;
+        parts: TopicPart[];
         quickLinks?: QuickLink[];
     };
 

@@ -28,4 +28,5 @@ Object.assign(globalThis, {
     definePage,
     defineGroup,
     defineDocument,
+    Include,
 });

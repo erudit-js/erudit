@@ -5,9 +5,8 @@ import { isProseElement, type ProseElement } from '@jsprose/core';
 import { captionSecondarySchema, type captionSchema } from './core.js';
 import Render from '../../app/shared/Render.vue';
 
-const { caption, fallbackWidth } = defineProps<{
+const { caption } = defineProps<{
     caption: ProseElement<typeof captionSchema>;
-    fallbackWidth?: string;
 }>();
 
 const emit = defineEmits(['captionMounted']);
@@ -21,11 +20,7 @@ const mainInliners = caption.children.filter(
     (child) => child !== captionSecondary,
 );
 
-const width = caption.data?.width
-    ? `min(${caption.data.width}, 100%)`
-    : fallbackWidth
-      ? `min(${fallbackWidth}, 100%)`
-      : '';
+const width = caption.data?.width ? `min(${caption.data.width}, 100%)` : '';
 
 onMounted(() => {
     emit('captionMounted', captionElement.value);

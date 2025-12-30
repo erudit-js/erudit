@@ -51,8 +51,11 @@ export default defineEventHandler<Promise<MainContent>>(async (event) => {
             contentTypePath.type === 'topic'
                 ? contentTypePath.topicPart
                 : contentTypePath.type,
-            contentTypePath.contentId,
+            fullContentId,
         );
+
+        const topicParts =
+            await ERUDIT.repository.content.topicParts(fullContentId);
 
         const { storage } =
             await ERUDIT.repository.prose.finalize(proseElement);
@@ -64,7 +67,9 @@ export default defineEventHandler<Promise<MainContent>>(async (event) => {
             const mainContentTopicPart: MainContentTopicPart = {
                 ...mainContentBase,
                 type: 'topic',
+                shortContentId: navNode.shortId,
                 part: contentTypePath.topicPart,
+                parts: topicParts,
                 proseElement,
                 storage,
             };

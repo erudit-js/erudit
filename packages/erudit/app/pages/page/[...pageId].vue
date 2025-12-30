@@ -17,11 +17,13 @@ const mainContent = await useMainContent<MainContentPage>(contentTypePath);
     <MainQuickLinks mode="single" :quickLinks="mainContent.quickLinks" />
     <MainConnections :connections="mainContent.connections" />
     <MainElementCounts :elementCounts="mainContent.elementCounts" />
-
-    <Prose
-        :element="mainContent.proseElement"
-        :storage="mainContent.storage"
-        :urlPath="'/' + mainContent.fullId"
-        :useHashUrl="true"
-    />
+    <div class="h-(--_pMainY)"></div>
+    <MainSection>
+        <Prose
+            :element="mainContent.proseElement"
+            :storage="mainContent.storage"
+            :urlPath="'/' + mainContent.fullId"
+            :useHashUrl="true"
+        />
+    </MainSection>
 </template>
