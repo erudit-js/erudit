@@ -50,7 +50,7 @@ const formatText = useFormatText();
                         {{ formatText(element.data.title) }}
                     </div>
                 </header>
-                <main>
+                <main class="text-main-sm">
                     <Render
                         v-for="child of element.children"
                         :element="child"

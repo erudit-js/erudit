@@ -362,7 +362,7 @@ const { floatingStyles: seedFloatingStyles } = useFloating(
         <Suspense suspensible>
             <component
                 v-if="currentAction"
-                :key
+                :key="`${key}-${currentAction}`"
                 :is="expanderComponents[currentAction]"
                 :value="expandableActions[currentAction]"
             />

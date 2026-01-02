@@ -12,13 +12,18 @@ const phrase = await usePhrases('key_elements');
         >
             <MainSubTitle :title="phrase.key_elements + ':'" />
             <div
+                :style="{ '--quickBg': 'var(--color-bg-aside)' }"
                 class="gap-small micro:gap-normal micro:justify-start flex
                     flex-wrap justify-center"
             >
                 <MainQuickLink v-for="quickLink of quickLinks" :quickLink />
             </div>
         </section>
-        <div v-else>
+        <div
+            v-else
+            :style="{ '--quickBg': 'var(--color-bg-main)' }"
+            class="gap-small text-main-sm flex flex-wrap"
+        >
             <MainQuickLink v-for="quickLink of quickLinks" :quickLink />
         </div>
     </template>

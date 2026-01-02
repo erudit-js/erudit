@@ -20,6 +20,7 @@ export interface MainContentChildrenItem {
     title: string;
     description?: string;
     quickLinks?: QuickLink[];
+    elementCounts?: Record<string, number>;
 }
 
 //

@@ -16,6 +16,12 @@ export function defineContributor(contributor: ContributorDefinition) {
 // Contributors Global
 //
 
+declare const globalContributorBrand: unique symbol;
+
+export interface GlobalContributorTypeguard {
+    [globalContributorBrand]: true;
+}
+
 export function contributorIdToPropertyName(contributorId: string): string {
     return contributorId
         .split('-')
@@ -46,15 +52,18 @@ export function globalContributorsObject(
 export function globalContributorsTypes(
     contributors: Record<string, string>,
 ): string {
-    const entries = Object.keys(contributors)
-        .map((key) => `        ${key}: ${JSON.stringify(contributors[key])};`)
-        .join('\n');
+    return `import type { GlobalContributorTypeguard } from '@erudit-js/core/contributor';
 
-    return `export {};
+export {};
 
 declare global {
     const $CONTRIBUTOR: {
-${entries}
+${Object.keys(contributors)
+    .map(
+        (contributorId) =>
+            `        ${contributorId}: GlobalContributorTypeguard;`,
+    )
+    .join('\n')}
     };
 }
 `;

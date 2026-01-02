@@ -3,35 +3,30 @@ export interface EruditSponsors {
     tier1Label: string;
     tier2Label: string;
     defaultCameoMessages?: string[];
+    defaultSponsorMessages?: string[];
 }
 
-export type SponsorTier = 'tier1' | 'tier2';
-
 interface BaseSponsor {
-    tier: SponsorTier;
+    tier: 1 | 2;
     name: string;
     icon?: string;
     avatar?: string;
-    slogan?: string;
+    info?: string;
     color?: string;
     link?: string;
 }
 
 export interface SponsorTier1 extends BaseSponsor {
-    tier: 'tier1';
+    tier: 1;
 }
 
 export interface SponsorTier2 extends BaseSponsor {
-    tier: 'tier2';
-    quotes?: string[];
+    tier: 2;
+    messages?: string[];
 }
 
 export type Sponsor = SponsorTier1 | SponsorTier2;
 
-export interface ResolvedSponsorData {
-    sponsorId: string;
-    avatarExtension?: string;
+export function defineSponsor(sponsor: Sponsor) {
+    return sponsor;
 }
-
-export type ResolvedSponsor<T extends SponsorTier1 | SponsorTier2> = T &
-    ResolvedSponsorData;

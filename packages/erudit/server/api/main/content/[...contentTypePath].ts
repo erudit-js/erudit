@@ -123,6 +123,9 @@ async function getContentChildren(
         const quickLinks = await ERUDIT.repository.content.quickLinks(
             childNode.fullId,
         );
+        const elementCounts = await ERUDIT.repository.content.elementCounts(
+            childNode.fullId,
+        );
 
         const child: MainContentChildrenItem = {
             type,
@@ -136,6 +139,10 @@ async function getContentChildren(
 
         if (quickLinks) {
             child.quickLinks = quickLinks;
+        }
+
+        if (elementCounts) {
+            child.elementCounts = elementCounts;
         }
 
         children.push(child);

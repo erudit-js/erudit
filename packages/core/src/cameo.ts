@@ -3,9 +3,13 @@ export interface Cameo {
     name: string;
     icon: string;
     messages: string[];
-    avatars?: string[];
+    avatarExtension?: string;
     color?: string;
     link?: string;
 }
 
-export type CameoConfig = Omit<Cameo, 'cameoId' | 'avatars'>;
+export type CameoConfig = Omit<Cameo, 'cameoId' | 'avatarExtension'>;
+
+export function defineCameo(cameo: CameoConfig) {
+    return cameo;
+}

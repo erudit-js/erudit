@@ -75,6 +75,6 @@ export async function resolvePage(pageNode: ContentNavNode) {
         await insertContentResolved(pageNode.fullId, 'page', resolveResult);
     } catch (error) {
         logContentError(pageNode);
-        console.log(error);
+        throw error;
     }
 }

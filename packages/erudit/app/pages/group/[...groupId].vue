@@ -16,7 +16,10 @@ const phrase = await usePhrases('begin_learning');
     <MainFlags :flags="mainContent.flags" />
     <MainDescription :description="mainContent.description" />
     <MainConnections :connections="mainContent.connections" />
-    <MainElementCounts :elementCounts="mainContent.elementCounts" />
+    <MainElementCounts
+        mode="single"
+        :elementCounts="mainContent.elementCounts"
+    />
     <div class="h-(--_pMainY)"></div>
     <MainAction
         icon="rocket"
@@ -24,5 +27,5 @@ const phrase = await usePhrases('begin_learning');
         :link="mainContent.children[0]!.link"
     />
     <div class="h-(--_pMainY)"></div>
-    <MainSection> Nav </MainSection>
+    <MainContentChildren :children="mainContent.children" />
 </template>

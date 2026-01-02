@@ -13,7 +13,10 @@ defineProps<{
     <MainDescription :description="mainContent.description" />
     <MainQuickLinks mode="single" :quickLinks="mainContent.quickLinks" />
     <MainConnections :connections="mainContent.connections" />
-    <MainElementCounts :elementCounts="mainContent.elementCounts" />
+    <MainElementCounts
+        mode="single"
+        :elementCounts="mainContent.elementCounts"
+    />
     <div class="h-(--_pMainY)"></div>
     <MainSection>
         <template #header>

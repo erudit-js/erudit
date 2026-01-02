@@ -34,6 +34,6 @@ export async function resolveGroup(groupNode: ContentNavNode) {
         });
     } catch (error) {
         logContentError(groupNode);
-        console.log(error);
+        throw error;
     }
 }

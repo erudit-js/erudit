@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 const { elementCounts } = defineProps<{
+    mode: 'single' | 'children';
     elementCounts?: Record<string, number>;
 }>();
 
@@ -27,19 +28,30 @@ const phrase = await usePhrases('element_stats');
 </script>
 
 <template>
-    <section
-        v-if="elementCounts"
-        class="px-(--_pMainX) py-[calc(var(--_pMainY)/2)]"
-    >
-        <MainSubTitle :title="phrase.element_stats + ':'" />
-        <div
-            class="micro:justify-start gap-normal flex flex-wrap justify-center"
+    <template v-if="elementCounts">
+        <section
+            v-if="mode === 'single'"
+            class="px-(--_pMainX) py-[calc(var(--_pMainY)/2)]"
         >
+            <MainSubTitle :title="phrase.element_stats + ':'" />
+            <div
+                class="micro:justify-start gap-normal flex flex-wrap
+                    justify-center"
+            >
+                <MainElementCount
+                    v-for="(count, schemaName) of counts"
+                    :schemaName
+                    :count
+                />
+            </div>
+        </section>
+        <div v-else class="gap-normal text-main-sm flex flex-wrap">
             <MainElementCount
                 v-for="(count, schemaName) of counts"
                 :schemaName
                 :count
+                children
             />
         </div>
-    </section>
+    </template>
 </template>

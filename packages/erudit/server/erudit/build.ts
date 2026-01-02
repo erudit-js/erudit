@@ -7,7 +7,7 @@ import slash from 'slash';
 import { buildContributors } from './contributors/build';
 import { buildSponsors } from './sponsors/build';
 import { buildContentNav } from './content/nav/build';
-import { resolveContent } from './content/resolve';
+import { requestFullContentResolve, resolveContent } from './content/resolve';
 import { buildGlobalContent } from './content/global/build';
 
 export type EruditServerChangedFiles = Set<string>;
@@ -26,6 +26,8 @@ export async function buildServerErudit() {
             await resolveContent();
             ERUDIT.log.success(chalk.green('Build Complete!'));
         } catch (buildError) {
+            requestFullContentResolve();
+
             if (buildError instanceof Error) {
                 ERUDIT.buildError = buildError;
                 if (buildError.stack) {

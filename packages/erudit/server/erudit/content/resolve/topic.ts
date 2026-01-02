@@ -99,6 +99,7 @@ export async function resolveTopic(topicNode: ContentNavNode) {
         }
     } catch (error) {
         logContentError(topicNode);
-        console.log(error);
+        //console.log(error);
+        throw error;
     }
 }

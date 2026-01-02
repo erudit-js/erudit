@@ -31,9 +31,9 @@ export async function resolveContent() {
                 }, navNode);
             }
         }
-
-        await clearOldContentData(Array.from(toResolveContentIds));
     }
+
+    await clearOldContentData(Array.from(toResolveContentIds));
 
     for (const contentId of toResolveContentIds) {
         const navNode = ERUDIT.contentNav.getNodeOrThrow(contentId);
@@ -103,6 +103,15 @@ export async function clearOldContentData(contentIds: string[]) {
         );
 
     await ERUDIT.db
+        .delete(ERUDIT.db.schema.contentContributions)
+        .where(
+            inArray(
+                ERUDIT.db.schema.contentContributions.contentFullId,
+                contentIds,
+            ),
+        );
+
+    await ERUDIT.db
         .delete(ERUDIT.db.schema.contentUniques)
         .where(
             inArray(ERUDIT.db.schema.contentUniques.contentFullId, contentIds),
@@ -119,4 +128,8 @@ export async function clearOldContentData(contentIds: string[]) {
         .where(
             inArray(ERUDIT.db.schema.problemScripts.contentFullId, contentIds),
         );
+}
+
+export function requestFullContentResolve() {
+    initialResolve = true;
 }

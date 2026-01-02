@@ -27,6 +27,6 @@ export async function resolveBook(bookNode: ContentNavNode) {
         await insertContentItem(bookNode, bookContentItem);
     } catch (error) {
         logContentError(bookNode);
-        console.log(error);
+        throw error;
     }
 }

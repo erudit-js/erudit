@@ -15,7 +15,7 @@ const opened = computed(() => {
 <template>
     <aside
         :class="[
-            `absolute top-0 h-full w-(--w-aside) text-[18px]
+            `absolute top-0 z-10 h-full w-(--w-aside) text-[18px]
             transition-[left,right]`,
             opened
                 ? isMajor
@@ -53,10 +53,10 @@ const opened = computed(() => {
                 <div
                     :class="[
                         `pointer-events-none absolute top-0 h-full w-full
-                        touch-none bg-gradient-to-l
+                        touch-none bg-linear-to-l
                         from-[light-dark(rgba(0,0,0,0.02),rgba(0,0,0,0.1))]
                         via-transparent via-[3px] opacity-100
-                        transition-[opacity]`,
+                        transition-opacity`,
                         {
                             '-scale-100': isMinor,
                             'max-aside1:opacity-0': opened && isMajor,

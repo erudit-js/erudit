@@ -47,9 +47,9 @@ const elementIcon = await getElementIcon(quickLink.schemaName);
         <EruditLink
             @touchstart="popupVisible ? hidePopup() : showPopup()"
             :to="quickLink.link"
-            class="gap-small border-border px-small bg-bg-aside text-text-muted
-                text-main-sm hocus:text-brand hocus:border-brand
-                hocus:ring-brand/25 flex items-center rounded border py-1 ring-2
+            class="gap-small border-border px-small text-text-muted text-main-sm
+                hocus:text-brand hocus:border-brand hocus:ring-brand/25 flex
+                items-center rounded border bg-(--quickBg) py-1 ring-2
                 ring-transparent
                 transition-[background,color,border,box-shadow]"
         >

@@ -2,6 +2,7 @@ import type { ContentFlags } from './flags.js';
 import type { ContentDependency } from './dependencies.js';
 import type { ContentType } from './type.js';
 import type { ContentExternal } from './externals.js';
+import type { ContentContribution } from './contributions.js';
 
 export type ContentItem = { type: ContentType } & Partial<{
     title: string;
@@ -15,16 +16,19 @@ export type ContentItem = { type: ContentType } & Partial<{
     hidden: boolean;
 
     /**
-     * List of contributors to this content item.
+     * List of contributions to this content item.
      * You can access contributors via `$CONTRIBUTOR` global variable:
      * ```ts
-     * contributors: [
-     *   $CONTRIBUTOR.fooContributor,
-     *   $CONTRIBUTOR.barContributor,
+     * contributions: [
+     *   $CONTRIBUTOR.john,
+     *   {
+     *     contributor: $CONTRIBUTOR.alice,
+     *     description: 'Proposed problem "A game of circles".'
+     *   }
      * ],
      * ```
      */
-    contributors: string[];
+    contributions: ContentContribution[];
 
     /**
      * Mark content with specific flags.

@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { topicParts, type TopicPart } from '@erudit-js/core/content/topic';
+import { type TopicPart } from '@erudit-js/core/content/topic';
 
 interface TopicPartSwitchData {
     state: 'active' | 'inactive' | 'missing';
@@ -47,8 +47,7 @@ const data: Record<TopicPart, TopicPartSwitchData> = {
                 h-(--switchHeight) items-center rounded rounded-b-none border-2
                 transition-[border,color,background]`,
                 partData.state === 'missing' &&
-                    `text-text-disabled/75 border-b-border bg-bg-aside
-                    cursor-not-allowed`,
+                    'text-text-disabled/75 border-b-border cursor-not-allowed',
                 partData.state === 'active' &&
                     'text-brand bg-bg-main border-b-transparent',
                 partData.state === 'inactive' &&

@@ -14,7 +14,7 @@ function overlayClick() {
 
 <template>
     <div
-        class="fixed top-0 left-0 h-dvh w-dvh"
+        class="fixed top-0 left-0 z-20 h-dvh w-dvh"
         v-if="asideState.opened"
         @click="overlayClick"
     ></div>

@@ -1,28 +1,17 @@
 import { globSync } from 'glob';
 import type { ContentItem } from '@erudit-js/core/content/item';
-
-import type { ContentNavNode } from '../../nav/types';
 import {
     getGlobalContentPath,
     type GlobalContentItem,
 } from '@erudit-js/core/content/global';
 
+import type { ContentNavNode } from '../../nav/types';
+
 export async function insertContentItem(
     navNode: ContentNavNode,
     contentItem: ContentItem,
 ) {
-    if (contentItem.contributors) {
-        const contributors = contentItem.contributors;
-        const uniqueContributors = new Set(contributors);
-        if (uniqueContributors.size !== contributors.length) {
-            const duplicates = contributors.filter(
-                (item, index) => contributors.indexOf(item) !== index,
-            );
-            throw new Error(
-                `Duplicate contributors found: ${[...new Set(duplicates)].map((item) => `"${item}"`).join(', ')}`,
-            );
-        }
-    }
+    await resolveContributions(navNode.fullId, contentItem);
 
     const decorationExtension = await resolveDecorationExtension(navNode);
     await resolveHardDependencies(navNode.fullId, contentItem);
@@ -38,6 +27,41 @@ export async function insertContentItem(
         decorationExtension,
         externals: contentItem.externals,
     });
+}
+
+async function resolveContributions(fullId: string, contentItem: ContentItem) {
+    if (contentItem.contributions) {
+        const seenContributors = new Set<string>();
+
+        for (const contribution of contentItem.contributions as any) {
+            const contributorId: string =
+                typeof contribution === 'string'
+                    ? contribution
+                    : contribution.contributor;
+
+            const description: string | undefined =
+                typeof contribution === 'string'
+                    ? undefined
+                    : contribution.description;
+
+            if (seenContributors.has(contributorId)) {
+                ERUDIT.log.warn(
+                    `Duplicate contributor "${contributorId}" in content item "${fullId}"!`,
+                );
+                continue;
+            }
+
+            seenContributors.add(contributorId);
+
+            await ERUDIT.db
+                .insert(ERUDIT.db.schema.contentContributions)
+                .values({
+                    contentFullId: fullId,
+                    contributorId,
+                    description,
+                });
+        }
+    }
 }
 
 async function resolveHardDependencies(
