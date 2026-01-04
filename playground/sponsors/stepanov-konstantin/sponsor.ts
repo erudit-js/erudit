@@ -1,4 +1,4 @@
 export default defineSponsor({
-    tier: 1,
+    tier: 2,
     name: 'Константин Степанов',
 });

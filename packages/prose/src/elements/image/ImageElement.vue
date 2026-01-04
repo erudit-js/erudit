@@ -52,6 +52,7 @@ function imageClick() {
         <img
             :src="imageStorage.resolvedSrc"
             @click="imageClick"
+            loading="lazy"
             v-bind="
                 element.data.width
                     ? {

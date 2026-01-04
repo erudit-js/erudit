@@ -64,6 +64,8 @@ const ru: LanguagePhrases = {
     depends_on: 'Зависит от',
     used_by: 'Используется в',
     externals: 'Внешние',
+    add_quote: 'Добавить свое сообщение!',
+    next_quote: 'Следующая цитата',
 
     // _language_title: 'Русский',
     // _language_code: 'ru',

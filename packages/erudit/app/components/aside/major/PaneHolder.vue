@@ -87,6 +87,7 @@ await usePhrases(
 <template>
     <section class="relative flex-1 overflow-clip">
         <TransitionSlide :direction>
+            <!-- The problem is here -->
             <KeepAlive>
                 <component :is="activePaneComponent" />
             </KeepAlive>

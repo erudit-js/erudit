@@ -25,6 +25,7 @@ import {
     addContentElementCount,
 } from './content/repository/elementCount';
 import { getContentConnections } from './content/repository/connections';
+import { getQuoteIds } from './quote/repository/ids';
 
 export const repository = {
     db: {
@@ -34,6 +35,9 @@ export const repository = {
     },
     contributors: {
         count: countContributors,
+    },
+    quotes: {
+        ids: getQuoteIds,
     },
     sponsors: {
         count: countSponsors,

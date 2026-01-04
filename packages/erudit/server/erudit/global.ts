@@ -23,6 +23,7 @@ export const ERUDIT: {
 Object.assign(globalThis, {
     defineContributor,
     defineSponsor,
+    defineCameo,
     defineBook,
     defineTopic,
     definePage,

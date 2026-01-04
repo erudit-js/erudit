@@ -6,6 +6,7 @@ import slash from 'slash';
 // Builders
 import { buildContributors } from './contributors/build';
 import { buildSponsors } from './sponsors/build';
+import { buildCameos } from './cameos/build';
 import { buildContentNav } from './content/nav/build';
 import { requestFullContentResolve, resolveContent } from './content/resolve';
 import { buildGlobalContent } from './content/global/build';
@@ -21,6 +22,7 @@ export async function buildServerErudit() {
             ERUDIT.log.start('Building...');
             await buildContributors();
             await buildSponsors();
+            await buildCameos();
             await buildContentNav();
             await buildGlobalContent();
             await resolveContent();

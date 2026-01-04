@@ -63,6 +63,8 @@ const en: LanguagePhrases = {
     depends_on: 'Depends on',
     used_by: 'Used by',
     externals: 'Externals',
+    add_quote: 'Add your own message!',
+    next_quote: 'Next quote',
 
     // _language_title: 'English',
     // _language_code: 'en',

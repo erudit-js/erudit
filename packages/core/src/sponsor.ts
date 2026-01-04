@@ -1,16 +1,17 @@
 export interface EruditSponsors {
-    addLink: string;
+    enabled: boolean;
+    becomeSponsorLink: string;
     tier1Label: string;
     tier2Label: string;
-    defaultCameoMessages?: string[];
-    defaultSponsorMessages?: string[];
+    defaultSponsorMessages: string[];
 }
 
 interface BaseSponsor {
+    sponsorId: string;
     tier: 1 | 2;
-    name: string;
+    name?: string;
     icon?: string;
-    avatar?: string;
+    avatarExtension?: string;
     info?: string;
     color?: string;
     link?: string;
@@ -27,6 +28,12 @@ export interface SponsorTier2 extends BaseSponsor {
 
 export type Sponsor = SponsorTier1 | SponsorTier2;
 
-export function defineSponsor(sponsor: Sponsor) {
+type SponsorOmit = 'sponsorId' | 'avatarExtension' | 'icon';
+
+export type SponsorConfig =
+    | Omit<SponsorTier1, SponsorOmit>
+    | Omit<SponsorTier2, SponsorOmit>;
+
+export function defineSponsor(sponsor: SponsorConfig) {
     return sponsor;
 }

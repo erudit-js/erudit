@@ -16,7 +16,7 @@ export async function useMainContent<TMainContent extends MainContent>(
     let mainContentPromise = async () => {
         if (payloadMainContent.contentPath !== contentTypePath) {
             payloadMainContent.contentPath = contentTypePath;
-            payloadMainContent.mainContent = await $fetch(
+            payloadMainContent.mainContent = await $fetch<MainContent>(
                 '/api/main/content/' + contentTypePath,
                 {
                     responseType: 'json',

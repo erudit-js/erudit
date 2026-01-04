@@ -28,15 +28,13 @@ export default defineEruditConfig({
     // seo: {
     //     title: 'Открытая математика',
     // },
-    // sponsors: {
-    //     addLink: 'https://google.com',
-    //     tier1Label: 'Помощники',
-    //     tier2Label: 'Меценаты',
-    //     // defaultCameoMessages: [
-    //     //     'Я поддерживаю Открытую Математику!',
-    //     //     'Кто в лес, а кто по математике!',
-    //     // ],
-    // },
+    sponsors: {
+        enabled: true,
+        becomeSponsorLink: 'https://google.com',
+        tier1Label: 'Помощники',
+        tier2Label: 'Меценаты',
+        defaultSponsorMessages: ['Я поддерживаю Открытую Математику!'],
+    },
     index: {
         logotype: {
             src: projectPublic('index-logo.png'),

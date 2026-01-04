@@ -66,6 +66,8 @@ export type LanguagePhrases = Phrases<{
     depends_on: string;
     used_by: string;
     externals: string;
+    add_quote: string;
+    next_quote: string;
 
     // _language_title: string;
     // _language_code: string;

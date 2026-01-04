@@ -11,3 +11,5 @@ export { problemScripts } from './problemScripts';
 export { contentElementCount } from './contentElementCount';
 export { contentDeps } from './contentDeps';
 export { contentContributions } from './contentContributions';
+export { cameos } from './cameos';
+export { sponsors } from './sponsors';

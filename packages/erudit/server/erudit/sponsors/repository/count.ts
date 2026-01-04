@@ -1,8 +1,14 @@
-import { SPONSORS } from '..';
+export async function countSponsors() {
+    const dbSponsors = await ERUDIT.db.query.sponsors.findMany({
+        columns: { tier: true },
+    });
 
-export function countSponsors() {
-    const tier1Count = Object.keys(SPONSORS.tier1).length;
-    const tier2Count = Object.keys(SPONSORS.tier2).length;
+    let tier1Count = 0;
+    let tier2Count = 0;
+
+    dbSponsors.forEach((dbSponsor) =>
+        dbSponsor.tier === 1 ? tier1Count++ : tier2Count++,
+    );
 
     return {
         tier1: tier1Count,

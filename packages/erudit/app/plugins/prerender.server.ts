@@ -23,6 +23,7 @@ export default defineNuxtPlugin({
             '/api/prerender/contributors',
             '/api/prerender/language',
             '/api/prerender/content',
+            '/api/prerender/quotes',
         ];
 
         for (const provider of routeProviders) {

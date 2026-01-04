@@ -18,6 +18,8 @@ defineProps<{
         :elementCounts="mainContent.elementCounts"
     />
     <div class="h-(--_pMainY)"></div>
+    <MainQuoteLoader />
+    <div class="h-(--_pMainY)"></div>
     <MainSection>
         <template #header>
             <MainTopicPartSwitch

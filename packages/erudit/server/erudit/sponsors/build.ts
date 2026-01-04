@@ -1,10 +1,14 @@
-import { readdirSync } from 'node:fs';
-import type { Sponsor } from '@erudit-js/core/sponsor';
-
-import { SPONSORS } from '.';
+import { readdirSync, readFileSync } from 'node:fs';
+import { eq } from 'drizzle-orm';
+import type { Sponsor, SponsorConfig } from '@erudit-js/core/sponsor';
 
 export async function buildSponsors() {
     ERUDIT.log.debug.start('Building sponsors...');
+
+    await ERUDIT.db.delete(ERUDIT.db.schema.sponsors);
+    await ERUDIT.db
+        .delete(ERUDIT.db.schema.files)
+        .where(eq(ERUDIT.db.schema.files.role, 'sponsor-avatar'));
 
     let sponsorIds: string[] = [];
 
@@ -16,12 +20,15 @@ export async function buildSponsors() {
             .map((entry) => entry.name);
     } catch {}
 
+    let sponsorCount = 0;
+
     for (const sponsorId of sponsorIds) {
         await buildSponsor(sponsorId);
+        sponsorCount++;
     }
 
     ERUDIT.log.success(
-        `Sponsors build complete! (${ERUDIT.log.stress(ERUDIT.repository.sponsors.count().all)})`,
+        `Sponsors build complete! (${ERUDIT.log.stress(sponsorCount)})`,
     );
 }
 
@@ -45,12 +52,12 @@ async function buildSponsor(sponsorId: string) {
         return;
     }
 
-    let sponsorConfig: Sponsor;
+    let sponsorConfig: SponsorConfig;
 
     try {
         sponsorConfig = (await ERUDIT.import(
             `${sponsorDirectory}/sponsor`,
-        )) as Sponsor;
+        )) as SponsorConfig;
     } catch (error) {
         const message = error instanceof Error ? error.message : String(error);
         ERUDIT.log.error(
@@ -64,10 +71,38 @@ async function buildSponsor(sponsorId: string) {
         ?.split('.')
         .pop();
 
-    SPONSORS[sponsorConfig.tier][sponsorId] = {
-        // @ts-ignore
-        ...sponsorConfig.default,
+    if (avatarExtension) {
+        await ERUDIT.repository.db.pushFile(
+            `${sponsorDirectory}/avatar.${avatarExtension}`,
+            'sponsor-avatar',
+        );
+    }
+
+    const icon = (() => {
+        const iconFile = sponsorFiles.find((file) => file === 'icon.svg');
+        if (iconFile) {
+            return readFileSync(sponsorDirectory + '/' + iconFile, 'utf-8');
+        }
+    })();
+
+    const sponsor: Sponsor = {
         sponsorId,
+        tier: sponsorConfig.tier,
+        name: sponsorConfig.name,
+        icon,
         avatarExtension,
+        info: sponsorConfig.info,
+        color: sponsorConfig.color,
+        link: sponsorConfig.link,
     };
+
+    if (sponsor.tier === 2 && sponsorConfig.tier === 2) {
+        sponsor.messages = sponsorConfig.messages;
+    }
+
+    await ERUDIT.db.insert(ERUDIT.db.schema.sponsors).values({
+        sponsorId,
+        tier: sponsor.tier,
+        data: sponsor,
+    });
 }

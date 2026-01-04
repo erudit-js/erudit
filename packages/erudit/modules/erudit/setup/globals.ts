@@ -66,7 +66,11 @@ export async function registerServerGlobals(
         },
         {
             name: 'defineSponsor',
-            from: `${runtimeConfig.paths.module}/globals/sponsor`,
+            from: `@erudit-js/core/sponsor`,
+        },
+        {
+            name: 'defineCameo',
+            from: `@erudit-js/core/cameo`,
         },
         {
             name: 'defineBook',
@@ -136,7 +140,11 @@ export async function registerGlobalContentTypes(
         },
         {
             name: 'defineSponsor',
-            from: `${runtimeConfig.paths.module}/globals/sponsor`,
+            from: `@erudit-js/core/sponsor`,
+        },
+        {
+            name: 'defineCameo',
+            from: `@erudit-js/core/cameo`,
         },
         {
             name: 'defineDocument',
