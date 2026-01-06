@@ -21,8 +21,8 @@ const LinkComponent = external ? h('a') : EruditLink;
         tabindex="0"
         target="_blank"
         :class="{
-            [`p-small micro:text-[18px] cursor-pointer rounded bg-transparent
-            text-[14px] transition-[background,color,opacity]`]: true,
+            [`micro:size-[32px] size-[28px] cursor-pointer rounded
+            bg-transparent transition-[background,color,opacity]`]: true,
             'pointer-events-none opacity-15': state === 'disabled',
             'text-brand hocus:bg-brand/20': state === 'brand',
             'text-text-muted hocus:text-text hocus:bg-bg-accent': !state,
@@ -30,7 +30,10 @@ const LinkComponent = external ? h('a') : EruditLink;
     >
         <MaybeMyIcon
             :name="icon"
-            :class="{ 'scale-120 rotate-45': icon === 'plus' }"
+            :class="{
+                'size-full': true,
+                'scale-120 rotate-45': icon === 'plus',
+            }"
         />
     </component>
 </template>

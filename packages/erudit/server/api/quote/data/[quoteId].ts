@@ -65,13 +65,16 @@ export default defineEventHandler<Promise<Quote>>(async (event) => {
             color: data.color,
             icon: data.icon,
             link: data.link,
-            avatarUrl: data.avatarExtension
-                ? `/file/sponsors/${id}/avatar.${data.avatarExtension}`
-                : undefined,
+            avatarUrl: ERUDIT.repository.sponsors.avatarUrl(
+                id,
+                data.avatarExtension,
+            ),
         };
 
-        if (data.tier === 2) {
-            quote.messages = data.messages;
+        if (data.messages?.enabled === true) {
+            if (data.messages.list) {
+                quote.messages = data.messages.list;
+            }
         }
 
         return quote;

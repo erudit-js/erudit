@@ -28,4 +28,7 @@ const phrase = await usePhrases('begin_learning');
     />
     <div class="h-(--_pMainY)"></div>
     <MainContentChildren :children="mainContent.children" />
+    <MainSection>
+        <AdsBannerBottom v-if="adsBottomAllowed()" />
+    </MainSection>
 </template>

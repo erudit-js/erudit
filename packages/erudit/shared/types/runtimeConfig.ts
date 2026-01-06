@@ -5,6 +5,7 @@ import type { EruditCustomLinks } from '@erudit-js/core/eruditConfig/links';
 import type { EruditRepository } from '@erudit-js/core/eruditConfig/repository';
 import type { EruditSiteBrandLayout } from '@erudit-js/core/eruditConfig/site';
 import type { EruditSponsors } from '@erudit-js/core/sponsor';
+import type { EruditContributors } from '@erudit-js/core/contributor';
 
 export interface EruditRuntimeConfigPaths {
     package: string;
@@ -48,6 +49,7 @@ export interface EruditPublicRuntimeConfig {
             brandColor?: string;
         };
         customLinks?: EruditCustomLinks;
+        contributors?: EruditContributors;
         sponsors?: EruditSponsors;
         ads?: EruditAdsBanners;
     };

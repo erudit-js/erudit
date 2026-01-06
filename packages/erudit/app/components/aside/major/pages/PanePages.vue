@@ -16,7 +16,8 @@ const activeState = computed(() => {
     };
 });
 
-const sponsorsEnabled = !!ERUDIT.config.project.sponsors;
+const contributorsEnabled = !!ERUDIT.config.project.contributors?.enabled;
+const sponsorsEnabled = !!ERUDIT.config.project.sponsors?.enabled;
 
 const phrase = await usePhrases('main_page', 'contributors', 'sponsors');
 </script>
@@ -31,6 +32,7 @@ const phrase = await usePhrases('main_page', 'contributors', 'sponsors');
                 :active="activeState.main"
             />
             <AsideListItem
+                v-if="contributorsEnabled"
                 icon="users"
                 :to="PAGES.contributors"
                 :main="phrase.contributors"

@@ -38,7 +38,7 @@ export const useTheme = () => {
     };
 };
 
-export const useThemeWatcher = () => {
+export const initThemeWatcher = () => {
     onMounted(() => {
         const { themePref, binaryTheme } = useTheme();
 

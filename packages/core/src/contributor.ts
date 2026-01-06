@@ -1,8 +1,13 @@
-import type { AnySchema, RawElement } from '@jsprose/core';
+import type { AnySchema, ProseElement, RawElement } from '@jsprose/core';
+
+export interface EruditContributors {
+    enabled: boolean;
+    becomeContributorLink?: string;
+}
 
 export type ContributorDefinition = Partial<{
     displayName: string;
-    slogan: string;
+    short: string;
     editor: boolean;
     links: Record<string, string>;
     description: RawElement<AnySchema>;
@@ -67,4 +72,23 @@ ${Object.keys(contributors)
     };
 }
 `;
+}
+
+export interface ListContributor {
+    id: string;
+    displayName?: string;
+    short?: string;
+    avatarUrl?: string;
+    contributions?: number;
+    editor?: boolean;
+}
+
+export interface PageContributor {
+    id: string;
+    displayName?: string;
+    short?: string;
+    links?: Record<string, string>;
+    avatarUrl?: string;
+    description?: ProseElement<AnySchema>;
+    editor?: boolean;
 }

@@ -2,7 +2,7 @@
 import ItemTemplate from './ItemTemplate.vue';
 
 const { navItem } = defineProps<{ navItem: FrontContentNavTopic }>();
-const { shortContentId } = inject(asideMajorContentNavSymbol)!;
+const { shortContentId } = useContentId();
 
 const active = computed(() => {
     return navItem.shortId === shortContentId.value;

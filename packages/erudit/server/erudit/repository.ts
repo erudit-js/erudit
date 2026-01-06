@@ -26,6 +26,9 @@ import {
 } from './content/repository/elementCount';
 import { getContentConnections } from './content/repository/connections';
 import { getQuoteIds } from './quote/repository/ids';
+import { countContributions } from './contributors/repository/countContributions';
+import { getContributorAvatarUrl } from './contributors/repository/avatarUrl';
+import { getSponsorAvatarUrl } from './sponsors/repository/avatarUrl';
 
 export const repository = {
     db: {
@@ -35,12 +38,15 @@ export const repository = {
     },
     contributors: {
         count: countContributors,
+        countContributions,
+        avatarUrl: getContributorAvatarUrl,
     },
     quotes: {
         ids: getQuoteIds,
     },
     sponsors: {
         count: countSponsors,
+        avatarUrl: getSponsorAvatarUrl,
     },
     content: {
         topicParts: getTopicParts,

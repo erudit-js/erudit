@@ -1,8 +1,15 @@
 <script lang="ts" setup>
-useThemeWatcher();
-useAsideMajorPaneWatcher();
-await useFormatText();
+// Watching and setting theme
+initThemeWatcher();
+
+// Fetching and setting global navigation variable
+await initGlobalContentNav();
+
+await initFormatText();
 await initAppElements();
+
+// Watching route changes and set corresponsing aside major pane
+initAsideMajorPaneWatcher();
 </script>
 
 <template>

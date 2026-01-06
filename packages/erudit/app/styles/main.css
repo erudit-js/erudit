@@ -167,3 +167,7 @@
         background: var(--color-border);
     }
 }
+
+@utility text-size-h1 {
+    @apply micro:text-[36px] text-[30px];
+}

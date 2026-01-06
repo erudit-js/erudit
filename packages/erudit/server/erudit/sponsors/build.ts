@@ -3,6 +3,10 @@ import { eq } from 'drizzle-orm';
 import type { Sponsor, SponsorConfig } from '@erudit-js/core/sponsor';
 
 export async function buildSponsors() {
+    if (!ERUDIT.config.public.project.sponsors?.enabled) {
+        return;
+    }
+
     ERUDIT.log.debug.start('Building sponsors...');
 
     await ERUDIT.db.delete(ERUDIT.db.schema.sponsors);
@@ -79,6 +83,10 @@ async function buildSponsor(sponsorId: string) {
     }
 
     const icon = (() => {
+        if (sponsorConfig.icon) {
+            return sponsorConfig.icon;
+        }
+
         const iconFile = sponsorFiles.find((file) => file === 'icon.svg');
         if (iconFile) {
             return readFileSync(sponsorDirectory + '/' + iconFile, 'utf-8');
@@ -87,22 +95,20 @@ async function buildSponsor(sponsorId: string) {
 
     const sponsor: Sponsor = {
         sponsorId,
-        tier: sponsorConfig.tier,
         name: sponsorConfig.name,
+        group: sponsorConfig.group,
         icon,
         avatarExtension,
         info: sponsorConfig.info,
         color: sponsorConfig.color,
         link: sponsorConfig.link,
+        messages: sponsorConfig.messages,
     };
-
-    if (sponsor.tier === 2 && sponsorConfig.tier === 2) {
-        sponsor.messages = sponsorConfig.messages;
-    }
 
     await ERUDIT.db.insert(ERUDIT.db.schema.sponsors).values({
         sponsorId,
-        tier: sponsor.tier,
+        hasMessages: sponsor.messages?.enabled === true,
+        hasAvatar: sponsor.avatarExtension !== undefined,
         data: sponsor,
     });
 }

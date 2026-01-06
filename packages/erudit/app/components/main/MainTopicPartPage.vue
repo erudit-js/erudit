@@ -37,4 +37,7 @@ defineProps<{
             />
         </template>
     </MainSection>
+    <MainSection>
+        <AdsBannerBottom v-if="adsBottomAllowed()" />
+    </MainSection>
 </template>

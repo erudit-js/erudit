@@ -4,8 +4,8 @@ export const ICONS = {
     ['book']: 'book-outline',
     ['group']: 'folder-open',
     ['page']: 'lines',
-    ['topic']: 'lines-array',
-    ['article']: 'lines-array',
-    ['summary']: 'star-array',
-    ['practice']: 'check-array',
+    ['topic']: 'array-lines',
+    ['article']: 'array-lines',
+    ['summary']: 'array-star',
+    ['practice']: 'array-check',
 } satisfies Record<string, MaybeMyIconName>;

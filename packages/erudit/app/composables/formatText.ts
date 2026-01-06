@@ -8,7 +8,7 @@ const formatTextLoaders: Partial<
 
 export let formatText: FormatText;
 
-export async function useFormatText() {
+export async function initFormatText() {
     const languageCode = ERUDIT.config.project.language.current;
 
     const formatTextLoader =

@@ -2,7 +2,7 @@
 import ItemTemplate from './ItemTemplate.vue';
 
 const { navItem } = defineProps<{ navItem: FrontContentNavTopic }>();
-const { shortContentId } = inject(asideMajorContentNavSymbol)!;
+const { shortContentId } = useContentId();
 
 const active = computed(() => {
     return navItem.shortId === shortContentId.value;
@@ -11,7 +11,7 @@ const active = computed(() => {
 
 <template>
     <ItemTemplate
-        icon="lines-array"
+        icon="array-lines"
         :navItem
         :state="active ? 'active' : undefined"
     />

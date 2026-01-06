@@ -24,7 +24,7 @@ const { closePreview, hasPreviousRequest, setPreviousPreview } = usePreview();
         >
             <MaybeMyIcon
                 :name="icon"
-                class="text-text-muted micro:text-[28px] shrink-0 text-[26px]"
+                class="text-text-muted micro:text-[34px] shrink-0 text-[30px]"
             />
             <div class="flex flex-1 flex-col justify-center overflow-hidden">
                 <div
@@ -41,10 +41,7 @@ const { closePreview, hasPreviousRequest, setPreviousPreview } = usePreview();
                     {{ secondary }}
                 </div>
             </div>
-            <div
-                class="micro:gap-small flex shrink-0 items-center
-                    gap-[calc(var(--spacing-small)/2)]"
-            >
+            <div class="gap-small flex shrink-0 items-center">
                 <PreviewScreenButton
                     :class="hasPreviousRequest ? '' : 'opacity-0'"
                     icon="arrow/left"

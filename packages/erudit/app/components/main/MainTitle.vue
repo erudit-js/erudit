@@ -13,7 +13,7 @@ const { color = 'var(--color-brand)' } = defineProps<{
         :style="{ '--titleColor': color }"
         class="gap-normal micro:flex-row micro:justify-start flex flex-col
             items-center justify-center px-(--_pMainX)
-            py-[calc(var(--_pMainY)/2)]"
+            py-[calc(var(--_pMainY)/2)] pt-0"
     >
         <div
             class="max-micro:rounded-full max-micro:p-4
@@ -21,16 +21,12 @@ const { color = 'var(--color-brand)' } = defineProps<{
         >
             <MaybeMyIcon
                 :name="icon"
-                class="max-micro:text-white max-micro:text-[24px] text-[31px]
+                class="max-micro:text-white micro:text-[38px] text-[34px]
                     text-[color-mix(in_srgb,var(--titleColor),var(--color-text)_70%)]"
             />
         </div>
-        <h1
-            class="text-text-deep micro:text-[35px] max-micro:text-center
-                text-[30px] leading-tight font-extrabold
-                text-shadow-[2px_2px_color-mix(in_srgb,var(--titleColor),transparent_65%)]"
-        >
-            {{ formatText(title) }}
+        <h1 class="text-size-h1 max-micro:text-center">
+            <FancyBold :text="title" :color="color" />
         </h1>
     </section>
 </template>

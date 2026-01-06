@@ -1,8 +1,12 @@
 <script lang="ts" setup>
 import type { Quote } from '@erudit-js/core/quote';
-import type { MaybeMyIconName } from '#my-icons';
+import type { MaybeMyIconName, MyIconName } from '#my-icons';
 
-const { quote } = defineProps<{ quote: Quote; hasActions?: boolean }>();
+const { quote } = defineProps<{
+    quote: Quote;
+    hasBecomeLink?: boolean;
+    hasNextLink?: boolean;
+}>();
 const emit = defineEmits(['next']);
 
 const color = quote.color ?? stringColor(quote.name);
@@ -20,12 +24,14 @@ const message = (() => {
     return randomMessage;
 })();
 
-const icon: MaybeMyIconName = (() => {
+const avatarUrl = (() => {
     if (quote.type === 'cameo') {
-        return quote.icon;
+        return withBaseUrl(quote.avatarUrl);
     }
 
-    return quote.icon ?? 'diamond';
+    return quote.avatarUrl
+        ? withBaseUrl(quote.avatarUrl)
+        : ('diamond' satisfies MyIconName);
 })();
 
 function nextClick() {
@@ -53,9 +59,24 @@ const phrase = await usePhrases('add_quote', 'next_quote');
             '--colorIcon':
                 'color-mix(in srgb, var(--color), var(--color-text) 30%)',
         }"
-        class="flex gap-[40px]"
+        class="micro:gap-[40px] flex gap-[30px]"
     >
-        <div class="shrink-0">Icon</div>
+        <div class="shrink-0">
+            <EruditLink
+                external
+                target="_blank"
+                :to="quote.link"
+                class="block rounded-full ring-2 ring-(--colorBorder)"
+            >
+                <SmartMedia
+                    :url="avatarUrl"
+                    class="border-bg-main micro:size-[60px] size-[40px]
+                        rounded-full border-2
+                        [box-shadow:0_0_16px_0_var(--color)] transition-[border]
+                        [--mediaColor:var(--color)]"
+                />
+            </EruditLink>
+        </div>
         <div
             class="p-small micro:p-normal relative flex-1 rounded
                 rounded-tl-none border-2 border-(--colorBorder) bg-(--colorBg)
@@ -67,7 +88,7 @@ const phrase = await usePhrases('add_quote', 'next_quote');
                     bg-(--colorBorder) transition-[background]
                     [--arrowSize:14px]
                     [--arrowSizeSmall:calc(var(--arrowSize)-2px)]
-                    [clip-path:polygon(100%_0,100%_100%,0_0)]"
+                    [clip-path:polygon(110%_0,110%_110%,0_0)]"
             >
                 <div
                     class="absolute top-[2px] -right-[3px] h-(--arrowSizeSmall)
@@ -83,9 +104,10 @@ const phrase = await usePhrases('add_quote', 'next_quote');
                 >
                     <div class="flex-1">
                         <MaybeMyIcon
-                            class="relative -top-[1px] mr-1.5 inline
+                            v-if="quote.type === 'cameo' || quote.avatarUrl"
+                            class="relative -top-[1.5px] mr-1.5 inline
                                 text-(--colorIcon)"
-                            :name="icon"
+                            :name="quote.icon!"
                         />
                         <EruditLink
                             v-if="quote.link"
@@ -100,13 +122,16 @@ const phrase = await usePhrases('add_quote', 'next_quote');
                         <MyIcon
                             v-if="quote.link"
                             name="arrow/outward"
-                            class="micro:text-[8px] micro:-right-2 relative
-                                -top-1 -right-1.5 inline text-[6px]
+                            class="relative -top-1 -right-1 inline
                                 text-(--colorText)/40"
                         />
                     </div>
-                    <div class="gap-normal flex items-center">
+                    <div
+                        v-if="hasBecomeLink || hasNextLink"
+                        class="gap-normal flex items-center text-[1.5em]"
+                    >
                         <EruditLink
+                            v-if="hasBecomeLink"
                             :to="PAGES.sponsors"
                             :title="phrase.add_quote"
                             class="hocus:text-(--colorIcon)
@@ -115,6 +140,7 @@ const phrase = await usePhrases('add_quote', 'next_quote');
                             <MyIcon name="plus" />
                         </EruditLink>
                         <button
+                            v-if="hasNextLink"
                             @click="nextClick"
                             :title="phrase.next_quote"
                             class="hocus:text-(--colorIcon) cursor-pointer

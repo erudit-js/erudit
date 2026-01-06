@@ -90,11 +90,11 @@ onUnmounted(() => {
     >
         <div
             @touchstart="popupVisible ? hidePopup() : showPopup()"
-            class="px-small gap-small text-main-sm flex cursor-help items-center
+            class="px-small text-main-sm flex cursor-help items-center gap-1
                 rounded border border-(--flagColor)/30 bg-(--flagColor)/15 py-1
                 text-(--flagColor)"
         >
-            <MyIcon :name="flagData.icon" />
+            <MyIcon :name="flagData.icon" class="text-[1.3em]" />
             <span>{{ formatText(flagData.title) }}</span>
         </div>
         <TransitionFade>

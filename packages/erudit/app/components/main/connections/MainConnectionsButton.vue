@@ -73,7 +73,7 @@ const dynamicClasses = computed(() => {
             dynamicClasses,
         ]"
     >
-        <MyIcon :name="icon" />
+        <MyIcon :name="icon" class="text-[1.2em]" />
         <span>{{ formatText(title) }}</span>
         <span class="font-bold">{{ count }}</span>
     </button>

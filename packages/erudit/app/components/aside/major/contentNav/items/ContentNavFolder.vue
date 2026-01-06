@@ -7,7 +7,7 @@ const { navItem } = defineProps<{
     level?: number;
 }>();
 
-const { shortContentId } = inject(asideMajorContentNavSymbol)!;
+const { shortContentId } = useContentId();
 
 const hasActiveDescendant = computed(() => {
     return checkActiveDescendant(navItem.children, shortContentId.value);

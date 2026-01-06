@@ -1,12 +1,14 @@
 <script lang="ts" setup>
-import PaneContentNav from './contentNav/PaneContentNav.vue';
+import PaneGlobalNav from './contentNav/PaneGlobalNav.vue';
+import PaneBookNav from './contentNav/PaneBookNav.vue';
 import PaneLanguages from './languages/PaneLanguages.vue';
 import PanePages from './pages/PanePages.vue';
 import PaneSearch from './search/PaneSearch.vue';
 import PaneSettings from './settings/PaneSettings.vue';
 
 const paneMap: Record<AsideMajorPane, Component> = {
-    [AsideMajorPane.ContentNav]: PaneContentNav,
+    [AsideMajorPane.GlobalNav]: PaneGlobalNav,
+    [AsideMajorPane.BookNav]: PaneBookNav,
     [AsideMajorPane.Languages]: PaneLanguages,
     [AsideMajorPane.Pages]: PanePages,
     [AsideMajorPane.Search]: PaneSearch,
@@ -16,9 +18,7 @@ const paneMap: Record<AsideMajorPane, Component> = {
 const route = useRoute();
 const asideMajorPane = useAsideMajorPane();
 const asideState = useAsideState();
-
 const direction = ref<'forward' | 'backward'>('forward');
-
 const activePaneComponent = computed(() => paneMap[asideMajorPane.value]);
 
 watch(asideMajorPane, (next, prev) => {
@@ -42,13 +42,6 @@ onMounted(() => {
             asideState.value.opened = AsideType.Major;
         }
     }
-});
-
-// Prefetch global content nav
-await useFetch('/api/aside/major/frontNav/global', {
-    key: asideMajorContentNavGlobalKey,
-    deep: false,
-    responseType: 'json',
 });
 
 // Prefetch pages data
@@ -87,9 +80,8 @@ await usePhrases(
 <template>
     <section class="relative flex-1 overflow-clip">
         <TransitionSlide :direction>
-            <!-- The problem is here -->
             <KeepAlive>
-                <component :is="activePaneComponent" />
+                <component :key="asideMajorPane" :is="activePaneComponent" />
             </KeepAlive>
         </TransitionSlide>
     </section>

@@ -12,6 +12,7 @@ import type { EruditSeo } from './seo.js';
 import type { EruditSite } from './site.js';
 import type { EruditLanguage } from './language.js';
 import type { EruditElements } from './elements.js';
+import type { EruditContributors } from '../contributor.js';
 
 export interface EruditConfig {
     language?: EruditLanguage;
@@ -22,6 +23,7 @@ export interface EruditConfig {
     site?: EruditSite;
     index?: EruditIndexPage;
     content?: EruditContent;
+    contributors?: EruditContributors;
     sponsors?: EruditSponsors;
     seo?: EruditSeo;
     repository?: EruditRepository;

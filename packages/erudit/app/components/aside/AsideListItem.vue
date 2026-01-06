@@ -37,7 +37,7 @@ const isExternalLink = computed(() => {
                 <MaybeMyIcon
                     v-if="icon"
                     :name="icon"
-                    class="size-[20px] shrink-0"
+                    class="shrink-0 text-[23px]"
                 />
                 <slot name="icon" v-else-if="$slots.icon"></slot>
 
@@ -46,8 +46,8 @@ const isExternalLink = computed(() => {
                     <MyIcon
                         v-if="isExternalLink"
                         name="arrow/outward"
-                        class="text-text-dimmed absolute top-[3px] right-[-11px]
-                            text-[6px]"
+                        class="text-text-dimmed absolute -top-[1px]
+                            -right-[16px] text-xs"
                     />
                 </span>
                 <slot name="main" v-else-if="$slots.main"></slot>

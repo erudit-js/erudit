@@ -27,7 +27,7 @@ const active = computed(() => {
             },
         ]"
     >
-        <MyIcon :name="icon" class="size-[40%]" />
+        <MyIcon :name="icon" class="size-[48%]" />
         <!-- Button underline -->
         <div
             class="group-hocus:bg-border absolute right-(--_underline-p)

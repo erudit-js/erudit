@@ -1,16 +1,14 @@
-import { createQuoteId } from '@erudit-js/core/quote';
-
 export default defineEventHandler(async () => {
     const routes: string[] = ['/api/quote/ids'];
 
     const { cameo, sponsor } = await ERUDIT.repository.quotes.ids();
 
     for (const cameoId of cameo ?? []) {
-        routes.push(`/api/quote/data/${createQuoteId('cameo', cameoId)}`);
+        routes.push(`/api/quote/data/${cameoId}`);
     }
 
     for (const sponsorId of sponsor ?? []) {
-        routes.push(`/api/quote/data/${createQuoteId('sponsor', sponsorId)}`);
+        routes.push(`/api/quote/data/${sponsorId}`);
     }
 
     return routes;

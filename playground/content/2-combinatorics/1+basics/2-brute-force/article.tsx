@@ -1,3 +1,5 @@
+import gen from './gen';
+
 export default defineDocument({
     uniques: {
         bruteForceRules: Important,
@@ -15,12 +17,15 @@ export default defineDocument({
             можно решить просто вручную, составив все возможные комбинации.
         </P>
 
+        <Reference to={$CONTENT.combinatorics}>Лол кек чебурек</Reference>
+
         <List type="ul">
             <Li>Зачем вообще проходить эту тему?</Li>
             <Li>Перебрать варианты любой ведь сможет!</Li>
             <Li>
-                Мы ведь и зашли в этот учебник, чтобы изучать приёмы быстрого
-                решения!
+                Мы ведь и зашли в этот{' '}
+                <Ref to={$CONTENT.combinatorics}>учебник</Ref>, чтобы изучать
+                приёмы быстрого решения!
             </Li>
         </List>
 
@@ -81,6 +86,8 @@ export default defineDocument({
             их для решения задач. Начнём с чего-нибудь простого:
         </P>
 
+        <Problem title="Генерящаяся проблема" level="hard" script={gen()} />
+
         <Problem
             title="Насыщенный день"
             level="example"
@@ -129,7 +136,12 @@ export default defineDocument({
                     алфавитном порядке. Делайте так, как удобно вам. Главное --{' '}
                     <B>строго придерживайтесь</B> выбранного алгоритма!
                 </P>
+                <ProblemSection title="Привет мир">sdfsdf</ProblemSection>
             </ProblemSolution>
+
+            <ProblemAnswer>Hello World!</ProblemAnswer>
+
+            <ProblemCheck label="lol" answer={3} />
         </Problem>
 
         <P>

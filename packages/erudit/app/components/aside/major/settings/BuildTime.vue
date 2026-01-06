@@ -18,7 +18,7 @@ const phrase = await usePhrases('built');
 <template>
     <AsideListItem
         :hoverable="false"
-        icon="clock-check"
+        icon="box"
         :main="phrase.built"
         :secondary="formattedBuildDate"
     />

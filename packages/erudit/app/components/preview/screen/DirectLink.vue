@@ -8,7 +8,7 @@ const phrase = await usePhrases('direct_link', 'direct_link_explain');
 
 <template>
     <PreviewScreen
-        icon="link"
+        icon="arrow/outward-box"
         :main="phrase.direct_link"
         :link="request.href"
         :external="true"

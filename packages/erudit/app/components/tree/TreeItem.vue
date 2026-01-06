@@ -30,7 +30,7 @@ defineProps<{
             <MaybeMyIcon
                 v-if="icon"
                 :name="icon"
-                class="h-[calc(1em+.5px)] w-[calc(1em+.5px)] shrink-0"
+                class="shrink-0 text-[1.2em]"
             />
             <div class="flex-1">{{ main }}</div>
             <div class="shrink-0" v-if="$slots.secondary">

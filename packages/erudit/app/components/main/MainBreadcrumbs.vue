@@ -14,7 +14,7 @@ defineProps<{ breadcrumbs: Breadcrumbs }>();
             class="gap-small text-text-dimmed hocus:text-text-muted flex
                 items-center transition-[color]"
         >
-            <MaybeMyIcon :name="breadcrumb.icon" />
+            <MaybeMyIcon :name="breadcrumb.icon" class="text-[1.2em]" />
             <span>{{ formatText(breadcrumb.title) }}</span>
             <MyIcon
                 name="chevron-right"

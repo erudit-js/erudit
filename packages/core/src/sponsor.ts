@@ -1,39 +1,38 @@
 export interface EruditSponsors {
     enabled: boolean;
     becomeSponsorLink: string;
-    tier1Label: string;
-    tier2Label: string;
     defaultSponsorMessages: string[];
 }
 
-interface BaseSponsor {
+export interface Sponsor {
     sponsorId: string;
-    tier: 1 | 2;
     name?: string;
+    group?: string;
     icon?: string;
     avatarExtension?: string;
     info?: string;
     color?: string;
     link?: string;
+    messages?: {
+        enabled: boolean;
+        list?: string[];
+    };
 }
 
-export interface SponsorTier1 extends BaseSponsor {
-    tier: 1;
-}
+type SponsorOmit = 'sponsorId' | 'avatarExtension';
 
-export interface SponsorTier2 extends BaseSponsor {
-    tier: 2;
-    messages?: string[];
-}
-
-export type Sponsor = SponsorTier1 | SponsorTier2;
-
-type SponsorOmit = 'sponsorId' | 'avatarExtension' | 'icon';
-
-export type SponsorConfig =
-    | Omit<SponsorTier1, SponsorOmit>
-    | Omit<SponsorTier2, SponsorOmit>;
+export type SponsorConfig = Omit<Sponsor, SponsorOmit>;
 
 export function defineSponsor(sponsor: SponsorConfig) {
     return sponsor;
+}
+
+export interface PageSponsor {
+    name: string;
+    group?: string;
+    icon?: string;
+    info?: string;
+    color?: string;
+    link?: string;
+    avatarUrl?: string;
 }

@@ -53,7 +53,7 @@ const elementIcon = await getElementIcon(quickLink.schemaName);
                 ring-transparent
                 transition-[background,color,border,box-shadow]"
         >
-            <MaybeMyIcon :name="elementIcon" />
+            <MaybeMyIcon :name="elementIcon" class="-mr-0.5 text-[1.2em]" />
             <span>{{ formatText(quickLink.title) }}</span>
         </EruditLink>
         <TransitionFade>

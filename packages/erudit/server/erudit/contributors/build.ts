@@ -12,6 +12,10 @@ import {
 $CONTRIBUTOR;
 
 export async function buildContributors() {
+    if (!ERUDIT.config.public.project.contributors?.enabled) {
+        return;
+    }
+
     ERUDIT.log.debug.start('Building contributors...');
 
     await ERUDIT.db.delete(ERUDIT.db.schema.contributors);
@@ -99,7 +103,7 @@ async function buildContributor(contributorId: string) {
         contributorId,
         avatarExtension,
         displayName: moduleDefault?.displayName,
-        slogan: moduleDefault?.slogan,
+        short: moduleDefault?.short,
         links: moduleDefault?.links,
         editor: moduleDefault?.editor,
         description: description,

@@ -31,4 +31,7 @@ const mainContent = await useMainContent<MainContentPage>(contentTypePath);
             :useHashUrl="true"
         />
     </MainSection>
+    <MainSection>
+        <AdsBannerBottom v-if="adsBottomAllowed()" />
+    </MainSection>
 </template>

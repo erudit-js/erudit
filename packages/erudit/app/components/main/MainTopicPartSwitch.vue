@@ -42,10 +42,10 @@ const data: Record<TopicPart, TopicPartSwitchData> = {
             v-for="(partData, partKey) of data"
             :to="partData.state !== 'missing' ? partData.link : undefined"
             :class="[
-                `micro:[--switchHeight:50px] gap-small micro:gap-normal px-small
+                `micro:[--switchHeight:50px] micro:gap-small px-small
                 micro:px-normal border-border relative -bottom-[2px] flex
-                h-(--switchHeight) items-center rounded rounded-b-none border-2
-                transition-[border,color,background]`,
+                h-(--switchHeight) items-center gap-1 rounded rounded-b-none
+                border-2 transition-[border,color,background]`,
                 partData.state === 'missing' &&
                     'text-text-disabled/75 border-b-border cursor-not-allowed',
                 partData.state === 'active' &&
@@ -57,7 +57,7 @@ const data: Record<TopicPart, TopicPartSwitchData> = {
         >
             <MyIcon
                 :name="ICONS[partKey]"
-                class="max-micro:text-[18px] max-micro:mx-1"
+                class="max-micro:mx-1 text-[1.2em]"
             />
             <span
                 :class="[

@@ -15,8 +15,8 @@ defineProps<{ child: MainContentChildrenItem }>();
             <EruditLink :to="child.link" class="p-normal block">
                 <MyIcon
                     :name="ICONS[child.type]"
-                    class="mr-small micro:mr-normal text-text-muted
-                        group-hocus:text-brand inline transition-[color]"
+                    class="text-text-muted group-hocus:text-brand mr-3 inline
+                        text-[1.2em] transition-[color]"
                 />
                 <span>{{ formatText(child.title) }}</span>
             </EruditLink>

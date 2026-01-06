@@ -61,7 +61,7 @@ if (import.meta.client) {
                 justify-center bg-neutral-500 opacity-90
                 shadow-[0_0_20px_20px_var(--color-bg-main)] transition-opacity"
         >
-            <MyIcon name="aside-open" class="text-bg-main size-[45%]" />
+            <MyIcon name="aside-open" class="text-bg-main size-[60%]" />
         </button>
     </div>
 </template>

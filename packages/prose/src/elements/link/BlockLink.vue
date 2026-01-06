@@ -79,7 +79,7 @@ switch (linkStorage.type) {
             <EruditIcon
                 name="arrow/outward"
                 class="text-brand/15 group-hocus:text-brand/20 top-small
-                    right-small absolute shrink-0 text-[30px]
+                    right-small absolute shrink-0 text-[60px]
                     transition-[color]"
             />
             <div
@@ -88,8 +88,8 @@ switch (linkStorage.type) {
             >
                 <EruditIcon
                     :name="uiData!.icon"
-                    class="text-main-sm mr-small relative top-0.5 inline
-                        align-baseline"
+                    class="mr-small relative top-0.5 inline align-baseline
+                        text-[1.1em]"
                 />
                 <span>{{ formatText(uiData!.text) }}</span>
             </div>

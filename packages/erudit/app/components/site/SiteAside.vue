@@ -15,7 +15,7 @@ const opened = computed(() => {
 <template>
     <aside
         :class="[
-            `absolute top-0 z-10 h-full w-(--w-aside) text-[18px]
+            `absolute top-0 z-30 h-full w-(--w-aside) text-[18px]
             transition-[left,right]`,
             opened
                 ? isMajor

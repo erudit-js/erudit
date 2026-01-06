@@ -35,7 +35,7 @@ watch(
                 items-center gap-(--asideMenuGapBig) px-(--asideMenuGapBig)
                 py-(--asideMenuGap)"
         >
-            <EruditIcon :name="icon" class="shrink-0" />
+            <EruditIcon :name="icon" class="shrink-0 text-[1.2em]" />
             <div>{{ title }}</div>
         </div>
         <EruditTransition>
@@ -45,7 +45,7 @@ watch(
                     gap-(--asideMenuGapBig) px-(--asideMenuGapBig)
                     py-(--asideMenuGap)"
             >
-                <EruditIcon :name="icon" class="shrink-0" />
+                <EruditIcon :name="icon" class="shrink-0 text-[1.2em]" />
                 <div>{{ title }}</div>
             </div>
         </EruditTransition>

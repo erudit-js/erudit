@@ -4,7 +4,7 @@ import type { AnySchema, ProseElement } from '@jsprose/core';
 export const contributors = sqliteTable('contributors', {
     contributorId: text().primaryKey(),
     displayName: text(),
-    slogan: text(),
+    short: text(),
     avatarExtension: text(),
     editor: integer({ mode: 'boolean' }),
     links: text({ mode: 'json' }).$type<Record<string, string>>(),

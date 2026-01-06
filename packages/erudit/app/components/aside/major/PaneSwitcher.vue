@@ -6,11 +6,11 @@ const asideMajorPane = useAsideMajorPane();
 const translations = ERUDIT.config.project.language.translations;
 
 const underlinePaneIndex = computed(() => {
-    const paneIndex = asideMajorPanes.findIndex(
-        (pane) => pane === asideMajorPane.value,
-    );
-    return paneIndex;
+    const paneIndex = asideMajorPanes.indexOf(asideMajorPane.value);
+    return Math.max(paneIndex - 1, 0);
 });
+
+const { shortBookId } = useContentId();
 
 const phrase = await usePhrases(
     'content_nav',
@@ -28,7 +28,11 @@ const phrase = await usePhrases(
             class="relative mx-auto flex w-max"
         >
             <PaneSwitcherButton
-                :pane="AsideMajorPane.ContentNav"
+                :pane="
+                    shortBookId
+                        ? AsideMajorPane.BookNav
+                        : AsideMajorPane.GlobalNav
+                "
                 :hint="phrase.content_nav"
                 icon="book"
             />

@@ -4,7 +4,7 @@ import { ref } from 'vue';
 import { useProseContext } from '../../composables/context.js';
 import { useProseLanguage } from '../../composables/language.js';
 import AsideMenuButton from './AsideMenuButton.vue';
-import linkIcon from '../assets/link.svg?raw';
+import shareIcon from '../assets/share.svg?raw';
 import checkIcon from '../assets/check.svg?raw';
 
 const { elementId } = defineProps<{
@@ -33,7 +33,7 @@ async function copyLink() {
 <template>
     <AsideMenuButton
         :brand="copied"
-        :icon="copied ? checkIcon : linkIcon"
+        :icon="copied ? checkIcon : shareIcon"
         :title="copied ? prosePhrase.copied : prosePhrase.copy_link"
         @click="copyLink"
     />

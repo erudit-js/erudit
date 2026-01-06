@@ -96,6 +96,7 @@ async function transferConfigData(
             };
         })(),
         customLinks: projectConfig.customLinks,
+        contributors: projectConfig.contributors,
         sponsors: projectConfig.sponsors,
         ads: projectConfig.ads,
     };

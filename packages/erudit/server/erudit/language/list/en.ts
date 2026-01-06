@@ -65,6 +65,18 @@ const en: LanguagePhrases = {
     externals: 'Externals',
     add_quote: 'Add your own message!',
     next_quote: 'Next quote',
+    sponsors_description:
+        'List of people and organizations that support the project financially. Thanks to them, the project can exist and develop. If you want to help the project, you can become a sponsor and get on this page too!',
+    become_sponsor: 'Become a sponsor',
+    no_sponsors: 'There are no sponsors yet. You can be the first one!',
+    contributors_description:
+        'List of people who contributed to the project materials: suggested valuable ideas, made corrections to existing material or wrote their own!',
+    contributors_invite:
+        'You can also help the project, make a contribution and get on this page!',
+    become_contributor: 'Become a contributor',
+    no_contributors: 'There are no contributors yet. You can be the first one!',
+    contribution: 'Contribution',
+    editor: 'Editor',
 
     // _language_title: 'English',
     // _language_code: 'en',

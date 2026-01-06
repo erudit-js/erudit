@@ -1,4 +1,5 @@
 import { createQuoteId, type QuoteIds } from '@erudit-js/core/quote';
+import { eq } from 'drizzle-orm';
 
 export async function getQuoteIds(): Promise<QuoteIds> {
     const ids: QuoteIds = {};
@@ -16,6 +17,7 @@ export async function getQuoteIds(): Promise<QuoteIds> {
     if (ERUDIT.config.public.project.sponsors?.enabled) {
         const dbSponsors = await ERUDIT.db.query.sponsors.findMany({
             columns: { sponsorId: true },
+            where: eq(ERUDIT.db.schema.sponsors.hasMessages, true),
         });
 
         if (dbSponsors.length > 0) {

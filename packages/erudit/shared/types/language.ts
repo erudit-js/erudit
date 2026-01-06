@@ -68,6 +68,15 @@ export type LanguagePhrases = Phrases<{
     externals: string;
     add_quote: string;
     next_quote: string;
+    sponsors_description: string;
+    become_sponsor: string;
+    no_sponsors: string;
+    contributors_description: string;
+    contributors_invite: string;
+    become_contributor: string;
+    no_contributors: string;
+    contribution: string;
+    editor: string;
 
     // _language_title: string;
     // _language_code: string;

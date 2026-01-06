@@ -28,11 +28,13 @@ export default defineEruditConfig({
     // seo: {
     //     title: 'Открытая математика',
     // },
+    contributors: {
+        enabled: true,
+        becomeContributorLink: 'https://github.com',
+    },
     sponsors: {
         enabled: true,
         becomeSponsorLink: 'https://google.com',
-        tier1Label: 'Помощники',
-        tier2Label: 'Меценаты',
         defaultSponsorMessages: ['Я поддерживаю Открытую Математику!'],
     },
     index: {
@@ -53,9 +55,7 @@ export default defineEruditConfig({
             Совместно!
         `,
     },
-    content: {
-        howToImproveLink: 'lol',
-    },
+
     customLinks: [
         {
             label: 'Google',

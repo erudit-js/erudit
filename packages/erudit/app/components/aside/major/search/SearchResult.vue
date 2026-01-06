@@ -54,12 +54,12 @@ if (isElementCategory) {
                     transition-[color]"
             >
                 <div class="gap-small text-text flex items-center">
-                    <div class="relative h-[1em] w-[1em]">
+                    <div class="relative size-[1.2em]">
                         <TransitionFade>
                             <MaybeMyIcon
                                 :name="icon"
                                 :key="iconKey"
-                                class="absolute top-px left-0"
+                                class="absolute top-px left-0 size-full"
                             />
                         </TransitionFade>
                     </div>
@@ -90,7 +90,10 @@ if (isElementCategory) {
                         class="text-text-dimmed pt-small gap-small flex
                             items-center text-xs italic"
                     >
-                        <MyIcon name="arrow/up-to-right" class="shrink-0" />
+                        <MyIcon
+                            name="arrow/up-to-right"
+                            class="shrink-0 text-[1.3em]"
+                        />
                         {{ formatText(result.location) }}
                     </div>
                 </div>

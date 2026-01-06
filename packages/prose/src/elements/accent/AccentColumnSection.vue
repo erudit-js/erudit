@@ -36,11 +36,14 @@ watchEffect(() => {
             <div class="flex-1">{{ title }}</div>
             <button
                 class="group-hocus:bg-(--accentBorder)/70 shrink-0 rounded
-                    bg-transparent p-[5px] transition-[background]"
+                    bg-transparent p-0.5 transition-[background]"
             >
                 <EruditIcon
                     :name="plusIcon"
-                    :class="['transition-[rotate]', opened ? 'rotate-45' : '']"
+                    :class="[
+                        'micro:text-[26px] text-[22px] transition-[rotate]',
+                        opened ? 'rotate-45' : '',
+                    ]"
                 />
             </button>
             <div

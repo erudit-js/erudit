@@ -7,7 +7,7 @@ const phrase = await usePhrases('ads_replacer');
         <div class="h-dvh w-dvw"></div>
         <div class="[container-type:size] absolute top-0 left-0 h-full w-full">
             <div
-                class="text-text-muted gap-big @max-[550px]:gap-small flex
+                class="text-text-muted gap-normal @max-[550px]:gap-small flex
                     h-full w-full flex-row items-center justify-center
                     bg-neutral-200
                     shadow-[inset_0px_0px_5px_0px_light-dark(rgba(0,0,0,0.12),rgba(255,255,255,0.08))]
@@ -16,7 +16,7 @@ const phrase = await usePhrases('ads_replacer');
             >
                 <MyIcon
                     name="handshake"
-                    class="text-[60px] [@container(max-height:150px)]:hidden"
+                    class="text-[70px] [@container(max-height:150px)]:hidden"
                 />
                 <div
                     v-html="phrase.ads_replacer"

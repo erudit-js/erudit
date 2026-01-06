@@ -68,7 +68,10 @@ const accentOptions = (appElement as any)['accent'] as AccentAppOptions;
                     px-(--proseAsideWidth) py-(--proseAsideWidth) font-semibold
                     text-(--accentText) transition-[color]"
             >
-                <EruditIcon :name="accentIcon" class="shrink-0" />
+                <EruditIcon
+                    :name="accentIcon"
+                    class="-mr-1 shrink-0 text-[1.3em]"
+                />
                 <h2>{{ formatText(element.data.title) }}</h2>
             </div>
             <div class="pb-(--proseAsideWidth)">

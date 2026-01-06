@@ -2,7 +2,8 @@
 import ItemTemplate from './ItemTemplate.vue';
 
 const { navItem } = defineProps<{ navItem: FrontContentNavTopic }>();
-const { shortBookId, showBookNav } = inject(asideMajorContentNavSymbol)!;
+const { shortBookId } = useContentId();
+const asideMajorPane = useAsideMajorPane();
 
 const active = computed(() => {
     return navItem.shortId === shortBookId.value;
@@ -15,6 +16,6 @@ const active = computed(() => {
         :navItem
         :state="active ? 'active' : undefined"
         :to="active ? '' : navItem.link"
-        @click="showBookNav = true"
+        @click="asideMajorPane = AsideMajorPane.BookNav"
     />
 </template>

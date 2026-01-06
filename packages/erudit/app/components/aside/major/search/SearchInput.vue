@@ -78,10 +78,14 @@ const phrase = await usePhrases('search_the_site');
             <div
                 v-if="currentQuery"
                 @click="currentQuery = ''"
-                class="p-normal text-text-dimmed hocus:text-text cursor-pointer
-                    ps-[calc(0.5*var(--spacing-normal))] transition-[color]"
+                class="p-normal group hocus:cursor-pointer pl-small"
             >
-                <MyIcon name="plus" class="rotate-45" />
+                <div
+                    class="text-text-dimmed group-hocus:text-text text-[25px]
+                        transition-[color]"
+                >
+                    <MyIcon name="plus" class="rotate-45" />
+                </div>
             </div>
         </TransitionFade>
     </section>

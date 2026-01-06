@@ -125,14 +125,18 @@ function doCheck() {
                 <EruditIcon
                     :key="state"
                     :name="states[state].icon"
-                    :class="['invisible m-auto', states[state].iconClass]"
+                    :class="[
+                        'invisible m-auto text-[1.2em]',
+                        states[state].iconClass,
+                    ]"
                 />
                 <EruditTransition>
                     <EruditIcon
                         :key="state"
                         :name="states[state].icon"
                         :class="[
-                            'absolute top-1/2 left-1/2 -translate-1/2',
+                            `absolute top-1/2 left-1/2 -translate-1/2
+                            text-[1.2em]`,
                             states[state].iconClass,
                         ]"
                     />

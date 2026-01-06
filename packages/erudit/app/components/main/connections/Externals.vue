@@ -25,8 +25,8 @@ defineProps<{ externals: ContentExternal[] }>();
                             <MyIcon
                                 v-if="external.link"
                                 name="arrow/outward"
-                                class="text-text-disabled relative -top-1
-                                    -right-1 inline text-[8px]"
+                                class="text-text-disabled text-main-sm relative
+                                    -top-1 inline"
                             />
                         </EruditLink>
                     </template>

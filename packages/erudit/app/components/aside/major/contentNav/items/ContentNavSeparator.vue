@@ -4,7 +4,7 @@ import ContentNavItem from './ContentNavItem.vue';
 
 const { navItem } = defineProps<{ navItem: FrontContentNavGroup }>();
 
-const { shortContentId } = inject(asideMajorContentNavSymbol)!;
+const { shortContentId } = useContentId();
 
 const hasActiveDescendant = computed(() => {
     return checkActiveDescendant(navItem.children, shortContentId.value);

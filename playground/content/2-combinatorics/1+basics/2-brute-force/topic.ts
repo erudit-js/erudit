@@ -7,6 +7,7 @@ export default defineTopic({
     `,
     flags: {
         secondary: true,
+        advanced: true,
     },
     dependencies: [
         {

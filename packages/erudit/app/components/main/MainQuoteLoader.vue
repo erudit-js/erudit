@@ -2,21 +2,48 @@
 import type { Quote, QuoteIds } from '@erudit-js/core/quote';
 
 const nuxtApp = useNuxtApp();
-const payloadKey = 'cameo-ids';
+const payloadKey = 'quote-ids';
 const payloadValue: QuoteIds =
     (nuxtApp.static.data[payloadKey] ||=
     nuxtApp.payload.data[payloadKey] ||=
         await $fetch('/api/quote/ids', { responseType: 'json' }));
 
-function getRandomQuoteId() {
-    const randomTypeI = Math.floor(
-        Math.random() * Object.keys(payloadValue).length,
+// Calculate total number of quotes
+const totalQuotes = computed(() => {
+    return Object.values(payloadValue).reduce(
+        (sum, ids) => sum + (ids?.length ?? 0),
+        0,
     );
-    const randomType = Object.keys(payloadValue)[randomTypeI] as keyof QuoteIds;
-    const randomIds = payloadValue[randomType]!;
-    const randomIdI = Math.floor(Math.random() * randomIds.length);
-    const randomId = randomIds[randomIdI];
-    return randomId;
+});
+
+const hasMultipleQuotes = computed(() => totalQuotes.value > 1);
+
+const currentQuoteId = ref<string | undefined>();
+
+function getRandomQuoteId() {
+    const allQuoteIds: string[] = [];
+
+    // Collect all quote IDs
+    for (const type in payloadValue) {
+        const ids = payloadValue[type as keyof QuoteIds];
+        if (ids) {
+            allQuoteIds.push(...ids);
+        }
+    }
+
+    // If only one quote exists, return it
+    if (allQuoteIds.length === 1) {
+        return allQuoteIds[0];
+    }
+
+    // Filter out the current quote ID to avoid repetition
+    const availableIds = currentQuoteId.value
+        ? allQuoteIds.filter((id) => id !== currentQuoteId.value)
+        : allQuoteIds;
+
+    // Select a random quote from available ones
+    const randomIdI = Math.floor(Math.random() * availableIds.length);
+    return availableIds[randomIdI];
 }
 
 const quote = shallowRef<Quote>();
@@ -28,6 +55,7 @@ async function nextQuote() {
     loadingQuote = true;
 
     const nextQuoteId = getRandomQuoteId();
+    currentQuoteId.value = nextQuoteId;
     const nextQuote = await $fetch(`/api/quote/data/${nextQuoteId}`, {
         responseType: 'json',
     });
@@ -54,7 +82,8 @@ onMounted(() => {
     >
         <MainQuote
             :quote
-            :hasActions="true"
+            :hasBecomeLink="true"
+            :hasNextLink="hasMultipleQuotes"
             @next="!loadingQuote && nextQuote()"
         />
     </section>

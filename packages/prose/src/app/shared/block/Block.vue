@@ -193,9 +193,9 @@ onBeforeUnmount(() => {
                         <div v-if="hover" :key="elementIcon">
                             <EruditIcon
                                 :name="elementIcon"
-                                class="micro:w-[60%] text-text-dimmed
+                                class="text-text-dimmed
                                     group-hocus/aside:text-text m-auto mt-0.5
-                                    aspect-square w-[70%] transition-[color]"
+                                    aspect-square w-[80%] transition-[color]"
                             />
                         </div>
                     </EruditTransition>

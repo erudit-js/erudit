@@ -28,7 +28,7 @@ const linkStorage = (await useElementStorage(element as any)) as LinkStorage;
 const icon = await (async () => {
     switch (linkStorage.type) {
         case 'direct':
-            return 'link';
+            return 'arrow/outward-box';
         case 'contentItem':
             return eruditIcons[
                 linkStorage.content.contentType === 'topic'
@@ -85,7 +85,7 @@ function linkClick() {
         >
             <EruditIcon
                 :name="icon"
-                class="micro:pr-1.5 micro:text-lg inline pr-1 text-sm"
+                class="micro:pr-1.5 inline pr-1 text-[1.3em]"
             />
             <span>{{ formatText(element.data.label) }}</span>
         </EruditLink>

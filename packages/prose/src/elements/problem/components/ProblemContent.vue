@@ -287,7 +287,7 @@ const { floatingStyles: seedFloatingStyles } = useFloating(
             >
                 <EruditIcon
                     :name="actionIcons[actionKey]"
-                    class="text-[15px]"
+                    class="text-[1.3em]"
                 />
                 <span>{{ phrase[`action_${actionKey}`] }}</span>
             </ProblemButton>
@@ -307,7 +307,7 @@ const { floatingStyles: seedFloatingStyles } = useFloating(
                     <EruditIcon
                         :name="actionIcons.generate"
                         :style="{ transform: `rotate(${generateRotation}deg)` }"
-                        class="text-[15px] transition-[transform]
+                        class="text-[1.3em] transition-[transform]
                             backface-hidden"
                     />
                     <span>{{ phrase.action_generate }}</span>
@@ -342,13 +342,13 @@ const { floatingStyles: seedFloatingStyles } = useFloating(
                                     usingCustomSeed = true;
                                     doGenerate();
                                 "
-                                class="cursor-pointer py-[5px] pr-2"
+                                class="cursor-pointer pr-[3px]"
                             >
                                 <EruditIcon
                                     :name="plusIcon"
                                     class="hocus:text-white
                                         dark:hocus:text-black rotate-45
-                                        text-[15px] text-neutral-400
+                                        text-[2em] text-neutral-400
                                         transition-[color]
                                         dark:text-neutral-600"
                                 />

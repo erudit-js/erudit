@@ -15,7 +15,10 @@ const elementPhrase = await getElementPhrase(schemaName);
         :title="elementPhrase.element_name"
         class="gap-small flex cursor-help items-center"
     >
-        <MaybeMyIcon :name="elementIcon" class="text-text-dimmed" />
+        <MaybeMyIcon
+            :name="elementIcon"
+            class="text-text-dimmed -mr-0.5 text-[1.2em]"
+        />
         <span class="text-text-muted font-bold">{{ count }}</span>
     </div>
     <div
@@ -24,7 +27,10 @@ const elementPhrase = await getElementPhrase(schemaName);
             items-center rounded-xl border py-1
             transition-[background,color,border]"
     >
-        <MaybeMyIcon :name="elementIcon" class="text-text-dimmed" />
+        <MaybeMyIcon
+            :name="elementIcon"
+            class="text-text-dimmed -mr-0.5 text-[1.2em]"
+        />
         <span class="text-text-muted">{{ elementPhrase.element_name }}</span>
         <span class="text-text-muted font-bold">{{ count }}</span>
     </div>
