@@ -20,15 +20,18 @@ import {
 import { getContentDecoration } from './content/repository/decoration';
 import { getContentQuickLinks } from './content/repository/quickLinks';
 import { getContentFlags } from './content/repository/flags';
-import {
-    getContentElementCounts,
-    addContentElementCount,
-} from './content/repository/elementCount';
+
 import { getContentConnections } from './content/repository/connections';
 import { getQuoteIds } from './quote/repository/ids';
 import { countContributions } from './contributors/repository/countContributions';
 import { getContributorAvatarUrl } from './contributors/repository/avatarUrl';
 import { getSponsorAvatarUrl } from './sponsors/repository/avatarUrl';
+import { getContentDescription } from './content/repository/description';
+import { getContentChildren } from './content/repository/children';
+import {
+    addContentElementCount,
+    getContentStats,
+} from './content/repository/stats';
 
 export const repository = {
     db: {
@@ -56,12 +59,14 @@ export const repository = {
         link: getContentLink,
         breadcrumbs: getContentBreadcrumbs,
         title: getContentTitle,
+        description: getContentDescription,
         decoration: getContentDecoration,
         quickLinks: getContentQuickLinks,
         flags: getContentFlags,
-        addElementCount: addContentElementCount,
-        elementCounts: getContentElementCounts,
         connections: getContentConnections,
+        children: getContentChildren,
+        stats: getContentStats,
+        addElementCount: addContentElementCount,
     },
     prose: {
         resolve: resolveEruditProse,

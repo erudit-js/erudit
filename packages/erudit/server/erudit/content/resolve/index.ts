@@ -86,9 +86,9 @@ export async function clearOldContentData(contentIds: string[]) {
         .where(inArray(ERUDIT.db.schema.contentDeps.toFullId, contentIds));
 
     await ERUDIT.db
-        .delete(ERUDIT.db.schema.contentElementCount)
+        .delete(ERUDIT.db.schema.contentElementStats)
         .where(
-            inArray(ERUDIT.db.schema.contentElementCount.fullId, contentIds),
+            inArray(ERUDIT.db.schema.contentElementStats.fullId, contentIds),
         );
 
     await ERUDIT.db

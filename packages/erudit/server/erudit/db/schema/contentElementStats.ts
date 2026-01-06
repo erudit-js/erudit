@@ -5,8 +5,8 @@ import {
     primaryKey,
 } from 'drizzle-orm/sqlite-core';
 
-export const contentElementCount = sqliteTable(
-    'contentElementCount',
+export const contentElementStats = sqliteTable(
+    'contentElementStats',
     {
         fullId: text().notNull(),
         schemaName: text().notNull(),

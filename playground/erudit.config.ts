@@ -37,14 +37,14 @@ export default defineEruditConfig({
         becomeSponsorLink: 'https://google.com',
         defaultSponsorMessages: ['Я поддерживаю Открытую Математику!'],
     },
-    index: {
+    indexPage: {
         logotype: {
             src: projectPublic('index-logo.png'),
             maxWidth: '400px',
             invert: 'dark',
         },
-        title: 'Open Erudit',
-        slogan: 'Теория, конспекты и задачник в одном флаконе',
+        title: 'Открытая Математика',
+        short: 'Теория, конспекты и задачник в одном флаконе',
         description: `
             Современный учебник по математике — понятный, интересный, подробный.
             Теория, конспекты и задачник в одном флаконе.

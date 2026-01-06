@@ -16,10 +16,7 @@ const phrase = await usePhrases('begin_learning');
     <MainFlags :flags="mainContent.flags" />
     <MainDescription :description="mainContent.description" />
     <MainConnections :connections="mainContent.connections" />
-    <MainElementCounts
-        mode="single"
-        :elementCounts="mainContent.elementCounts"
-    />
+    <MainContentStats mode="single" :stats="mainContent.stats" />
     <div class="h-(--_pMainY)"></div>
     <MainAction
         icon="rocket"

@@ -1,7 +1,7 @@
 import type { EruditLanguageCode } from '@erudit-js/core/eruditConfig/language';
 
 export interface EruditServerLanguage {
-    phrases: Record<string, LanguagePhraseValue>;
+    phrases: LanguagePhrases;
     functions: Record<string, Function>;
 }
 

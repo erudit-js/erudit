@@ -1,22 +1,20 @@
 <script lang="ts" setup>
-const { schemaName } = defineProps<{
-    schemaName: string;
+const { mode = 'detailed' } = defineProps<{
+    mode?: 'compact' | 'detailed';
+    icon: string;
+    label: string;
     count: number;
-    children?: true;
 }>();
-
-const elementIcon = await getElementIcon(schemaName);
-const elementPhrase = await getElementPhrase(schemaName);
 </script>
 
 <template>
     <div
-        v-if="children"
-        :title="elementPhrase.element_name"
+        v-if="mode === 'compact'"
+        :title="label"
         class="gap-small flex cursor-help items-center"
     >
         <MaybeMyIcon
-            :name="elementIcon"
+            :name="icon"
             class="text-text-dimmed -mr-0.5 text-[1.2em]"
         />
         <span class="text-text-muted font-bold">{{ count }}</span>
@@ -28,10 +26,10 @@ const elementPhrase = await getElementPhrase(schemaName);
             transition-[background,color,border]"
     >
         <MaybeMyIcon
-            :name="elementIcon"
+            :name="icon"
             class="text-text-dimmed -mr-0.5 text-[1.2em]"
         />
-        <span class="text-text-muted">{{ elementPhrase.element_name }}</span>
+        <span class="text-text-muted">{{ label }}</span>
         <span class="text-text-muted font-bold">{{ count }}</span>
     </div>
 </template>

@@ -49,6 +49,8 @@ async function transferConfigData(
 ) {
     runtimeConfig.project = {
         elements: projectConfig.elements || [],
+        countElements: projectConfig.countElements || [],
+        indexPage: projectConfig.indexPage,
     };
 
     publicRuntimeConfig.project = {
@@ -64,7 +66,6 @@ async function transferConfigData(
                     nuxt.options.dev,
             },
         },
-        countElements: projectConfig.countElements || [],
         siteInfo: {
             title: projectConfig.site?.title,
             slogan: projectConfig.site?.slogan,

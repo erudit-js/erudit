@@ -6,6 +6,7 @@ import type { EruditRepository } from '@erudit-js/core/eruditConfig/repository';
 import type { EruditSiteBrandLayout } from '@erudit-js/core/eruditConfig/site';
 import type { EruditSponsors } from '@erudit-js/core/sponsor';
 import type { EruditContributors } from '@erudit-js/core/contributor';
+import type { EruditIndexPage } from '@erudit-js/core/eruditConfig/indexPage';
 
 export interface EruditRuntimeConfigPaths {
     package: string;
@@ -20,6 +21,8 @@ export interface EruditRuntimeConfig {
     paths: EruditRuntimeConfigPaths;
     project: {
         elements: string[];
+        countElements: (string | string[])[];
+        indexPage?: EruditIndexPage;
     };
 }
 
@@ -43,7 +46,6 @@ export interface EruditPublicRuntimeConfig {
                 repository: boolean;
             };
         };
-        countElements: (string | string[])[];
         repository?: EruditRepository & { _link: string };
         style?: {
             brandColor?: string;

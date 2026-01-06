@@ -1,6 +1,6 @@
 export type EruditIndexPage = Partial<{
     title: string;
-    slogan: string;
+    short: string;
     description: string;
     logotype: {
         src: string;

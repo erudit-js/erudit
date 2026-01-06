@@ -3,6 +3,7 @@ import {
     isProseElement,
     PROSE_REGISTRY,
     type AnySchema,
+    type FinalizedProse,
     type GenericStorage,
     type ProseElement,
 } from '@jsprose/core';

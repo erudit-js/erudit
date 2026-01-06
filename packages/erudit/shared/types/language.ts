@@ -77,6 +77,10 @@ export type LanguagePhrases = Phrases<{
     no_contributors: string;
     contribution: string;
     editor: string;
+    materials: string;
+
+    default_index_title: string;
+    default_index_short: string;
 
     // _language_title: string;
     // _language_code: string;

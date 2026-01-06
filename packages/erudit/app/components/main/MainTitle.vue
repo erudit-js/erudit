@@ -21,7 +21,7 @@ const { color = 'var(--color-brand)' } = defineProps<{
         >
             <MaybeMyIcon
                 :name="icon"
-                class="max-micro:text-white micro:text-[38px] text-[34px]
+                class="max-micro:text-white micro:text-[38px] text-[30px]
                     text-[color-mix(in_srgb,var(--titleColor),var(--color-text)_70%)]"
             />
         </div>

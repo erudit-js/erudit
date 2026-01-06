@@ -16,10 +16,7 @@ const mainContent = await useMainContent<MainContentPage>(contentTypePath);
     <MainDescription :description="mainContent.description" />
     <MainQuickLinks mode="single" :quickLinks="mainContent.quickLinks" />
     <MainConnections :connections="mainContent.connections" />
-    <MainElementCounts
-        mode="single"
-        :elementCounts="mainContent.elementCounts"
-    />
+    <MainContentStats mode="single" :stats="mainContent.stats" />
     <div class="h-(--_pMainY)"></div>
     <MainQuoteLoader />
     <div class="h-(--_pMainY)"></div>

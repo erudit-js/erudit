@@ -78,6 +78,10 @@ const ru: LanguagePhrases = {
     no_contributors: 'Пока что авторов нет. Вы можете стать первым!',
     contribution: 'Вклад',
     editor: 'Редактор',
+    materials: 'Материалы',
+
+    default_index_title: 'Erudit',
+    default_index_short: 'Современные цифровые учебники!',
 
     // _language_title: 'Русский',
     // _language_code: 'ru',

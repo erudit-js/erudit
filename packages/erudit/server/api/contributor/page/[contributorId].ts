@@ -49,5 +49,11 @@ export default defineEventHandler<Promise<PageContributor>>(async (event) => {
         pageContributor.editor = dbContributor.editor;
     }
 
+    if (dbContributor.description) {
+        pageContributor.description = await ERUDIT.repository.prose.finalize(
+            dbContributor.description,
+        );
+    }
+
     return pageContributor;
 });

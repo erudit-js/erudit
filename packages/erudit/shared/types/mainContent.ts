@@ -1,3 +1,4 @@
+import type { FinalizedProse } from '@jsprose/core';
 import type { ContentType } from '@erudit-js/core/content/type';
 import type { TopicPart } from '@erudit-js/core/content/topic';
 import type { ContentFlags } from '@erudit-js/core/content/flags';
@@ -10,7 +11,7 @@ export interface MainContentBase {
     description?: string;
     decoration?: string;
     flags?: ContentFlags;
-    elementCounts?: Record<string, number>;
+    stats?: ContentStats;
     connections?: ContentConnections;
 }
 
@@ -20,7 +21,7 @@ export interface MainContentChildrenItem {
     title: string;
     description?: string;
     quickLinks?: QuickLink[];
-    elementCounts?: Record<string, number>;
+    stats?: ContentStats;
 }
 
 //

@@ -21,7 +21,7 @@ export interface EruditConfig {
     analytics?: EruditAnalytics;
     ads?: EruditAdsBanners;
     site?: EruditSite;
-    index?: EruditIndexPage;
+    indexPage?: EruditIndexPage;
     content?: EruditContent;
     contributors?: EruditContributors;
     sponsors?: EruditSponsors;

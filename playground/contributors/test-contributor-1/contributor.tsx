@@ -6,7 +6,7 @@ export default defineContributor({
     editor: true,
     links: {
         Telegram: 'https://t.me/kolobok',
-        GitHub: 'sdfsd',
+        GitHub: 'https://github.com',
     },
     description: (
         <>
@@ -14,7 +14,7 @@ export default defineContributor({
                 Привет! Меня зовут Пётр Радько, я фронтенд-разработчик из
                 России.
             </P>
-            <Image src={myShady} />
+            <Image src={myShady} width="400px" />
         </>
     ),
 });

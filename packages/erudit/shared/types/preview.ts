@@ -1,4 +1,4 @@
-import type { AnySchema, ProseElement } from '@jsprose/core';
+import type { FinalizedProse } from '@jsprose/core';
 import type { PreviewRequest } from '@erudit-js/core/preview/request';
 import type { ContentType } from '@erudit-js/core/content/type';
 

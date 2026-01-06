@@ -63,7 +63,7 @@ export async function resolveTopic(topicNode: ContentNavNode) {
                         }
 
                         if (
-                            ERUDIT.config.public.project.countElements
+                            ERUDIT.config.project.countElements
                                 .flat()
                                 .includes(rawElement.schemaName)
                         ) {

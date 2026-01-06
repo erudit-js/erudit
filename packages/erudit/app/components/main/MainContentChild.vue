@@ -1,5 +1,7 @@
 <script lang="ts" setup>
-defineProps<{ child: MainContentChildrenItem }>();
+const { child } = defineProps<{ child: MainContentChildrenItem }>();
+
+const hasExtra = child.stats || child.quickLinks;
 </script>
 
 <template>
@@ -8,33 +10,42 @@ defineProps<{ child: MainContentChildrenItem }>();
             rounded border bg-neutral-100 ring-2 ring-transparent
             transition-[border,box-shadow,background] dark:bg-neutral-800"
     >
-        <h2
-            class="text-main-lg group-hocus:text-brand font-bold
-                transition-[color]"
+        <EruditLink
+            :to="child.link"
+            class="p-normal gap-small micro:gap-normal flex flex-col"
         >
-            <EruditLink :to="child.link" class="p-normal block">
+            <div class="gap-small micro:gap-normal flex items-center">
                 <MyIcon
                     :name="ICONS[child.type]"
-                    class="text-text-muted group-hocus:text-brand mr-3 inline
+                    class="text-text-muted group-hocus:text-brand shrink-0
                         text-[1.2em] transition-[color]"
                 />
-                <span>{{ formatText(child.title) }}</span>
-            </EruditLink>
-        </h2>
-        <EruditLink
-            v-if="child.description"
-            :to="child.link"
-            class="px-normal pb-normal block"
-            >{{ formatText(child.description) }}</EruditLink
+                <h2
+                    class="group-hocus:text-brand gap-small micro:text-main-lg
+                        flex items-center font-bold transition-[color]"
+                >
+                    {{ formatText(child.title) }}
+                </h2>
+            </div>
+
+            <div v-if="child.description" class="text-text-muted">
+                {{ formatText(child.description) }}
+            </div>
+        </EruditLink>
+        <div
+            v-if="hasExtra"
+            class="border-t-border p-normal gap-normal flex flex-col border-t
+                transition-[border]"
         >
-        <div v-if="child.quickLinks" class="px-normal pb-normal">
-            <MainQuickLinks :quickLinks="child.quickLinks" mode="children" />
-        </div>
-        <div v-if="child.elementCounts" class="px-normal pb-normal">
-            <MainElementCounts
-                :elementCounts="child.elementCounts"
-                mode="children"
-            />
+            <div v-if="child.quickLinks" class="relative top-[1px]">
+                <MainQuickLinks
+                    :quickLinks="child.quickLinks"
+                    mode="children"
+                />
+            </div>
+            <div v-if="child.stats">
+                <MainContentStats :stats="child.stats" mode="children" />
+            </div>
         </div>
     </div>
 </template>

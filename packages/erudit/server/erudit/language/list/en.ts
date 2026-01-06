@@ -77,6 +77,10 @@ const en: LanguagePhrases = {
     no_contributors: 'There are no contributors yet. You can be the first one!',
     contribution: 'Contribution',
     editor: 'Editor',
+    materials: 'Materials',
+
+    default_index_title: 'Erudit',
+    default_index_short: 'Modern digital textbooks!',
 
     // _language_title: 'English',
     // _language_code: 'en',

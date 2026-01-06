@@ -169,5 +169,5 @@
 }
 
 @utility text-size-h1 {
-    @apply micro:text-[36px] text-[30px];
+    @apply micro:text-[36px] text-[26px];
 }

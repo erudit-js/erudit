@@ -57,6 +57,7 @@
     }
 
     .content {
+        background: var(--color-bg-main);
         position: relative;
         z-index: 1;
     }

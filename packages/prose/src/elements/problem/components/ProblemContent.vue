@@ -348,7 +348,7 @@ const { floatingStyles: seedFloatingStyles } = useFloating(
                                     :name="plusIcon"
                                     class="hocus:text-white
                                         dark:hocus:text-black rotate-45
-                                        text-[2em] text-neutral-400
+                                        text-[1.3em] text-neutral-400
                                         transition-[color]
                                         dark:text-neutral-600"
                                 />

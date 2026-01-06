@@ -1,4 +1,4 @@
-import type { AnySchema, ProseElement, RawElement } from '@jsprose/core';
+import type { AnySchema, FinalizedProse, RawElement } from '@jsprose/core';
 
 export interface EruditContributors {
     enabled: boolean;
@@ -89,6 +89,6 @@ export interface PageContributor {
     short?: string;
     links?: Record<string, string>;
     avatarUrl?: string;
-    description?: ProseElement<AnySchema>;
+    description?: FinalizedProse;
     editor?: boolean;
 }
