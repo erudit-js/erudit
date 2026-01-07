@@ -7,7 +7,7 @@ defineProps<{
     stats?: ContentStats;
 }>();
 
-const phrase = await usePhrases('element_stats');
+const phrase = await usePhrases('stats');
 </script>
 
 <template>
@@ -16,7 +16,7 @@ const phrase = await usePhrases('element_stats');
             v-if="mode === 'single'"
             class="px-(--_pMainX) py-[calc(var(--_pMainY)/2)]"
         >
-            <MainSubTitle :title="phrase.element_stats + ':'" />
+            <MainSubTitle :title="phrase.stats + ':'" />
             <div
                 class="micro:justify-start gap-normal flex flex-wrap
                     justify-center"

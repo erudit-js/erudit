@@ -26,18 +26,22 @@ const description =
 </script>
 
 <template>
-    <MainGlow />
-    <MainTitle icon="users" :title="phrase.contributors" />
-    <MainDescription :description />
-    <template v-if="ERUDIT.config.project.contributors?.becomeContributorLink">
-        <div class="h-(--_pMainY)"></div>
-        <MainAction
-            icon="users"
-            :label="phrase.become_contributor"
-            :link="'https://google.com'"
-        />
-        <div class="h-(--_pMainY)"></div>
-    </template>
+    <MainSection>
+        <MainGlow />
+        <MainTitle icon="users" :title="phrase.contributors" />
+        <MainDescription :description />
+        <template
+            v-if="ERUDIT.config.project.contributors?.becomeContributorLink"
+        >
+            <div class="h-(--_pMainY)"></div>
+            <MainAction
+                icon="users"
+                :label="phrase.become_contributor"
+                :link="'https://google.com'"
+            />
+            <div class="h-(--_pMainY)"></div>
+        </template>
+    </MainSection>
     <MainSection>
         <div
             v-if="listContributors.length > 0"

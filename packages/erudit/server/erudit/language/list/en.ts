@@ -57,7 +57,7 @@ const en: LanguagePhrases = {
     flag_secondary_description:
         'This is an optional material is for learners who want to dive deeper and gain additional knowledge and context.',
     key_elements: 'Key elements',
-    element_stats: 'Element statistics',
+    stats: 'Statistics',
     connections: 'Connections',
     need_to_know: 'Need to know',
     depends_on: 'Depends on',

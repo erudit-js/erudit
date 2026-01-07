@@ -60,7 +60,7 @@ export type LanguagePhrases = Phrases<{
     flag_secondary: string;
     flag_secondary_description: string;
     key_elements: string;
-    element_stats: string;
+    stats: string;
     connections: string;
     need_to_know: string;
     depends_on: string;

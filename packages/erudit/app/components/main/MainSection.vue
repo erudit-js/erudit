@@ -1,70 +1,55 @@
 <template>
-    <section :class="$style.mainSection">
-        <div :class="$style.hr">
-            <div :class="$style.shade"></div>
-            <div v-if="$slots.header" :class="$style.header">
+    <section :class="[$style.section, 'bg-bg-main transition-[background]']">
+        <!-- Section Header -->
+        <div
+            :class="[
+                $style.header,
+                'border-border relative border-b-2 transition-[border]',
+            ]"
+        >
+            <!-- Header Shade -->
+            <div class="absolute bottom-0 h-[70px] w-full">
+                <!-- Light mode gradient -->
+                <div
+                    class="absolute inset-0 bg-linear-to-t from-[#f7f7f7]
+                        to-transparent opacity-100 transition-opacity
+                        dark:opacity-0"
+                ></div>
+                <!-- Dark mode gradient -->
+                <div
+                    class="absolute inset-0 bg-linear-to-t from-[#1b1b1b]
+                        to-transparent opacity-0 transition-opacity
+                        dark:opacity-100"
+                ></div>
+            </div>
+
+            <!-- Header Content -->
+            <div :class="[$style.headerContent, 'relative z-1']">
                 <slot name="header"></slot>
             </div>
         </div>
-        <div :class="$style.content">
+
+        <!-- Section Body -->
+        <div class="relative z-1">
             <slot></slot>
         </div>
     </section>
 </template>
 
 <style module>
-.mainSection {
-    .hr {
-        position: relative;
-        border-bottom: 2px solid var(--color-border);
-        margin: var(--_pMainY) 0;
-        transition: border var(--default-transition-duration)
-            var(--default-transition-timing-function);
-
-        .shade {
-            position: absolute;
-            z-index: 0;
-            bottom: 0;
-            left: 0;
-            height: 50px;
-            width: 100%;
-
-            &::before {
-                content: '';
-                position: absolute;
-                inset: 0;
-                background: var(--color-bg-aside);
-                mask-image: linear-gradient(to bottom, transparent, black);
-                transition: background var(--default-transition-duration)
-                    var(--default-transition-timing-function);
-            }
-        }
-
-        .header {
-            position: relative;
-            z-index: 1;
-        }
-    }
-
-    &:nth-child(even of .mainSection) {
-        .hr {
-            transform: scaleY(-1);
-
-            .header {
-                transform: scaleY(-1);
-            }
-        }
-    }
-
-    .content {
-        background: var(--color-bg-main);
-        position: relative;
-        z-index: 1;
+.section:nth-child(1) {
+    .header {
+        display: none;
     }
 }
 
-:not(.mainSection):has(+ .mainSection) {
-    position: relative;
-    z-index: 1;
+.section:nth-child(odd of .section) {
+    .header {
+        transform: scaleY(-1);
+    }
+
+    .headerContent {
+        transform: scaleY(-1);
+    }
 }
 </style>

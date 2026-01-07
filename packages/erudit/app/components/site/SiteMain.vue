@@ -6,8 +6,8 @@
         <div class="text-main" data-erudit-main>
             <Preview />
             <div
-                class="bg-bg-main min-h-dvh py-(--_pMainY)
-                    transition-[background] dark:bg-[#212121]"
+                class="bg-bg-main min-h-dvh transition-[background]
+                    dark:bg-[#212121]"
             >
                 <slot></slot>
             </div>

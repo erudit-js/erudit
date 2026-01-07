@@ -17,16 +17,18 @@ const phrase = await usePhrases(
 </script>
 
 <template>
-    <MainGlow />
-    <MainTitle icon="diamond" :title="phrase.sponsors" />
-    <MainDescription :description="phrase.sponsors_description" />
-    <div class="h-(--_pMainY)"></div>
-    <MainAction
-        icon="diamond"
-        :label="phrase.become_sponsor"
-        :link="ERUDIT.config.project.sponsors!.becomeSponsorLink"
-    />
-    <div class="h-(--_pMainY)"></div>
+    <MainSection>
+        <MainGlow />
+        <MainTitle icon="diamond" :title="phrase.sponsors" />
+        <MainDescription :description="phrase.sponsors_description" />
+        <div class="h-(--_pMainY)"></div>
+        <MainAction
+            icon="diamond"
+            :label="phrase.become_sponsor"
+            :link="ERUDIT.config.project.sponsors!.becomeSponsorLink"
+        />
+        <div class="h-(--_pMainY)"></div>
+    </MainSection>
     <MainSection>
         <div
             v-if="pageSponsors.length > 0"

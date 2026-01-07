@@ -9,6 +9,7 @@ const { color = 'var(--color-brand)' } = defineProps<{
     <span
         :style="{ '--titleColor': color }"
         class="text-text-deep leading-tight font-extrabold
+            transition-[color,text-shadow]
             text-shadow-[2px_2px_color-mix(in_srgb,var(--titleColor),transparent_65%)]"
     >
         {{ formatText(text) }}

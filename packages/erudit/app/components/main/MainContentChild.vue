@@ -10,10 +10,7 @@ const hasExtra = child.stats || child.quickLinks;
             rounded border bg-neutral-100 ring-2 ring-transparent
             transition-[border,box-shadow,background] dark:bg-neutral-800"
     >
-        <EruditLink
-            :to="child.link"
-            class="p-normal gap-small micro:gap-normal flex flex-col"
-        >
+        <EruditLink :to="child.link" class="p-normal gap-small flex flex-col">
             <div class="gap-small micro:gap-normal flex items-center">
                 <MyIcon
                     :name="ICONS[child.type]"

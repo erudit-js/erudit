@@ -58,7 +58,7 @@ const ru: LanguagePhrases = {
     flag_secondary_description:
         'Это дополнительный материал для тех, кто хочет глубже погрузиться предмет и получить дополнительные знания и контекст.',
     key_elements: 'Ключевые элементы',
-    element_stats: 'Статистика элементов',
+    stats: 'Статистика',
     connections: 'Связи',
     need_to_know: 'Надо знать',
     depends_on: 'Зависит от',
