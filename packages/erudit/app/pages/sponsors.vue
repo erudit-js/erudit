@@ -17,23 +17,23 @@ const phrase = await usePhrases(
 </script>
 
 <template>
-    <MainSection>
-        <MainGlow />
+    <MainGlow />
+    <MainSectionPreamble>
         <MainTitle icon="diamond" :title="phrase.sponsors" />
         <MainDescription :description="phrase.sponsors_description" />
-        <div class="h-(--_pMainY)"></div>
+        <div class="h-main-half"></div>
         <MainAction
             icon="diamond"
             :label="phrase.become_sponsor"
             :link="ERUDIT.config.project.sponsors!.becomeSponsorLink"
         />
-        <div class="h-(--_pMainY)"></div>
-    </MainSection>
+        <div class="h-main-half"></div>
+    </MainSectionPreamble>
     <MainSection>
         <div
             v-if="pageSponsors.length > 0"
-            class="gap-small micro:gap-normal columns-[300px] px-(--_pMainX)
-                py-[calc(var(--_pMainY)/2)]"
+            class="gap-small micro:gap-normal px-main py-main-half
+                columns-[300px]"
         >
             <FancyCard
                 v-for="pageSponsor of pageSponsors"
@@ -69,10 +69,7 @@ const phrase = await usePhrases(
                 </template>
             </FancyCard>
         </div>
-        <div
-            v-else
-            class="text-text-muted px-(--_pMainX) py-(--_pMainY) text-center"
-        >
+        <div v-else class="text-text-muted px-main py-main text-center">
             {{ phrase.no_sponsors }}
         </div>
     </MainSection>

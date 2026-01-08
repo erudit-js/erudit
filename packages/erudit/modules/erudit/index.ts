@@ -18,13 +18,11 @@ import {
     registerModuleGlobals,
     registerServerGlobals,
 } from './setup/globals';
-import { setupProseElements } from './setup/elements';
+import { setupProseElements } from './setup/elements/setup';
 
 export default defineNuxtModule({
     meta: { name: 'Erudit', configKey: 'erudit', version },
     async setup(_, nuxt) {
-        // const transpile = (nuxt.options.build.transpile ||= []);
-        // transpile.push('katex');
         moduleLogger.start('Setting up Erudit module...');
 
         const { eruditRuntimeConfig, eruditPublicRuntimeConfig } =

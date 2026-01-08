@@ -59,7 +59,9 @@ ${escapeHtml(ERUDIT.buildError.stack || '')}
 
 async function setupServer() {
     try {
-        await import('#erudit/prose/core');
+        const { registerProseGlobals } = await import('#erudit/prose/global');
+        registerProseGlobals();
+
         await setupServerRuntimeConfig();
         await setupServerLogger();
         await setupServerImporter();

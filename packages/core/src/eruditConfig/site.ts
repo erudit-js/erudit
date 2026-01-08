@@ -1,17 +1,14 @@
-export type EruditSiteBrandLayout = 'row' | 'column';
-
 export type EruditSite = Partial<{
     buildUrl: string;
     baseUrl: string;
     title: string;
-    slogan: string;
-    brandLayout: EruditSiteBrandLayout;
+    short: string | false;
     /**
      * - `string` — url to your logotype (use `projectPublic` to target path inside `public` directory)
      * - `false` — do not show logotype
-     * - `falsy` — use default Erudit logotype
+     * - falsy (`0`, `undefined`, `null`, `""` and etc.) — use default Erudit logotype
      */
-    logotype: string | boolean;
+    logotype: string | false;
     favicon: Partial<{
         default: string;
         article: string;

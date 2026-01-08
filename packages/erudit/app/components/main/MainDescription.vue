@@ -5,8 +5,8 @@ defineProps<{ description: string | undefined }>();
 <template>
     <section
         v-if="description"
-        class="text-main-lg max-micro:text-center px-(--_pMainX)
-            py-[calc(var(--_pMainY)/2)] font-semibold transition-[color]"
+        class="text-main-lg max-micro:text-center px-main py-main-half
+            font-semibold transition-[color]"
     >
         {{ formatText(description) }}
     </section>

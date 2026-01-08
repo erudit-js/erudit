@@ -31,4 +31,6 @@
  * </Table>
  * ```
  */
-let Table, Tr, Td;
+export const Table = '_tag_';
+export const Tr = '_tag_';
+export const Td = '_tag_';

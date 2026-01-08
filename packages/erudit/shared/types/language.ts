@@ -12,7 +12,6 @@ export type LanguagePhrases = Phrases<{
     language_code: string;
     language_name: string;
     erudit: string;
-    modern_textbook: string;
     content_nav: string;
     pages: string;
     search: string;
@@ -78,9 +77,12 @@ export type LanguagePhrases = Phrases<{
     contribution: string;
     editor: string;
     materials: string;
+    x_sponsors: (count: number) => string;
+    x_contributors: (count: number) => string;
 
     default_index_title: string;
     default_index_short: string;
+    default_site_info_short: string;
 
     // _language_title: string;
     // _language_code: string;

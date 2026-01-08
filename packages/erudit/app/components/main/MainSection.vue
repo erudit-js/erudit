@@ -37,7 +37,7 @@
 </template>
 
 <style module>
-.section:nth-child(1) {
+.section:nth-child(1 of .section) {
     .header {
         display: none;
     }

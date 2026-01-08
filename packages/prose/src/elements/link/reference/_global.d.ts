@@ -25,7 +25,7 @@
  * <Ref to="https://google.com">Just Google It!</Ref>
  * ```
  */
-let Ref;
+export const Ref = '_tag_';
 
 /**
  * Same as `<Ref>`, but as a block element which draws more attention.
@@ -46,4 +46,4 @@ let Ref;
  * </Reference>
  * ```
  */
-let Reference;
+export const Reference = '_tag_';

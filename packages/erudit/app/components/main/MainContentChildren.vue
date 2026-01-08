@@ -4,7 +4,10 @@ defineProps<{ children: MainContentChildrenItem[] }>();
 
 <template>
     <MainSection>
-        <div class="flex flex-col gap-(--_pMainX) p-(--_pMainX)">
+        <div
+            class="gap-main p-main flex flex-col
+                py-[calc(var(--spacing-main)*1.5)]"
+        >
             <MainContentChild v-for="child of children" :child />
         </div>
     </MainSection>

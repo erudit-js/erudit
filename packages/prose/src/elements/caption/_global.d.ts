@@ -22,4 +22,5 @@
  * </Video>
  * ```
  */
-let Caption, CaptionSecondary;
+export const Caption = '_tag_';
+export const CaptionSecondary = '_tag_';

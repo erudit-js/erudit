@@ -1,14 +1,16 @@
 export interface IndexPage {
     title: string;
     short: string;
-    description?: string;
     logotype?: {
         src: string;
         maxWidth?: string;
         invert?: 'light' | 'dark';
     };
+    description?: string;
     stats?: ContentStats;
-    contributorIds?: string[];
-    sponsorIds?: string[];
+    contributors?: IndexPagePersons;
+    sponsors?: IndexPagePersons;
     children?: MainContentChildrenItem[];
 }
+
+export type IndexPagePersons = Record<string, string | 0>;

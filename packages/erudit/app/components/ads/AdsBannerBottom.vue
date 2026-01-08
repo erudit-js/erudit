@@ -9,7 +9,7 @@ onMounted(() => {
 </script>
 
 <template>
-    <section v-if="adsData" class="px-(--_pMainX) py-(--_pMainY)">
+    <section v-if="adsData" class="px-main py-main">
         <div class="relative max-h-[300px] overflow-hidden">
             <Ads :data="adsData" />
         </div>

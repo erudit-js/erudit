@@ -33,6 +33,9 @@
     --spacing-big: calc(2 * var(--spacing-normal));
     --spacing-small: calc(0.5 * var(--spacing-normal));
 
+    --spacing-main: 18px;
+    --spacing-main-half: calc(0.5 * var(--spacing-main));
+
     --w-aside: 300px;
     --w-max-main: 1024px;
     --w-max-content: calc(1024px + 2 * 300px);
@@ -83,8 +86,6 @@
 
 @layer base {
     :root {
-        --_pMainX: 18px;
-        --_pMainY: 22px;
         background: var(--color-bg-root);
         color: var(--color-text);
         font-size: 18px;
@@ -122,8 +123,7 @@
 
 @variant micro {
     :root {
-        --_pMainX: 34px;
-        --_pMainY: 24px;
+        --spacing-main: 34px;
     }
 }
 

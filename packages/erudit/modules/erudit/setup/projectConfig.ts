@@ -56,6 +56,11 @@ async function transferConfigData(
     publicRuntimeConfig.project = {
         language: projectConfig.language || { current: 'en' },
         baseUrl: projectConfig.site?.baseUrl || '/',
+        siteInfo: {
+            title: projectConfig.site?.title,
+            short: projectConfig.site?.short,
+            logotype: projectConfig.site?.logotype,
+        },
         debug: {
             ads: projectConfig.debug?.ads ?? false,
             log: projectConfig.debug?.log ?? false,
@@ -65,12 +70,6 @@ async function transferConfigData(
                     projectConfig.debug?.fakeApi?.repository ??
                     nuxt.options.dev,
             },
-        },
-        siteInfo: {
-            title: projectConfig.site?.title,
-            slogan: projectConfig.site?.slogan,
-            logotype: projectConfig.site?.logotype,
-            brandLayout: projectConfig.site?.brandLayout || 'row',
         },
         style: {
             brandColor: projectConfig.site?.style?.brandColor,

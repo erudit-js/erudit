@@ -15,4 +15,4 @@
  * </Image>
  * ```
  */
-let Image;
+export const Image = '_tag_';

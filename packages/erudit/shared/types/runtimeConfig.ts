@@ -3,7 +3,6 @@ import type { EruditAdsBanners } from '@erudit-js/core/eruditConfig/ads';
 import type { EruditLanguage } from '@erudit-js/core/eruditConfig/language';
 import type { EruditCustomLinks } from '@erudit-js/core/eruditConfig/links';
 import type { EruditRepository } from '@erudit-js/core/eruditConfig/repository';
-import type { EruditSiteBrandLayout } from '@erudit-js/core/eruditConfig/site';
 import type { EruditSponsors } from '@erudit-js/core/sponsor';
 import type { EruditContributors } from '@erudit-js/core/contributor';
 import type { EruditIndexPage } from '@erudit-js/core/eruditConfig/indexPage';
@@ -34,9 +33,8 @@ export interface EruditPublicRuntimeConfig {
         baseUrl: string;
         siteInfo: {
             title?: string;
-            slogan?: string;
-            logotype?: string | boolean;
-            brandLayout: EruditSiteBrandLayout;
+            short?: string | false;
+            logotype?: string | false;
         };
         debug: {
             log: boolean;

@@ -7,14 +7,17 @@ if (!siteInfo.title) {
     fetchPhrases.push('erudit');
 }
 
-if (!siteInfo.slogan) {
-    fetchPhrases.push('modern_textbook');
+if (!siteInfo.short && siteInfo.short !== false) {
+    fetchPhrases.push('default_site_info_short');
 }
 
 const phrase = await usePhrases(...fetchPhrases);
 
 const title = siteInfo.title || phrase.erudit;
-const slogan = siteInfo.slogan || phrase.modern_textbook;
+const short =
+    siteInfo.short === false
+        ? undefined
+        : siteInfo.short || phrase.default_site_info_short;
 
 const logotype = (() => {
     if (siteInfo.logotype === false) {
@@ -27,6 +30,8 @@ const logotype = (() => {
 
     return String(siteInfo.logotype);
 })();
+
+const layout = siteInfo.logotype === false ? 'column' : 'row';
 </script>
 
 <template>
@@ -36,11 +41,10 @@ const logotype = (() => {
             'mx-auto',
             'flex',
             {
-                'gap-normal items-center': siteInfo.brandLayout === 'row',
-                'gap-small flex-col': siteInfo.brandLayout === 'column',
+                'gap-normal items-center': layout === 'row',
+                'gap-small flex-col': layout === 'column',
                 'text-center':
-                    siteInfo.brandLayout === 'column' ||
-                    siteInfo.logotype === false,
+                    layout === 'column' || siteInfo.logotype === false,
             },
         ]"
     >
@@ -53,10 +57,12 @@ const logotype = (() => {
                     class="text-hover-underline text-lg font-bold"
                     to="/"
                 >
-                    {{ title }}
+                    {{ formatText(title) }}
                 </EruditLink>
             </div>
-            <div class="text-text-muted text-sm">{{ slogan }}</div>
+            <div v-if="short" class="text-text-muted text-sm">
+                {{ formatText(short) }}
+            </div>
         </div>
     </section>
 </template>

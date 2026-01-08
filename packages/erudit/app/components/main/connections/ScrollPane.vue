@@ -2,9 +2,9 @@
 
 <template>
     <div
-        class="nice-scrollbars border-border relative mt-(--_pMainY) flex
-            max-h-[500px] flex-col gap-[calc(var(--_pMainY)/2)] overflow-auto
-            border-t border-b py-(--_pMainY) transition-[border]"
+        class="nice-scrollbars border-border gap-main-half mt-normal py-normal
+            relative flex max-h-[500px] flex-col overflow-auto border-t border-b
+            transition-[border]"
     >
         <slot></slot>
     </div>

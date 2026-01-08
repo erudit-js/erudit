@@ -21,11 +21,11 @@
  * ```tsx
  * <>
  *   We need variables <M>x</M> and <M>y</M>.
- *   They are wrapped in square roots <M>{`\\sqrt{x}`}</M> and <M>{`\\sqrt{y}`}</M>.
+ *   They are wrapped in square roots <M>{math`\sqrt{x}`}</M> and <M>{math`\sqrt{y}`}</M>.
  * </>
  * ```
  */
-let M;
+export const M = '_tag_';
 
 /**
  * Block math is used to display mathematical expressions as separate blocks.
@@ -47,13 +47,26 @@ let M;
  * @layout block
  * @example
  * ```tsx
- * <BlockMath>{`
- *   A^2 + \\green{B^2} = \\brand{C^2}
+ * <BlockMath>{math`
+ *   A^2 + \green{B^2} = \brand{C^2}
  * `}</BlockMath>
  *
- * <BlockMath freeze>{`
- *   \\lim\\limits_{x \\to \\infty} \\frac{1}{x} = 0
+ * <BlockMath freeze>{math`
+ *   \lim\limits_{x \to \infty} \frac{1}{x} = 0
  * `}</BlockMath>
  * ```
  */
-let BlockMath;
+export const BlockMath = '_tag_';
+
+/**
+ * Math template tag function for writing LaTeX math expressions.
+ * It allows not to escape backslashes in LaTeX commands.
+ *
+ * @example
+ * ```tsx
+ * const bad = `\\frac{a}{b}`;
+ * // But
+ * const good = math`\frac{a}{b}`;
+ * ```
+ */
+export const math: typeof String.raw;

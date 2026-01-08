@@ -2,9 +2,13 @@
 import { isMyIcon, type MyIconName } from '#my-icons';
 import { computed, ref, watch } from 'vue';
 
-const { url } = defineProps<{ url: MyIconName | (string & {}) }>();
+const { url } = defineProps<{ url?: MyIconName | (string & {}) }>();
 
-const mediaType = computed<'icon' | 'image' | 'video'>(() => {
+const mediaType = computed<'icon' | 'image' | 'video' | null>(() => {
+    if (!url) {
+        return null;
+    }
+
     const extension = url.split('.').pop() || '';
 
     if (isMyIcon(url)) {
@@ -24,7 +28,7 @@ const mediaType = computed<'icon' | 'image' | 'video'>(() => {
 
 const visible = ref(false);
 const loaded = ref(false);
-const loading = computed(() => !loaded.value || !visible.value);
+const loading = computed(() => !url || !loaded.value || !visible.value);
 
 const mediaElement = useTemplateRef('media');
 
@@ -61,7 +65,8 @@ onMounted(() => {
                 <div v-if="loading">
                     <div
                         class="absolute z-10 h-full w-full animate-pulse
-                            bg-(--_mediaColor)/50"
+                            bg-(--_mediaColor)/50
+                            transition-[opacity,background]"
                     ></div>
                 </div>
             </TransitionFade>
@@ -69,15 +74,19 @@ onMounted(() => {
                 <template v-if="visible">
                     <div
                         v-if="mediaType === 'icon'"
-                        class="absolute flex h-full w-full items-center
-                            justify-center bg-(--_mediaColor)/30
-                            text-(--_mediaColor)"
+                        class="absolute h-full w-full"
                     >
-                        <MyIcon
-                            @vue:mounted="loaded = true"
-                            :name="url as MyIconName"
-                            class="h-2/3 w-2/3"
-                        />
+                        <div
+                            class="grid size-full place-items-center
+                                bg-(--_mediaColor)/30 text-(--_mediaColor)
+                                transition-[color,background]"
+                        >
+                            <MyIcon
+                                @vue:mounted="loaded = true"
+                                :name="url as MyIconName"
+                                class="h-2/3 w-2/3"
+                            />
+                        </div>
                     </div>
                     <img
                         v-if="mediaType === 'image'"

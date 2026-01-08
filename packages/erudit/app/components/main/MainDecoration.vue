@@ -5,8 +5,7 @@ defineProps<{ decoration?: string }>();
 <template>
     <section
         v-if="decoration"
-        class="pl-small pb-small pt-small float-right pr-(--_pMainX)
-            max-[700px]:hidden"
+        class="pl-small pb-small pt-main pr-main float-right max-[700px]:hidden"
     >
         <img
             :src="fileUrl(decoration!)"

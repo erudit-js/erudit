@@ -14,4 +14,5 @@
  * </>
  * ```
  */
-let B, I;
+export const B = '_tag_';
+export const I = '_tag_';

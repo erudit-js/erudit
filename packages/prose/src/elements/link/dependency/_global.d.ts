@@ -23,7 +23,7 @@
  * </P>
  * ```
  */
-let Dep;
+export const Dep = '_tag_';
 
 /**
  * Same as `<Dep>`, but as a block element which draws more attention.
@@ -44,4 +44,4 @@ let Dep;
  * </Dependency>
  * ```
  */
-let Dependency;
+export const Dependency = '_tag_';

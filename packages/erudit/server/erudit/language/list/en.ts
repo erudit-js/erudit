@@ -2,7 +2,6 @@ const en: LanguagePhrases = {
     language_code: 'en',
     language_name: 'English',
     erudit: 'Erudit',
-    modern_textbook: 'Modern textbook',
     content_nav: 'Content navigation',
     pages: 'Pages',
     search: 'Search',
@@ -78,9 +77,12 @@ const en: LanguagePhrases = {
     contribution: 'Contribution',
     editor: 'Editor',
     materials: 'Materials',
+    x_sponsors: (count: number) => m(count, 'Sponsor', 'Sponsors'),
+    x_contributors: (count: number) => m(count, 'Contributor', 'Contributors'),
 
     default_index_title: 'Erudit',
     default_index_short: 'Modern digital textbooks!',
+    default_site_info_short: 'Modern textbook',
 
     // _language_title: 'English',
     // _language_code: 'en',

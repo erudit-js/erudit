@@ -2,7 +2,6 @@ const ru: LanguagePhrases = {
     language_code: 'ru',
     language_name: 'Русский',
     erudit: 'Erudit',
-    modern_textbook: 'Современный учебник',
     content_nav: 'Оглавление',
     pages: 'Страницы',
     search: 'Поиск',
@@ -79,9 +78,12 @@ const ru: LanguagePhrases = {
     contribution: 'Вклад',
     editor: 'Редактор',
     materials: 'Материалы',
+    x_sponsors: (count: number) => m(count, 'Спонсор', 'Спонсора', 'Спонсоров'),
+    x_contributors: (count: number) => m(count, 'Автор', 'Автора', 'Авторов'),
 
     default_index_title: 'Erudit',
     default_index_short: 'Современные цифровые учебники!',
+    default_site_info_short: 'Современный учебник',
 
     // _language_title: 'Русский',
     // _language_code: 'ru',

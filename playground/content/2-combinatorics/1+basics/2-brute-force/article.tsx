@@ -1,5 +1,10 @@
 import gen from './gen';
 
+const myAttr: ProblemCustomAttribute = {
+    label: 'Custom attribute',
+    hint: 'This is a custom attribute',
+};
+
 export default defineDocument({
     uniques: {
         bruteForceRules: Important,
@@ -11,6 +16,10 @@ export default defineDocument({
 })(({ uniques }) => (
     <>
         <H1>Зачем это нужно?</H1>
+
+        <BlockMath>{math`
+            \lim\limits_{n \to \infty} \frac{1}{n} = 0
+        `}</BlockMath>
 
         <P>
             Очень многие <Ref to="https://google.com">комбинаторные задачи</Ref>{' '}
@@ -91,6 +100,7 @@ export default defineDocument({
         <Problem
             title="Насыщенный день"
             level="example"
+            attributes={['applied', myAttr]}
             $={uniques.wonderfulDay}
         >
             <ProblemDescription>

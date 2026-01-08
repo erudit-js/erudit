@@ -26,11 +26,10 @@ export const problemAttributes = [
 
 export type ProblemAttribute = (typeof problemAttributes)[number];
 
-export function isProblemAttribute(value: unknown): value is ProblemAttribute {
-    return (
-        typeof value === 'string' &&
-        problemAttributes.includes(value as ProblemAttribute)
-    );
+export interface ProblemCustomAttribute {
+    label: string;
+    icon?: string;
+    hint?: string;
 }
 
 //
@@ -62,12 +61,13 @@ export function isProblemAction(value: unknown): value is ProblemAction {
 export interface ProblemInfo {
     title: string;
     level: ProblemLevel;
-    attributes: ProblemAttribute[];
+    attributes: (ProblemAttribute | ProblemCustomAttribute)[];
 }
 
 export type ProblemInfoProps = {
     title: string;
     level: ProblemLevel;
+    attributes?: (ProblemAttribute | ProblemCustomAttribute)[];
 } & AttributeProps;
 
 type AttributeProps = {
@@ -78,6 +78,9 @@ export function problemProps2Info(props: ProblemInfoProps): ProblemInfo {
     return {
         title: props.title,
         level: props.level,
-        attributes: problemAttributes.filter((attr) => props[attr] === true),
+        attributes: [
+            ...problemAttributes.filter((attr) => props[attr] === true),
+            ...(props.attributes ?? []),
+        ],
     };
 }

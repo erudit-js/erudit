@@ -25,10 +25,10 @@ provide(anchorStateSymbol, anchorState);
 
 <template>
     <section
+        :style="{ '--proseGap': 'none' }"
         :class="[
             /* Variables */
-            `micro:[--proseAsideWidth:20px] [--proseAsideWidth:16px]
-            [--proseGap:none]`,
+            'micro:[--proseAsideWidth:20px] [--proseAsideWidth:16px]',
         ]"
     >
         <Render :element />

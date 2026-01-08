@@ -12,5 +12,10 @@
         "outDir": "dist",
         "types": ["./env.d.ts"]
     },
-    "include": ["src/**/*"]
+    "include": ["src/**/*"],
+    "exclude": [
+        "src/elements/**/_docs.ts",
+        "src/elements/**/_global.d.ts",
+        "src/elements/**/_global.ts"
+    ]
 }

@@ -1,12 +1,9 @@
 import type { AppElement } from '@erudit-js/prose/app';
+import { appElements as _appElements } from '#erudit/prose/app';
 
-export const appElements: Record<string, AppElement> = {};
+export const appElements: Record<string, AppElement> = { ..._appElements };
 
 export async function initAppElements() {
-    Object.assign(appElements, {
-        ...(await import('#erudit/prose/app')).default,
-    });
-
     for (const [name, element] of Object.entries(appElements)) {
         const languageCode = ERUDIT.config.project.language.current;
         if (!element.languages[languageCode]) {

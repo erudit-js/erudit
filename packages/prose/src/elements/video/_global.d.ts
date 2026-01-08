@@ -15,4 +15,4 @@
  * </Video>
  * ```
  */
-let Video;
+export const Video = '_tag_';

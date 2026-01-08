@@ -12,10 +12,7 @@ const phrase = await usePhrases('stats');
 
 <template>
     <template v-if="stats">
-        <section
-            v-if="mode === 'single'"
-            class="px-(--_pMainX) py-[calc(var(--_pMainY)/2)]"
-        >
+        <section v-if="mode === 'single'" class="px-main py-main-half">
             <MainSubTitle :title="phrase.stats + ':'" />
             <div
                 class="micro:justify-start gap-normal flex flex-wrap

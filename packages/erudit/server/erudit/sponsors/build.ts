@@ -108,7 +108,7 @@ async function buildSponsor(sponsorId: string) {
     await ERUDIT.db.insert(ERUDIT.db.schema.sponsors).values({
         sponsorId,
         hasMessages: sponsor.messages?.enabled === true,
-        hasAvatar: sponsor.avatarExtension !== undefined,
+        avatarExtension: sponsor.avatarExtension,
         data: sponsor,
     });
 }

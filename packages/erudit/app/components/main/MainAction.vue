@@ -5,10 +5,7 @@ defineProps<{ icon: MaybeMyIconName; label: string; link: string }>();
 </script>
 
 <template>
-    <section
-        class="clear-both grid place-items-center px-(--_pMainX)
-            py-[calc(var(--_pMainY)/2)]"
-    >
+    <section class="px-main py-main-half clear-both grid place-items-center">
         <EruditLink
             :to="link"
             class="bg-brand gap-small micro:gap-normal px-normal text-main-lg

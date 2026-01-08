@@ -40,10 +40,7 @@ const secondary =
         :main="previewData.title"
         :secondary
     >
-        <div
-            class="micro:text-base px-(--_pMainX) py-[calc(var(--_pMainY)*2)]
-                text-sm"
-        >
+        <div class="micro:text-base px-main py-main text-sm">
             {{
                 previewData.description ??
                 phrase.preview_content_page_description

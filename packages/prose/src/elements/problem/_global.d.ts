@@ -1,3 +1,5 @@
+import type { ProblemCustomAttribute as PAC } from './shared.js';
+
 /**
  * Problems are used to present exercises and questions to the reader.
  * See the example for a full breakdown of the sub-elements available.
@@ -68,14 +70,14 @@
  * <Problem title="Addition Problem" level="medium" script={fooScript} />
  * ```
  */
-let Problem,
-    ProblemDescription,
-    ProblemHint,
-    ProblemSection,
-    ProblemSolution,
-    ProblemAnswer,
-    ProblemNote,
-    ProblemCheck;
+export const Problem = '_tag_';
+export const ProblemDescription = '_tag_';
+export const ProblemHint = '_tag_';
+export const ProblemSection = '_tag_';
+export const ProblemSolution = '_tag_';
+export const ProblemAnswer = '_tag_';
+export const ProblemNote = '_tag_';
+export const ProblemCheck = '_tag_';
 
 /**
  * Problem set is a collection of related problems presented together.
@@ -101,4 +103,10 @@ let Problem,
  * </Problems>
  * ```
  */
-let Problems, SubProblem;
+export const Problems = '_tag_';
+export const SubProblem = '_tag_';
+
+/**
+ * Typeguard for creating custom problem attributes.
+ */
+export type ProblemCustomAttribute = PAC;

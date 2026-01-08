@@ -5,9 +5,9 @@ defineProps<{
 </script>
 
 <template>
-    <MainSection>
-        <MainGlow />
-        <MainDecoration :decoration="mainContent.decoration" />
+    <MainGlow />
+    <MainDecoration :decoration="mainContent.decoration" />
+    <MainSectionPreamble>
         <MainBreadcrumbs :breadcrumbs="mainContent.breadcrumbs" />
         <MainTitle :icon="ICONS[mainContent.part]" :title="mainContent.title" />
         <MainFlags :flags="mainContent.flags" />
@@ -15,10 +15,10 @@ defineProps<{
         <MainQuickLinks mode="single" :quickLinks="mainContent.quickLinks" />
         <MainConnections :connections="mainContent.connections" />
         <MainContentStats mode="single" :stats="mainContent.stats" />
-        <div class="h-(--_pMainY)"></div>
+        <div class="h-main-half"></div>
         <MainQuoteLoader />
-        <div class="h-(--_pMainY)"></div>
-    </MainSection>
+        <div class="h-main-half"></div>
+    </MainSectionPreamble>
     <MainSection>
         <template #header>
             <MainTopicPartSwitch

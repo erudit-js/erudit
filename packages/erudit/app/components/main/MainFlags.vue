@@ -9,8 +9,8 @@ const flagKeys = (flags ? Object.keys(flags).sort() : []) as ContentFlag[];
 <template>
     <section
         v-if="flags"
-        class="gap-small micro:gap-normal micro:justify-start flex flex-wrap
-            justify-center px-(--_pMainX) py-[calc(var(--_pMainY)/2)]"
+        class="gap-small micro:gap-normal micro:justify-start px-main
+            py-main-half flex flex-wrap justify-center"
     >
         <MainFlag v-for="flag of flagKeys" :flag />
     </section>

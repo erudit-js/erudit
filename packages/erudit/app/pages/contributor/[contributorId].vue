@@ -35,8 +35,8 @@ const phrase = await usePhrases('contributors', 'editor');
 </script>
 
 <template>
-    <MainSection>
-        <MainGlow :color />
+    <MainGlow :color />
+    <MainSectionPreamble>
         <MainBreadcrumbs
             :breadcrumbs="[
                 {
@@ -58,8 +58,7 @@ const phrase = await usePhrases('contributors', 'editor');
                 '--colorIcon':
                     'color-mix(in srgb, var(--color), var(--color-text) 30%)',
             }"
-            class="flex flex-col items-center gap-(--_pMainY) px-(--_pMainX)
-                py-(--_pMainY)"
+            class="px-main gap-main flex flex-col items-center"
         >
             <div class="relative">
                 <div class="rounded-full ring-2 ring-(--colorBorder)">
@@ -90,7 +89,7 @@ const phrase = await usePhrases('contributors', 'editor');
                     />
                 </div>
             </div>
-            <div class="flex flex-col gap-(--_pMainY) text-center">
+            <div class="gap-normal flex flex-col text-center">
                 <h1>
                     <FancyBold
                         :text="
@@ -125,7 +124,8 @@ const phrase = await usePhrases('contributors', 'editor');
                 </div>
             </div>
         </div>
-    </MainSection>
+        <div class="h-main-half"></div>
+    </MainSectionPreamble>
     <MainSection v-if="pageContributor.description">
         <Prose
             :element="pageContributor.description.proseElement"

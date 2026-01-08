@@ -40,4 +40,6 @@
  * // ... Content ...
  * ```
  */
-let H1, H2, H3;
+export const H1 = '_tag_';
+export const H2 = '_tag_';
+export const H3 = '_tag_';

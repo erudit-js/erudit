@@ -4,8 +4,8 @@ defineProps<{ title: string }>();
 
 <template>
     <div
-        class="text-main-sm micro:text-left pb-[calc(var(--_pMainY)/2)]
-            text-center font-semibold"
+        class="text-main-sm micro:text-left pb-main-half text-center
+            font-semibold"
     >
         {{ formatText(title) }}
     </div>

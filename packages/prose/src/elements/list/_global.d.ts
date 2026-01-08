@@ -27,7 +27,7 @@
  * </List>
  * ```
  */
-let List;
+export const List = '_tag_';
 
 /**
  * List item element.
@@ -47,4 +47,4 @@ let List;
  * </Li>
  * ```
  */
-let Li;
+export const Li = '_tag_';

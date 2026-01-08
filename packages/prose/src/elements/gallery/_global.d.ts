@@ -15,4 +15,4 @@
  * </Gallery>
  * ```
  */
-let Gallery;
+export const Gallery = '_tag_';

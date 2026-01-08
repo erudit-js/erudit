@@ -15,4 +15,4 @@
  *   Snow on me!
  * </>
  */
-let Br;
+export const Br = '_tag_';

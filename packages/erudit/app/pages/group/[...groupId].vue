@@ -9,23 +9,23 @@ const phrase = await usePhrases('begin_learning');
 </script>
 
 <template>
-    <MainSection>
-        <MainGlow />
-        <MainDecoration :decoration="mainContent.decoration" />
+    <MainGlow />
+    <MainDecoration :decoration="mainContent.decoration" />
+    <MainSectionPreamble>
         <MainBreadcrumbs :breadcrumbs="mainContent.breadcrumbs" />
         <MainTitle icon="folder-open" :title="mainContent.title" />
         <MainFlags :flags="mainContent.flags" />
         <MainDescription :description="mainContent.description" />
         <MainConnections :connections="mainContent.connections" />
         <MainContentStats mode="single" :stats="mainContent.stats" />
-        <div class="h-(--_pMainY)"></div>
+        <div class="h-main-half"></div>
         <MainAction
             icon="rocket"
             :label="formatText(phrase.begin_learning)"
             :link="mainContent.children[0]!.link"
         />
-        <div class="h-(--_pMainY)"></div>
-    </MainSection>
+        <div class="h-main-half"></div>
+    </MainSectionPreamble>
     <MainContentChildren :children="mainContent.children" />
     <MainSection>
         <AdsBannerBottom v-if="adsBottomAllowed()" />

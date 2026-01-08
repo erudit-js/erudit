@@ -24,4 +24,4 @@
  * </P>
  * ```
  */
-let P;
+export const P = '_tag_';

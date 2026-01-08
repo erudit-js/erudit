@@ -5,8 +5,8 @@ defineProps<{ breadcrumbs: Breadcrumbs }>();
 <template>
     <section
         v-if="breadcrumbs.length > 0"
-        class="gap-small max-micro:justify-center flex flex-wrap px-(--_pMainX)
-            py-[calc(var(--_pMainY)/2)]"
+        class="gap-small max-micro:justify-center px-main py-main-half flex
+            flex-wrap"
     >
         <EruditLink
             v-for="(breadcrumb, i) of breadcrumbs"

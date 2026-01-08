@@ -20,4 +20,4 @@
  * </Flex>
  * ```
  */
-let Flex;
+export const Flex = '_tag_';

@@ -12,10 +12,7 @@ const currentType = ref<keyof ContentConnections | undefined>(
 </script>
 
 <template>
-    <section
-        v-if="connections"
-        class="px-(--_pMainX) py-[calc(var(--_pMainY)/2)]"
-    >
+    <section v-if="connections" class="px-main py-main-half">
         <MainSubTitle :title="phrase.connections + ':'" />
         <div
             class="gap-small micro:gap-normal micro:justify-start flex flex-wrap

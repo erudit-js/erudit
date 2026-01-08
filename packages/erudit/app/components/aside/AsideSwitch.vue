@@ -38,7 +38,7 @@ if (import.meta.client) {
     <div
         :class="[
             /* Variables */
-            `micro:[--_switchSize:110px] [--_switchGap:var(--_pMainX)]
+            `micro:[--_switchSize:110px] [--_switchGap:var(--spacing-main)]
             [--_switchSize:80px]`,
             /* */
             `absolute bottom-0 flex size-(--_switchSize) items-center

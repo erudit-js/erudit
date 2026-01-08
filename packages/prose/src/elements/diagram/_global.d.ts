@@ -16,4 +16,4 @@
  * </Diagram>
  * ```
  */
-let Diagram;
+export const Diagram = '_tag_';

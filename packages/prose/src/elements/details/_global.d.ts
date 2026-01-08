@@ -24,4 +24,4 @@
  * </Details>
  * ```
  */
-let Details;
+export const Details = '_tag_';

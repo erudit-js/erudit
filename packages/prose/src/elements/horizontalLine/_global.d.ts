@@ -14,4 +14,4 @@
  * <P>Paragraph 2</P>
  * ```
  */
-let Hr;
+export const Hr = '_tag_';

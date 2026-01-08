@@ -40,7 +40,7 @@ export default defineEruditConfig({
     indexPage: {
         logotype: {
             src: projectPublic('index-logo.png'),
-            maxWidth: '400px',
+            maxWidth: '600px',
             invert: 'dark',
         },
         title: 'Открытая Математика',
@@ -55,7 +55,6 @@ export default defineEruditConfig({
             Совместно!
         `,
     },
-
     customLinks: [
         {
             label: 'Google',

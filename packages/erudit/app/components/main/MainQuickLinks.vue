@@ -6,10 +6,7 @@ const phrase = await usePhrases('key_elements');
 
 <template>
     <template v-if="quickLinks">
-        <section
-            v-if="mode === 'single'"
-            class="px-(--_pMainX) py-[calc(var(--_pMainY)/2)]"
-        >
+        <section v-if="mode === 'single'" class="px-main py-main-half">
             <MainSubTitle :title="phrase.key_elements + ':'" />
             <div
                 :style="{ '--quickBg': 'var(--color-bg-aside)' }"

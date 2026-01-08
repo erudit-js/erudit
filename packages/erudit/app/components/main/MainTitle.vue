@@ -11,9 +11,9 @@ const { color = 'var(--color-brand)' } = defineProps<{
 <template>
     <section
         :style="{ '--titleColor': color }"
-        class="gap-normal micro:flex-row micro:justify-start flex flex-col
-            items-center justify-center px-(--_pMainX)
-            py-[calc(var(--_pMainY)/2)] pt-0"
+        class="gap-small micro:gap-normal micro:flex-row micro:justify-start
+            px-main py-main-half not-first:micro:-my-3 not-first:micro:-top-1.5
+            relative flex flex-col items-center justify-center"
     >
         <div
             class="max-micro:rounded-full max-micro:p-4

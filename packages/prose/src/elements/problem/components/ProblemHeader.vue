@@ -59,7 +59,11 @@ const levelColors: Record<ProblemLevel, string> = {
         >
             <div
                 v-for="attribute of info.attributes.sort()"
-                :title="phrase[`attribute_explain.${attribute}`]"
+                :title="
+                    typeof attribute === 'string'
+                        ? phrase[`attribute_explain.${attribute}`]
+                        : attribute.hint
+                "
                 class="border-border/60 bg-bg-main text-main-xs text-text-muted
                     flex h-(--labelHeight) cursor-help items-center gap-1
                     rounded-xl border px-2 shadow
@@ -67,10 +71,21 @@ const levelColors: Record<ProblemLevel, string> = {
                     transition-[background,border,color,box-shadow]"
             >
                 <EruditIcon
-                    :name="attributeIcons[attribute]"
+                    v-if="typeof attribute === 'string' || attribute.icon"
+                    :name="
+                        typeof attribute === 'string'
+                            ? attributeIcons[attribute]
+                            : attribute.icon
+                    "
                     class="text-[15px]"
                 />
-                <span>{{ phrase[`attribute.${attribute}`] }}</span>
+                <span>
+                    {{
+                        typeof attribute === 'string'
+                            ? phrase[`attribute.${attribute}`]
+                            : attribute.label
+                    }}
+                </span>
             </div>
             <div
                 :style="{ '--levelColor': levelColors[info.level] }"

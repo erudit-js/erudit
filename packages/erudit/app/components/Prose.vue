@@ -45,7 +45,7 @@ const context: ProseContext = {
         :element
         :storage
         :context
-        class="px-[calc(var(--proseGap)-var(--proseAsideWidth))] py-(--_pMainY)
-            [--proseGap:var(--_pMainX)]"
+        :style="{ '--proseGap': 'calc(var(--spacing-main)*1.1)' }"
+        class="py-main px-[calc(var(--proseGap)-var(--proseAsideWidth))]"
     />
 </template>

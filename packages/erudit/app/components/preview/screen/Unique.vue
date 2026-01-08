@@ -35,8 +35,8 @@ const secondary = (() => {
         :link="previewData.link"
     >
         <div
-            class="nice-scrollbars relative max-h-[inherit] overflow-auto
-                py-(--_pMainY)"
+            class="nice-scrollbars py-small relative max-h-[inherit]
+                overflow-auto"
         >
             <Prose
                 :element="previewData.proseElement"

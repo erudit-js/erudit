@@ -26,27 +26,27 @@ const description =
 </script>
 
 <template>
-    <MainSection>
-        <MainGlow />
+    <MainGlow />
+    <MainSectionPreamble>
         <MainTitle icon="users" :title="phrase.contributors" />
         <MainDescription :description />
         <template
             v-if="ERUDIT.config.project.contributors?.becomeContributorLink"
         >
-            <div class="h-(--_pMainY)"></div>
+            <div class="h-main-half"></div>
             <MainAction
                 icon="users"
                 :label="phrase.become_contributor"
                 :link="'https://google.com'"
             />
-            <div class="h-(--_pMainY)"></div>
+            <div class="h-main-half"></div>
         </template>
-    </MainSection>
+    </MainSectionPreamble>
     <MainSection>
         <div
             v-if="listContributors.length > 0"
-            class="gap-small micro:gap-normal columns-[300px] px-(--_pMainX)
-                py-[calc(var(--_pMainY)/2)]"
+            class="gap-small micro:gap-normal px-main py-main-half
+                columns-[300px]"
         >
             <FancyCard
                 v-for="contributor of listContributors"
@@ -84,10 +84,7 @@ const description =
                 </template>
             </FancyCard>
         </div>
-        <div
-            v-else
-            class="text-text-muted px-(--_pMainX) py-(--_pMainY) text-center"
-        >
+        <div v-else class="text-text-muted px-main py-main text-center">
             {{ phrase.no_contributors }}
         </div>
     </MainSection>

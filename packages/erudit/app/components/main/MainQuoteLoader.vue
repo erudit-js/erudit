@@ -75,11 +75,7 @@ onMounted(() => {
 </script>
 
 <template>
-    <section
-        v-if="quote"
-        :key="quoteKey"
-        class="px-(--_pMainX) py-[calc(var(--_pMainY)/2)]"
-    >
+    <section v-if="quote" :key="quoteKey" class="px-main py-main-half">
         <MainQuote
             :quote
             :hasBecomeLink="true"
