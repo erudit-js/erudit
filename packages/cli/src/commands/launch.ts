@@ -2,9 +2,9 @@ import { defineCommand } from 'citty';
 import { consola } from 'consola';
 import chalk from 'chalk';
 import { existsSync } from 'node:fs';
-
-import { resolvePath } from '../shared/path';
 import { spawn } from 'node:child_process';
+
+import { resolvePath } from '../shared/path.js';
 
 export const launch = defineCommand({
     meta: {

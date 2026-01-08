@@ -18,7 +18,7 @@ export default defineDocument({
         <H1>Зачем это нужно?</H1>
 
         <BlockMath>{math`
-            \lim\limits_{n \to \infty} \frac{1}{n} = 0
+            \lim\limits_{n \to \infty} \frac{1}{n} = \frac{n}{\infty}
         `}</BlockMath>
 
         <P>

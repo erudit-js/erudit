@@ -9,7 +9,7 @@ import {
     writeFileSync,
 } from 'node:fs';
 
-import { resolvePath } from '../shared/path';
+import { resolvePath } from '../shared/path.js';
 
 export const init = defineCommand({
     meta: {

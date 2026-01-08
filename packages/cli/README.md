@@ -6,7 +6,8 @@ CLI is accessible via `erudit` or `erudit-cli` commands.
 
 ## Commands
 
-- `init`
-- `dev`
-- `build`
-- `preview`
+- `play` - starts an Erudit project in full dev mode
+- `build` - compiles Erudit project
+- `launch` - launches compiled Erudit project
+- `generate` - generates a fully static production-ready site from Erudit project
+- `preview` - preview generated static site

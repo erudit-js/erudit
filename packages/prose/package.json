@@ -28,7 +28,8 @@
     "scripts": {
         "build": "bun run script/build.ts",
         "dev": "bun run script/dev.ts",
-        "test": "bun vitest run"
+        "test": "bun vitest run",
+        "prepack": "bun run build"
     },
     "dependencies": {
         "@erudit-js/core": "catalog:",

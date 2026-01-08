@@ -15,8 +15,9 @@
     ],
     "license": "MIT",
     "scripts": {
+        "build": "rm -rf dist && bun tsc --project ./tsconfig.src.json",
         "test": "bun vitest run",
-        "build": "rm -rf dist && bun tsc --project ./tsconfig.src.json"
+        "prepack": "bun run build"
     },
     "dependencies": {
         "@jsprose/core": "catalog:",

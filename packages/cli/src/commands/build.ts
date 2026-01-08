@@ -7,10 +7,10 @@ import {
     nitroPresetArg,
     projectPathArg,
     resolveArgPaths,
-} from '../shared/args';
-import { logCommand } from '../shared/log';
-import { spawnNuxt } from '../shared/nuxt';
-import { prepare } from '../shared/prepare';
+} from '../shared/args.js';
+import { logCommand } from '../shared/log.js';
+import { spawnNuxt } from '../shared/nuxt.js';
+import { prepare } from '../shared/prepare.js';
 
 export const build = defineCommand({
     meta: {

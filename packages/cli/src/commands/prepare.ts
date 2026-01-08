@@ -1,10 +1,14 @@
 import { consola } from 'consola';
 import { defineCommand } from 'citty';
 
-import { logCommand } from '../shared/log';
-import { prepare as _prepare } from '../shared/prepare';
-import { spawnNuxt } from '../shared/nuxt';
-import { eruditPathArg, projectPathArg, resolveArgPaths } from '../shared/args';
+import { logCommand } from '../shared/log.js';
+import { prepare as _prepare } from '../shared/prepare.js';
+import { spawnNuxt } from '../shared/nuxt.js';
+import {
+    eruditPathArg,
+    projectPathArg,
+    resolveArgPaths,
+} from '../shared/args.js';
 
 export const prepare = defineCommand({
     meta: {

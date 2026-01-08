@@ -1,0 +1,17 @@
+{
+    "compilerOptions": {
+        "noEmit": true,
+        "strict": true,
+        "forceConsistentCasingInFileNames": true,
+        "verbatimModuleSyntax": true,
+        "skipLibCheck": true,
+        "target": "esnext",
+        "module": "esnext",
+        "moduleResolution": "bundler",
+        "lib": ["ESNext"],
+        "paths": {
+            "@erudit-js/cli/*": ["./src/*"]
+        }
+    },
+    "include": ["test/**/*"]
+}

@@ -2,7 +2,7 @@ import type { ArgDef } from 'citty';
 import { consola } from 'consola';
 import chalk from 'chalk';
 
-import { resolvePath } from './path';
+import { resolvePath } from './path.js';
 
 export const eruditPathArg = {
     eruditPath: {

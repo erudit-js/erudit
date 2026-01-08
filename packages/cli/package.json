@@ -9,19 +9,23 @@
         "url": "git+https://github.com/erudit-js/erudit.git",
         "directory": "packages/cli"
     },
+    "main": "./dist/index.js",
     "types": "./dist/index.d.ts",
     "exports": {
-        ".": "./dist/index.mjs",
-        "./cli": "./bin/erudit-cli.mjs"
+        ".": {
+            "import": "./dist/index.js",
+            "types": "./dist/index.d.ts"
+        },
+        "./cli": "./bin/erudit-cli.js"
     },
     "bin": {
-        "erudit-cli": "bin/erudit-cli.mjs",
-        "erudit": "bin/erudit-cli.mjs"
+        "erudit-cli": "bin/erudit-cli.js",
+        "erudit": "bin/erudit-cli.js"
     },
     "scripts": {
-        "dev": "bun unbuild --stub",
-        "build": "bun run prepack",
-        "prepack": "bun unbuild"
+        "build": "rm -rf dist && bun tsc --project ./tsconfig.src.json && bun run postBuild.ts",
+        "test": "bun vitest run",
+        "prepack": "bun run build"
     },
     "files": [
         "bin",
@@ -32,8 +36,5 @@
         "chalk": "catalog:",
         "citty": "^0.1.6",
         "consola": "catalog:"
-    },
-    "devDependencies": {
-        "unbuild": "^3.6.1"
     }
 }

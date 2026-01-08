@@ -4,7 +4,7 @@ import { defineCommand } from 'citty';
 import { consola } from 'consola';
 import chalk from 'chalk';
 
-import { resolvePath } from '../shared/path';
+import { resolvePath } from '../shared/path.js';
 
 export const preview = defineCommand({
     meta: {
