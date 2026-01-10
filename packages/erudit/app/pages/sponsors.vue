@@ -1,6 +1,8 @@
 <script lang="ts" setup>
 import type { PageSponsor } from '@erudit-js/core/sponsor';
 
+useAsideMinorNews();
+
 const nuxtApp = useNuxtApp();
 const payloadKey = 'page-sponsors';
 const pageSponsors: PageSponsor[] =

@@ -80,6 +80,9 @@ const ru: LanguagePhrases = {
     materials: 'Материалы',
     x_sponsors: (count: number) => m(count, 'Спонсор', 'Спонсора', 'Спонсоров'),
     x_contributors: (count: number) => m(count, 'Автор', 'Автора', 'Авторов'),
+    news: 'Новости',
+    no_news: 'Новостей пока нет.',
+    show_more: 'Показать больше',
 
     default_index_title: 'Erudit',
     default_index_short: 'Современные цифровые учебники!',

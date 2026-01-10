@@ -1,6 +1,8 @@
 <script lang="ts" setup>
 import type { ListContributor } from '@erudit-js/core/contributor';
 
+useAsideMinorNews();
+
 const nuxtApp = useNuxtApp();
 const payloadKey = 'list-contributors';
 const listContributors: ListContributor[] =

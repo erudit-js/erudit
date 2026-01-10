@@ -79,6 +79,9 @@ const en: LanguagePhrases = {
     materials: 'Materials',
     x_sponsors: (count: number) => m(count, 'Sponsor', 'Sponsors'),
     x_contributors: (count: number) => m(count, 'Contributor', 'Contributors'),
+    news: 'News',
+    no_news: 'No news available.',
+    show_more: 'Show more',
 
     default_index_title: 'Erudit',
     default_index_short: 'Modern digital textbooks!',

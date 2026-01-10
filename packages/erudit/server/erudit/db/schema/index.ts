@@ -13,3 +13,4 @@ export { contentDeps } from './contentDeps';
 export { contentContributions } from './contentContributions';
 export { cameos } from './cameos';
 export { sponsors } from './sponsors';
+export { news } from './news';

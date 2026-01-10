@@ -10,6 +10,7 @@ import { buildCameos } from './cameos/build';
 import { buildContentNav } from './content/nav/build';
 import { requestFullContentResolve, resolveContent } from './content/resolve';
 import { buildGlobalContent } from './content/global/build';
+import { buildNews } from './news/build';
 
 export type EruditServerChangedFiles = Set<string>;
 export type EruditServerBuildError = Error | undefined;
@@ -23,6 +24,7 @@ export async function buildServerErudit() {
             await buildContributors();
             await buildSponsors();
             await buildCameos();
+            await buildNews();
             await buildContentNav();
             await buildGlobalContent();
             await resolveContent();
@@ -100,6 +102,10 @@ export async function tryServerWatchProject() {
         }
 
         if (path.startsWith(ERUDIT.config.paths.project + '/sponsors/')) {
+            return true;
+        }
+
+        if (path.startsWith(ERUDIT.config.paths.project + '/news/')) {
             return true;
         }
     }

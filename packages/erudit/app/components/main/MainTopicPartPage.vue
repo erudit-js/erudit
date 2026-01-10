@@ -2,6 +2,13 @@
 defineProps<{
     mainContent: MainContentTopicPart;
 }>();
+
+const asideMinor = useAsideMinor();
+
+asideMinor.value = {
+    type: 'article',
+    articleId: 'lol',
+};
 </script>
 
 <template>

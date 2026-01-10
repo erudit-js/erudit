@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+useAsideMinorNews();
+
 const nuxtApp = useNuxtApp();
 const payloadKey = 'index-page';
 const indexPage: IndexPage =

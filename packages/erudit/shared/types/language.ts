@@ -79,6 +79,9 @@ export type LanguagePhrases = Phrases<{
     materials: string;
     x_sponsors: (count: number) => string;
     x_contributors: (count: number) => string;
+    news: string;
+    no_news: string;
+    show_more: string;
 
     default_index_title: string;
     default_index_short: string;

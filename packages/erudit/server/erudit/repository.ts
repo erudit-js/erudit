@@ -32,6 +32,7 @@ import {
     addContentElementCount,
     getContentStats,
 } from './content/repository/stats';
+import { countNewsBatches, getNewsNextBatch } from './news/repository/batch';
 
 export const repository = {
     db: {
@@ -73,6 +74,10 @@ export const repository = {
         getContent: getContentProse,
         getContributor: getContributorProse,
         finalize: finalizeProse,
+    },
+    news: {
+        countBatches: countNewsBatches,
+        batch: getNewsNextBatch,
     },
 } as const;
 
