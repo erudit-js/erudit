@@ -1,23 +1,37 @@
-interface BaseAsideMinorState {
-    type: 'news' | 'article';
-}
+import type { ContributorContribution } from '@erudit-js/core/content/contributions';
 
-export interface AsideMinorStateNews extends BaseAsideMinorState {
+export interface AsideMinorStateNews {
     type: 'news';
 }
 
-export interface AsideMinorStateArticle extends BaseAsideMinorState {
+export interface AsideMinorContributions {
+    type: 'contributions';
+    contributions?: ContributorContribution[];
+}
+
+export interface AsideMinorStateArticle {
     type: 'article';
     articleId: string;
 }
 
-export type AsideMinorState = AsideMinorStateNews | AsideMinorStateArticle;
+export type AsideMinorState =
+    | AsideMinorStateNews
+    | AsideMinorContributions
+    | AsideMinorStateArticle;
 
 export const useAsideMinor = () => {
-    return useState<AsideMinorState | undefined>('aside-minor');
-};
+    const asideMinor = useState<AsideMinorState | undefined>('aside-minor');
 
-export function useAsideMinorNews() {
-    const asideMinor = useAsideMinor();
-    asideMinor.value = { type: 'news' };
-}
+    return {
+        asideMinorState: asideMinor,
+        showNews() {
+            asideMinor.value = { type: 'news' };
+        },
+        showContributions(contributions?: ContributorContribution[]) {
+            asideMinor.value = {
+                type: 'contributions',
+                contributions,
+            };
+        },
+    };
+};

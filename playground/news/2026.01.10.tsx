@@ -1,5 +1,7 @@
 export default (
     <>
-        <P>Hello, my beautiful world!</P>
+        <P>
+            Hello, my <Ref to={'https://google.com'}>beautiful</Ref> world!
+        </P>
     </>
 );

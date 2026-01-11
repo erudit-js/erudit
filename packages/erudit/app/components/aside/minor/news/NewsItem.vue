@@ -1,4 +1,8 @@
 <script lang="ts" setup>
+import { walkElements } from '@jsprose/core';
+
+import RenderNewsElement from './RenderNewsElement.vue';
+
 const { item, isNew } = defineProps<{
     item: NewsItem;
     isNew?: boolean;
@@ -20,6 +24,16 @@ const dateOptions: Intl.DateTimeFormatOptions = {
 };
 
 const formattedTitle = itemDate.toLocaleDateString(undefined, dateOptions);
+
+// Prepopulate storage values in order not to fuck with provide/inject shit
+await walkElements(item.content.proseElement, async (element) => {
+    if (element.storageKey) {
+        const storageKey = element.storageKey;
+        if (item.content.storage[storageKey] !== undefined) {
+            (element as any).storageValue = item.content.storage[storageKey];
+        }
+    }
+});
 </script>
 
 <template>
@@ -41,6 +55,15 @@ const formattedTitle = itemDate.toLocaleDateString(undefined, dateOptions);
                 class="cursor-help"
             />
         </div>
-        <div>Content</div>
+        <div
+            :style="{
+                '--linkColor': isNew
+                    ? 'light-dark(var(--color-orange-700),var(--color-orange-300))'
+                    : 'var(--color-brand)',
+            }"
+            class="gap-small flex flex-col text-[0.95em]"
+        >
+            <RenderNewsElement :element="item.content.proseElement" />
+        </div>
     </div>
 </template>

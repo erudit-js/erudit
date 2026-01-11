@@ -75,6 +75,7 @@ const en: LanguagePhrases = {
     become_contributor: 'Become a contributor',
     no_contributors: 'There are no contributors yet. You can be the first one!',
     contribution: 'Contribution',
+    no_contribution: 'No contributions yet.',
     editor: 'Editor',
     materials: 'Materials',
     x_sponsors: (count: number) => m(count, 'Sponsor', 'Sponsors'),

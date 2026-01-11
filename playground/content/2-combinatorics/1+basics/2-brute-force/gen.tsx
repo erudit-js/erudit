@@ -1,7 +1,18 @@
 export default defineProblemScript({
     isGenerator: true,
-})(() => (
-    <>
-        <ProblemDescription>Privet Mir!</ProblemDescription>
-    </>
-));
+})(({ initial }) => {
+    const solution = initial ? (
+        <>
+            <ProblemSolution>Hello World!</ProblemSolution>
+        </>
+    ) : (
+        ''
+    );
+
+    return (
+        <>
+            <ProblemDescription>Privet Mir!{''}</ProblemDescription>
+            {solution}
+        </>
+    );
+});

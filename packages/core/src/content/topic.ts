@@ -1,3 +1,4 @@
+import type { IContributable } from './contributions.js';
 import {
     finalizeContentItem,
     type ContentItem,
@@ -12,7 +13,7 @@ export function isTopicPart(value: unknown): value is TopicPart {
     return topicParts.includes(value as TopicPart);
 }
 
-export interface TopicContentItem extends ContentItem {
+export interface TopicContentItem extends ContentItem, IContributable {
     type: 'topic';
 }
 

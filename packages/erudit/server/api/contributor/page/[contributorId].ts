@@ -55,5 +55,14 @@ export default defineEventHandler<Promise<PageContributor>>(async (event) => {
         );
     }
 
+    const contributions =
+        await ERUDIT.repository.contributors.contributorContributions(
+            contributorId,
+        );
+
+    if (contributions) {
+        pageContributor.contributions = contributions;
+    }
+
     return pageContributor;
 });

@@ -7,8 +7,8 @@ const hasExtra = child.stats || child.quickLinks;
 <template>
     <div
         class="border-border hocus:ring-brand/25 hocus:border-brand group
-            rounded border bg-neutral-100 ring-2 ring-transparent
-            transition-[border,box-shadow,background] dark:bg-neutral-800"
+            dark:bg-bg-aside rounded border bg-neutral-100 ring-2
+            ring-transparent transition-[border,box-shadow,background]"
     >
         <EruditLink :to="child.link" class="p-normal gap-small flex flex-col">
             <div class="gap-small micro:gap-normal flex items-center">

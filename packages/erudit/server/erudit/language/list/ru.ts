@@ -76,6 +76,7 @@ const ru: LanguagePhrases = {
     become_contributor: 'Стать автором',
     no_contributors: 'Пока что авторов нет. Вы можете стать первым!',
     contribution: 'Вклад',
+    no_contribution: 'Пока что вклада нет.',
     editor: 'Редактор',
     materials: 'Материалы',
     x_sponsors: (count: number) => m(count, 'Спонсор', 'Спонсора', 'Спонсоров'),

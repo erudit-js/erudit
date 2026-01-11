@@ -30,6 +30,9 @@ const pageContributor = await (async () => {
     return fetchedContributor;
 })();
 
+const { showContributions } = useAsideMinor();
+showContributions(pageContributor.contributions);
+
 const color = stringColor(contributorId.value);
 const phrase = await usePhrases('contributors', 'editor');
 </script>

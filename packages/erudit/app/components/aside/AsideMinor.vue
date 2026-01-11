@@ -1,30 +1,65 @@
 <script lang="ts" setup>
-import { LazyAsideMinorNews } from '#components';
+import { LazyAsideMinorNews, LazyAsideMinorContributions } from '#components';
 
-const asideMinor = useAsideMinor();
+const { asideMinorState } = useAsideMinor();
 const mouted = ref(false);
-
-watchEffect(() => {
-    console.log('Aside Minor Pane State Change. New state:', asideMinor.value);
-});
+const showLoadingIcon = ref(false);
+const loadingIconDelay = 500;
+let loadingTimer: ReturnType<typeof setTimeout> | null = null;
 
 onMounted(() => {
     mouted.value = true;
+});
+
+watch(
+    asideMinorState,
+    () => {
+        if (loadingTimer) {
+            clearTimeout(loadingTimer);
+            loadingTimer = null;
+        }
+
+        showLoadingIcon.value = false;
+
+        loadingTimer = setTimeout(() => {
+            showLoadingIcon.value = true;
+        }, loadingIconDelay);
+    },
+    { immediate: true },
+);
+
+onUnmounted(() => {
+    if (loadingTimer) {
+        clearTimeout(loadingTimer);
+    }
 });
 </script>
 
 <template>
     <div class="absolute top-0 left-0 h-full w-full">
         <TransitionFade>
-            <Suspense>
-                <template #default :timeout="0">
+            <Suspense v-if="mouted" :key="asideMinorState?.type">
+                <template #default :timeout="10">
                     <LazyAsideMinorNews
-                        v-if="mouted && asideMinor?.type === 'news'"
+                        v-if="asideMinorState?.type === 'news'"
+                    />
+                    <LazyAsideMinorContributions
+                        v-else-if="asideMinorState?.type === 'contributions'"
                     />
                     <div v-else></div>
                 </template>
                 <template #fallback>
-                    <div></div>
+                    <div
+                        v-if="showLoadingIcon"
+                        class="absolute top-0 left-0 grid h-full w-full
+                            place-items-center"
+                    >
+                        <MyRuntimeIcon
+                            :svg="loadingSvg"
+                            class="text-text-disabled text-[60px]"
+                        />
+                    </div>
+                    <div v-else></div>
                 </template>
             </Suspense>
         </TransitionFade>

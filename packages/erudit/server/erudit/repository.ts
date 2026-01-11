@@ -23,7 +23,6 @@ import { getContentFlags } from './content/repository/flags';
 
 import { getContentConnections } from './content/repository/connections';
 import { getQuoteIds } from './quote/repository/ids';
-import { countContributions } from './contributors/repository/countContributions';
 import { getContributorAvatarUrl } from './contributors/repository/avatarUrl';
 import { getSponsorAvatarUrl } from './sponsors/repository/avatarUrl';
 import { getContentDescription } from './content/repository/description';
@@ -33,6 +32,10 @@ import {
     getContentStats,
 } from './content/repository/stats';
 import { countNewsBatches, getNewsNextBatch } from './news/repository/batch';
+import {
+    countContributions,
+    getContributorContributions,
+} from './contributors/repository/contributions';
 
 export const repository = {
     db: {
@@ -43,6 +46,7 @@ export const repository = {
     contributors: {
         count: countContributors,
         countContributions,
+        contributorContributions: getContributorContributions,
         avatarUrl: getContributorAvatarUrl,
     },
     quotes: {

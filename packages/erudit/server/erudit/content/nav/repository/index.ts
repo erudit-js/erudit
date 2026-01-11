@@ -6,3 +6,4 @@ export * from './hasParent';
 export * from './hasNav';
 export * from './id';
 export * from './previousNext';
+export * from './order';

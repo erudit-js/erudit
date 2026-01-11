@@ -16,21 +16,6 @@ export type ContentItem = { type: ContentType } & Partial<{
     hidden: boolean;
 
     /**
-     * List of contributions to this content item.
-     * You can access contributors via `$CONTRIBUTOR` global variable:
-     * ```ts
-     * contributions: [
-     *   $CONTRIBUTOR.john,
-     *   {
-     *     contributor: $CONTRIBUTOR.alice,
-     *     description: 'Proposed problem "A game of circles".'
-     *   }
-     * ],
-     * ```
-     */
-    contributions: ContentContribution[];
-
-    /**
      * Mark content with specific flags.
      * @example
      * ```ts

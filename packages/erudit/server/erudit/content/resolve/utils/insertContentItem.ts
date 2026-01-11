@@ -1,17 +1,25 @@
 import { globSync } from 'glob';
-import type { ContentItem } from '@erudit-js/core/content/item';
+import { isContentItem, type ContentItem } from '@erudit-js/core/content/item';
 import {
     getGlobalContentPath,
     type GlobalContentItem,
 } from '@erudit-js/core/content/global';
 
 import type { ContentNavNode } from '../../nav/types';
+import { isContentType } from '@erudit-js/core/content/type';
+import type { TopicContentItem } from '@erudit-js/core/content/topic';
+import type { PageContentItem } from '@erudit-js/core/content/page';
 
 export async function insertContentItem(
     navNode: ContentNavNode,
     contentItem: ContentItem,
 ) {
-    await resolveContributions(navNode.fullId, contentItem);
+    if (
+        isContentItem<TopicContentItem>(contentItem, 'topic') ||
+        isContentItem<PageContentItem>(contentItem, 'page')
+    ) {
+        await resolveContributions(navNode.fullId, contentItem);
+    }
 
     const decorationExtension = await resolveDecorationExtension(navNode);
     await resolveHardDependencies(navNode.fullId, contentItem);
@@ -29,7 +37,10 @@ export async function insertContentItem(
     });
 }
 
-async function resolveContributions(fullId: string, contentItem: ContentItem) {
+async function resolveContributions(
+    fullId: string,
+    contentItem: TopicContentItem | PageContentItem,
+) {
     if (contentItem.contributions) {
         const seenContributors = new Set<string>();
 

@@ -1,24 +1,46 @@
 <script lang="ts" setup>
 import NewsItem from './NewsItem.vue';
 
-const initialLoaded = ref(false);
-const showLoadingIcon = ref(false);
+interface NewsCache {
+    total?: number;
+    items: NewsItem[];
+    newIndices: number[];
+    nextIndex?: number;
+}
 
+const STORAGE_KEY = 'last-viewed-news-date';
 const newsTotal = ref(0);
 const newsItems = ref<NewsItem[]>([]);
 const newNewsItems = ref<Set<number>>(new Set());
 const nextBatchIndex = ref<number | undefined>();
 const newsLoading = ref(false);
-const phrase = ref<{ news: string; no_news: string; show_more: string }>();
 
-const STORAGE_KEY = 'last-viewed-news-date';
+const nuxtApp = useNuxtApp();
 
-const loadingTimeout = setTimeout(() => {
-    showLoadingIcon.value = true;
-}, 300);
+function getCache(): NewsCache | undefined {
+    return nuxtApp.payload.data['news'] as NewsCache | undefined;
+}
+
+function updateCache() {
+    nuxtApp.payload.data['news'] = {
+        total: newsTotal.value || undefined,
+        items: newsItems.value,
+        newIndices: Array.from(newNewsItems.value),
+        nextIndex: nextBatchIndex.value,
+    } as NewsCache;
+}
+
+function getLastViewedDate(): string | null {
+    return localStorage.getItem(STORAGE_KEY);
+}
+
+function updateLastViewedDate(date: string) {
+    localStorage.setItem(STORAGE_KEY, date);
+}
 
 async function fetchNews(index: number) {
     newsLoading.value = true;
+
     try {
         const newsBatch = await $fetch<NewsBatch>(`/api/news/batch/${index}`, {
             responseType: 'json',
@@ -31,6 +53,8 @@ async function fetchNews(index: number) {
 
         newsItems.value = newsItems.value.concat(newsBatch.items);
         nextBatchIndex.value = newsBatch.nextIndex;
+
+        updateCache();
     } catch (error) {
         console.error('Error fetching news:', error);
     } finally {
@@ -41,101 +65,71 @@ async function fetchNews(index: number) {
 function handleNewNewsItems(items: NewsItem[]) {
     if (items.length === 0) return;
 
-    const lastViewedDate = localStorage.getItem(STORAGE_KEY);
+    const lastViewedDate = getLastViewedDate();
     const latestItemDate = items[0]!.date;
 
-    if (!lastViewedDate) {
-        // No localStorage value: create it but don't mark items
-        localStorage.setItem(STORAGE_KEY, latestItemDate);
-        return;
-    }
+    if (lastViewedDate) {
+        const newItems = items
+            .map((item, idx) => (item.date > lastViewedDate ? idx : -1))
+            .filter((idx) => idx !== -1);
 
-    const newItems: number[] = [];
-
-    items.forEach((item, idx) => {
-        if (item.date > lastViewedDate) {
-            newItems.push(idx);
+        // Only mark items as new if some (but not all) are new
+        if (newItems.length > 0 && newItems.length < items.length) {
+            newNewsItems.value = new Set(newItems);
         }
-    });
-
-    if (newItems.length === items.length) {
-        // All items are new: update localStorage but don't mark them
-    } else if (newItems.length > 0) {
-        // Some items are new: mark them and update localStorage
-        newNewsItems.value = new Set(newItems);
-    } else {
-        // No new items: still update localStorage with latest date
     }
 
-    localStorage.setItem(STORAGE_KEY, latestItemDate);
+    updateLastViewedDate(latestItemDate);
 }
 
-async function fetchPhrases() {
-    phrase.value = await usePhrases('news', 'no_news', 'show_more');
+const cache = getCache();
+if (cache) {
+    newsTotal.value = cache.total || 0;
+    newsItems.value = cache.items;
+    newNewsItems.value = new Set(cache.newIndices);
+    nextBatchIndex.value = cache.nextIndex;
+} else {
+    await fetchNews(0);
 }
 
-const newsPromise = fetchNews(0);
-const phrasesPromise = fetchPhrases();
-
-Promise.all([newsPromise, phrasesPromise]).then(() => {
-    clearTimeout(loadingTimeout);
-    initialLoaded.value = true;
-});
+const phrase = await usePhrases('news', 'no_news', 'show_more');
 </script>
 
 <template>
     <AsideMinorPane>
-        <TransitionFade>
-            <div
-                v-if="initialLoaded"
-                class="absolute top-0 left-0 flex h-full w-full flex-col"
-            >
-                <AsideMinorPlainHeader
-                    icon="bell"
-                    :title="phrase!.news"
-                    :count="newsTotal === 0 ? undefined : newsTotal"
+        <div class="absolute top-0 left-0 flex h-full w-full flex-col">
+            <AsideMinorPlainHeader
+                icon="bell"
+                :title="phrase!.news"
+                :count="newsTotal === 0 ? undefined : newsTotal"
+            />
+            <section v-if="newsItems.length === 0">
+                <p class="text-text-muted p-normal text-center">
+                    {{ phrase!.no_news }}
+                </p>
+            </section>
+            <ScrollHolder class="flex-1">
+                <NewsItem
+                    v-for="(item, index) in newsItems"
+                    :item
+                    :isNew="newNewsItems.has(index)"
                 />
-                <section v-if="newsItems.length === 0">
-                    <p class="text-text-muted p-normal text-center">
-                        {{ phrase!.no_news }}
-                    </p>
-                </section>
-                <section class="nice-scrollbars flex-1 overflow-auto">
-                    <NewsItem
-                        v-for="(item, index) in newsItems"
-                        :item
-                        :isNew="newNewsItems.has(index)"
-                    />
-                    <TransitionFade>
-                        <button
-                            v-if="nextBatchIndex !== undefined"
-                            @click="fetchNews(nextBatchIndex)"
-                            :disabled="newsLoading"
-                            class="my-big px-normal py-small bg-bg-accent
-                                hocus:border-text-disabled gap-normal m-auto
-                                flex w-auto cursor-pointer items-center rounded
-                                border-2 border-transparent text-sm
-                                transition-[border,background,color]"
-                        >
-                            <MyRuntimeIcon
-                                v-if="newsLoading"
-                                :svg="loadingSvg"
-                            />
-                            <span>{{ phrase!.show_more }}</span>
-                        </button>
-                    </TransitionFade>
-                </section>
-            </div>
-            <div
-                v-else-if="showLoadingIcon"
-                class="absolute top-0 left-0 grid h-full w-full
-                    place-items-center"
-            >
-                <MyRuntimeIcon
-                    :svg="loadingSvg"
-                    class="text-text-disabled text-[60px]"
-                />
-            </div>
-        </TransitionFade>
+                <TransitionFade>
+                    <button
+                        v-if="nextBatchIndex !== undefined"
+                        @click="fetchNews(nextBatchIndex)"
+                        :disabled="newsLoading"
+                        class="my-big px-normal py-small bg-bg-accent
+                            hocus:border-text-disabled gap-normal m-auto flex
+                            w-auto cursor-pointer items-center rounded border-2
+                            border-transparent text-sm
+                            transition-[border,background,color]"
+                    >
+                        <MyRuntimeIcon v-if="newsLoading" :svg="loadingSvg" />
+                        <span>{{ phrase!.show_more }}</span>
+                    </button>
+                </TransitionFade>
+            </ScrollHolder>
+        </div>
     </AsideMinorPane>
 </template>

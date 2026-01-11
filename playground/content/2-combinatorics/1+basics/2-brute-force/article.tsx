@@ -1,8 +1,8 @@
 import gen from './gen';
 
 const myAttr: ProblemCustomAttribute = {
-    label: 'Custom attribute',
-    hint: 'This is a custom attribute',
+    label: 'ЕГЭ Физика',
+    hint: ' фывафы вафывал фджывалфывла ыфвлал жфвыла лыв',
 };
 
 export default defineDocument({
@@ -18,7 +18,7 @@ export default defineDocument({
         <H1>Зачем это нужно?</H1>
 
         <BlockMath>{math`
-            \lim\limits_{n \to \infty} \frac{1}{n} = \frac{n}{\infty}
+            \lim\limits_{n \to \infty} \frac{1}{n} = \frac{n}{\infty} \text{ (ну почти)}
         `}</BlockMath>
 
         <P>
