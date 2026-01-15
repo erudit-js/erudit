@@ -8,7 +8,7 @@ const { personType, persons } = defineProps<{
     persons: IndexPagePersons;
 }>();
 
-const changeInterval = 1500;
+const changeInterval = 2500;
 
 const personIds = Object.keys(persons);
 const personsNumber = personIds.length;

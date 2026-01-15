@@ -1,8 +1,12 @@
 import type { AnySchema, FinalizedProse, RawElement } from '@jsprose/core';
+import type { ContributorContribution } from './content/contributions.js';
 
 export interface EruditContributors {
     enabled: boolean;
     becomeContributorLink?: string;
+    howToImproveLink?: string;
+    reportIssueLink?: string;
+    editLinkPrefix?: string;
 }
 
 export type ContributorDefinition = Partial<{
@@ -91,4 +95,5 @@ export interface PageContributor {
     avatarUrl?: string;
     description?: FinalizedProse;
     editor?: boolean;
+    contributions?: ContributorContribution[];
 }

@@ -75,6 +75,7 @@ describe('Problem', () => {
                     title="Script Problem"
                     level="example"
                     applied
+                    search
                     script={problemScript()}
                 />,
             );
@@ -97,8 +98,12 @@ describe('Problem', () => {
             });
             expect(scriptProblem.title).toBe('Script Problem');
             expect(scriptProblem.snippet).toEqual({
-                search: true,
                 title: 'Script Problem',
+            });
+            expect(scriptProblem.snippetFlags).toEqual({
+                search: true,
+                quick: undefined,
+                seo: true,
             });
             expect(scriptProblem.toc).toEqual({ title: 'Script Problem' });
         });
@@ -147,7 +152,7 @@ describe('Problem', () => {
             _prepareRegistry();
 
             const childProblem = asEruditRaw(
-                <Problem title="Child Problem" level="easy">
+                <Problem title="Child Problem" level="easy" search>
                     <ProblemDescription>
                         <P>Problem description</P>
                     </ProblemDescription>
@@ -169,8 +174,12 @@ describe('Problem', () => {
             ).toBe(true);
             expect(childProblem.title).toBe('Child Problem');
             expect(childProblem.snippet).toEqual({
-                search: true,
                 title: 'Child Problem',
+            });
+            expect(childProblem.snippetFlags).toEqual({
+                search: true,
+                quick: undefined,
+                seo: true,
             });
             expect(childProblem.toc).toEqual({ title: 'Child Problem' });
         });

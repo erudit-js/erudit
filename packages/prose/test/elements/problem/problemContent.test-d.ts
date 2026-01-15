@@ -7,14 +7,14 @@ describe('Problem Content', () => {
         ProblemCheck({ answer: 42 });
         ProblemCheck({ answers: [42, 43] });
         ProblemCheck({
-            script: true,
+            script: 'myCheck',
         });
 
         // @ts-expect-error
         ProblemCheck({
             answer: 42,
             answers: [42, 43],
-            script: true as const,
+            script: 'myCheck',
         });
     });
 });

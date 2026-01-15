@@ -35,7 +35,7 @@ onMounted(() => {
 
     const initCommand: SearchCommandInit = {
         type: 'init',
-        fullSiteUrl: withFullUrl(),
+        baseUrl: withBaseUrl('/'),
         language: ERUDIT.config.project.language.current,
         cacheId: String(
             import.meta.dev ? Date.now() : runtimeConfig.public.buildTimestamp,

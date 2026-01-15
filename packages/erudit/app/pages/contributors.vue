@@ -1,8 +1,8 @@
 <script lang="ts" setup>
 import type { ListContributor } from '@erudit-js/core/contributor';
 
-const { showNews } = useAsideMinor();
-showNews();
+const { showNewsAside } = useAsideMinor();
+showNewsAside();
 
 const nuxtApp = useNuxtApp();
 const payloadKey = 'list-contributors';
@@ -26,6 +26,12 @@ const description =
     (ERUDIT.config.project.contributors?.becomeContributorLink
         ? ' ' + phrase.contributors_invite
         : '');
+
+useStandartSeo({
+    title: phrase.contributors,
+    description: phrase.contributors_description,
+    urlPath: PAGES.contributors,
+});
 </script>
 
 <template>

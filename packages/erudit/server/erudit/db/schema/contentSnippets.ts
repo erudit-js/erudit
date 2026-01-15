@@ -11,13 +11,14 @@ export const contentSnippets = sqliteTable(
     {
         contentFullId: text().notNull(),
         contentProseType: text().notNull().$type<ContentProseType>(),
+        title: text().notNull(),
+        description: text(),
         elementId: text().notNull(),
         schemaName: text().notNull(),
         search: integer({ mode: 'boolean' }).notNull(),
+        searchSynonyms: text({ mode: 'json' }).$type<string[]>(),
         quick: integer({ mode: 'boolean' }).notNull(),
-        title: text().notNull(),
-        description: text(),
-        synonyms: text({ mode: 'json' }).$type<string[]>(),
+        seo: integer({ mode: 'boolean' }).notNull(),
     },
     (table) => [
         primaryKey({

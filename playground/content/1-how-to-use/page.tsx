@@ -13,7 +13,7 @@ export const page = definePage({
     ],
 });
 
-export default defineDocument()(() => (
+export const content = defineProse()(() => (
     <>
         <P>Здесь описание, как пользоваться этим сайтом.</P>
     </>

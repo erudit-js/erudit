@@ -72,6 +72,7 @@ export type ResolvedTocHeading = {
     level: 1 | 2 | 3;
     title: string;
     elementId: string;
+    children: ResolvedTocItem[];
 };
 
 export type ResolvedTocElement = {
@@ -91,6 +92,7 @@ export const tocItemStep = defineResolveStep(({ rawElement, proseElement }) => {
                 level: rawElement.data.level,
                 title: rawElement.toc.title,
                 elementId: proseElement.id,
+                children: [],
             };
             return tocItem;
         } else {

@@ -1,6 +1,4 @@
 <script lang="ts" setup>
-import { LazyAsideMinorNews, LazyAsideMinorContributions } from '#components';
-
 const { asideMinorState } = useAsideMinor();
 const mouted = ref(false);
 const showLoadingIcon = ref(false);
@@ -43,8 +41,19 @@ onUnmounted(() => {
                     <LazyAsideMinorNews
                         v-if="asideMinorState?.type === 'news'"
                     />
-                    <LazyAsideMinorContributions
-                        v-else-if="asideMinorState?.type === 'contributions'"
+                    <LazyAsideMinorContributor
+                        v-else-if="asideMinorState?.type === 'contributor'"
+                    />
+                    <LazyAsideMinorContentContributions
+                        v-else-if="
+                            asideMinorState?.type === 'content-contributions'
+                        "
+                    />
+                    <LazyAsideMinorContentPage
+                        v-else-if="asideMinorState?.type === 'content-page'"
+                    />
+                    <LazyAsideMinorContentTopic
+                        v-else-if="asideMinorState?.type === 'content-topic'"
                     />
                     <div v-else></div>
                 </template>

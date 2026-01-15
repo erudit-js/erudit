@@ -71,9 +71,9 @@ function processHeadingElement(
 
     element.title = title;
 
-    element.snippet = {
-        search: true,
-    };
+    element.snippetFlags ||= {};
+    element.snippetFlags.search ??= true;
+    element.snippetFlags.seo ??= false;
 
     element.toc = {
         add: true,

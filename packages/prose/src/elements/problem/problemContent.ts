@@ -230,8 +230,8 @@ export const problemAnswer = defineProblemSectionContainer('answer');
 
 export type CheckFunction = (args: {
     answer: string | undefined;
-    i: number;
-    answers: Record<number | string, string | undefined>;
+    name: string;
+    answers: Record<string, string | undefined>;
 }) => boolean;
 
 export interface ProblemCheckData {
@@ -239,7 +239,7 @@ export interface ProblemCheckData {
     hint?: string;
     placeholder?: string;
     answers?: (string | undefined)[];
-    script?: true;
+    script?: string;
 }
 
 export const problemCheckSchema = defineSchema({
@@ -263,7 +263,7 @@ export const ProblemCheck = defineEruditTag({
               answer?: undefined;
               script?: undefined;
           }
-        | { script: true; answers?: undefined; answer?: undefined }
+        | { script: string; answers?: undefined; answer?: undefined }
     ) &
         NoTagChildren
 >(({ element, tagName, props, children }) => {
@@ -282,7 +282,7 @@ export const ProblemCheck = defineEruditTag({
     } else if (props.script !== undefined) {
         element.data = {
             ...element.data,
-            script: true,
+            script: props.script,
         };
     }
 

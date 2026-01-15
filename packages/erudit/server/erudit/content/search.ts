@@ -127,7 +127,7 @@ export async function searchIndexSnippets(): Promise<SearchEntriesList[]> {
             description: dbSnippet.description || undefined,
             link,
             location: locationTitle,
-            synonyms: dbSnippet.synonyms || undefined,
+            synonyms: dbSnippet.searchSynonyms || undefined,
         });
     }
 

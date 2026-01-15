@@ -73,6 +73,14 @@ export async function resolveTopic(topicNode: ContentNavNode) {
                     },
                 );
 
+                if (resolvedTopicPart.tocItems?.length) {
+                    await ERUDIT.db.insert(ERUDIT.db.schema.contentToc).values({
+                        fullId: topicNode.fullId,
+                        topicPart,
+                        toc: resolvedTopicPart.tocItems,
+                    });
+                }
+
                 await ERUDIT.db
                     .update(ERUDIT.db.schema.topics)
                     .set({

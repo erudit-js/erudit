@@ -4,93 +4,97 @@ import type { EruditProcessTagArgs } from './tag.js';
 import { defineResolveStep } from './resolveStep.js';
 import type { EruditRawElement } from './rawElement.js';
 
-interface SnippetBase {
+/**
+ * Snippet attribute - only contains title and description
+ */
+export interface SnippetProp {
     title?: string;
     description?: string;
 }
 
-interface SnippetSearch {
+export type ObjPropSnippet = {
+    /**
+     * Compact summary of the element with title and description.
+     */
+    snippet?: SnippetProp;
+};
+
+export type ObjPropSearch = {
     /**
      * Show element in search results.
+     * Can be a boolean to enable/disable, or an object with synonyms.
      */
-    search?:
-        | boolean
-        | {
-              synonyms?: string[];
-          };
-}
+    search?: boolean | { synonyms: string[] };
+};
 
-interface SnippetQuick {
+export type ObjPropQuick = {
     /**
      * Show element in "Quick Links" sections at start of the page and also in TOC.
      */
     quick?: boolean;
-}
-
-export type Snippet = SnippetBase & SnippetQuick & SnippetSearch;
-export type ObjPropSnippet = {
-    /**
-     * Compact summary of the element to use in other places (e.g., search results, quick links, TOC).
-     */
-    snippet?: Snippet;
 };
-export type ObjRawElementSnippet = { snippet?: Snippet };
+
+export type ObjPropSeo = {
+    /**
+     * When targeting this element with '#' anchor, adjust SEO metadata (like title and description).
+     * Search engines should treat it as a different "page" and therefore show it as a standalone search result.
+     */
+    seo?: boolean;
+};
+
+export type ObjRawElementSnippet = {
+    snippet?: SnippetProp;
+    snippetFlags?: {
+        quick?: boolean;
+        search?: boolean | { synonyms: string[] };
+        seo?: boolean;
+    };
+};
 
 export function finalizeSnippet(
     processTagArgs: EruditProcessTagArgs,
-): Snippet | undefined {
-    const propSnippet = processTagArgs.props.snippet || {};
-    const elementSnippet = processTagArgs.element.snippet || {};
+): SnippetProp | undefined {
+    const quick =
+        processTagArgs.props.quick ??
+        processTagArgs.element.snippetFlags?.quick;
+    const search =
+        processTagArgs.props.search ??
+        processTagArgs.element.snippetFlags?.search;
+    let seo =
+        processTagArgs.props.seo ?? processTagArgs.element.snippetFlags?.seo;
 
-    const quick = finalizeQuick(propSnippet, elementSnippet);
-    const search = finalizeSearch(propSnippet, elementSnippet);
-
-    if ([quick, search].every((v) => Boolean(v) === false)) {
+    // If none of the flags are set to true, no snippet is created
+    if (!quick && !search && !seo) {
         return undefined;
     }
 
-    const title = finalizeTitle(processTagArgs);
-    const description = finalizeDescription(propSnippet, elementSnippet);
+    // Enable SEO if either quick or search is enabled unless SEO is explicitly disabled
+    // Check both element defaults and props - if either explicitly disables seo, don't auto-enable
+    const seoExplicitlyDisabled =
+        processTagArgs.element.snippetFlags?.seo === false ||
+        processTagArgs.props.seo === false;
 
-    const snippet: Snippet = {
+    if (!seoExplicitlyDisabled) {
+        if (quick || search) {
+            seo = true;
+        }
+    }
+
+    const title = finalizeTitle(processTagArgs);
+    const description = finalizeDescription(processTagArgs);
+
+    const snippet: SnippetProp = {
         title,
     };
-
-    if (quick) {
-        snippet.quick = quick;
-    }
-
-    if (search) {
-        snippet.search = search;
-    }
 
     if (description) {
         snippet.description = description;
     }
 
+    // Store flags on element for later resolution
+    processTagArgs.element.snippetFlags = { quick, search, seo };
+
     return snippet;
-}
-
-function finalizeQuick(
-    propSnippet: Snippet,
-    elementSnippet: Snippet,
-): Snippet['quick'] {
-    if (propSnippet.quick === undefined) {
-        return elementSnippet.quick;
-    }
-
-    return propSnippet.quick;
-}
-
-function finalizeSearch(
-    propSnippet: Snippet,
-    elementSnippet: Snippet,
-): Snippet['search'] {
-    if (propSnippet.search === undefined) {
-        return elementSnippet.search;
-    }
-
-    return propSnippet.search;
 }
 
 function finalizeTitle(processTagArgs: EruditProcessTagArgs): string {
@@ -107,26 +111,37 @@ function finalizeTitle(processTagArgs: EruditProcessTagArgs): string {
 }
 
 function finalizeDescription(
-    propSnippet: Snippet,
-    elementSnippet: Snippet,
+    processTagArgs: EruditProcessTagArgs,
 ): string | undefined {
-    return (propSnippet.description || elementSnippet.description)?.trim();
+    return (
+        processTagArgs.props.snippet?.description?.trim() ||
+        processTagArgs.element.snippet?.description?.trim()
+    );
 }
 
 //
 // Resolve
 //
 
-export interface ResolvedSnippet extends Snippet {
+export interface ResolvedSnippet {
+    title: string;
+    description?: string;
+    quick?: boolean;
+    search?: boolean | { synonyms: string[] };
+    seo?: boolean;
     schemaName: string;
     isUnique: boolean;
     elementId: string;
 }
 
 export const snippetStep = defineResolveStep(({ rawElement, proseElement }) => {
-    if (rawElement.snippet && proseElement.id) {
+    if (rawElement.snippet && proseElement.id && rawElement.snippet.title) {
         const resolvedSnippet: ResolvedSnippet = {
-            ...rawElement.snippet,
+            title: rawElement.snippet.title,
+            description: rawElement.snippet.description,
+            quick: rawElement.snippetFlags?.quick,
+            search: rawElement.snippetFlags?.search,
+            seo: rawElement.snippetFlags?.seo,
             schemaName: rawElement.schemaName,
             isUnique: Boolean(rawElement.uniqueName),
             elementId: proseElement.id,

@@ -2,7 +2,7 @@ import type { ContentFlags } from './flags.js';
 import type { ContentDependency } from './dependencies.js';
 import type { ContentType } from './type.js';
 import type { ContentExternal } from './externals.js';
-import type { ContentContribution } from './contributions.js';
+import type { ContentSeo } from './seo.js';
 
 export type ContentItem = { type: ContentType } & Partial<{
     title: string;
@@ -63,6 +63,8 @@ export type ContentItem = { type: ContentType } & Partial<{
      * ];
      */
     externals: ContentExternal[];
+
+    seo: ContentSeo;
 }>;
 
 export type TypelessContentItem<TContentItem extends ContentItem> = Omit<

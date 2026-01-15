@@ -36,7 +36,7 @@ const hasExtra = child.stats || child.quickLinks;
         >
             <div v-if="child.quickLinks" class="relative top-[1px]">
                 <MainQuickLinks
-                    :quickLinks="child.quickLinks"
+                    :elementSnippets="child.quickLinks"
                     mode="children"
                 />
             </div>

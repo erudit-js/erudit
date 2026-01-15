@@ -97,7 +97,7 @@ const phrase = await usePhrases('news', 'no_news', 'show_more');
 
 <template>
     <AsideMinorPane>
-        <div class="absolute top-0 left-0 flex h-full w-full flex-col">
+        <div class="flex h-full w-full flex-col">
             <AsideMinorPlainHeader
                 icon="bell"
                 :title="phrase!.news"
@@ -105,7 +105,7 @@ const phrase = await usePhrases('news', 'no_news', 'show_more');
             />
             <section v-if="newsItems.length === 0">
                 <p class="text-text-muted p-normal text-center">
-                    {{ phrase!.no_news }}
+                    {{ phrase.no_news }}
                 </p>
             </section>
             <ScrollHolder class="flex-1">
@@ -126,7 +126,7 @@ const phrase = await usePhrases('news', 'no_news', 'show_more');
                             transition-[border,background,color]"
                     >
                         <MyRuntimeIcon v-if="newsLoading" :svg="loadingSvg" />
-                        <span>{{ phrase!.show_more }}</span>
+                        <span>{{ phrase.show_more }}</span>
                     </button>
                 </TransitionFade>
             </ScrollHolder>

@@ -51,6 +51,7 @@ export async function setupServerImporter() {
                 code = insertDocumentId({
                     code,
                     documentId: stringifyDocumentId(documentId),
+                    aliasName: 'defineProse',
                 });
             }
 

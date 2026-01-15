@@ -1,6 +1,10 @@
 import article from './article';
 
-export default defineDocument()(() => (
+export default defineProse({
+    uniques: {
+        combinatorics: P,
+    },
+})(({ uniques }) => (
     <>
         <Diagram>{`
             graph TD
@@ -21,13 +25,13 @@ export default defineDocument()(() => (
 
         <Hr />
 
-        <P>
+        <P $={uniques.combinatorics} quick snippet={{ title: 'Лох пердох' }}>
             Нас повсюду окружают комбинации -- самые разные объекты, собранные в
             наборы по каким-то правилам. Раз комбинации встречаются очень часто,
             нам нужна наука, которая их изучает.
         </P>
 
-        <Include>{article.uniques.combinatorics}</Include>
+        <Include toc>{article.uniques.combinatorics}</Include>
 
         <Hr />
 
@@ -38,7 +42,7 @@ export default defineDocument()(() => (
             называются "проблемами комбинаторики":
         </P>
 
-        <Include>{article.uniques.goals}</Include>
+        <Include toc>{article.uniques.goals}</Include>
 
         <P>
             Почти всегда задачи по комбинаторике охватывают сразу несколько
@@ -54,7 +58,7 @@ export default defineDocument()(() => (
             стоит за сложением двух чисел.
         </P>
 
-        <Include>{article.uniques.cutTheCrap}</Include>
+        <Include toc>{article.uniques.cutTheCrap}</Include>
 
         <Hr />
 

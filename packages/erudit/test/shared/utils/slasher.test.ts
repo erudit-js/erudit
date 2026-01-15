@@ -54,4 +54,22 @@ describe('slasher', () => {
             }),
         ).toBe('/a////b//c/');
     });
+
+    it('preserves protocol double slashes (http://, https://, file://)', () => {
+        expect(slasher('http://example.com/path')).toBe(
+            'http://example.com/path',
+        );
+        expect(slasher('https://example.com/path')).toBe(
+            'https://example.com/path',
+        );
+        expect(slasher('file://C:/path/to/file')).toBe(
+            'file://C:/path/to/file',
+        );
+        expect(slasher('http://example.com//path///to//resource')).toBe(
+            'http://example.com/path/to/resource',
+        );
+        expect(slasher('https://example.com/', { trailing: false })).toBe(
+            'https://example.com',
+        );
+    });
 });

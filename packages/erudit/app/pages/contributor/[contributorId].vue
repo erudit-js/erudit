@@ -30,11 +30,23 @@ const pageContributor = await (async () => {
     return fetchedContributor;
 })();
 
-const { showContributions } = useAsideMinor();
-showContributions(pageContributor.contributions);
+const { showContributorAside } = useAsideMinor();
+showContributorAside(pageContributor.contributions);
 
 const color = stringColor(contributorId.value);
-const phrase = await usePhrases('contributors', 'editor');
+const phrase = await usePhrases(
+    'contributors',
+    'editor',
+    'contributor_page_description',
+);
+
+useStandartSeo({
+    title: pageContributor.displayName || pageContributor.id,
+    description: phrase.contributor_page_description(
+        pageContributor.displayName || pageContributor.id,
+    ),
+    urlPath: PAGES.contributor(contributorId.value),
+});
 </script>
 
 <template>

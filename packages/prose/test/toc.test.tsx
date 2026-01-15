@@ -128,7 +128,7 @@ describe('finalizeToc', () => {
 });
 
 describe('tocStep', () => {
-    it('should collect TOC items', async () => {
+    it('should collect TOC items in hierarchical structure', async () => {
         await isolateProse(async () => {
             PROSE_REGISTRY.setItems(
                 paragraphRegistryItem,
@@ -149,7 +149,8 @@ describe('tocStep', () => {
                             Paragraph <B toc="Bold Too">in</B> Toc
                         </P>
                         <P
-                            snippet={{ quick: true, title: 'P Snippet Title' }}
+                            snippet={{ title: 'P Snippet Title' }}
+                            quick
                             toc={true}
                         >
                             Paragraph in Toc too
@@ -158,31 +159,34 @@ describe('tocStep', () => {
                 ),
             });
 
-            expect(tocItems).toHaveLength(4);
+            expect(tocItems).toHaveLength(1);
             expect(tocItems).toEqual<ResolvedTocItem[]>([
                 {
                     type: 'heading',
                     level: 1,
                     title: 'Heading 1 Title',
                     elementId: proseElement.children![0].id!,
-                },
-                {
-                    type: 'element',
-                    schemaName: 'emphasis',
-                    title: 'Bold Too',
-                    elementId: proseElement.children![2].children![1].id!,
-                },
-                {
-                    type: 'element',
-                    schemaName: 'paragraph',
-                    title: 'P Toc Title',
-                    elementId: proseElement.children![2].id!,
-                },
-                {
-                    type: 'element',
-                    schemaName: 'paragraph',
-                    title: 'P Snippet Title',
-                    elementId: proseElement.children![3].id!,
+                    children: [
+                        {
+                            type: 'element',
+                            schemaName: 'emphasis',
+                            title: 'Bold Too',
+                            elementId:
+                                proseElement.children![2].children![1].id!,
+                        },
+                        {
+                            type: 'element',
+                            schemaName: 'paragraph',
+                            title: 'P Toc Title',
+                            elementId: proseElement.children![2].id!,
+                        },
+                        {
+                            type: 'element',
+                            schemaName: 'paragraph',
+                            title: 'P Snippet Title',
+                            elementId: proseElement.children![3].id!,
+                        },
+                    ],
                 },
             ]);
         });

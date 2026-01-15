@@ -1,1 +1,1 @@
-export { defineDocument } from '@jsprose/core';
+export { defineDocument as defineProse } from '@jsprose/core';

@@ -8,15 +8,15 @@ export function withBaseUrl(path: string): string {
 }
 
 export function withFullUrl(path?: string): string {
-    if (import.meta.server) {
-        throw createError({
-            statusCode: 500,
-            statusMessage: `Full URLs can't be created on the server side!`,
-        });
+    // Return external URLs as is
+    if (path) {
+        if (!path.startsWith('/')) {
+            return path;
+        }
     }
 
-    const fullOrigin = location.origin + withBaseUrl('/');
-    const _path = slasher(path || '', { leading: false });
+    const originUrl = ERUDIT.config.project.originUrl;
+    const fullUrl = slasher(originUrl + withBaseUrl('/') + (path || ''));
 
-    return fullOrigin + _path;
+    return fullUrl;
 }

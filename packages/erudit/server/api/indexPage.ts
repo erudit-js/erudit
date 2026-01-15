@@ -36,6 +36,11 @@ export default defineEventHandler<Promise<IndexPage>>(async () => {
         indexPage.stats = stats;
     }
 
+    const seo = ERUDIT.config.project.indexPage?.seo;
+    if (seo) {
+        indexPage.seo = seo;
+    }
+
     {
         const dbContributors = await ERUDIT.db.query.contributors.findMany({
             columns: {

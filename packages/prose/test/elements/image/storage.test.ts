@@ -13,7 +13,7 @@ describe('getImageSize', () => {
     });
 
     it('should throw error for non-image file', async () => {
-        expect(async () => {
+        await expect(async () => {
             await getImageSize(currentDir + '/notAnImage.txt');
         }).rejects.toThrow();
     });

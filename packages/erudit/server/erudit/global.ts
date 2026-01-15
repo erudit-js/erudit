@@ -28,6 +28,6 @@ Object.assign(globalThis, {
     defineTopic,
     definePage,
     defineGroup,
-    defineDocument,
+    defineProse,
     Include,
 });

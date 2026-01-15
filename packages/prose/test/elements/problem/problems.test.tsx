@@ -109,7 +109,7 @@ describe('Problems', () => {
             _prepareRegistry();
 
             const problems = asEruditRaw(
-                <Problems title="Sample Problems" level="easy">
+                <Problems title="Sample Problems" level="easy" search>
                     <P>Paragraph 1</P>
                     <SubProblem label="first">
                         <ProblemDescription>
@@ -139,8 +139,12 @@ describe('Problems', () => {
             );
             expect(problems.title).toBe('Sample Problems');
             expect(problems.snippet).toEqual({
-                search: true,
                 title: 'Sample Problems',
+            });
+            expect(problems.snippetFlags).toEqual({
+                search: true,
+                quick: undefined,
+                seo: true,
             });
             expect(problems.toc).toEqual({ title: 'Sample Problems' });
         });

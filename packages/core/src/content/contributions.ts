@@ -1,13 +1,13 @@
 import type { GlobalContributorTypeguard } from '../contributor.js';
 
-export interface ContentContributionDescribed {
+export interface ConfigContributionDescribed {
     contributor: GlobalContributorTypeguard;
     description: string;
 }
 
-export type ContentContribution =
+export type ConfigContribution =
     | GlobalContributorTypeguard
-    | ContentContributionDescribed;
+    | ConfigContributionDescribed;
 
 export type IContributable = {
     /**
@@ -23,11 +23,22 @@ export type IContributable = {
      * ],
      * ```
      */
-    contributions?: ContentContribution[];
+    contributions?: ConfigContribution[];
 };
 
 //
-// Page contributions
+// Content page contributions
+//
+
+export interface ContentContribution {
+    contributorId: string;
+    name?: string;
+    avatarUrl?: string;
+    description?: string;
+}
+
+//
+// Contributor page contributions
 //
 
 export interface ContributorContributionItem {

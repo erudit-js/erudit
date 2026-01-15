@@ -1,6 +1,6 @@
 <script lang="ts" setup>
-const { showNews } = useAsideMinor();
-showNews();
+const { showNewsAside } = useAsideMinor();
+showNewsAside();
 
 const nuxtApp = useNuxtApp();
 const payloadKey = 'index-page';
@@ -8,6 +8,8 @@ const indexPage: IndexPage =
     (nuxtApp.static.data[payloadKey] ||=
     nuxtApp.payload.data[payloadKey] ||=
         await $fetch<IndexPage>('/api/indexPage', { responseType: 'json' }));
+
+useIndexSeo(indexPage);
 
 const logotypeInvertClass = computed(() => {
     if (!indexPage.logotype?.invert) return '';

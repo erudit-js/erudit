@@ -6,7 +6,7 @@ import type { MaybeMyIconName } from '#my-icons';
 
 export interface SearchCommandInit {
     type: 'init';
-    fullSiteUrl: string;
+    baseUrl: string;
     cacheId: string;
     language: LanguageCode;
 }

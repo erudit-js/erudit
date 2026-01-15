@@ -38,7 +38,7 @@ const ru: LanguagePhrases = {
     direct_link: 'Прямая ссылка',
     direct_link_explain: 'Вы собираетесь открыть прямую ссылку:',
     book: 'Учебник',
-    group: 'Группа',
+    group: 'Категория',
     topic: 'Тема',
     article: 'Статья',
     summary: 'Конспект',
@@ -73,6 +73,8 @@ const ru: LanguagePhrases = {
         'Список людей, которые внесли вклад в материалы проекта: предложили ценные идеи, вносили корректировки в существующий материал или же написали собственный!',
     contributors_invite:
         'Вы тоже можете помочь проекту, внести свой вклад и попасть на эту страницу!',
+    contributor_page_description: (name: string) =>
+        `Персональная страница автора "${name}" с данными о вкладе в проект.`,
     become_contributor: 'Стать автором',
     no_contributors: 'Пока что авторов нет. Вы можете стать первым!',
     contribution: 'Вклад',
@@ -84,6 +86,18 @@ const ru: LanguagePhrases = {
     news: 'Новости',
     no_news: 'Новостей пока нет.',
     show_more: 'Показать больше',
+    make_contribution: 'Внести свой вклад',
+    improve_material: 'Улучшить материал',
+    how_to_improve: 'Как улучшить?',
+    report_issue: 'Сообщить о проблеме',
+    edit_page: 'Редактировать страницу',
+    no_toc: 'Содержание пусто.',
+    article_seo_description: (contentTitle: string) =>
+        `Понятное и интересное объяснение темы «${contentTitle}». Показательные примеры, важные свойства, интересные факты, применение в жизни, понятные доказательства. Здесь вы точно разберетесь!`,
+    summary_seo_description: (contentTitle: string) =>
+        `Конспект темы «${contentTitle}»: ключевые определения, теоремы, свойства и примеры их использвания. Все самое важное и в кратком виде!`,
+    practice_seo_description: (contentTitle: string) =>
+        `Разнообразные задачи с подсказками и ответами по теме «${contentTitle}». Интересные условия, подсказки и подробные решения. Превратите знания в навык!`,
 
     default_index_title: 'Erudit',
     default_index_short: 'Современные цифровые учебники!',

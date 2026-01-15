@@ -3,7 +3,7 @@ import travelPlan from './assets/travel-plan.png';
 import applesToCircles from './assets/apples-to-circles.svg';
 import gambling from './assets/gambling.jpg';
 
-export default defineDocument({
+export default defineProse({
     uniques: {
         combinatorics: Term,
         goals: Important,
@@ -109,11 +109,7 @@ export default defineDocument({
             раздел математики. Называется он "комбинаторика".
         </P>
 
-        <Term
-            title="Комбинаторика"
-            $={uniques.combinatorics}
-            snippet={{ quick: true, search: true }}
-        >
+        <Term title="Комбинаторика" $={uniques.combinatorics} quick search toc>
             Раздел математики, в котором изучаются закономерности составления
             комбинаций из различных объектов.
         </Term>
@@ -161,11 +157,7 @@ export default defineDocument({
             задач, в решении которых используется комбинаторика:
         </P>
 
-        <Important
-            title="Задачи комбинаторики"
-            $={uniques.goals}
-            snippet={{ quick: true, search: true }}
-        >
+        <Important title="Задачи комбинаторики" $={uniques.goals} quick search>
             <List type="ol">
                 <Li>Поиск конкретных комбинаций с заданными свойствами.</Li>
                 <Li>Доказательство существования или отсутствия комбинаций.</Li>
@@ -224,11 +216,7 @@ export default defineDocument({
             подчеркнуть эту важную деталь.
         </P>
 
-        <Important
-            title="Избавляемся от смысла"
-            $={uniques.cutTheCrap}
-            snippet={{ quick: true }}
-        >
+        <Important title="Избавляемся от смысла" $={uniques.cutTheCrap} quick>
             Нас не интересует, какой <B accent>не</B>математический смысл стоит
             за комбинациями.
             <Br />
@@ -265,7 +253,7 @@ export default defineDocument({
             по строгим правилам.
         </P>
 
-        <H2 snippet={{ quick: true }}>Исторический экскурс</H2>
+        <H2 quick>Исторический экскурс</H2>
 
         <P>
             Для полноты картины будет полезно знать не только то, чем

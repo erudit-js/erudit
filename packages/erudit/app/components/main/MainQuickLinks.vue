@@ -1,11 +1,26 @@
 <script lang="ts" setup>
-defineProps<{ mode: 'single' | 'children'; quickLinks?: QuickLink[] }>();
+const { elementSnippets } = defineProps<{
+    mode: 'single' | 'children';
+    elementSnippets?: ElementSnippet[];
+}>();
+
+const quickLinks = (() => {
+    if (!elementSnippets) {
+        return;
+    }
+
+    const filtered = elementSnippets.filter(
+        (snippet) => snippet.quick === true,
+    );
+
+    return filtered.length > 0 ? filtered : undefined;
+})();
 
 const phrase = await usePhrases('key_elements');
 </script>
 
 <template>
-    <template v-if="quickLinks">
+    <template v-if="elementSnippets">
         <section v-if="mode === 'single'" class="px-main py-main-half">
             <MainSubTitle :title="phrase.key_elements + ':'" />
             <div

@@ -5,7 +5,32 @@ const groupId = Array.isArray(route.params.groupId)
     : route.params.groupId!;
 const contentTypePath = stringifyContentTypePath('group', groupId);
 const mainContent = await useMainContent<MainContentGroup>(contentTypePath);
-const phrase = await usePhrases('begin_learning');
+
+const { showNewsAside, showContentContributionsAside } = useAsideMinor();
+if (ERUDIT.config.project.contributors?.enabled) {
+    showContentContributionsAside(
+        mainContent.contentRelativePath,
+        mainContent.type,
+        undefined,
+        mainContent.contributions,
+    );
+} else {
+    showNewsAside();
+}
+
+const phrase = await usePhrases('group', 'begin_learning');
+
+await useContentSeo({
+    title: mainContent.title,
+    bookTitle: mainContent.bookTitle,
+    description: mainContent.description,
+    contentTypeSuffix: phrase.group,
+    contentTypePath: {
+        type: 'group',
+        contentId: mainContent.shortId,
+    },
+    seo: mainContent.seo,
+});
 </script>
 
 <template>

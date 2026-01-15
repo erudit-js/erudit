@@ -16,7 +16,7 @@ const { value } = defineProps<{
     };
 }>();
 
-const scriptCheckFunction = (answer: string | undefined, index: number) => {
+const scriptCheckFunction = (answer: string | undefined, name: string) => {
     if (!value.checkFunction) {
         console.warn('No check function defined for script checks!');
         return false;
@@ -24,36 +24,34 @@ const scriptCheckFunction = (answer: string | undefined, index: number) => {
 
     const checkResult = value.checkFunction({
         answer,
-        i: index,
+        name,
         answers: scriptAnswers.value,
     });
 
     if (checkResult === true) {
-        scriptAnswers.value[index] = answer;
+        scriptAnswers.value[name] = answer;
     } else {
-        delete scriptAnswers.value[index];
+        delete scriptAnswers.value[name];
     }
 
     return checkResult;
 };
 
-const scriptClearFunction = (index: number) => {
-    delete scriptAnswers.value[index];
+const scriptClearFunction = (name: string) => {
+    delete scriptAnswers.value[name];
 };
 
-const scriptChecks: ProseElement<typeof problemCheckSchema>[] = [];
-const scriptCheckIndexMap = new Map<
+const scriptCheckNameMap = new Map<
     ProseElement<typeof problemCheckSchema>,
-    number
+    string
 >();
 for (const checkElement of value.checkElements) {
     if (checkElement.data.script) {
-        scriptCheckIndexMap.set(checkElement, scriptChecks.length);
-        scriptChecks.push(checkElement);
+        scriptCheckNameMap.set(checkElement, checkElement.data.script);
     }
 }
 
-const scriptAnswers = ref<Record<string | number, string | undefined>>({});
+const scriptAnswers = ref<Record<string, string | undefined>>({});
 </script>
 
 <template>
@@ -69,12 +67,12 @@ const scriptAnswers = ref<Record<string | number, string | undefined>>({});
                     check.data.script
                         ? {
                               check: (answer: string | undefined) => {
-                                  const index = scriptCheckIndexMap.get(check)!;
-                                  return scriptCheckFunction(answer, index);
+                                  const name = scriptCheckNameMap.get(check)!;
+                                  return scriptCheckFunction(answer, name);
                               },
                               clear: () => {
-                                  const index = scriptCheckIndexMap.get(check)!;
-                                  scriptClearFunction(index);
+                                  const name = scriptCheckNameMap.get(check)!;
+                                  scriptClearFunction(name);
                               },
                           }
                         : undefined

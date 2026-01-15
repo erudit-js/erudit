@@ -18,9 +18,7 @@ import {
     getContentUnique,
 } from './content/repository/unique';
 import { getContentDecoration } from './content/repository/decoration';
-import { getContentQuickLinks } from './content/repository/quickLinks';
 import { getContentFlags } from './content/repository/flags';
-
 import { getContentConnections } from './content/repository/connections';
 import { getQuoteIds } from './quote/repository/ids';
 import { getContributorAvatarUrl } from './contributors/repository/avatarUrl';
@@ -34,8 +32,11 @@ import {
 import { countNewsBatches, getNewsNextBatch } from './news/repository/batch';
 import {
     countContributions,
+    getContentContributions,
     getContributorContributions,
 } from './contributors/repository/contributions';
+import { getContentSeo } from './content/repository/seo';
+import { getContentElementSnippets } from './content/repository/elementSnippets';
 
 export const repository = {
     db: {
@@ -66,12 +67,14 @@ export const repository = {
         title: getContentTitle,
         description: getContentDescription,
         decoration: getContentDecoration,
-        quickLinks: getContentQuickLinks,
+        elementSnippets: getContentElementSnippets,
         flags: getContentFlags,
         connections: getContentConnections,
         children: getContentChildren,
         stats: getContentStats,
         addElementCount: addContentElementCount,
+        contentContributions: getContentContributions,
+        seo: getContentSeo,
     },
     prose: {
         resolve: resolveEruditProse,

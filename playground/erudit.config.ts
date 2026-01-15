@@ -9,7 +9,7 @@ export default defineEruditConfig({
         // },
     },
     site: {
-        buildUrl: 'http://localhost:3000',
+        originUrl: 'https://en.omath.net/',
         baseUrl: '/subfolder/',
         // logotype: projectPublic('logotype.png'),
         // logotype:
@@ -21,6 +21,15 @@ export default defineEruditConfig({
         // favicon: {
         //     article: publicAsset('ava.jpg'),
         // },
+        favicon: {
+            default: projectPublic('favicons/default.svg'),
+            group: projectPublic('favicons/group.svg'),
+            book: projectPublic('favicons/book.svg'),
+            page: projectPublic('favicons/page-article.svg'),
+            article: projectPublic('favicons/page-article.svg'),
+            summary: projectPublic('favicons/summary.svg'),
+            practice: projectPublic('favicons/practice.svg'),
+        },
         style: {
             brandColor: 'light-dark(#1879d9, #4e94d9)',
         },
@@ -28,9 +37,21 @@ export default defineEruditConfig({
     // seo: {
     //     title: 'Открытая математика',
     // },
+    seo: {
+        siteTitle: 'Математика',
+        useBookSiteTitle: true,
+        image: {
+            src: 'https://omath.ru/user-asset/content/02+base-math/01-combinatorics/1+basics/1-preface/assets/joke.png',
+            width: 300,
+            height: 300,
+        },
+    },
     contributors: {
         enabled: true,
         becomeContributorLink: 'https://github.com',
+        howToImproveLink: 'https://google.com',
+        reportIssueLink: 'https://github.com',
+        editLinkPrefix: 'https://github.com',
     },
     sponsors: {
         enabled: true,
@@ -54,6 +75,9 @@ export default defineEruditConfig({
             Никаких сухих перечислений формул и теорем, везде повествовательный подход, чтобы вы понимали, почему и как сформировалось то, что сформировалось.
             Совместно!
         `,
+        seo: {
+            title: 'Неоткрытая Математика',
+        },
     },
     customLinks: [
         {

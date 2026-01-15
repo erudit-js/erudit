@@ -1,8 +1,8 @@
 <script lang="ts" setup>
 import type { PageSponsor } from '@erudit-js/core/sponsor';
 
-const { showNews } = useAsideMinor();
-showNews();
+const { showNewsAside } = useAsideMinor();
+showNewsAside();
 
 const nuxtApp = useNuxtApp();
 const payloadKey = 'page-sponsors';
@@ -17,6 +17,12 @@ const phrase = await usePhrases(
     'become_sponsor',
     'no_sponsors',
 );
+
+useStandartSeo({
+    title: phrase.sponsors,
+    description: phrase.sponsors_description,
+    urlPath: PAGES.sponsors,
+});
 </script>
 
 <template>

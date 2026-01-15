@@ -1,7 +1,13 @@
-export type FormatText = (text: string) => string;
+export interface FormatText {
+    (text: string): string;
+    (text: undefined): undefined;
+    (text?: string): string | undefined;
+}
+
+type LanguageFormatText = (text: string) => string;
 
 const formatTextLoaders: Partial<
-    Record<LanguageCode, () => Promise<{ default: FormatText }>>
+    Record<LanguageCode, () => Promise<{ default: LanguageFormatText }>>
 > = {
     ru: () => import('../formatters/ru'),
 };
@@ -16,12 +22,19 @@ export async function initFormatText() {
             ? formatTextLoaders[languageCode]
             : undefined;
 
-    let languageFormatText: FormatText = (text) => text;
+    let languageFormatText: LanguageFormatText = (text) => text;
     if (formatTextLoader) {
         languageFormatText = (await formatTextLoader()).default;
     }
 
-    function _formatText(text: string): string {
+    function _formatText(text: string): string;
+    function _formatText(text: undefined): undefined;
+    function _formatText(text?: string): string | undefined;
+    function _formatText(text?: string): string | undefined {
+        if (text === undefined) {
+            return text;
+        }
+
         //
         // Normalize spacing (new lines, spaces)
         //

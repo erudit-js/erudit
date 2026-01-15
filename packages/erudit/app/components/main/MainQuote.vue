@@ -128,7 +128,8 @@ const phrase = await usePhrases('add_quote', 'next_quote');
                     </div>
                     <div
                         v-if="hasBecomeLink || hasNextLink"
-                        class="gap-normal flex items-center text-[1.5em]"
+                        class="gap-normal micro:text-[1.5em] flex items-center
+                            text-[1.2em]"
                     >
                         <EruditLink
                             v-if="hasBecomeLink"

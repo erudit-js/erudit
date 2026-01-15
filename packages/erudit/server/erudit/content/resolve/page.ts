@@ -16,7 +16,7 @@ export async function resolvePage(pageNode: ContentNavNode) {
 
     try {
         const pageModule = await ERUDIT.import<{
-            default: AnyDocument;
+            content: AnyDocument;
             page: PageContentItem;
         }>(
             ERUDIT.config.paths.project +
@@ -29,15 +29,15 @@ export async function resolvePage(pageNode: ContentNavNode) {
             throw new Error('Page `page` export must be a page content item!');
         }
 
-        if (!isDocument(pageModule?.default)) {
-            throw new Error('Page default export must be a Document!');
+        if (!isDocument(pageModule?.content)) {
+            throw new Error('Page `content` export must be a Document!');
         }
 
         await insertContentItem(pageNode, pageModule.page);
 
         const elementsCount: Record<string, number> = {};
 
-        const proseDocument = pageModule.default;
+        const proseDocument = pageModule.content;
         const resolveResult = await resolveEruditProse(
             proseDocument.content,
             true,
@@ -58,6 +58,13 @@ export async function resolvePage(pageNode: ContentNavNode) {
                 }
             },
         );
+
+        if (resolveResult.tocItems?.length) {
+            await ERUDIT.db.insert(ERUDIT.db.schema.contentToc).values({
+                fullId: pageNode.fullId,
+                toc: resolveResult.tocItems,
+            });
+        }
 
         for (const [schemaName, count] of Object.entries(elementsCount)) {
             await ERUDIT.repository.content.addElementCount(

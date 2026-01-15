@@ -128,6 +128,10 @@ export async function clearOldContentData(contentIds: string[]) {
         .where(
             inArray(ERUDIT.db.schema.problemScripts.contentFullId, contentIds),
         );
+
+    await ERUDIT.db
+        .delete(ERUDIT.db.schema.contentToc)
+        .where(inArray(ERUDIT.db.schema.contentToc.fullId, contentIds));
 }
 
 export function requestFullContentResolve() {

@@ -15,4 +15,8 @@ export default defineTopic({
             reason: 'Там есть важный момент про отброс смысла комбинаций!',
         },
     ],
+    seo: {
+        title: 'Я не тот',
+        description: 'Я вот этот!',
+    },
 });

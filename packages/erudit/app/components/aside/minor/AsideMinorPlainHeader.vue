@@ -11,7 +11,7 @@ defineProps<{ icon: MyIconName; title: string; count?: number }>();
         <MyIcon :name="icon" class="text-text-muted text-[1.3em]" />
         <span class="font-semibold">{{ formatText(title) }}</span>
         <span
-            v-if="count !== undefined"
+            v-if="count"
             class="text-invert rounded-full bg-neutral-600 px-[8px] py-[2.5px]
                 text-xs font-semibold transition-[color,background]
                 dark:bg-neutral-300"

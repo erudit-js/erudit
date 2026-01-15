@@ -27,6 +27,7 @@ export async function resolveEruditRawElement(args: {
 
     const snippets: ResolvedSnippet[] = [];
     const tocItems: ResolvedTocItem[] = [];
+    const headingStack: ResolvedTocItem[] = []; // Track heading hierarchy
     const dependencies: Set<string> = new Set();
     const files: Set<string> = new Set();
     const problemScripts: Set<string> = new Set();
@@ -37,7 +38,45 @@ export async function resolveEruditRawElement(args: {
         if (snippet) snippets.push(snippet);
 
         const tocItem = tocItemStep(args);
-        if (tocItem) tocItems.push(tocItem);
+        if (tocItem) {
+            if (tocItem.type === 'heading') {
+                // Pop headings from stack that are same level or deeper
+                while (headingStack.length > 0) {
+                    const lastItem = headingStack[headingStack.length - 1];
+                    if (
+                        lastItem.type === 'heading' &&
+                        lastItem.level >= tocItem.level
+                    ) {
+                        headingStack.pop();
+                    } else {
+                        break;
+                    }
+                }
+
+                // Add to parent or root
+                if (headingStack.length > 0) {
+                    const parent = headingStack[headingStack.length - 1];
+                    if (parent.type === 'heading') {
+                        parent.children.push(tocItem);
+                    }
+                } else {
+                    tocItems.push(tocItem);
+                }
+
+                // Push this heading to stack
+                headingStack.push(tocItem);
+            } else {
+                // Non-heading item: add to most recent heading or root
+                if (headingStack.length > 0) {
+                    const parent = headingStack[headingStack.length - 1];
+                    if (parent.type === 'heading') {
+                        parent.children.push(tocItem);
+                    }
+                } else {
+                    tocItems.push(tocItem);
+                }
+            }
+        }
 
         const resolvedDependency = dependencyStep(args);
         if (resolvedDependency) dependencies.add(resolvedDependency);

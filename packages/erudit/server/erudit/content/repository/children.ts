@@ -16,9 +16,10 @@ export async function getContentChildren(
             'nav',
         );
         const description = await getContentDescription(childNode.fullId);
-        const quickLinks = await ERUDIT.repository.content.quickLinks(
+        const elementSnippets = await ERUDIT.repository.content.elementSnippets(
             childNode.fullId,
         );
+        const quickLinks = elementSnippets?.filter((snippet) => snippet.quick);
         const stats = await ERUDIT.repository.content.stats(childNode.fullId);
 
         const child: MainContentChildrenItem = {
@@ -31,7 +32,7 @@ export async function getContentChildren(
             child.description = description;
         }
 
-        if (quickLinks) {
+        if (quickLinks && quickLinks.length > 0) {
             child.quickLinks = quickLinks;
         }
 

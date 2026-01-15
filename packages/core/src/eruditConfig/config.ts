@@ -4,7 +4,6 @@ import type { EruditIndexPage } from './indexPage.js';
 import type { EruditSponsors } from '../sponsor.js';
 import type { EruditAdsBanners } from './ads.js';
 import type { EruditAnalytics } from './analytics.js';
-import type { EruditContent } from './content.js';
 import type { EruditDebug } from './debug.js';
 import type { EruditCustomLinks } from './links.js';
 import type { EruditRepository } from './repository.js';
@@ -22,7 +21,6 @@ export interface EruditConfig {
     ads?: EruditAdsBanners;
     site?: EruditSite;
     indexPage?: EruditIndexPage;
-    content?: EruditContent;
     contributors?: EruditContributors;
     sponsors?: EruditSponsors;
     seo?: EruditSeo;

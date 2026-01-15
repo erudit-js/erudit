@@ -3,7 +3,7 @@ import ItemBook from './ItemBook.vue';
 import ItemContent from './ItemContent.vue';
 
 const { asideMinorState } = useAsideMinor();
-const contributions = (asideMinorState.value as AsideMinorContributions)
+const contributions = (asideMinorState.value as AsideMinorContributor)
     .contributions;
 
 const phrase = await usePhrases('contribution', 'no_contribution');
@@ -11,7 +11,7 @@ const phrase = await usePhrases('contribution', 'no_contribution');
 
 <template>
     <AsideMinorPane>
-        <div class="absolute top-0 left-0 flex h-full w-full flex-col">
+        <div class="flex h-full w-full flex-col">
             <AsideMinorPlainHeader
                 icon="draw"
                 :title="phrase.contribution"

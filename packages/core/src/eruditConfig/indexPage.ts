@@ -7,4 +7,8 @@ export type EruditIndexPage = Partial<{
         maxWidth?: string;
         invert?: 'light' | 'dark';
     };
+    seo?: {
+        title?: string;
+        description?: string;
+    };
 }>;

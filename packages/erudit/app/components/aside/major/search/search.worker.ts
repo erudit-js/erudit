@@ -5,7 +5,7 @@ import { unzip } from '@erudit/shared/utils/zip';
 
 const batchSize = 50;
 
-let fullSiteUrl: string;
+let baseUrl: string;
 let initPromise: Promise<void>;
 let initError: string | undefined;
 let latestSearchId: number = -1;
@@ -19,7 +19,7 @@ onmessage = async (e) => {
     const command = e.data as SearchCommand;
     switch (command.type) {
         case 'init':
-            fullSiteUrl = command.fullSiteUrl;
+            baseUrl = command.baseUrl;
             initPromise = init(command);
             break;
         case 'search': {
@@ -43,7 +43,7 @@ onmessage = async (e) => {
 async function init(initCommand: SearchCommandInit) {
     try {
         const fetchedSearch = await fetch(
-            fullSiteUrl + 'search.json.gz?' + initCommand.cacheId,
+            baseUrl + 'search.json.gz?' + initCommand.cacheId,
         );
         const gzipSearch = await fetchedSearch.text();
         const textSearch = await unzip(gzipSearch);

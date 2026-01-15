@@ -1,6 +1,6 @@
 import article from './article';
 
-export default defineDocument()(() => (
+export default defineProse()(() => (
     <>
         <Problem title="Отбрасываем лишнее" level="easy">
             <ProblemDescription>

@@ -6,6 +6,10 @@ export interface IndexPage {
         maxWidth?: string;
         invert?: 'light' | 'dark';
     };
+    seo?: {
+        title?: string;
+        description?: string;
+    };
     description?: string;
     stats?: ContentStats;
     contributors?: IndexPagePersons;

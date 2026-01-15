@@ -135,7 +135,7 @@ export const Problems = defineEruditTag({
     element.children = [...otherChildren, ...subProblemChildren];
     element.data = problemProps2Info(props);
     element.title = element.data.title;
-    element.snippet = { search: true };
+    element.snippet = {};
     element.toc = { add: true };
 });
 

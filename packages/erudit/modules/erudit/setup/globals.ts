@@ -84,13 +84,14 @@ export async function registerServerGlobals(
             name: 'definePage',
             from: `${runtimeConfig.paths.module}/globals/content`,
         },
+
         {
             name: 'defineGroup',
             from: `${runtimeConfig.paths.module}/globals/content`,
         },
         {
-            name: 'defineDocument',
-            from: '@jsprose/core',
+            name: 'defineProse',
+            from: `${runtimeConfig.paths.module}/globals/prose`,
         },
         {
             name: 'Include',
@@ -147,10 +148,6 @@ export async function registerGlobalContentTypes(
             from: `@erudit-js/core/cameo`,
         },
         {
-            name: 'defineDocument',
-            from: `${runtimeConfig.paths.module}/globals/prose`,
-        },
-        {
             name: 'defineProblemScript',
             from: `${runtimeConfig.paths.module}/globals/problem`,
         },
@@ -169,6 +166,10 @@ export async function registerGlobalContentTypes(
         {
             name: 'defineGroup',
             from: `${runtimeConfig.paths.module}/globals/content`,
+        },
+        {
+            name: 'defineProse',
+            from: `${runtimeConfig.paths.module}/globals/prose`,
         },
         {
             name: 'Include',

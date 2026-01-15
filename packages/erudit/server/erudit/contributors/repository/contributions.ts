@@ -1,5 +1,8 @@
 import { eq, count } from 'drizzle-orm';
-import type { ContributorContribution } from '@erudit-js/core/content/contributions';
+import type {
+    ContentContribution,
+    ContributorContribution,
+} from '@erudit-js/core/content/contributions';
 
 export async function countContributions(
     contributorId: string,
@@ -95,6 +98,80 @@ export async function getContributorContributions(
             currentBookId = undefined;
             contributions.push(contributionItem);
         }
+    }
+
+    return contributions.length > 0 ? contributions : undefined;
+}
+
+export async function getContentContributions(
+    contentFullId: string,
+    withDescription: boolean,
+): Promise<ContentContribution[] | undefined> {
+    const contributions: ContentContribution[] = [];
+    const seenContributors = new Set<string>();
+
+    const dbContributions = await ERUDIT.db.query.contentContributions.findMany(
+        {
+            columns: {
+                contributorId: true,
+                description: true,
+                contentFullId: true,
+            },
+        },
+    );
+
+    const relevantContributions = dbContributions.filter(
+        (dbContribution) =>
+            dbContribution.contentFullId === contentFullId ||
+            dbContribution.contentFullId.startsWith(`${contentFullId}/`),
+    );
+
+    for (const dbContribution of relevantContributions) {
+        if (seenContributors.has(dbContribution.contributorId)) {
+            continue;
+        }
+
+        seenContributors.add(dbContribution.contributorId);
+
+        const dbContributor = await ERUDIT.db.query.contributors.findFirst({
+            columns: {
+                displayName: true,
+                avatarExtension: true,
+            },
+            where: eq(
+                ERUDIT.db.schema.contributors.contributorId,
+                dbContribution.contributorId,
+            ),
+        });
+
+        const name = dbContributor?.displayName || dbContribution.contributorId;
+
+        const avatarUrl = ERUDIT.repository.contributors.avatarUrl(
+            dbContribution.contributorId,
+            dbContributor?.avatarExtension || undefined,
+        );
+
+        const description = withDescription
+            ? dbContribution.description || undefined
+            : undefined;
+
+        const contribution: ContentContribution = {
+            contributorId: dbContribution.contributorId,
+        };
+
+        if (name) {
+            contribution.name = name;
+        }
+
+        if (avatarUrl) {
+            contribution.avatarUrl = avatarUrl;
+        }
+
+        if (description) {
+            contribution.description = description;
+        }
+
+        contributions.push(contribution);
     }
 
     return contributions.length > 0 ? contributions : undefined;

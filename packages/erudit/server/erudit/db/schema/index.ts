@@ -11,6 +11,7 @@ export { problemScripts } from './problemScripts';
 export { contentElementStats } from './contentElementStats';
 export { contentDeps } from './contentDeps';
 export { contentContributions } from './contentContributions';
+export { contentToc } from './contentToc';
 export { cameos } from './cameos';
 export { sponsors } from './sponsors';
 export { news } from './news';

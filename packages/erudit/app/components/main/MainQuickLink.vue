@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { autoUpdate, shift, useFloating } from '@floating-ui/vue';
 
-const { quickLink } = defineProps<{ quickLink: QuickLink }>();
+const { quickLink } = defineProps<{ quickLink: ElementSnippet }>();
 
 const referenceElement = useTemplateRef('reference');
 const popupElement = useTemplateRef('popup');

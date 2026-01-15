@@ -5,7 +5,30 @@ const bookId = Array.isArray(route.params.bookId)
     : route.params.bookId!;
 const contentTypePath = stringifyContentTypePath('book', bookId);
 const mainContent = await useMainContent<MainContentBook>(contentTypePath);
+
+const { showNewsAside, showContentContributionsAside } = useAsideMinor();
+if (ERUDIT.config.project.contributors?.enabled) {
+    showContentContributionsAside(
+        mainContent.contentRelativePath,
+        mainContent.type,
+        undefined,
+        mainContent.contributions,
+    );
+} else {
+    showNewsAside();
+}
+
 const phrase = await usePhrases('begin_learning');
+
+await useContentSeo({
+    title: mainContent.title,
+    description: mainContent.description,
+    contentTypePath: {
+        type: 'book',
+        contentId: mainContent.shortId,
+    },
+    seo: mainContent.seo,
+});
 </script>
 
 <template>

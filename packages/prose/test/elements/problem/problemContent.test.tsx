@@ -159,8 +159,8 @@ describe('Problem Check', () => {
                 'baz',
             ]);
 
-            const scriptCheck = asEruditRaw(<ProblemCheck script />);
-            expect(scriptCheck.data.script).toBe(true);
+            const scriptCheck = asEruditRaw(<ProblemCheck script="check1" />);
+            expect(scriptCheck.data.script).toBe('check1');
         });
     });
 });

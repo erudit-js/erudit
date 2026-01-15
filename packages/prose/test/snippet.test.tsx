@@ -47,12 +47,12 @@ describe('finalizeSnippet', () => {
             }),
         ).toBeUndefined();
 
-        // Both quick and search are false
+        // Both quick, search, and seo are undefined/false - no snippet
         expect(
             testFinalizeSnippet({
                 element: {},
                 props: {
-                    snippet: { quick: false, search: false, title: 'Title' },
+                    snippet: { title: 'Title' },
                 },
             }),
         ).toBeUndefined();
@@ -63,10 +63,9 @@ describe('finalizeSnippet', () => {
         expect(
             testFinalizeSnippet({
                 element: {},
-                props: { snippet: { quick: true, title: 'Prop Title' } },
+                props: { snippet: { title: 'Prop Title' }, quick: true },
             }),
         ).toEqual({
-            quick: true,
             title: 'Prop Title',
         });
 
@@ -74,27 +73,10 @@ describe('finalizeSnippet', () => {
         expect(
             testFinalizeSnippet({
                 element: {},
-                props: { snippet: { search: true, title: 'Test Title' } },
+                props: { snippet: { title: 'Test Title' }, search: true },
             }),
         ).toEqual({
-            search: true,
             title: 'Test Title',
-        });
-
-        // Search with synonyms
-        expect(
-            testFinalizeSnippet({
-                element: {},
-                props: {
-                    snippet: {
-                        search: { synonyms: ['alias1', 'alias2'] },
-                        title: 'Test',
-                    },
-                },
-            }),
-        ).toEqual({
-            search: { synonyms: ['alias1', 'alias2'] },
-            title: 'Test',
         });
 
         // Both quick and search enabled
@@ -102,24 +84,60 @@ describe('finalizeSnippet', () => {
             testFinalizeSnippet({
                 element: {},
                 props: {
-                    snippet: {
-                        quick: true,
-                        search: { synonyms: ['syn1'] },
-                        title: 'Title',
-                    },
+                    snippet: { title: 'Title' },
+                    quick: true,
+                    search: true,
                 },
             }),
         ).toEqual({
-            quick: true,
-            search: { synonyms: ['syn1'] },
             title: 'Title',
+        });
+
+        // SEO enabled
+        expect(
+            testFinalizeSnippet({
+                element: {},
+                props: {
+                    snippet: { title: 'SEO Title' },
+                    seo: true,
+                },
+            }),
+        ).toEqual({
+            title: 'SEO Title',
+        });
+
+        // Search with synonyms
+        expect(
+            testFinalizeSnippet({
+                element: {},
+                props: {
+                    snippet: { title: 'Search Title' },
+                    search: { synonyms: ['alias1', 'alias2'] },
+                },
+            }),
+        ).toEqual({
+            title: 'Search Title',
+        });
+
+        // Quick and search with synonyms
+        expect(
+            testFinalizeSnippet({
+                element: {},
+                props: {
+                    snippet: { title: 'Combined Title' },
+                    quick: true,
+                    search: { synonyms: ['syn1', 'syn2', 'syn3'] },
+                },
+            }),
+        ).toEqual({
+            title: 'Combined Title',
         });
     });
 
     it('should prefer props over element values', () => {
         // Prop title overrides element title
         const resultTitle = testFinalizeSnippet({
-            props: { snippet: { quick: true, title: 'Prop Title' } },
+            props: { snippet: { title: 'Prop Title' }, quick: true },
             element: { snippet: { title: 'Element Title' } },
         });
         expect(resultTitle!.title).toBe('Prop Title');
@@ -128,10 +146,10 @@ describe('finalizeSnippet', () => {
         const resultDesc = testFinalizeSnippet({
             props: {
                 snippet: {
-                    quick: true,
                     title: 'Title',
                     description: 'Prop Desc',
                 },
+                quick: true,
             },
             element: {
                 snippet: { title: 'Title', description: 'Element Desc' },
@@ -144,51 +162,34 @@ describe('finalizeSnippet', () => {
         // Use element snippet when prop snippet not provided
         expect(
             testFinalizeSnippet({
-                props: {},
-                element: { snippet: { quick: true, title: 'Element Title' } },
+                props: { quick: true },
+                element: { snippet: { title: 'Element Title' } },
             }),
         ).toEqual({
-            quick: true,
             title: 'Element Title',
         });
 
         // Use element title when prop title not provided
         const resultTitle = testFinalizeSnippet({
-            props: { snippet: { quick: true } },
+            props: { snippet: {}, quick: true },
             element: { snippet: { title: 'Element Title' } },
         });
         expect(resultTitle!.title).toBe('Element Title');
 
         // Use element description when prop description not provided
         const resultDesc = testFinalizeSnippet({
-            props: { snippet: { quick: true, title: 'Title' } },
+            props: { snippet: { title: 'Title' }, quick: true },
             element: {
                 snippet: { title: 'Title', description: 'Element Desc' },
             },
         });
         expect(resultDesc!.description).toBe('Element Desc');
-
-        // Use element quick when prop quick is undefined
-        const resultQuick = testFinalizeSnippet({
-            props: { snippet: { title: 'Prop Title' } },
-            element: { snippet: { quick: true, title: 'Title' } },
-        });
-        expect(resultQuick!.quick).toBe(true);
-
-        // Use element search when prop search is undefined
-        const resultSearch = testFinalizeSnippet({
-            props: { snippet: { title: 'Prop Title' } },
-            element: {
-                snippet: { search: { synonyms: ['syn'] }, title: 'Title' },
-            },
-        });
-        expect(resultSearch!.search).toEqual({ synonyms: ['syn'] });
     });
 
     it('should trim whitespace from title and description', () => {
         // Trim title
         const resultTitle = testFinalizeSnippet({
-            props: { snippet: { quick: true, title: '  Trimmed Title  ' } },
+            props: { snippet: { title: '  Trimmed Title  ' }, quick: true },
             element: {},
         });
         expect(resultTitle!.title).toBe('Trimmed Title');
@@ -197,10 +198,10 @@ describe('finalizeSnippet', () => {
         const resultDesc = testFinalizeSnippet({
             props: {
                 snippet: {
-                    quick: true,
                     title: 'Title',
                     description: '  Trimmed Description  ',
                 },
+                quick: true,
             },
             element: {},
         });
@@ -210,19 +211,19 @@ describe('finalizeSnippet', () => {
     it('should fallback to element title if possible when finalizing snippet title', () => {
         expect(
             testFinalizeSnippet({
-                props: { snippet: { quick: true } },
+                props: { snippet: {}, quick: true },
                 element: {
                     title: 'Element Title',
                 },
             }),
-        ).toEqual({ quick: true, title: 'Element Title' });
+        ).toEqual({ title: 'Element Title' });
     });
 
     it('should throw error for invalid titles', () => {
         // Title cannot be resolved
         expect(() => {
             testFinalizeSnippet({
-                props: { snippet: { quick: true } },
+                props: { snippet: {}, quick: true },
                 element: {},
             });
         }).toThrow();
@@ -230,52 +231,46 @@ describe('finalizeSnippet', () => {
         // Title is whitespace only
         expect(() => {
             testFinalizeSnippet({
-                props: { snippet: { quick: true, title: '   ' } },
+                props: { snippet: { title: '   ' }, quick: true },
                 element: {},
             });
         }).toThrow();
     });
 
     it('should handle prop overrides correctly', () => {
-        // Prop quick: false overrides element quick: true
+        // No flags set - returns undefined
         expect(
             testFinalizeSnippet({
-                props: { snippet: { quick: false } },
-                element: { snippet: { quick: true, title: 'Title' } },
+                props: { snippet: { title: 'Title' } },
+                element: {},
             }),
         ).toBeUndefined();
 
-        // Prop search: false overrides element search
+        // Quick: false but search enabled - snippet created
         expect(
             testFinalizeSnippet({
-                props: { snippet: { search: false } },
-                element: {
-                    snippet: { search: { synonyms: ['syn'] }, title: 'Title' },
+                props: {
+                    snippet: { title: 'Title' },
+                    search: true,
+                    quick: false,
                 },
-            }),
-        ).toBeUndefined();
-
-        // Prop quick: false but search enabled
-        expect(
-            testFinalizeSnippet({
-                props: { snippet: { search: true, quick: false } },
-                element: { snippet: { quick: true, title: 'Title' } },
+                element: {},
             }),
         ).toEqual({
-            search: true,
             title: 'Title',
         });
 
-        // Prop search: false but quick enabled
+        // Search: false but quick enabled - snippet created
         expect(
             testFinalizeSnippet({
-                props: { snippet: { quick: true, search: false } },
-                element: {
-                    snippet: { search: { synonyms: ['syn'] }, title: 'Title' },
+                props: {
+                    snippet: { title: 'Title' },
+                    quick: true,
+                    search: false,
                 },
+                element: {},
             }),
         ).toEqual({
-            quick: true,
             title: 'Title',
         });
     });
@@ -305,17 +300,14 @@ describe('snippetStep', () => {
                     <>
                         <H1>Heading 1 Title</H1>
                         <P>Paragraph 1</P>
-                        <P
-                            $={pUnique}
-                            snippet={{ quick: true, title: 'P-Snippet' }}
-                        >
+                        <P $={pUnique} snippet={{ title: 'P-Snippet' }} quick>
                             Paragraph with{' '}
-                            <B snippet={{ quick: true, title: 'Bold' }}>
+                            <B snippet={{ title: 'Bold' }} quick>
                                 manual
                             </B>{' '}
                             snippet title
                         </P>
-                        <P snippet={{ search: true }} toc="Toc Title">
+                        <P snippet={{}} search toc="Toc Title">
                             Paragraph with snippet title taken from toc title
                         </P>
                     </>
@@ -326,7 +318,9 @@ describe('snippetStep', () => {
             expect(snippets).toEqual<ResolvedSnippet[]>([
                 {
                     schemaName: 'heading',
+                    quick: undefined,
                     search: true,
+                    seo: false,
                     title: 'Heading 1 Title',
                     isUnique: false,
                     elementId: proseElement.children![0].id!,
@@ -334,6 +328,8 @@ describe('snippetStep', () => {
                 {
                     schemaName: 'emphasis',
                     quick: true,
+                    search: undefined,
+                    seo: true,
                     title: 'Bold',
                     isUnique: false,
                     elementId: proseElement.children![2].children![1].id!,
@@ -341,16 +337,92 @@ describe('snippetStep', () => {
                 {
                     schemaName: 'paragraph',
                     quick: true,
+                    search: undefined,
+                    seo: true,
                     title: 'P-Snippet',
                     isUnique: true,
                     elementId: proseElement.children![2].id!,
                 },
                 {
                     schemaName: 'paragraph',
+                    quick: undefined,
                     search: true,
+                    seo: true,
                     title: 'Toc Title',
                     isUnique: false,
                     elementId: proseElement.children![3].id!,
+                },
+            ]);
+        });
+    });
+
+    it('should collect snippets with synonyms', async () => {
+        await isolateProse(async () => {
+            PROSE_REGISTRY.setItems(
+                paragraphRegistryItem,
+                headingRegistryItem,
+                emphasisRegistryItem,
+            );
+
+            const { snippets, proseElement } = await resolveEruditRawElement({
+                context: {
+                    language: 'en',
+                    linkable: true,
+                },
+                rawElement: (
+                    <>
+                        <H1
+                            snippet={{ title: 'Advanced Search' }}
+                            search={{ synonyms: ['lookup', 'find', 'query'] }}
+                        >
+                            Search Heading
+                        </H1>
+                        <P
+                            snippet={{
+                                title: 'Paragraph with synonyms',
+                                description: 'Test description',
+                            }}
+                            search={{ synonyms: ['alternative', 'alias'] }}
+                            seo
+                        >
+                            Some content here with{' '}
+                            <B snippet={{ title: 'Bold Text' }} quick>
+                                emphasis
+                            </B>
+                        </P>
+                    </>
+                ),
+            });
+
+            expect(snippets).toHaveLength(3);
+            expect(snippets).toEqual<ResolvedSnippet[]>([
+                {
+                    schemaName: 'heading',
+                    quick: undefined,
+                    search: { synonyms: ['lookup', 'find', 'query'] },
+                    seo: false,
+                    title: 'Advanced Search',
+                    isUnique: false,
+                    elementId: proseElement.children![0].id!,
+                },
+                {
+                    schemaName: 'emphasis',
+                    quick: true,
+                    search: undefined,
+                    seo: true,
+                    title: 'Bold Text',
+                    isUnique: false,
+                    elementId: proseElement.children![1].children![1].id!,
+                },
+                {
+                    schemaName: 'paragraph',
+                    quick: undefined,
+                    search: { synonyms: ['alternative', 'alias'] },
+                    seo: true,
+                    title: 'Paragraph with synonyms',
+                    description: 'Test description',
+                    isUnique: false,
+                    elementId: proseElement.children![1].id!,
                 },
             ]);
         });

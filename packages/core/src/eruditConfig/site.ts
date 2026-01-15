@@ -1,5 +1,30 @@
+import type { TopicPart } from '../content/topic.js';
+import type { ContentType } from '../content/type.js';
+
+export type EruditSiteFaviconConfig =
+    | Partial<
+          { default?: string } & Exclude<Record<ContentType, string>, 'topic'> &
+              Record<TopicPart, string>
+      >
+    | string;
+
+export type EruditSiteFaviconResolved = Partial<
+    { default: string } & Exclude<Record<ContentType, string>, 'topic'> &
+        Record<TopicPart, string>
+>;
+
 export type EruditSite = Partial<{
-    buildUrl: string;
+    /**
+     * `https://en.erudit.io/base-url/article/my-article`
+     *
+     * Origin URL: `https://en.erudit.io/`
+     */
+    originUrl: string;
+    /**
+     * `https://en.erudit.io/base-url/article/my-article`
+     *
+     * Base URL: `/base-url/`
+     */
     baseUrl: string;
     title: string;
     short: string | false;
@@ -9,12 +34,7 @@ export type EruditSite = Partial<{
      * - falsy (`0`, `undefined`, `null`, `""` and etc.) — use default Erudit logotype
      */
     logotype: string | false;
-    favicon: Partial<{
-        default: string;
-        article: string;
-        summary: string;
-        practice: string;
-    }>;
+    favicon: EruditSiteFaviconConfig;
     style: Partial<{
         brandColor: string;
     }>;

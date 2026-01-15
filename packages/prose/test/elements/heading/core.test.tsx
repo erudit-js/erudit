@@ -14,9 +14,9 @@ describe('Heading', () => {
         isolateProse(() => {
             PROSE_REGISTRY.setItems(headingRegistryItem);
 
-            const h1 = asEruditRaw(<H1>Heading Level 1</H1>);
-            const h2 = asEruditRaw(<H2>Heading Level 2</H2>);
-            const h3 = asEruditRaw(<H3>Heading Level 3</H3>);
+            const h1 = asEruditRaw(<H1 search>Heading Level 1</H1>);
+            const h2 = asEruditRaw(<H2 quick>Heading Level 2</H2>);
+            const h3 = asEruditRaw(<H3 seo>Heading Level 3</H3>);
 
             expect(h1.data).toStrictEqual({
                 level: 1,
@@ -24,8 +24,12 @@ describe('Heading', () => {
             });
             expect(h1.slug).toBe('Heading Level 1');
             expect(h1.snippet).toStrictEqual({
-                search: true,
                 title: 'Heading Level 1',
+            });
+            expect(h1.snippetFlags).toStrictEqual({
+                search: true,
+                quick: undefined,
+                seo: false,
             });
             expect(h1.toc).toStrictEqual({
                 title: 'Heading Level 1',
@@ -38,6 +42,11 @@ describe('Heading', () => {
             });
             expect(h2.slug).toBe('Heading Level 2');
             expect(h2.title).toBe('Heading Level 2');
+            expect(h2.snippetFlags).toStrictEqual({
+                search: true,
+                quick: true,
+                seo: false,
+            });
 
             expect(h3.data).toStrictEqual({
                 level: 3,
@@ -45,6 +54,11 @@ describe('Heading', () => {
             });
             expect(h3.slug).toBe('Heading Level 3');
             expect(h3.title).toBe('Heading Level 3');
+            expect(h3.snippetFlags).toStrictEqual({
+                search: true,
+                quick: undefined,
+                seo: true,
+            });
         });
     });
 
@@ -57,20 +71,20 @@ describe('Heading', () => {
                     <H1
                         snippet={{
                             title: 'Manual Snippet Title',
-                            search: { synonyms: ['synonym1'] },
+                            description: 'Test description',
                         }}
+                        search
                     >
                         Auto-generated {'Snippet'} Title
                     </H1>,
                 ).snippet,
             ).toStrictEqual({
                 title: 'Manual Snippet Title',
-                search: { synonyms: ['synonym1'] },
+                description: 'Test description',
             });
 
             expect(
-                asEruditRaw(<H2 snippet={{ search: false }}>Heading 2</H2>)
-                    .snippet,
+                asEruditRaw(<H2 search={false}>Heading 2</H2>).snippet,
             ).toBeUndefined();
         });
     });

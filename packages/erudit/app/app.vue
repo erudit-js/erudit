@@ -1,4 +1,7 @@
 <script lang="ts" setup>
+initFavicon();
+initOgImage();
+
 // Watching and setting theme
 initThemeWatcher();
 

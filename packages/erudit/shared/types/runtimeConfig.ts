@@ -6,6 +6,8 @@ import type { EruditRepository } from '@erudit-js/core/eruditConfig/repository';
 import type { EruditSponsors } from '@erudit-js/core/sponsor';
 import type { EruditContributors } from '@erudit-js/core/contributor';
 import type { EruditIndexPage } from '@erudit-js/core/eruditConfig/indexPage';
+import type { EruditSiteFaviconResolved } from '@erudit-js/core/eruditConfig/site';
+import type { EruditSeo } from '@erudit-js/core/eruditConfig/seo';
 
 export interface EruditRuntimeConfigPaths {
     package: string;
@@ -30,12 +32,15 @@ export interface EruditPublicRuntimeConfig {
     version: string;
     project: {
         language: EruditLanguage;
+        originUrl: string;
         baseUrl: string;
         siteInfo: {
             title?: string;
             short?: string | false;
             logotype?: string | false;
+            favicon?: EruditSiteFaviconResolved;
         };
+        seo?: EruditSeo;
         debug: {
             log: boolean;
             slowTransition: boolean;

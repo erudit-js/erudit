@@ -38,6 +38,13 @@ function insertUrlQuery(q: string | undefined) {
     router.replace({ ...route, query: { ...route.query, q } });
 }
 
+function handleKeyDown(event: KeyboardEvent) {
+    if (event.shiftKey && event.code === 'KeyF') {
+        event.preventDefault();
+        onWake();
+    }
+}
+
 watch(normalizedQuery, () => {
     insertUrlQuery(urlParamQuery.value);
     scheduleEmit();
@@ -46,6 +53,11 @@ watch(normalizedQuery, () => {
 onMounted(() => {
     initFromUrlParam();
     onWake();
+    window.addEventListener('keydown', handleKeyDown);
+});
+
+onUnmounted(() => {
+    window.removeEventListener('keydown', handleKeyDown);
 });
 
 onActivated(() => {

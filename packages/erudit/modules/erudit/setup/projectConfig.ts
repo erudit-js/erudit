@@ -55,12 +55,21 @@ async function transferConfigData(
 
     publicRuntimeConfig.project = {
         language: projectConfig.language || { current: 'en' },
+        originUrl: nuxt.options.dev
+            ? 'http://localhost:3000'
+            : projectConfig.site?.originUrl || 'http://localhost:3000',
         baseUrl: projectConfig.site?.baseUrl || '/',
         siteInfo: {
             title: projectConfig.site?.title,
             short: projectConfig.site?.short,
             logotype: projectConfig.site?.logotype,
+            favicon: projectConfig.site?.favicon
+                ? typeof projectConfig.site?.favicon === 'string'
+                    ? { default: projectConfig.site?.favicon }
+                    : projectConfig.site?.favicon
+                : undefined,
         },
+        seo: projectConfig.seo,
         debug: {
             ads: projectConfig.debug?.ads ?? false,
             log: projectConfig.debug?.log ?? false,

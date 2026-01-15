@@ -38,7 +38,7 @@ const en: LanguagePhrases = {
     direct_link: 'Direct link',
     direct_link_explain: 'You are about to open a direct link:',
     book: 'Textbook',
-    group: 'Group',
+    group: 'Category',
     topic: 'Topic',
     article: 'Article',
     summary: 'Summary',
@@ -72,6 +72,8 @@ const en: LanguagePhrases = {
         'List of people who contributed to the project materials: suggested valuable ideas, made corrections to existing material or wrote their own!',
     contributors_invite:
         'You can also help the project, make a contribution and get on this page!',
+    contributor_page_description: (name: string) =>
+        `Personal page of contributor "${name}" with information about their contributions to the project.`,
     become_contributor: 'Become a contributor',
     no_contributors: 'There are no contributors yet. You can be the first one!',
     contribution: 'Contribution',
@@ -83,6 +85,18 @@ const en: LanguagePhrases = {
     news: 'News',
     no_news: 'No news available.',
     show_more: 'Show more',
+    make_contribution: 'Make a contribution',
+    improve_material: 'Improve material',
+    how_to_improve: 'How to improve?',
+    report_issue: 'Report an issue',
+    edit_page: 'Edit page',
+    no_toc: 'TOC is empty.',
+    article_seo_description: (contentTitle: string) =>
+        `Clear and interesting explanation of the topic "${contentTitle}". Clear examples, important terms and statements, interesting facts, life applications.`,
+    summary_seo_description: (contentTitle: string) =>
+        `Summary of the topic "${contentTitle}": key definitions, theorems, properties and examples of their use. All the most important things in a concise form!`,
+    practice_seo_description: (contentTitle: string) =>
+        `Various problems with hints and answers on the topic "${contentTitle}". Interesting conditions, hints and detailed solutions. Turn knowledge into a skill!`,
 
     default_index_title: 'Erudit',
     default_index_short: 'Modern digital textbooks!',

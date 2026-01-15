@@ -2,17 +2,25 @@ import type { FinalizedProse } from '@jsprose/core';
 import type { ContentType } from '@erudit-js/core/content/type';
 import type { TopicPart } from '@erudit-js/core/content/topic';
 import type { ContentFlags } from '@erudit-js/core/content/flags';
+import type { ContentContribution } from '@erudit-js/core/content/contributions';
+import type { ResolvedTocItem } from '@erudit-js/prose';
+import type { ContentSeo } from '@erudit-js/core/content/seo';
 
 export interface MainContentBase {
     type: ContentType;
     breadcrumbs: Breadcrumbs;
     fullId: string;
+    shortId: string;
+    contentRelativePath: string;
     title: string;
+    bookTitle?: string;
     description?: string;
     decoration?: string;
     flags?: ContentFlags;
     stats?: ContentStats;
     connections?: ContentConnections;
+    contributions?: ContentContribution[];
+    seo?: ContentSeo;
 }
 
 export interface MainContentChildrenItem {
@@ -20,7 +28,7 @@ export interface MainContentChildrenItem {
     link: string;
     title: string;
     description?: string;
-    quickLinks?: QuickLink[];
+    quickLinks?: ElementSnippet[];
     stats?: ContentStats;
 }
 
@@ -31,16 +39,17 @@ export interface MainContentChildrenItem {
 export type MainContentTopicPart = MainContentBase &
     FinalizedProse & {
         type: 'topic';
-        shortContentId: string;
         part: TopicPart;
         parts: TopicPart[];
-        quickLinks?: QuickLink[];
+        snippets?: ElementSnippet[];
+        toc?: ResolvedTocItem[];
     };
 
 export type MainContentPage = MainContentBase &
     FinalizedProse & {
         type: 'page';
-        quickLinks?: QuickLink[];
+        snippets?: ElementSnippet[];
+        toc?: ResolvedTocItem[];
     };
 
 export type MainContentGroup = MainContentBase & {

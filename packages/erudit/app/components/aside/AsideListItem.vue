@@ -20,9 +20,7 @@ const isExternalLink = computed(() => {
         :class="[
             `border-border block min-h-(--h-min-aside-item) border-b
             bg-transparent text-sm transition-[background,color,border]`,
-            hoverable &&
-                `hocus:bg-neutral-800/8 hocus:dark:bg-neutral-400/8
-                cursor-pointer`,
+            hoverable && 'hocus:bg-bg-accent cursor-pointer',
             active
                 ? 'text-brand'
                 : ['text-text-muted', hoverable && 'hocus:text-text'],

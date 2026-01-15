@@ -72,6 +72,7 @@ export type LanguagePhrases = Phrases<{
     no_sponsors: string;
     contributors_description: string;
     contributors_invite: string;
+    contributor_page_description: (name: string) => string;
     become_contributor: string;
     no_contributors: string;
     contribution: string;
@@ -83,6 +84,15 @@ export type LanguagePhrases = Phrases<{
     news: string;
     no_news: string;
     show_more: string;
+    make_contribution: string;
+    improve_material: string;
+    how_to_improve: string;
+    report_issue: string;
+    edit_page: string;
+    no_toc: string;
+    article_seo_description: (contentTitle: string) => string;
+    summary_seo_description: (contentTitle: string) => string;
+    practice_seo_description: (contentTitle: string) => string;
 
     default_index_title: string;
     default_index_short: string;

@@ -30,14 +30,15 @@ export async function insertContentResolved(
             contentProseType,
             elementId: snippet.elementId,
             schemaName: snippet.schemaName,
-            search: Boolean(snippet.search),
-            quick: Boolean(snippet.quick),
             title: snippet.title!,
             description: snippet.description,
-            synonyms:
+            search: Boolean(snippet.search),
+            searchSynonyms:
                 typeof snippet.search === 'object'
                     ? snippet.search.synonyms
                     : undefined,
+            quick: Boolean(snippet.quick),
+            seo: Boolean(snippet.seo),
         });
     }
 

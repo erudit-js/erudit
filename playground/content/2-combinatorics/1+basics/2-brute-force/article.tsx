@@ -5,7 +5,7 @@ const myAttr: ProblemCustomAttribute = {
     hint: ' фывафы вафывал фджывалфывла ыфвлал жфвыла лыв',
 };
 
-export default defineDocument({
+export default defineProse({
     uniques: {
         bruteForceRules: Important,
         wonderfulDay: Problem,
@@ -60,11 +60,7 @@ export default defineDocument({
             придерживаться двух простых правил:
         </P>
 
-        <Important
-            title="Правила перебора"
-            $={uniques.bruteForceRules}
-            snippet={{ quick: true }}
-        >
+        <Important title="Правила перебора" $={uniques.bruteForceRules} quick>
             <List type="ol">
                 <Li>
                     Каждому элементу дать уникальное и короткое обозначение.
@@ -328,7 +324,11 @@ export default defineDocument({
             следует довольно простой вывод:
         </P>
 
-        <Important title="Терпение и труд...">
+        <Important
+            title="Терпение и труд..."
+            seo
+            snippet={{ description: 'Alalaia' }}
+        >
             Если соблюдать{' '}
             <Dep to={uniques.bruteForceRules}>правила перебора</Dep>, то
             множество комбинаторных задач можно решить полным (прямым)
@@ -351,11 +351,7 @@ export default defineDocument({
             "дерево вариантов".
         </P>
 
-        <Term
-            title="Дерево вариантов"
-            $={uniques.tree}
-            snippet={{ quick: true }}
-        >
+        <Term title="Дерево вариантов" $={uniques.tree} quick>
             Универсальный алгоритм построения и перебора комбинаций.
             <Br />В этом алгоритме все варианты обозначаются в виде расходящихся
             "веток дерева".

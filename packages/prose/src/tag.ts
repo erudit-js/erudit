@@ -9,7 +9,13 @@ import {
 } from '@jsprose/core';
 
 import type { EruditRawElement } from './rawElement.js';
-import { finalizeSnippet, type ObjPropSnippet } from './snippet.js';
+import {
+    finalizeSnippet,
+    type ObjPropSnippet,
+    type ObjPropSearch,
+    type ObjPropQuick,
+    type ObjPropSeo,
+} from './snippet.js';
 import { finalizeToc, type ObjPropToc } from './toc.js';
 import { finalizeTitle } from './title.js';
 
@@ -21,12 +27,19 @@ export type NoSnippet = { readonly [NoSnippetSymbol]?: never };
 
 export type EruditTagProps<TProps extends Record<string, unknown>> =
     (TProps extends NoToc ? {} : ObjPropToc) &
-        (TProps extends NoSnippet ? {} : ObjPropSnippet);
+        (TProps extends NoSnippet
+            ? {}
+            : ObjPropSnippet & ObjPropSearch & ObjPropQuick & ObjPropSeo);
 
 export type EruditProcessTagArgs = {
     tagName: string;
     element: EruditRawElement<AnySchema>;
-    props: ConfigurableTagProps & ObjPropSnippet & ObjPropToc;
+    props: ConfigurableTagProps &
+        ObjPropSnippet &
+        ObjPropToc &
+        ObjPropSearch &
+        ObjPropQuick &
+        ObjPropSeo;
     children: NormalizedChildren;
     registry: Registry;
 };
