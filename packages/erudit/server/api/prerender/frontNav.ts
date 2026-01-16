@@ -1,7 +1,7 @@
 export default defineEventHandler(async () => {
-    const bookShortIds = ERUDIT.contentNav.id2Books
-        .values()
-        .map((bookNode) => bookNode.shortId);
+    const bookShortIds = Array.from(ERUDIT.contentNav.id2Books.values()).map(
+        (bookNode) => bookNode.shortId,
+    );
 
     const routes: string[] = [];
 

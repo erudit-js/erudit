@@ -3,8 +3,8 @@ import { eq } from 'drizzle-orm';
 import type { ContentNavNode } from './types';
 
 export async function getGlobalFrontContentNav(): Promise<FrontGlobalContentNav> {
-    const bookShortIds = Array.from(
-        ERUDIT.contentNav.id2Books.values().map((b) => b.shortId),
+    const bookShortIds = Array.from(ERUDIT.contentNav.id2Books.values()).map(
+        (b) => b.shortId,
     );
 
     const navItems = await Promise.all(
