@@ -96,19 +96,19 @@ export async function prepare({
                     files: [],
                     references: [
                         {
-                            path: `${eruditBuildDir}/tsconfig.erudit.json`,
+                            path: `./.erudit/tsconfig.erudit.json`,
                         },
                         {
-                            path: `${eruditBuildDir}/tsconfig.nuxt.app.json`,
+                            path: `./.erudit/tsconfig.nuxt.app.json`,
                         },
                         {
-                            path: `${eruditBuildDir}/tsconfig.nuxt.server.json`,
+                            path: `./.erudit/tsconfig.nuxt.server.json`,
                         },
                         {
-                            path: `${eruditBuildDir}/tsconfig.nuxt.shared.json`,
+                            path: `./.erudit/tsconfig.nuxt.shared.json`,
                         },
                         {
-                            path: `${eruditBuildDir}/tsconfig.nuxt.node.json`,
+                            path: `./.erudit/tsconfig.nuxt.node.json`,
                         },
                     ],
                 },
