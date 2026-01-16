@@ -79,6 +79,7 @@ async function transferConfigData(
                     projectConfig.debug?.fakeApi?.repository ??
                     nuxt.options.dev,
             },
+            analytics: projectConfig.debug?.analytics,
         },
         style: {
             brandColor: projectConfig.site?.style?.brandColor,
@@ -108,5 +109,6 @@ async function transferConfigData(
         contributors: projectConfig.contributors,
         sponsors: projectConfig.sponsors,
         ads: projectConfig.ads,
+        analytics: projectConfig.analytics,
     };
 }

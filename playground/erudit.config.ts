@@ -4,6 +4,7 @@ export default defineEruditConfig({
         log: true,
         slowTransition: true,
         ads: true,
+        // analytics: true,
         // fakeApi: {
         //     repository: false,
         // },
