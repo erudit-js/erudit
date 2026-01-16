@@ -1,6 +1,6 @@
 {
     "name": "erudit",
-    "version": "3.0.0-dev.23",
+    "version": "3.0.0-dev.28",
     "type": "module",
     "description": "🤓 CMS for perfect educational sites.",
     "license": "MIT",
@@ -29,9 +29,9 @@
         "test": "bun vitest run"
     },
     "dependencies": {
-        "@erudit-js/cli": "catalog:",
-        "@erudit-js/core": "catalog:",
-        "@erudit-js/prose": "catalog:",
+        "@erudit-js/cli": "workspace:3.0.0-dev.28",
+        "@erudit-js/core": "workspace:3.0.0-dev.28",
+        "@erudit-js/prose": "workspace:3.0.0-dev.28",
         "@floating-ui/vue": "catalog:",
         "@jsprose/core": "catalog:",
         "@tailwindcss/vite": "^4.1.17",

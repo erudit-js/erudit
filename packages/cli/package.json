@@ -1,6 +1,6 @@
 {
     "name": "@erudit-js/cli",
-    "version": "3.0.0-dev.23",
+    "version": "3.0.0-dev.28",
     "type": "module",
     "description": "📟 Command Line Interface for Erudit",
     "license": "MIT",
@@ -32,7 +32,7 @@
         "dist"
     ],
     "dependencies": {
-        "@erudit-js/core": "catalog:",
+        "@erudit-js/core": "workspace:3.0.0-dev.28",
         "chalk": "catalog:",
         "citty": "^0.1.6",
         "consola": "catalog:"

@@ -1,3 +1,4 @@
+import { rmSync } from 'node:fs';
 import consola from 'consola';
 import { defineCommand } from 'citty';
 
@@ -50,5 +51,11 @@ export const build = defineCommand({
 
         consola.start('Starting Nuxt build...');
         await spawnNuxt('build', projectPath, restParams);
+
+        // Just fucking remove @jsprose because not a single fucking option inside Nuxt/Nitro allows NOT TO bundle it!
+        rmSync(`${projectPath}/.output/server/node_modules/@jsprose`, {
+            recursive: true,
+            force: true,
+        });
     },
 });

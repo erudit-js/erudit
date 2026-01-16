@@ -6,8 +6,6 @@ import type {
 export function initAnalytics() {
     const analytics = ERUDIT.config.project.analytics;
 
-    console.log('ERUDIT.config.mode:', ERUDIT.config.mode);
-
     const analyticsEnabled = (() => {
         const debugValue = ERUDIT.config.project.debug.analytics;
 

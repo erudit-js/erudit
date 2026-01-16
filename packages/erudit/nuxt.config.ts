@@ -75,13 +75,7 @@ export default defineNuxtConfig({
             },
         ],
         optimizeDeps: {
-            include: [
-                '@vue/devtools-core',
-                '@vue/devtools-kit',
-                '@floating-ui/vue',
-                'perfect-debounce',
-                'flexsearch',
-            ],
+            noDiscovery: true,
         },
         server: {
             fs: { strict: false },

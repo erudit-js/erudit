@@ -13,11 +13,7 @@
             "playground"
         ],
         "catalog": {
-            "@erudit-js/core": "workspace:3.0.0-dev.23",
-            "@erudit-js/cli": "workspace:3.0.0-dev.23",
-            "@erudit-js/prose": "workspace:3.0.0-dev.23",
-            "erudit": "workspace:3.0.0-dev.23",
-            "@jsprose/core": "link:@jsprose/core",
+            "@jsprose/core": "^1.0.0",
             "vue": "latest",
             "vue-router": "latest",
             "@floating-ui/vue": "^1.1.9",
@@ -38,12 +34,12 @@
         "play:preview": "bun erudit preview playground"
     },
     "devDependencies": {
-        "prettier": "^3.7.4",
+        "prettier": "^3.8.0",
         "prettier-plugin-classnames": "^0.8.6",
         "prettier-plugin-merge": "^0.8.0",
         "prettier-plugin-tailwindcss": "^0.7.2",
         "typescript": "^5.9.3",
-        "vitest": "^4.0.16"
+        "vitest": "^4.0.17"
     },
     "dependencies": {
         "slash": "^5.1.0"
