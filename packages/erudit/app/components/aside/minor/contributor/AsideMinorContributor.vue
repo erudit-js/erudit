@@ -32,9 +32,7 @@ const phrase = await usePhrases('contribution', 'no_contribution');
                 </TreeContainer>
             </ScrollHolder>
             <section v-else>
-                <p class="text-text-muted p-normal text-center">
-                    {{ phrase.no_contribution }}
-                </p>
+                <AsidePlainMessage :text="phrase.no_contribution" />
             </section>
         </div>
     </AsideMinorPane>
