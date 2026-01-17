@@ -18,10 +18,15 @@ import {
     useResolveAnchor,
 } from '../../composables/anchor.js';
 import AsideMenu from './AsideMenu.vue';
+import { useFormatTextState } from '../../composables/formatText.js';
 
 const { element } = defineProps<{ element: ProseElement<BlockSchema> }>();
 const { EruditIcon, EruditTransition } = useProseContext();
 const elementIcon = await useElementIcon(element);
+
+const formatTextState = useFormatTextState();
+// Reset quote state making sure any opened quote does not leak outside
+formatTextState.quote = 'closed';
 
 const blockElement = useTemplateRef('block');
 const asideElement = useTemplateRef('aside');

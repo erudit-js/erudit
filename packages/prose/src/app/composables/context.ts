@@ -1,6 +1,7 @@
 import { inject, type Component, type InjectionKey, type Ref } from 'vue';
 import type { EruditLanguageCode } from '@erudit-js/core/eruditConfig/language';
 import type { EruditMode } from '@erudit-js/core/mode';
+import type { FormatText } from '@erudit-js/core/formatText';
 
 import type { AppElement } from '../appElement.js';
 
@@ -8,7 +9,7 @@ export interface ProseContext {
     mode: EruditMode;
     languageCode: EruditLanguageCode;
     appElements: Record<string, AppElement>;
-    formatText: (text: string) => string;
+    formatText: FormatText;
     pathUrl: string;
     baseUrl: string;
     hashUrl: Ref<string | undefined>;

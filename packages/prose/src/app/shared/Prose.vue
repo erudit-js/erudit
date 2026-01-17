@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { provide } from 'vue';
 import type { AnySchema, GenericStorage, ProseElement } from '@jsprose/core';
+import { createFormatTextState } from '@erudit-js/core/formatText';
 
 import {
     proseContextSymbol,
@@ -9,6 +10,7 @@ import {
 import { proseStorageSymbol } from '../composables/storage.js';
 import Render from './Render.vue';
 import { anchorStateSymbol, useAnchorState } from '../composables/anchor.js';
+import { formatTextStateSymbol } from '../composables/formatText.js';
 
 const { element, storage, context } = defineProps<{
     element: ProseElement<AnySchema>;
@@ -21,6 +23,8 @@ provide(proseStorageSymbol, storage);
 
 const anchorState = useAnchorState(context.hashUrl, element);
 provide(anchorStateSymbol, anchorState);
+
+provide(formatTextStateSymbol, createFormatTextState());
 </script>
 
 <template>

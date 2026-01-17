@@ -1,8 +1,4 @@
-export interface FormatText {
-    (text: string): string;
-    (text: undefined): undefined;
-    (text?: string): string | undefined;
-}
+import type { FormatTextState, FormatText } from '@erudit-js/core/formatText';
 
 type LanguageFormatText = (text: string) => string;
 
@@ -27,10 +23,16 @@ export async function initFormatText() {
         languageFormatText = (await formatTextLoader()).default;
     }
 
-    function _formatText(text: string): string;
-    function _formatText(text: undefined): undefined;
-    function _formatText(text?: string): string | undefined;
-    function _formatText(text?: string): string | undefined {
+    function _formatText(text: string, state?: FormatTextState): string;
+    function _formatText(text: undefined, state?: FormatTextState): undefined;
+    function _formatText(
+        text?: string,
+        state?: FormatTextState,
+    ): string | undefined;
+    function _formatText(
+        text?: string,
+        state?: FormatTextState,
+    ): string | undefined {
         if (text === undefined) {
             return text;
         }
@@ -69,11 +71,13 @@ export async function initFormatText() {
                 }
             })();
 
-            let quoteOpen = false;
+            let quoteOpen = state?.quote === 'opened';
             text = text.replaceAll(/"/gm, () => {
-                return (quoteOpen = !quoteOpen)
-                    ? quoteSymbols[0]
-                    : quoteSymbols[1];
+                quoteOpen = !quoteOpen;
+                if (state) {
+                    state.quote = quoteOpen ? 'opened' : 'closed';
+                }
+                return quoteOpen ? quoteSymbols[0] : quoteSymbols[1];
             });
         }
 
