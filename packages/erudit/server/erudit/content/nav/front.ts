@@ -8,12 +8,9 @@ export async function getGlobalFrontContentNav(): Promise<FrontGlobalContentNav>
     );
 
     const navItems = await Promise.all(
-        ERUDIT.contentNav.id2Root
-            .values()
-            .map(
-                async (navNode) =>
-                    await createFrontContentNavItem(navNode, true),
-            ),
+        Array.from(ERUDIT.contentNav.id2Root.values()).map(
+            async (navNode) => await createFrontContentNavItem(navNode, true),
+        ),
     );
 
     return {
