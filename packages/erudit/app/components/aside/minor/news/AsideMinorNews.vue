@@ -104,9 +104,7 @@ const phrase = await usePhrases('news', 'no_news', 'show_more');
                 :count="newsTotal === 0 ? undefined : newsTotal"
             />
             <section v-if="newsItems.length === 0">
-                <p class="text-text-muted p-normal text-center">
-                    {{ phrase.no_news }}
-                </p>
+                <AsidePlainMessage :text="phrase.no_news" />
             </section>
             <ScrollHolder class="flex-1">
                 <NewsItem

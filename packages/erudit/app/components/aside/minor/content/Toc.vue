@@ -159,7 +159,5 @@ onMounted(() => {
         </TreeContainer>
     </div>
 
-    <p v-else class="text-text-muted p-normal text-center">
-        {{ phrase.no_toc }}
-    </p>
+    <AsidePlainMessage v-else :text="phrase.no_toc" />
 </template>

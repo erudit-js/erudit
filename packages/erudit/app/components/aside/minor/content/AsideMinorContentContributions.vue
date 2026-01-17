@@ -43,9 +43,7 @@ const phrase = await usePhrases('contribution', 'no_contribution');
                         :contribution
                     />
                 </div>
-                <p v-else class="text-text-muted p-normal text-center">
-                    {{ phrase.no_contribution }}
-                </p>
+                <AsidePlainMessage v-else :text="phrase.no_contribution" />
             </ScrollHolder>
             <ButtonPaneImprove :contentRelativePath :contentType :topicPart />
         </div>
