@@ -1,15 +1,14 @@
 export default defineEventHandler(async (event) => {
     const urls = new Set<string>();
-
     urls.add(PAGES.index);
-    urls.add(PAGES.contributors);
-    urls.add(PAGES.sponsors);
 
     //
     // Contributors
     //
 
-    {
+    if (ERUDIT.config.public.project.contributors?.enabled) {
+        urls.add(PAGES.contributors);
+
         const dbContributors = await ERUDIT.db.query.contributors.findMany({
             columns: { contributorId: true },
         });
@@ -17,6 +16,14 @@ export default defineEventHandler(async (event) => {
         for (const dbContributor of dbContributors) {
             urls.add(PAGES.contributor(dbContributor.contributorId));
         }
+    }
+
+    //
+    // Sponsors
+    //
+
+    if (ERUDIT.config.public.project.sponsors?.enabled) {
+        urls.add(PAGES.sponsors);
     }
 
     //

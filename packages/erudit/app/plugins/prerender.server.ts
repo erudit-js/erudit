@@ -18,6 +18,7 @@ export default defineNuxtPlugin({
         const routes = ['/robots.txt', '/search.json.gz', '/sitemap.xml'];
 
         const routeProviders = [
+            '/api/prerender/default',
             '/api/prerender/files',
             '/api/prerender/frontNav',
             '/api/prerender/language',

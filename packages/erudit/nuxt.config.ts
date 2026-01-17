@@ -22,6 +22,10 @@ export default defineNuxtConfig({
     plugins: ['@erudit/app/plugins/appSetup'],
     nitro: {
         plugins: ['@erudit/server'],
+        prerender: {
+            crawlLinks: false,
+            routes: ['/'],
+        },
         esbuild: {
             options: {
                 charset: 'utf8',
