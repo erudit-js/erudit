@@ -1,3 +1,4 @@
+import type { EruditMode } from '@erudit-js/core/mode';
 import { spawn } from 'node:child_process';
 
 type NuxtCommand = 'dev' | 'build' | 'generate' | 'prepare';
@@ -35,6 +36,18 @@ export async function spawnNuxt(
         };
 
         const _spawnNuxt = () => {
+            const mode: EruditMode | undefined = (() => {
+                switch (command) {
+                    case 'dev':
+                    case 'prepare':
+                        return 'dev';
+                    case 'build':
+                        return 'write';
+                    case 'generate':
+                        return 'static';
+                }
+            })();
+
             const nuxtProcess = spawn(
                 `nuxt ${command} ${projectPath}/.erudit/nuxt ${restParams || ''}`,
                 {
@@ -43,7 +56,8 @@ export async function spawnNuxt(
                     env: {
                         ...process.env,
                         ERUDIT_PROJECT_DIR: projectPath,
-                        ERUDIT_MODE: command,
+                        ERUDIT_COMMAND: command,
+                        ERUDIT_MODE: mode,
                     },
                 },
             );

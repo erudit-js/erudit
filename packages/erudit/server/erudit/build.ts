@@ -59,8 +59,10 @@ export async function buildServerErudit() {
 //
 
 export async function tryServerWatchProject() {
-    if (ERUDIT.config.public.mode === 'generate') {
-        // Generate is single pass so no watching
+    if (
+        ERUDIT.config.public.mode !== 'write' &&
+        ERUDIT.config.public.mode !== 'dev'
+    ) {
         return;
     }
 

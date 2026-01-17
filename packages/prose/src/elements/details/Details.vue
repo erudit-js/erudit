@@ -27,7 +27,7 @@ const containsAnchor = useContainsAnchor(element);
 </script>
 
 <template>
-    <Block :element v-if="isAnchor || containsAnchor || mode !== 'generate'">
+    <Block :element v-if="isAnchor || containsAnchor || mode !== 'static'">
         <div
             class="border-border bg-bg-accent/30 rounded-xl border-2
                 border-dashed transition-[border,background]

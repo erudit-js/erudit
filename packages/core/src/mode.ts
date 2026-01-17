@@ -1,1 +1,1 @@
-export type EruditMode = 'dev' | 'build' | 'generate';
+export type EruditMode = 'dev' | 'write' | 'static';

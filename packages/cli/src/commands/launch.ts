@@ -37,7 +37,11 @@ export const launch = defineCommand({
         spawn(`node index.mjs`, {
             shell: true,
             stdio: 'inherit',
-            env: process.env,
+            env: {
+                ...process.env,
+                ERUDIT_COMMAND: 'launch',
+                ERUDIT_MODE: 'write',
+            },
             cwd: distPath,
         });
     },

@@ -45,4 +45,18 @@ export async function setupEruditNuxtConfig(
             runtimeConfig.paths.package + '/server/**/*',
         ];
     }
+
+    //
+    // Prerendering options
+    //
+
+    {
+        const mode = process.env.ERUDIT_MODE;
+        if (mode === 'static') {
+            nuxt.options.nitro.prerender = {
+                crawlLinks: false,
+                routes: ['/'],
+            };
+        }
+    }
 }

@@ -38,7 +38,10 @@ export const preview = defineCommand({
         spawn(`npx http-server ${distPath} -p 3000`, {
             shell: true,
             stdio: 'inherit',
-            env: process.env,
+            env: {
+                ...process.env,
+                ERUDIT_MODE: 'static',
+            },
         });
     },
 });
