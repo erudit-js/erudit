@@ -1,6 +1,6 @@
 import type { ListContributor } from '@erudit-js/core/contributor';
 
-export default defineEventHandler<Promise<ListContributor[]>>(async (event) => {
+export default defineEventHandler<Promise<ListContributor[]>>(async () => {
     const listContributors: ListContributor[] = [];
     const dbContributors = await ERUDIT.db.query.contributors.findMany();
 
@@ -40,6 +40,22 @@ export default defineEventHandler<Promise<ListContributor[]>>(async (event) => {
 
         listContributors.push(listContributor);
     }
+
+    listContributors.sort((a, b) => {
+        // Sort by contributions first (desc)
+        const aContributions = a.contributions ?? 0;
+        const bContributions = b.contributions ?? 0;
+
+        if (aContributions !== bContributions) {
+            return bContributions - aContributions;
+        }
+
+        // Then sort alphabetically by displayName or id
+        const aName = a.displayName ?? a.id;
+        const bName = b.displayName ?? b.id;
+
+        return aName.localeCompare(bName);
+    });
 
     return listContributors;
 });
