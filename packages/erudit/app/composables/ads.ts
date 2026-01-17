@@ -1,11 +1,17 @@
 export function adsAllowed() {
-    if (ERUDIT.config.project.ads === undefined) {
-        return import.meta.dev ? false : true;
-    } else if (!Boolean(ERUDIT.config.project.debug.ads)) {
+    const debugAllowed = ERUDIT.config.project.debug?.ads;
+
+    if (debugAllowed === true) {
+        return true;
+    }
+
+    const adsConfig = ERUDIT.config.project.ads;
+
+    if (adsConfig === undefined) {
         return false;
     }
 
-    return true;
+    return ERUDIT.config.mode === 'generate';
 }
 
 export function adsAsideAllowed() {
