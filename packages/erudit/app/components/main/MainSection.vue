@@ -43,6 +43,10 @@
     }
 }
 
+.section:not(:nth-child(1 of .section)) {
+    position: relative;
+}
+
 .section:nth-child(odd of .section) {
     .header {
         transform: scaleY(-1);
