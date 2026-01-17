@@ -47,7 +47,7 @@ export default defineEventHandler(async () => {
                 title: entry.title,
                 link: entry.link,
                 description: entry.description
-                    ? entry.description.slice(0, 150) + '...'
+                    ? entry.description.slice(0, 200) + '...'
                     : '',
                 synonyms: entry.synonyms ?? [],
                 location: entry.location ?? '',
