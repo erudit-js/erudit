@@ -50,8 +50,6 @@ export const Problem = defineEruditTag({
     element.data = { info: problemProps2Info(props) };
 
     element.title = element.data.info.title;
-    element.snippet = {};
-    element.toc = { add: true };
 
     if (children && props.script) {
         throw new ProseError(
