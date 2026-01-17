@@ -39,6 +39,7 @@ defineProps<{
         <SmartMedia
             v-if="mediaUrl"
             :url="mediaUrl"
+            :style="{ '--mediaColor': color }"
             class="border-bg-main micro:size-[56px] size-[46px] rounded-full
                 border-2 [box-shadow:0_0_16px_0_var(--color)]"
         />
