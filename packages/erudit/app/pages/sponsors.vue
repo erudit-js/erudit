@@ -60,7 +60,14 @@ useStandartSeo({
                 "
                 :color="pageSponsor.color"
             >
-                <template #tags>
+                <template
+                    v-if="
+                        pageSponsor.group ||
+                        pageSponsor.icon ||
+                        pageSponsor.link
+                    "
+                    #tags
+                >
                     <FancyCardTag v-if="pageSponsor.group || pageSponsor.icon">
                         <MaybeMyIcon
                             v-if="pageSponsor.icon"

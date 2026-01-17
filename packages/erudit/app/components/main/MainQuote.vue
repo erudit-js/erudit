@@ -15,8 +15,10 @@ const message = (() => {
     const messages =
         quote.type === 'cameo'
             ? quote.messages
-            : (quote.messages ??
-              ERUDIT.config.project.sponsors?.defaultSponsorMessages!);
+            : [
+                  ...(quote.messages ?? []),
+                  ...ERUDIT.config.project.sponsors?.defaultSponsorMessages!,
+              ];
 
     const randomMessageI = Math.floor(Math.random() * messages.length);
     const randomMessage = messages[randomMessageI]!;

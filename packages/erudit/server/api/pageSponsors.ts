@@ -52,5 +52,7 @@ export default defineEventHandler<Promise<PageSponsor[]>>(async (event) => {
         pageSponsors.push(pageSponsor);
     }
 
+    pageSponsors.sort((a, b) => a.name.localeCompare(b.name));
+
     return pageSponsors;
 });
