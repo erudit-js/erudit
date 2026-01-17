@@ -93,7 +93,7 @@ const phrase = await usePhrases('search_the_site');
                 class="p-normal group hocus:cursor-pointer pl-small"
             >
                 <div
-                    class="text-text-dimmed group-hocus:text-text text-[25px]
+                    class="text-text-dimmed group-hocus:text-text text-[22px]
                         transition-[color]"
                 >
                     <MyIcon name="plus" class="rotate-45" />
