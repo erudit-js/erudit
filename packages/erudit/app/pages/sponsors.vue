@@ -41,8 +41,7 @@ useStandartSeo({
     <MainSection>
         <div
             v-if="pageSponsors.length > 0"
-            class="gap-small micro:gap-normal px-main py-main-half
-                columns-[300px]"
+            class="gap-small micro:gap-normal px-main py-main columns-[300px]"
         >
             <FancyCard
                 v-for="pageSponsor of pageSponsors"
