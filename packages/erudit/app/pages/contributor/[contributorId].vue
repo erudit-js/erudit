@@ -73,7 +73,7 @@ useStandartSeo({
                 '--colorIcon':
                     'color-mix(in srgb, var(--color), var(--color-text) 30%)',
             }"
-            class="px-main gap-main flex flex-col items-center"
+            class="px-main py-main-half gap-main flex flex-col items-center"
         >
             <div class="relative">
                 <div class="rounded-full ring-2 ring-(--colorBorder)">
