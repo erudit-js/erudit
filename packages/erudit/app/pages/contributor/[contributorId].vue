@@ -94,7 +94,7 @@ useStandartSeo({
                     v-if="pageContributor.editor"
                     :title="phrase.editor"
                     class="bg-bg-main micro:size-[28px] absolute bottom-0
-                        left-1/2 grid size-[24px] -translate-x-1/2
+                        left-1/2 z-10 grid size-[24px] -translate-x-1/2
                         translate-y-1/2 cursor-help place-items-center
                         rounded-full border-2 border-(--colorBorder)"
                 >
