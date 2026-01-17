@@ -13,7 +13,7 @@ const phrase = await usePhrases('no_content');
                     :navItem
                 />
             </TreeContainer>
-            <AsidePlainMessage :text="phrase.no_content" />
+            <AsidePlainMessage v-else :text="phrase.no_content" />
         </ScrollHolder>
     </AsideMajorPaneTemplate>
 </template>
