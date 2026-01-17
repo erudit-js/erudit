@@ -1,7 +1,7 @@
 export interface IndexPage {
     title: string;
     short: string;
-    logotype?: {
+    topImage?: {
         src: string;
         maxWidth?: string;
         invert?: 'light' | 'dark';

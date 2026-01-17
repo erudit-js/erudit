@@ -12,13 +12,13 @@ const indexPage: IndexPage =
 useIndexSeo(indexPage);
 
 const logotypeInvertClass = computed(() => {
-    if (!indexPage.logotype?.invert) return '';
+    if (!indexPage.topImage?.invert) return '';
 
-    if (indexPage.logotype.invert === 'dark') {
+    if (indexPage.topImage.invert === 'dark') {
         return 'dark:hue-rotate-180 dark:invert-100';
     }
 
-    if (indexPage.logotype.invert === 'light') {
+    if (indexPage.topImage.invert === 'light') {
         return 'hue-rotate-180 invert-100 dark:hue-rotate-0 dark:invert-0';
     }
 
@@ -33,10 +33,10 @@ const phrase = await usePhrases('x_contributors', 'x_sponsors');
     <MainSectionPreamble>
         <!-- Logotype -->
         <img
-            v-if="indexPage.logotype"
-            :src="withBaseUrl(indexPage.logotype.src)"
+            v-if="indexPage.topImage"
+            :src="withBaseUrl(indexPage.topImage.src)"
             :style="{
-                'max-width': `min(${indexPage.logotype.maxWidth || '100%'}, 100%)`,
+                'max-width': `min(${indexPage.topImage.maxWidth || '100%'}, 100%)`,
             }"
             :class="[
                 'pt-main-half px-main mx-auto block transition-[filter]',

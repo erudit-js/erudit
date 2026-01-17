@@ -12,16 +12,16 @@ export default defineEventHandler<Promise<IndexPage>>(async () => {
         short,
     };
 
-    const descritpion = ERUDIT.config.project.indexPage?.description;
+    const description = ERUDIT.config.project.indexPage?.description;
 
-    if (descritpion) {
-        indexPage.description = descritpion;
+    if (description) {
+        indexPage.description = description;
     }
 
-    const logoytpe = ERUDIT.config.project.indexPage?.logotype;
+    const topImage = ERUDIT.config.project.indexPage?.topImage;
 
-    if (logoytpe) {
-        indexPage.logotype = logoytpe;
+    if (topImage) {
+        indexPage.topImage = topImage;
     }
 
     const rootChildren = await ERUDIT.repository.content.children();

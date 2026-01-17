@@ -18,13 +18,9 @@ export function initOgImage() {
 }
 
 export function useIndexSeo(indexPage: IndexPage) {
-    const seo = indexPage.seo;
     setupSeo({
-        title: indexPage.seo?.title || seo?.title || indexPage.title,
-        description:
-            indexPage.seo?.description ||
-            seo?.description ||
-            indexPage.description,
+        title: indexPage.seo?.title || indexPage.title,
+        description: indexPage.seo?.description || indexPage.description,
         urlPath: '/',
     });
 }
