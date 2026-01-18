@@ -14,9 +14,9 @@ defineProps<{ element: ProseElement<typeof listSchema> }>();
             :is="element.data.type"
             class="micro:[--proseGap:18px]"
             :style="{
-                '--liBorder': 'var(--accentBorder, var(--color-border))',
+                '--liBorder': 'var(--color-text-disabled)',
                 '--liBackground':
-                    'color-mix(in hsl, var(--accentText, var(--color-text)) 12%, transparent)',
+                    'color-mix(in hsl, var(--accentText, var(--color-text)) 12%, var(--color-bg-main))',
                 '--liText': 'var(--accentText, var(--color-text-muted))',
             }"
             v-bind="
@@ -27,9 +27,14 @@ defineProps<{ element: ProseElement<typeof listSchema> }>();
         >
             <li
                 v-for="(listItem, i) of element.children"
-                class="flex not-last-of-type:mb-(--proseGap)"
+                class="relative flex not-last-of-type:mb-(--proseGap)"
             >
-                <div class="shrink-0">
+                <div
+                    class="micro:left-[11px] bg-text-disabled micro:w-[2px]
+                        absolute top-[3px] bottom-[5px] left-[9px] w-[1px]
+                        transition-[background]"
+                ></div>
+                <div class="relative shrink-0">
                     <div
                         class="micro:top-[1.5px] micro:size-[23px] relative
                             top-[3px] flex size-[20px] items-center
