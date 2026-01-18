@@ -1,4 +1,4 @@
-import { and, eq, or } from 'drizzle-orm';
+import { and, asc, eq, or } from 'drizzle-orm';
 
 export async function getContentElementSnippets(
     fullId: string,
@@ -22,6 +22,7 @@ export async function getContentElementSnippets(
                 eq(ERUDIT.db.schema.contentSnippets.seo, true),
             ),
         ),
+        orderBy: (snippets) => asc(snippets.snippetId),
     });
 
     const navNode = ERUDIT.contentNav.getNodeOrThrow(fullId);
