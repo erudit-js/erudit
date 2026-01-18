@@ -30,7 +30,7 @@ onMounted(() => {
 <template>
     <div
         ref="caption"
-        class="text-text-muted text-main-sm mt-small micro:mt-normal m-auto
+        class="**:text-text-muted text-main-sm mt-small micro:mt-normal m-auto
             text-center"
         v-bind="width ? { style: { width } } : {}"
     >

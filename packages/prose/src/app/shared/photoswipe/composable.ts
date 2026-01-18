@@ -33,7 +33,7 @@ export function usePhotoSwipe() {
                 lightbox.value!.pswp?.ui?.registerElement({
                     name: 'caption',
                     className:
-                        'text-xs micro:text-sm absolute bottom-0 w-full text-center p-normal bg-bg-main/50 backdrop-blur-md',
+                        'text-xs micro:text-sm absolute **:text-text-muted bottom-0 w-full text-center p-normal bg-bg-main/50 backdrop-blur-md',
                     order: 9,
                     isButton: false,
                     appendTo: 'root',
