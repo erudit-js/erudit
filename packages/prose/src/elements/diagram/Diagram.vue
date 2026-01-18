@@ -26,6 +26,7 @@ const { EruditIcon, loadingSvg } = useProseContext();
 const loading = ref(true);
 const diagramRendering = ref(false);
 const dummyMathHtml = ref('');
+const dummyElement = useTemplateRef('dummy');
 const diagramContent = ref(element.children[0].data);
 const diagramSvgContent = ref('');
 const diagramElement = useTemplateRef('diagram');
@@ -198,7 +199,11 @@ async function renderDiagram() {
         theme: 'base',
     });
 
-    const { svg } = await mermaid.render(diagramUid, diagramContent.value);
+    const { svg } = await mermaid.render(
+        diagramUid,
+        diagramContent.value,
+        dummyElement.value!,
+    );
 
     diagramSvgContent.value = svg;
 }
@@ -207,7 +212,8 @@ async function renderDiagram() {
 <template>
     <Block :element>
         <div
-            class="fixed -top-[9999px] -left-[9999px]"
+            ref="dummy"
+            :class="[$style.diagram, 'fixed -top-[9999px] -left-[9999px]']"
             v-html="dummyMathHtml"
         ></div>
         <div ref="diagram">
@@ -237,6 +243,10 @@ async function renderDiagram() {
     > svg {
         margin: auto;
         cursor: pointer;
+    }
+
+    :global(.katex-display) {
+        margin: 0 !important;
     }
 
     /* Text color */
