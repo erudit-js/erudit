@@ -82,7 +82,7 @@ await useContentSeo({
             />
         </template>
     </MainSection>
-    <MainSection>
-        <AdsBannerBottom v-if="adsBottomAllowed()" />
+    <MainSection v-if="adsBottomAllowed()">
+        <AdsBannerBottom />
     </MainSection>
 </template>

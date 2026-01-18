@@ -54,7 +54,7 @@ await useContentSeo({
             @vue:mounted="proseMounted"
         />
     </MainSection>
-    <MainSection>
-        <AdsBannerBottom v-if="adsBottomAllowed()" />
+    <MainSection v-if="adsBottomAllowed()">
+        <AdsBannerBottom />
     </MainSection>
 </template>
