@@ -18,7 +18,7 @@ defineProps<{
                 `px-normal py-small hocus:bg-bg-accent flex cursor-pointer
                 items-center gap-[calc(var(--spacing-normal)/1.6)] text-sm
                 transition-[background,color]`,
-                'pl-[calc(var(--spacing-normal)*(var(--level)+1))]',
+                'pl-[calc(var(--spacing-normal)*(var(--level)+1)-2px)]',
                 {
                     'text-text-muted hocus:text-text': !state,
                     'text-brand': state === 'active',

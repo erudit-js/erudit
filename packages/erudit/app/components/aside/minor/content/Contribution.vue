@@ -12,7 +12,7 @@ defineProps<{ contribution: ContentContribution }>();
     >
         <div class="gap-normal flex items-center">
             <SmartMedia
-                class="size-[40px] shrink-0 rounded-full"
+                class="micro:size-[40px] size-[30px] shrink-0 rounded-full"
                 :style="{
                     '--mediaColor': stringColor(contribution.contributorId),
                 }"
@@ -22,7 +22,9 @@ defineProps<{ contribution: ContentContribution }>();
                         : 'user'
                 "
             />
-            {{ contribution.name || contribution.contributorId }}
+            <span class="text-[0.9em]">{{
+                contribution.name || contribution.contributorId
+            }}</span>
         </div>
         <div
             v-if="contribution.description"
