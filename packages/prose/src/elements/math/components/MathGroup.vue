@@ -15,6 +15,8 @@ const columnGap = (() => {
             return 'var(--proseAsideWidth)';
         case 'big':
             return 'calc(var(--proseAsideWidth) * 2)';
+        case 'huge':
+            return 'calc(var(--proseAsideWidth) * 4)';
         case 'custom':
             return mathGroup.gap.size;
     }
