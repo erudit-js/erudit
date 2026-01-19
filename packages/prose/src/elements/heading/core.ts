@@ -32,27 +32,28 @@ export type HeadingProps = TagChildren & NoToc;
 export const H1 = defineEruditTag({
     tagName: 'H1',
     schema: headingSchema,
-})<HeadingProps>(({ tagName, element, children }) => {
-    processHeadingElement(1, tagName, element, children);
+})<HeadingProps>(({ tagName, element, props, children }) => {
+    processHeadingElement(1, tagName, props, element, children);
 });
 
 export const H2 = defineEruditTag({
     tagName: 'H2',
     schema: headingSchema,
-})<HeadingProps>(({ tagName, element, children }) => {
-    processHeadingElement(2, tagName, element, children);
+})<HeadingProps>(({ tagName, element, props, children }) => {
+    processHeadingElement(2, tagName, props, element, children);
 });
 
 export const H3 = defineEruditTag({
     tagName: 'H3',
     schema: headingSchema,
-})<HeadingProps>(({ tagName, element, children }) => {
-    processHeadingElement(3, tagName, element, children);
+})<HeadingProps>(({ tagName, element, props, children }) => {
+    processHeadingElement(3, tagName, props, element, children);
 });
 
 function processHeadingElement(
     level: 1 | 2 | 3,
     tagName: string,
+    props: any,
     element: EruditRawElement<typeof headingSchema>,
     children: NormalizedChildren,
 ) {
@@ -73,7 +74,10 @@ function processHeadingElement(
 
     element.snippetFlags ||= {};
     element.snippetFlags.search ??= true;
-    element.snippetFlags.seo ??= false;
+
+    if (!props.quick) {
+        element.snippetFlags.seo ??= false;
+    }
 
     element.toc = {
         add: true,

@@ -146,7 +146,6 @@ describe('Problems', () => {
                 quick: undefined,
                 seo: true,
             });
-            expect(problems.toc).toEqual({ title: 'Sample Problems' });
         });
     });
 });

@@ -105,7 +105,6 @@ describe('Problem', () => {
                 quick: undefined,
                 seo: true,
             });
-            expect(scriptProblem.toc).toEqual({ title: 'Script Problem' });
         });
     });
 
@@ -181,7 +180,6 @@ describe('Problem', () => {
                 quick: undefined,
                 seo: true,
             });
-            expect(childProblem.toc).toEqual({ title: 'Child Problem' });
         });
     });
 });

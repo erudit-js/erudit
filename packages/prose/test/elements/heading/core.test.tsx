@@ -45,7 +45,7 @@ describe('Heading', () => {
             expect(h2.snippetFlags).toStrictEqual({
                 search: true,
                 quick: true,
-                seo: false,
+                seo: true,
             });
 
             expect(h3.data).toStrictEqual({
