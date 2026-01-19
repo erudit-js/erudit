@@ -41,17 +41,27 @@ if (import.meta.client) {
             `micro:[--_switchSize:110px] [--_switchGap:var(--spacing-main)]
             [--_switchSize:80px]`,
             /* */
-            `absolute bottom-0 flex size-(--_switchSize) items-center
+            `fixed bottom-0 flex size-(--_switchSize) items-center
             justify-center pb-(--_switchGap) pl-(--_switchGap)
             transition-[left,right,opacity]`,
             {
-                '-scale-x-100': isMinor,
-                [`aside1:right-0 aside1:opacity-0 -right-(--_switchSize)
-                opacity-100`]: canShowSwitches && isMajor,
-                [`aside2:left-0 aside2:opacity-0 -left-(--_switchSize)
-                opacity-100`]: canShowSwitches && isMinor,
-                'right-0 opacity-0': !canShowSwitches && isMajor,
-                'left-0 opacity-0': !canShowSwitches && isMinor,
+                //
+                // Major Global
+                //
+                'aside1:opacity-0': isMajor,
+                // Major Can Show
+                'left-0 opacity-100': isMajor && canShowSwitches,
+                // Major Cannot Show
+                '-left-(--_switchSize) opacity-0': isMajor && !canShowSwitches,
+
+                //
+                // Minor Global
+                //
+                'aside2:opacity-0 -scale-x-100': isMinor,
+                // Minor Can Show
+                'right-0 opacity-100': isMinor && canShowSwitches,
+                // Minor Cannot Show
+                '-right-(--_switchSize) opacity-0': isMinor && !canShowSwitches,
             },
         ]"
     >
