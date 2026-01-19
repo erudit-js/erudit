@@ -60,9 +60,9 @@ watchEffect(() => {
                 />
             </div>
             <div
-                class="gap-normal border-border flex flex-wrap border-b
-                    px-(--proseAsideWidth) py-(--proseAsideWidth)
-                    transition-[border]"
+                class="gap-small micro:gap-normal border-border micro:*:px-4
+                    flex flex-wrap border-b px-(--proseAsideWidth)
+                    py-(--proseAsideWidth) transition-[border]"
             >
                 <ProblemButton
                     v-for="(subProblem, i) of subProblems"
