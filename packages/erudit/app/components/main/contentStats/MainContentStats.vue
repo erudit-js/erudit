@@ -15,8 +15,8 @@ const phrase = await usePhrases('stats');
         <section v-if="mode === 'single'" class="px-main py-main-half">
             <MainSubTitle :title="phrase.stats + ':'" />
             <div
-                class="micro:justify-start gap-normal flex flex-wrap
-                    justify-center"
+                class="micro:justify-start gap-small micro:gap-normal flex
+                    flex-wrap justify-center"
             >
                 <ItemMaterials
                     v-if="stats.materials"
@@ -32,7 +32,10 @@ const phrase = await usePhrases('stats');
                 />
             </div>
         </section>
-        <div v-else class="gap-normal text-main-sm flex flex-wrap">
+        <div
+            v-else
+            class="gap-small micro:gap-normal text-main-sm flex flex-wrap"
+        >
             <ItemMaterials
                 v-if="stats.materials"
                 :count="stats.materials"
