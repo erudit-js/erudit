@@ -9,13 +9,13 @@ const { mathGroup } = defineProps<{
 
 const columnGap = (() => {
     switch (mathGroup.gap.type) {
-        case 'zero':
+        case '0':
             return '0px';
-        case 'normal':
+        case 'small':
             return 'var(--proseAsideWidth)';
-        case 'big':
+        case 'normal':
             return 'calc(var(--proseAsideWidth) * 2)';
-        case 'huge':
+        case 'big':
             return 'calc(var(--proseAsideWidth) * 4)';
         case 'custom':
             return mathGroup.gap.size;

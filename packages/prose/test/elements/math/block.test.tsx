@@ -47,7 +47,7 @@ describe('resolveMathGroups', () => {
     it('should handle gap specification (named gap)', async () => {
         const result = await resolveMathGroups('a >>{small} b');
         expect(result).toEqual({
-            gap: { type: 'custom', size: 'small' },
+            gap: { type: 'small' },
             parts: ['a', 'b'],
         });
     });
@@ -63,7 +63,7 @@ describe('resolveMathGroups', () => {
     it('should handle nested groups', async () => {
         const result = await resolveMathGroups('a >> b >>{small} c');
         expect(result).toEqual({
-            gap: { type: 'custom', size: 'small' },
+            gap: { type: 'small' },
             parts: [
                 {
                     gap: { type: 'normal' },
@@ -94,7 +94,7 @@ describe('resolveMathGroups', () => {
     it('should handle complex nested groups', async () => {
         const result = await resolveMathGroups('a >>{big} b >> c >>{small} d');
         expect(result).toEqual({
-            gap: { type: 'custom', size: 'small' },
+            gap: { type: 'small' },
             parts: [
                 {
                     gap: { type: 'normal' },

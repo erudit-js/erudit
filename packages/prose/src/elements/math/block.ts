@@ -10,15 +10,19 @@ import {
 import { latexToHtml, normalizeKatex } from './katex.js';
 import { defineEruditTag } from '../../tag.js';
 
-export const mathGroupTypes = ['zero', 'normal', 'big', 'huge'] as const;
+export const mathGroupTypes = ['0', 'small', 'normal', 'big'] as const;
 export type MathGroupGapType = (typeof mathGroupTypes)[number] | 'custom';
 
 export interface MathGroupGapTemplate {
     type: MathGroupGapType;
 }
 
-export interface MathGroupGapNone extends MathGroupGapTemplate {
-    type: 'zero';
+export interface MathGroupGapZero extends MathGroupGapTemplate {
+    type: '0';
+}
+
+export interface MathGroupGapSmall extends MathGroupGapTemplate {
+    type: 'small';
 }
 
 export interface MathGroupGapNormal extends MathGroupGapTemplate {
@@ -29,20 +33,16 @@ export interface MathGroupGapBig extends MathGroupGapTemplate {
     type: 'big';
 }
 
-export interface MathGroupGapHuge extends MathGroupGapTemplate {
-    type: 'huge';
-}
-
 export interface MathGroupGapCustom extends MathGroupGapTemplate {
     type: 'custom';
     size: string;
 }
 
 export type MathGroupGap =
-    | MathGroupGapNone
+    | MathGroupGapZero
+    | MathGroupGapSmall
     | MathGroupGapNormal
     | MathGroupGapBig
-    | MathGroupGapHuge
     | MathGroupGapCustom;
 
 export type MathGroupPart = string | MathGroup;
