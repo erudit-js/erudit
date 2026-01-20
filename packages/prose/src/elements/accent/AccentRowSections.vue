@@ -45,7 +45,7 @@ watchEffect(() => {
         <div
             :class="[
                 `absolute bottom-0 left-0 w-full border-b
-                border-(--accentBorder) transition-[border]`,
+                border-(--accentBorder)`,
                 openedSectionI === undefined ? 'opacity-0' : 'opacity-100',
             ]"
         ></div>

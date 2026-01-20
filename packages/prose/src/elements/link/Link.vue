@@ -82,7 +82,7 @@ function linkClick() {
                 bg-transparent px-(--xGap) pt-(--tGap) pb-(--bGap)
                 whitespace-nowrap underline
                 decoration-[color-mix(in_srgb,var(--color-brand)30%,transparent)]
-                decoration-2 underline-offset-2 transition-[color,background]"
+                decoration-2 underline-offset-2 transition-[background]"
         >
             <EruditIcon
                 :name="icon"

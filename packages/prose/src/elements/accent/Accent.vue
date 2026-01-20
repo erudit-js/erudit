@@ -60,13 +60,13 @@ const accentOptions = (appElement as any)['accent'] as AccentAppOptions;
             }"
             :class="[
                 `rounded-xl border border-(--accentBorder)
-                bg-(--accentBackground) transition-[background,border]`,
+                bg-(--accentBackground)`,
             ]"
         >
             <div
                 class="text-main-lg flex items-center gap-(--proseAsideWidth)
                     px-(--proseAsideWidth) py-(--proseAsideWidth) font-semibold
-                    text-(--accentText) transition-[color]"
+                    text-(--accentText)"
             >
                 <EruditIcon
                     :name="accentIcon"

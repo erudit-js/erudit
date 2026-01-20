@@ -86,8 +86,7 @@ useStandartSeo({
                         :style="{ '--mediaColor': color }"
                         class="border-bg-main micro:size-[110px] size-[80px]
                             rounded-full border-2
-                            [box-shadow:0_0_16px_0_var(--color)]
-                            transition-[border]"
+                            [box-shadow:0_0_16px_0_var(--color)]"
                     />
                 </div>
                 <div

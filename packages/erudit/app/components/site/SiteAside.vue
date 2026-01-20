@@ -31,8 +31,7 @@ const opened = computed(() => {
             <div
                 :class="[
                     `bg-bg-aside absolute top-0 left-0 h-full w-full
-                    border-[light-dark(var(--color-neutral-200),var(--color-neutral-800))]
-                    transition-[background,border,backdrop-filter,box-shadow]`,
+                    border-[light-dark(var(--color-neutral-200),var(--color-neutral-800))]`,
                     {
                         'border-e': isMajor,
                         'border-s': isMinor,
@@ -55,8 +54,7 @@ const opened = computed(() => {
                         `pointer-events-none absolute top-0 h-full w-full
                         touch-none bg-linear-to-l
                         from-[light-dark(rgba(0,0,0,0.02),rgba(0,0,0,0.1))]
-                        via-transparent via-[3px] opacity-100
-                        transition-opacity`,
+                        via-transparent via-[3px] opacity-100`,
                         {
                             '-scale-100': isMinor,
                             'max-aside1:opacity-0': opened && isMajor,

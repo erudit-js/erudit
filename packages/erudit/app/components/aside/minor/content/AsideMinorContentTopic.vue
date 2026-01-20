@@ -40,10 +40,7 @@ const contentRelativePath = computed(() => {
 <template>
     <AsideMinorPane>
         <div class="flex h-full w-full flex-col">
-            <div
-                class="border-border gap-normal flex justify-center border-b
-                    transition-[border]"
-            >
+            <div class="border-border gap-normal flex justify-center border-b">
                 <TopicPartButton
                     v-for="part of topicParts"
                     :part

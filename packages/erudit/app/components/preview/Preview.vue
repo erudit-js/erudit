@@ -117,8 +117,7 @@ await usePhrases(
                     `border-border bg-bg-main micro:max-h-[70dvh]
                     pointer-events-auto absolute bottom-0 max-h-[90dvh] w-full
                     touch-auto overflow-hidden rounded-[25px] rounded-b-none
-                    border-t
-                    transition-[box-shadow,background,border,max-height,height,translate]`,
+                    border-t transition-[max-height,height,translate]`,
                     previewState.opened
                         ? `translate-y-0
                             shadow-[0px_-10px_15px_5px_light-dark(rgba(0,0,0,0.1),rgba(255,255,255,0.05))]`

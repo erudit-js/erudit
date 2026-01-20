@@ -46,10 +46,7 @@ const levelColors: Record<ProblemLevel, string> = {
         class="micro:flex-row micro:items-center micro:gap-normal gap-small flex
             flex-col flex-wrap p-(--proseAsideWidth) pb-0"
     >
-        <h2
-            class="text-text-deep text-main-lg flex-1 font-bold
-                transition-[color]"
-        >
+        <h2 class="text-text-deep text-main-lg flex-1 font-bold">
             {{ formatText(info.title) }}
         </h2>
         <div
@@ -67,8 +64,7 @@ const levelColors: Record<ProblemLevel, string> = {
                 class="border-border/60 bg-bg-main text-main-xs text-text-muted
                     flex h-(--labelHeight) cursor-help items-center gap-1
                     rounded-xl border px-2 shadow
-                    shadow-[light-dark(#d9d9d9,#3c3c3c)]
-                    transition-[background,border,color,box-shadow]"
+                    shadow-[light-dark(#d9d9d9,#3c3c3c)]"
             >
                 <EruditIcon
                     v-if="typeof attribute === 'string' || attribute.icon"

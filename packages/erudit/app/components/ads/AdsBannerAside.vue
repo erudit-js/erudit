@@ -33,8 +33,7 @@ onMounted(() => {
 <template>
     <section
         v-if="adsData"
-        class="p-small border-border border-t transition-[border]
-            [@media(max-height:500px)]:hidden"
+        class="p-small border-border border-t [@media(max-height:500px)]:hidden"
     >
         <div
             class="relative max-h-[300px] overflow-hidden

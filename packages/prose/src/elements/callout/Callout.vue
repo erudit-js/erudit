@@ -25,23 +25,20 @@ const formatText = useFormatText();
                     :src="calloutStorage.resolvedIconSrc"
                     loading="lazy"
                     class="outline-border size-[60px] rounded-full border-2
-                        border-transparent outline-2 transition-[outline]"
+                        border-transparent outline-2"
                 />
             </div>
             <div
                 class="border-border/90 relative flex-1 rounded-xl border
-                    bg-(--calloutBg) py-(--proseAsideWidth) font-serif shadow-md
-                    transition-[border,background]"
+                    bg-(--calloutBg) py-(--proseAsideWidth) font-serif
+                    shadow-md"
             >
-                <div
-                    :class="$style.arrow"
-                    class="max-micro:hidden transition-[border]"
-                >
-                    <div :class="$style.fill" class="transition-[border]"></div>
+                <div :class="$style.arrow" class="max-micro:hidden">
+                    <div :class="$style.fill"></div>
                 </div>
                 <header
                     class="gap-small mb-(--proseAsideWidth) flex items-center
-                        px-(--proseAsideWidth) font-semibold transition-[color]"
+                        px-(--proseAsideWidth) font-semibold"
                 >
                     <img
                         :src="calloutStorage.resolvedIconSrc"

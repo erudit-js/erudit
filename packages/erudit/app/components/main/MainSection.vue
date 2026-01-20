@@ -1,27 +1,12 @@
 <template>
-    <section :class="[$style.section, 'bg-bg-main transition-[background]']">
+    <section :class="[$style.section, 'bg-bg-main']">
         <!-- Section Header -->
-        <div
-            :class="[
-                $style.header,
-                'border-border relative border-b-2 transition-[border]',
-            ]"
-        >
+        <div :class="[$style.header, 'border-border relative border-b-2']">
             <!-- Header Shade -->
-            <div class="absolute bottom-0 h-[70px] w-full">
-                <!-- Light mode gradient -->
-                <div
-                    class="absolute inset-0 bg-linear-to-t from-[#f7f7f7]
-                        to-transparent opacity-100 transition-opacity
-                        dark:opacity-0"
-                ></div>
-                <!-- Dark mode gradient -->
-                <div
-                    class="absolute inset-0 bg-linear-to-t from-[#1b1b1b]
-                        to-transparent opacity-0 transition-opacity
-                        dark:opacity-100"
-                ></div>
-            </div>
+            <div
+                class="absolute bottom-0 h-[70px] w-full bg-linear-to-t
+                    from-[#f7f7f7] to-transparent dark:from-[#1b1b1b]"
+            ></div>
 
             <!-- Header Content -->
             <div :class="[$style.headerContent, 'relative z-1']">

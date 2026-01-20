@@ -37,9 +37,9 @@ await walkElements(item.content.proseElement, async (element) => {
 </script>
 
 <template>
-    <div class="p-normal border-border border-b text-sm transition-[border]">
+    <div class="p-normal border-border border-b text-sm">
         <div
-            class="mb-small gap-small flex items-center transition-[color]"
+            class="mb-small gap-small flex items-center"
             :class="
                 isNew
                     ? 'font-semibold text-orange-700 dark:text-orange-300'

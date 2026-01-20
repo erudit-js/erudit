@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div class="border-border border-t transition-[border]">
+        <div class="border-border border-t">
             <slot></slot>
         </div>
     </div>

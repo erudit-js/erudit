@@ -31,7 +31,7 @@ watchEffect(() => {
             @click="opened = !opened"
             class="group relative flex cursor-pointer items-center border-t
                 border-(--accentBorder) p-(--proseAsideWidth) font-medium
-                text-(--accentText) transition-[border]"
+                text-(--accentText)"
         >
             <div class="flex-1">{{ title }}</div>
             <button
@@ -49,7 +49,7 @@ watchEffect(() => {
             <div
                 :class="[
                     `absolute bottom-0 left-0 w-full border-b border-dashed
-                    border-(--accentBorder) transition-[border]`,
+                    border-(--accentBorder)`,
                     opened ? 'opacity-100' : 'opacity-0',
                 ]"
             ></div>

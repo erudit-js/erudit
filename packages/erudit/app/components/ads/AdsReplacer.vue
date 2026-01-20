@@ -11,8 +11,8 @@ const phrase = await usePhrases('ads_replacer');
                     h-full w-full flex-row items-center justify-center
                     bg-neutral-200
                     shadow-[inset_0px_0px_5px_0px_light-dark(rgba(0,0,0,0.12),rgba(255,255,255,0.08))]
-                    transition-[background,color] @max-[550px]:flex-col
-                    @max-[550px]:text-center dark:bg-neutral-800"
+                    @max-[550px]:flex-col @max-[550px]:text-center
+                    dark:bg-neutral-800"
             >
                 <MyIcon
                     name="handshake"

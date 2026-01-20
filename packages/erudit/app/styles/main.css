@@ -90,7 +90,6 @@
         color: var(--color-text);
         font-size: 18px;
         interpolate-size: allow-keywords;
-        @apply transition-[background];
     }
 
     :root[data-theme='light'] {

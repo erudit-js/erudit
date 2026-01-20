@@ -51,7 +51,7 @@ function linkClick() {
             -mt-(--tGap) -mb-(--bGap) rounded-sm bg-transparent px-(--xGap)
             pt-(--tGap) pb-(--bGap) text-(--linkColor) underline
             decoration-[color-mix(in_srgb,var(--linkColor)30%,transparent)]
-            decoration-2 underline-offset-2 transition-[color,background]"
+            decoration-2 underline-offset-2 transition-[background]"
     >
         {{ formatText(element.data.label) }}
     </EruditLink>

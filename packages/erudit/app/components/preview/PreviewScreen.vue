@@ -19,8 +19,7 @@ const { closePreview, hasPreviousRequest, setPreviousPreview } = usePreview();
         </div>
         <div
             class="border-border gap-small micro:gap-normal micro:h-[60px]
-                px-main flex h-[54px] shrink-0 items-center border-t
-                transition-[border]"
+                px-main flex h-[54px] shrink-0 items-center border-t"
         >
             <MaybeMyIcon
                 :name="icon"

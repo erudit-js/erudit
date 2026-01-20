@@ -37,8 +37,7 @@ const phrase = await usePhrases('contribution');
                 class="absolute top-0 left-0 z-10 h-full w-full"
             >
                 <div
-                    class="bg-bg-aside flex h-full w-full flex-col justify-end
-                        transition-[background]"
+                    class="bg-bg-aside flex h-full w-full flex-col justify-end"
                 >
                     <div
                         class="nice-scrollbars *:border-border overflow-auto
@@ -53,7 +52,7 @@ const phrase = await usePhrases('contribution');
                     </div>
                     <div
                         class="border-border flex items-center border-t py-1
-                            pr-0 transition-[border]"
+                            pr-0"
                     >
                         <div
                             class="pl-normal gap-small flex flex-1 items-center
@@ -63,7 +62,6 @@ const phrase = await usePhrases('contribution');
                             <span
                                 class="text-invert rounded-full bg-neutral-600
                                     px-[8px] py-[2.5px] text-xs font-semibold
-                                    transition-[color,background]
                                     dark:bg-neutral-300"
                                 >{{ contributions.length }}</span
                             >

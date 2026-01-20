@@ -22,8 +22,7 @@ const { mode = 'detailed' } = defineProps<{
     <div
         v-else
         class="gap-small px-small text-main-sm border-border bg-bg-aside flex
-            items-center rounded-xl border py-1
-            transition-[background,color,border]"
+            items-center rounded-xl border py-1"
     >
         <MaybeMyIcon
             :name="icon"

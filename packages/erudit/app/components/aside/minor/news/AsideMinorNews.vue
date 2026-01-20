@@ -120,8 +120,7 @@ const phrase = await usePhrases('news', 'no_news', 'show_more');
                         class="my-big px-normal py-small bg-bg-accent
                             hocus:border-text-disabled gap-normal m-auto flex
                             w-auto cursor-pointer items-center rounded border-2
-                            border-transparent text-sm
-                            transition-[border,background,color]"
+                            border-transparent text-sm transition-[border]"
                     >
                         <MyRuntimeIcon v-if="newsLoading" :svg="loadingSvg" />
                         <span>{{ phrase.show_more }}</span>

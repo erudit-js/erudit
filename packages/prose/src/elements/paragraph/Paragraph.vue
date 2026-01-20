@@ -12,7 +12,7 @@ defineProps<{ element: ProseElement<typeof paragraphSchema> }>();
     <Block :element>
         <div
             :class="[
-                'wrap-break-word transition-[color]',
+                'wrap-break-word',
                 element.data?.center
                     ? 'text-center'
                     : 'micro:text-justify text-left',

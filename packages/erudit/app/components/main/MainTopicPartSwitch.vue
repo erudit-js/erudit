@@ -45,7 +45,7 @@ const data: Record<TopicPart, TopicPartSwitchData> = {
                 `micro:[--switchHeight:50px] micro:gap-small px-small
                 micro:px-normal border-border relative -bottom-[2px] flex
                 h-(--switchHeight) items-center gap-1 rounded rounded-b-none
-                border-2 transition-[border,color,background]`,
+                border-2 transition-[color]`,
                 partData.state === 'missing' &&
                     'text-text-disabled/75 border-b-border cursor-not-allowed',
                 partData.state === 'active' &&

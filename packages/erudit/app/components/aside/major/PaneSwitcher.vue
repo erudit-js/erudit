@@ -22,7 +22,7 @@ const phrase = await usePhrases(
 </script>
 
 <template>
-    <section class="border-border z-1 border-b transition-[border]">
+    <section class="border-border z-1 border-b">
         <div
             style="--_button-size: 56px; --_underline-p: 6px"
             class="relative mx-auto flex w-max"

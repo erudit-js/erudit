@@ -31,8 +31,7 @@ defineProps<{ element: ProseElement<typeof listSchema> }>();
             >
                 <div
                     class="micro:left-[11px] bg-text-disabled micro:w-[2px]
-                        absolute top-[3px] bottom-[5px] left-[9px] w-[1px]
-                        transition-[background]"
+                        absolute top-[3px] bottom-[5px] left-[9px] w-[1px]"
                 ></div>
                 <div class="relative shrink-0">
                     <div
@@ -40,8 +39,7 @@ defineProps<{ element: ProseElement<typeof listSchema> }>();
                             top-[3px] flex size-[20px] items-center
                             justify-center rounded-full border
                             border-(--liBorder) bg-(--liBackground)
-                            font-semibold text-(--liText)
-                            transition-[border,background,color]"
+                            font-semibold text-(--liText)"
                     >
                         <template v-if="element.data.type === 'ol'">
                             <div class="micro:text-[13px] text-[10px]">
@@ -50,8 +48,7 @@ defineProps<{ element: ProseElement<typeof listSchema> }>();
                         </template>
                         <template v-else>
                             <div
-                                class="size-1.5 rounded-full bg-(--liText)
-                                    transition-[background]"
+                                class="size-1.5 rounded-full bg-(--liText)"
                             ></div>
                         </template>
                     </div>

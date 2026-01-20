@@ -30,7 +30,7 @@ watchEffect(() => {
         @click="opened = !opened"
         class="group border-border text-text-muted relative flex cursor-pointer
             items-center border-t p-(--proseAsideWidth) font-semibold
-            transition-[border] first:border-t-0"
+            first:border-t-0"
     >
         <div class="flex-1">{{ formatText(title) }}</div>
         <button
@@ -49,8 +49,7 @@ watchEffect(() => {
     <Suspense>
         <div
             v-if="opened"
-            class="border-border border-t border-dashed py-(--proseAsideWidth)
-                transition-[border]"
+            class="border-border border-t border-dashed py-(--proseAsideWidth)"
         >
             <Render v-for="child of element.children" :element="child" />
         </div>

@@ -38,10 +38,7 @@ const phrase = await usePhrases('x_contributors', 'x_sponsors');
             :style="{
                 'max-width': `min(${indexPage.topImage.maxWidth || '100%'}, 100%)`,
             }"
-            :class="[
-                'pt-main-half px-main mx-auto block transition-[filter]',
-                logotypeInvertClass,
-            ]"
+            :class="['pt-main-half px-main mx-auto block', logotypeInvertClass]"
         />
 
         <!-- Main Data -->

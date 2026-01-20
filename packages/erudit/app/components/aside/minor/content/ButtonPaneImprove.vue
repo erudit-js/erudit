@@ -55,8 +55,7 @@ const phrase = await usePhrases(
                 class="absolute top-0 left-0 z-10 h-full w-full"
             >
                 <div
-                    class="bg-bg-aside flex h-full w-full flex-col justify-end
-                        transition-[background]"
+                    class="bg-bg-aside flex h-full w-full flex-col justify-end"
                 >
                     <div
                         class="nice-scrollbars overflow-auto *:border-t
@@ -83,7 +82,7 @@ const phrase = await usePhrases(
                     </div>
                     <div
                         class="border-border flex items-center border-t py-1
-                            pr-0 transition-[border]"
+                            pr-0"
                     >
                         <div class="pl-normal flex-1 text-sm font-semibold">
                             {{ formatText(phrase.improve_material) }}

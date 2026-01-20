@@ -8,7 +8,7 @@ defineProps<{ contribution: ContentContribution }>();
     <EruditLink
         :to="PAGES.contributor(contribution.contributorId)"
         class="p-normal hocus:bg-bg-accent block bg-transparent
-            transition-[border,background]"
+            transition-[background]"
     >
         <div class="gap-normal flex items-center">
             <SmartMedia

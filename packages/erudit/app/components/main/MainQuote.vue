@@ -74,28 +74,25 @@ const phrase = await usePhrases('add_quote', 'next_quote');
                     :url="avatarUrl"
                     class="border-bg-main micro:size-[60px] size-[40px]
                         rounded-full border-2
-                        [box-shadow:0_0_16px_0_var(--color)] transition-[border]
+                        [box-shadow:0_0_16px_0_var(--color)]
                         [--mediaColor:var(--color)]"
                 />
             </EruditLink>
         </div>
         <div
             class="p-small micro:p-normal relative flex-1 rounded
-                rounded-tl-none border-2 border-(--colorBorder) bg-(--colorBg)
-                transition-[background,border]"
+                rounded-tl-none border-2 border-(--colorBorder) bg-(--colorBg)"
         >
             <div
                 class="micro:[--arrowSize:22px] absolute -top-[2px]
                     -left-(--arrowSize) h-(--arrowSize) w-(--arrowSize)
-                    bg-(--colorBorder) transition-[background]
-                    [--arrowSize:14px]
+                    bg-(--colorBorder) [--arrowSize:14px]
                     [--arrowSizeSmall:calc(var(--arrowSize)-2px)]
                     [clip-path:polygon(110%_0,110%_110%,0_0)]"
             >
                 <div
                     class="absolute top-[2px] -right-[3px] h-(--arrowSizeSmall)
                         w-(--arrowSizeSmall) bg-(--colorBg)
-                        transition-[background]
                         [clip-path:polygon(100%_0,100%_100%,0_0)]"
                 ></div>
             </div>

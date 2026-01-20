@@ -8,7 +8,7 @@ const hasExtra = child.stats || child.quickLinks;
     <div
         class="border-border hocus:ring-brand/25 hocus:border-brand group
             dark:bg-bg-aside rounded border bg-neutral-100 ring-2
-            ring-transparent transition-[border,box-shadow,background]"
+            ring-transparent transition-[border,box-shadow]"
     >
         <EruditLink :to="child.link" class="p-normal gap-small flex flex-col">
             <div class="gap-small micro:gap-normal flex items-center">
@@ -31,8 +31,7 @@ const hasExtra = child.stats || child.quickLinks;
         </EruditLink>
         <div
             v-if="hasExtra"
-            class="border-t-border p-normal gap-normal flex flex-col border-t
-                transition-[border]"
+            class="border-t-border p-normal gap-normal flex flex-col border-t"
         >
             <div v-if="child.quickLinks" class="relative top-[1px]">
                 <MainQuickLinks

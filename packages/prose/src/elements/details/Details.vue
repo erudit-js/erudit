@@ -30,8 +30,7 @@ const containsAnchor = useContainsAnchor(element);
     <Block :element v-if="isAnchor || containsAnchor || mode !== 'static'">
         <div
             class="border-border bg-bg-accent/30 rounded-xl border-2
-                border-dashed transition-[border,background]
-                dark:border-white/30 dark:bg-white/5"
+                border-dashed dark:border-white/30 dark:bg-white/5"
         >
             <div class="text-text-muted p-(--proseAsideWidth) font-medium">
                 <EruditIcon

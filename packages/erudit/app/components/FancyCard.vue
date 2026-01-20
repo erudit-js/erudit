@@ -31,8 +31,7 @@ defineProps<{
             `p-small micro:p-normal not-last:mb-normal gap-small text-main-sm
             relative flex w-full break-inside-avoid-column flex-col items-center
             rounded border border-(--colorBorder) bg-linear-to-tr
-            from-(--colorBg)/30 to-(--colorBg)
-            transition-[background,border,box-shadow]`,
+            from-(--colorBg)/30 to-(--colorBg) transition-shadow`,
             link && 'hocus:ring-(--colorBorder) ring-2 ring-transparent',
         ]"
     >

@@ -11,7 +11,7 @@ defineProps<{ element: ProseElement<typeof emphasisSchema> }>();
     <strong
         v-if="element.data.type === 'bold'"
         :class="[
-            'font-semibold transition-[color]',
+            'font-semibold',
             element.data?.accent
                 ? 'text-(--accentText,var(--color-text-deep))'
                 : 'text-text-deep',

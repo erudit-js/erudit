@@ -29,7 +29,7 @@ const Tag = (() => {
         <component
             :is="Tag"
             :class="[
-                'text-text-deep transition-[color,border]',
+                'text-text-deep',
                 {
                     [`text-main-2xl border-border pb-small micro:pb-normal
                     border-b font-bold`]: element.data.level === 1,

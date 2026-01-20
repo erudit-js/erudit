@@ -79,8 +79,7 @@ switch (linkStorage.type) {
             <EruditIcon
                 name="arrow/outward"
                 class="text-brand/15 group-hocus:text-brand/20 top-small
-                    right-small absolute shrink-0 text-[60px]
-                    transition-[color]"
+                    right-small absolute shrink-0 text-[60px]"
             />
             <div
                 class="text-brand/80 group-hocus:text-brand mb-small gap-small

@@ -31,16 +31,14 @@ const rows = computed(() =>
                 :class="[
                     $style.table,
                     `text-main-sm bg-bg-main m-auto max-w-full border-separate
-                    border-spacing-[3px] rounded border border-(--tableBorder)
-                    transition-[background,border]`,
+                    border-spacing-[3px] rounded border border-(--tableBorder)`,
                 ]"
             >
                 <tbody>
                     <tr
                         v-for="row in rows"
                         :key="row.id"
-                        class="transition-[background] odd:bg-(--oddCellBg)
-                            even:bg-(--evenCellBg)"
+                        class="odd:bg-(--oddCellBg) even:bg-(--evenCellBg)"
                     >
                         <td
                             v-for="cell in row.children"
