@@ -39,7 +39,6 @@ export function Include(props: {
         }
 
         delete element.snippet;
-        delete element.snippetFlags;
         delete element.uniqueName;
 
         (element as any)[includedKey] = true;

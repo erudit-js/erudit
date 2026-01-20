@@ -10,10 +10,7 @@ export async function getContentElementSnippets(
             contentProseType: true,
             schemaName: true,
             elementId: true,
-            title: true,
-            description: true,
-            quick: true,
-            seo: true,
+            snippetData: true,
         },
         where: and(
             eq(ERUDIT.db.schema.contentSnippets.contentFullId, fullId),
@@ -40,22 +37,65 @@ export async function getContentElementSnippets(
             );
         })();
 
+        const snippetData = dbSnippet.snippetData;
+
         const snippet: ElementSnippet = {
             link,
             schemaName: dbSnippet.schemaName,
-            title: dbSnippet.title,
+            title: snippetData.title!,
         };
 
-        if (dbSnippet.quick) {
-            snippet.quick = true;
+        if (snippetData.quick) {
+            snippet.quick = {};
+            let quickTitle: string | undefined;
+            let quickDescription: string | undefined;
+
+            if (typeof snippetData.quick === 'string') {
+                quickTitle = snippetData.quick;
+            } else if (typeof snippetData.quick === 'object') {
+                if (snippetData.quick.title) {
+                    quickTitle = snippetData.quick.title;
+                }
+                if (snippetData.quick.description) {
+                    quickDescription = snippetData.quick.description;
+                }
+            }
+
+            if (quickTitle) {
+                snippet.quick.title = quickTitle;
+            }
+            if (quickDescription) {
+                snippet.quick.description = quickDescription;
+            }
         }
 
-        if (dbSnippet.seo) {
-            snippet.seo = true;
+        if (snippetData.seo) {
+            snippet.seo = {};
+
+            let seoTitle: string | undefined;
+            let seoDescription: string | undefined;
+
+            if (typeof snippetData.seo === 'string') {
+                seoTitle = snippetData.seo;
+            } else if (typeof snippetData.seo === 'object') {
+                if (snippetData.seo.title) {
+                    seoTitle = snippetData.seo.title;
+                }
+                if (snippetData.seo.description) {
+                    seoDescription = snippetData.seo.description;
+                }
+            }
+
+            if (seoTitle) {
+                snippet.seo.title = seoTitle;
+            }
+            if (seoDescription) {
+                snippet.seo.description = seoDescription;
+            }
         }
 
-        if (dbSnippet.description) {
-            snippet.description = dbSnippet.description;
+        if (snippetData.description) {
+            snippet.description = snippetData.description;
         }
 
         snippets.push(snippet);

@@ -149,8 +149,7 @@ describe('tocStep', () => {
                             Paragraph <B toc="Bold Too">in</B> Toc
                         </P>
                         <P
-                            snippet={{ title: 'P Snippet Title' }}
-                            quick
+                            snippet={{ title: 'P Snippet Title', quick: true }}
                             toc={true}
                         >
                             Paragraph in Toc too

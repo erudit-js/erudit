@@ -1,8 +1,14 @@
 export interface ElementSnippet {
     schemaName: string;
-    title: string;
     link: string;
-    quick?: boolean;
-    seo?: boolean;
+    title: string;
     description?: string;
+    quick?: {
+        title?: string;
+        description?: string;
+    };
+    seo?: {
+        title?: string;
+        description?: string;
+    };
 }

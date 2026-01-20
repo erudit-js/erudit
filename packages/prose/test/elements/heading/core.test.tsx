@@ -14,9 +14,24 @@ describe('Heading', () => {
         isolateProse(() => {
             PROSE_REGISTRY.setItems(headingRegistryItem);
 
-            const h1 = asEruditRaw(<H1 search>Heading Level 1</H1>);
-            const h2 = asEruditRaw(<H2 quick>Heading Level 2</H2>);
-            const h3 = asEruditRaw(<H3 seo>Heading Level 3</H3>);
+            const h1 = asEruditRaw(
+                <H1 snippet={{ search: true }}>Heading Level 1</H1>,
+            );
+            const h2 = asEruditRaw(
+                <H2 snippet={{ quick: true }}>Heading Level 2</H2>,
+            );
+            const h3 = asEruditRaw(
+                <H3
+                    snippet={{
+                        seo: {
+                            title: 'Custom Title',
+                            description: 'Custom Description',
+                        },
+                    }}
+                >
+                    Heading Level 3
+                </H3>,
+            );
 
             expect(h1.data).toStrictEqual({
                 level: 1,
@@ -25,11 +40,11 @@ describe('Heading', () => {
             expect(h1.slug).toBe('Heading Level 1');
             expect(h1.snippet).toStrictEqual({
                 title: 'Heading Level 1',
-            });
-            expect(h1.snippetFlags).toStrictEqual({
                 search: true,
-                quick: undefined,
-                seo: false,
+            });
+            expect(h1.snippet).toStrictEqual({
+                search: true,
+                title: 'Heading Level 1',
             });
             expect(h1.toc).toStrictEqual({
                 title: 'Heading Level 1',
@@ -42,10 +57,11 @@ describe('Heading', () => {
             });
             expect(h2.slug).toBe('Heading Level 2');
             expect(h2.title).toBe('Heading Level 2');
-            expect(h2.snippetFlags).toStrictEqual({
+            expect(h2.snippet).toStrictEqual({
                 search: true,
                 quick: true,
                 seo: true,
+                title: 'Heading Level 2',
             });
 
             expect(h3.data).toStrictEqual({
@@ -54,10 +70,33 @@ describe('Heading', () => {
             });
             expect(h3.slug).toBe('Heading Level 3');
             expect(h3.title).toBe('Heading Level 3');
-            expect(h3.snippetFlags).toStrictEqual({
+            expect(h3.snippet).toStrictEqual({
+                title: 'Heading Level 3',
                 search: true,
-                quick: undefined,
-                seo: true,
+                seo: {
+                    title: 'Custom Title',
+                    description: 'Custom Description',
+                },
+            });
+
+            const h3SeoString = asEruditRaw(
+                <H3
+                    snippet={{
+                        quick: true,
+                        seo: 'Где используют уравнения в жизни?',
+                        description: `Подборка проблем и ситуаций из реальной жизни, которые можно решить, если перевести их в уравнения.`,
+                    }}
+                >
+                    Another Heading 3
+                </H3>,
+            );
+
+            expect(h3SeoString.snippet).toStrictEqual({
+                title: 'Another Heading 3',
+                search: true,
+                quick: true,
+                seo: 'Где используют уравнения в жизни?',
+                description: `Подборка проблем и ситуаций из реальной жизни, которые можно решить, если перевести их в уравнения.`,
             });
         });
     });
@@ -72,8 +111,8 @@ describe('Heading', () => {
                         snippet={{
                             title: 'Manual Snippet Title',
                             description: 'Test description',
+                            search: true,
                         }}
-                        search
                     >
                         Auto-generated {'Snippet'} Title
                     </H1>,
@@ -81,10 +120,12 @@ describe('Heading', () => {
             ).toStrictEqual({
                 title: 'Manual Snippet Title',
                 description: 'Test description',
+                search: true,
             });
 
             expect(
-                asEruditRaw(<H2 search={false}>Heading 2</H2>).snippet,
+                asEruditRaw(<H2 snippet={{ search: false }}>Heading 2</H2>)
+                    .snippet,
             ).toBeUndefined();
         });
     });
@@ -95,6 +136,52 @@ describe('Heading', () => {
             expect(() => {
                 <H2> </H2>;
             }).toThrow();
+        });
+    });
+
+    it('should only auto-enable SEO when quick flag is present', () => {
+        isolateProse(() => {
+            PROSE_REGISTRY.setItems(headingRegistryItem);
+
+            // Heading with only search (default) - should NOT auto-enable SEO
+            const headingWithSearch = asEruditRaw(<H1>Default Heading</H1>);
+            expect(headingWithSearch.snippet).toStrictEqual({
+                title: 'Default Heading',
+                search: true,
+            });
+            expect(headingWithSearch.snippet?.seo).toBeUndefined();
+
+            // Heading with explicit search - should NOT auto-enable SEO
+            const headingWithExplicitSearch = asEruditRaw(
+                <H2 snippet={{ search: true }}>Search Only Heading</H2>,
+            );
+            expect(headingWithExplicitSearch.snippet).toStrictEqual({
+                title: 'Search Only Heading',
+                search: true,
+            });
+            expect(headingWithExplicitSearch.snippet?.seo).toBeUndefined();
+
+            // Heading with quick flag - SHOULD auto-enable SEO
+            const headingWithQuick = asEruditRaw(
+                <H3 snippet={{ quick: true }}>Quick Heading</H3>,
+            );
+            expect(headingWithQuick.snippet).toStrictEqual({
+                title: 'Quick Heading',
+                search: true,
+                quick: true,
+                seo: true,
+            });
+
+            // Heading with quick and explicit seo=false - should respect explicit disable
+            const headingWithQuickButNoSeo = asEruditRaw(
+                <H1 snippet={{ quick: true, seo: false }}>Quick But No SEO</H1>,
+            );
+            expect(headingWithQuickButNoSeo.snippet).toStrictEqual({
+                title: 'Quick But No SEO',
+                search: true,
+                quick: true,
+            });
+            expect(headingWithQuickButNoSeo.snippet?.seo).toBeUndefined();
         });
     });
 });

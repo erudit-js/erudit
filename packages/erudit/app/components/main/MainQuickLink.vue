@@ -40,6 +40,22 @@ onUnmounted(() => {
 });
 
 const elementIcon = await getElementIcon(quickLink.schemaName);
+
+const title = computed(() => {
+    if (quickLink.quick?.title) {
+        return quickLink.quick.title;
+    } else {
+        return quickLink.title;
+    }
+});
+
+const description = computed(() => {
+    if (quickLink.quick?.description) {
+        return quickLink.quick.description;
+    } else {
+        return quickLink.description;
+    }
+});
 </script>
 
 <template>
@@ -54,11 +70,11 @@ const elementIcon = await getElementIcon(quickLink.schemaName);
                 transition-[background,color,border,box-shadow]"
         >
             <MaybeMyIcon :name="elementIcon" class="-mr-0.5 text-[1.2em]" />
-            <span>{{ formatText(quickLink.title) }}</span>
+            <span>{{ formatText(title) }}</span>
         </EruditLink>
         <TransitionFade>
             <div
-                v-if="quickLink.description && popupVisible"
+                v-if="description && popupVisible"
                 :style="floatingStyles"
                 ref="popup"
                 class="z-10 max-w-[300px] p-2"
@@ -68,7 +84,7 @@ const elementIcon = await getElementIcon(quickLink.schemaName);
                         text-white shadow-lg/30 dark:bg-neutral-400
                         dark:text-black dark:shadow-neutral-500"
                 >
-                    {{ formatText(quickLink.description) }}
+                    {{ formatText(description) }}
                 </div>
             </div>
         </TransitionFade>

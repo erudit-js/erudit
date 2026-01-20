@@ -9,9 +9,7 @@ const quickLinks = (() => {
         return;
     }
 
-    const filtered = elementSnippets.filter(
-        (snippet) => snippet.quick === true,
-    );
+    const filtered = elementSnippets.filter((snippet) => !!snippet.quick);
 
     return filtered.length > 0 ? filtered : undefined;
 })();

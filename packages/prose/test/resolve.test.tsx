@@ -35,8 +35,7 @@ describe('resolveEruditRawElement', () => {
                     <P toc="Not tracked title">Not tracked P title.</P>
                     <P
                         $={uniques.mySecondP}
-                        snippet={{ title: 'Second Title' }}
-                        quick
+                        snippet={{ title: 'Second Title', quick: true }}
                     >
                         This is the second paragraph.
                     </P>

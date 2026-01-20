@@ -6,7 +6,7 @@ import {
     type NoSnippet,
     type NoToc,
     type ObjRawElementToc,
-    type SnippetProp,
+    type SnippetData,
 } from '@erudit-js/prose';
 
 describe('defineEruditTag', () => {
@@ -22,10 +22,10 @@ describe('defineEruditTag', () => {
             schema: linkableSchema,
         })<NoTagChildren>(({ props, element }) => {
             expectTypeOf<typeof props.snippet>().toEqualTypeOf<
-                SnippetProp | undefined
+                SnippetData | undefined
             >();
             expectTypeOf<typeof element.snippet>().toEqualTypeOf<
-                SnippetProp | undefined
+                SnippetData | undefined
             >();
             expectTypeOf<typeof props.toc>().toEqualTypeOf<
                 boolean | string | undefined
@@ -81,7 +81,7 @@ describe('defineEruditTag', () => {
             schema: linkableSchema,
         })<NoTagChildren & NoToc>(({ props }) => {
             expectTypeOf<typeof props.snippet>().toEqualTypeOf<
-                SnippetProp | undefined
+                SnippetData | undefined
             >();
             // @ts-expect-error No toc prop when __noToc is set
             props.toc;

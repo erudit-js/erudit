@@ -121,13 +121,41 @@ export async function searchIndexSnippets(): Promise<SearchEntriesList[]> {
                 });
         }
 
+        let searchTitle = dbSnippet.snippetData.title!;
+        let searchDescription = dbSnippet.snippetData.description;
+        if (
+            typeof dbSnippet.snippetData.search === 'object' &&
+            !Array.isArray(dbSnippet.snippetData.search)
+        ) {
+            if (dbSnippet.snippetData.search.title) {
+                searchTitle = dbSnippet.snippetData.search.title;
+            }
+
+            if (dbSnippet.snippetData.search.description) {
+                searchDescription = dbSnippet.snippetData.search.description;
+            }
+        }
+
+        let searchSynonyms: string[] | undefined = undefined;
+        if (Array.isArray(dbSnippet.snippetData.search)) {
+            searchSynonyms = dbSnippet.snippetData.search;
+        } else {
+            if (typeof dbSnippet.snippetData.search === 'object') {
+                searchSynonyms = dbSnippet.snippetData.search.synonyms;
+            }
+        }
+
         entryLists.get(dbSnippet.schemaName)!.entries.push({
             category: 'element:' + dbSnippet.schemaName,
-            title: dbSnippet.title,
-            description: dbSnippet.description || undefined,
+            title: searchTitle,
+            description: searchDescription,
             link,
             location: locationTitle,
-            synonyms: dbSnippet.searchSynonyms || undefined,
+            synonyms: searchSynonyms
+                ? searchSynonyms.length > 0
+                    ? searchSynonyms
+                    : undefined
+                : undefined,
         });
     }
 

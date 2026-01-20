@@ -71,12 +71,13 @@ function processHeadingElement(
     };
 
     element.title = title;
+    element.snippet ||= {};
+    element.snippet.search ??= true;
 
-    element.snippetFlags ||= {};
-    element.snippetFlags.search ??= true;
-
-    if (!props.quick) {
-        element.snippetFlags.seo ??= false;
+    // Only auto-enable SEO if quick is set in props
+    // Otherwise explicitly disable it to prevent auto-enablement from search flag
+    if (!props.snippet?.quick) {
+        element.snippet.seo ??= false;
     }
 
     element.toc = {

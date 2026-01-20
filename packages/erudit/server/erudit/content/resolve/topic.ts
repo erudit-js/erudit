@@ -1,13 +1,9 @@
 import { eq } from 'drizzle-orm';
 import {
     isDocument,
-    isProseElement,
     isRawElement,
-    walkElements,
     type AnyDocument,
     type AnySchema,
-    type ProseElement,
-    type RawElement,
 } from '@jsprose/core';
 import {
     topicParts,

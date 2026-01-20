@@ -118,9 +118,26 @@ export async function useContentSeo(args: {
             }
 
             const elementPhrase = await getElementPhrase(snippet.schemaName);
+
+            const title = (() => {
+                if (snippet.seo?.title) {
+                    return snippet.seo.title;
+                } else {
+                    return snippet.title;
+                }
+            })();
+
+            const description = (() => {
+                if (snippet.seo?.description) {
+                    return snippet.seo.description;
+                } else {
+                    return snippet.description;
+                }
+            })();
+
             setupSeo({
-                title: `${snippet.title} [${elementPhrase.element_name}] - ${seoSiteTitle}`,
-                description: snippet.description || '',
+                title: `${title} [${elementPhrase.element_name}] - ${seoSiteTitle}`,
+                description: description || '',
                 urlPath: snippet.link,
             });
         },
