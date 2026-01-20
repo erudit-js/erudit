@@ -51,27 +51,41 @@ onMounted(() => {
 </script>
 
 <template>
-    <TreeItem
-        :level
-        :icon="elementIcon"
-        :main="formatText(item.title)"
-        :state="active ? 'active' : undefined"
-        :to="'#' + item.elementId"
-    />
-    <div v-if="item.type === 'heading'" class="relative overflow-hidden">
-        <div
-            :style="{ '--level': level ? +level : 0 }"
-            :class="[
-                `absolute top-0
-                left-[calc(var(--spacing-normal)*(var(--level)+1)+8px)] h-full
-                border-l opacity-40 transition-[border]`,
-                [active ? 'border-brand' : 'border-text-dimmed'],
-            ]"
-        ></div>
-        <TocItem
-            v-for="child of item.children"
-            :item="child"
-            :level="item.level"
+    <div :class="[$style.item, active && $style.activeItem]">
+        <TreeItem
+            :level
+            :icon="elementIcon"
+            :main="formatText(item.title)"
+            :state="active ? 'active' : undefined"
+            :to="'#' + item.elementId"
         />
+        <div
+            v-if="item.type === 'heading'"
+            class="group/children relative overflow-hidden"
+        >
+            <div
+                :style="{ '--level': level ? +level : 0 }"
+                :class="[
+                    `border-text-dimmed absolute top-0
+                    left-[calc(var(--spacing-normal)*(var(--level)+1)+6.5px)]
+                    h-full border-l opacity-40 transition-[border]`,
+                    $style.leftLine,
+                ]"
+            ></div>
+            <TocItem
+                v-for="child of item.children"
+                :item="child"
+                :level="item.level"
+            />
+        </div>
     </div>
 </template>
+
+<style module>
+.item.activeItem,
+.item:has(.activeItem) {
+    .leftLine {
+        border-color: var(--color-brand);
+    }
+}
+</style>
