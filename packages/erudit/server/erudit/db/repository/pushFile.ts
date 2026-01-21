@@ -16,8 +16,11 @@ export async function pushFile(filepath: string, role: string): Promise<void> {
         '',
     );
 
-    await ERUDIT.db.insert(ERUDIT.db.schema.files).values({
-        path: relativePath,
-        role,
-    });
+    await ERUDIT.db
+        .insert(ERUDIT.db.schema.files)
+        .values({
+            path: relativePath,
+            role,
+        })
+        .onConflictDoNothing();
 }
