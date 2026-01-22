@@ -1,6 +1,7 @@
 import { type ResolvedRawElement } from '@jsprose/core';
 import type { ContentProseType } from '@erudit-js/core/content/prose';
 import type { ResolvedEruditRawElement } from '@erudit-js/prose';
+import { sql } from 'drizzle-orm';
 
 export async function insertContentResolved(
     contentFullId: string,
@@ -35,6 +36,15 @@ export async function insertContentResolved(
             quick: !!snippet.snippetData.quick,
             seo: !!snippet.snippetData.seo,
         });
+    }
+
+    // Deduplicate search flags for topic snippets
+    if (
+        contentProseType === 'article' ||
+        contentProseType === 'summary' ||
+        contentProseType === 'practice'
+    ) {
+        await deduplicateTopicSnippetsSearch(contentFullId);
     }
 
     for (const problemScript of resolveResult.problemScripts) {
@@ -85,4 +95,38 @@ function globalContentToNavNode(globalContentPath: string) {
         ERUDIT.contentNav.getNodeOrThrow(parts.slice(0, -1).join('/'));
 
     return navNode;
+}
+
+async function deduplicateTopicSnippetsSearch(contentFullId: string) {
+    // Disable search flag for duplicate snippets,
+    // keeping the highest-priority one per (title, schemaName)
+    await ERUDIT.db.run(sql`
+    UPDATE contentSnippets
+    SET search = 0
+    WHERE snippetId IN (
+      SELECT snippetId
+      FROM (
+        SELECT
+          snippetId,
+          ROW_NUMBER() OVER (
+            PARTITION BY
+              LOWER(TRIM(json_extract(snippetData, '$.title'))),
+              schemaName
+            ORDER BY
+              CASE contentProseType
+                WHEN 'article' THEN 0
+                WHEN 'summary' THEN 1
+                WHEN 'practice' THEN 2
+                ELSE 99
+              END
+          ) AS rn
+        FROM contentSnippets
+        WHERE
+          contentFullId = ${contentFullId}
+          AND json_extract(snippetData, '$.title') IS NOT NULL
+          AND search = 1
+      )
+      WHERE rn > 1
+    );
+  `);
 }
