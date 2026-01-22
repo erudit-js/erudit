@@ -5,8 +5,20 @@ import { $CONTENT } from './singleton';
 // Call singleton to trigger initialization
 $CONTENT;
 
+let initialBuild = true;
+
+const contentRoot = () => `${ERUDIT.config.paths.project}/content`;
+
 export async function buildGlobalContent() {
     ERUDIT.log.debug.start('Building global content...');
+
+    const isInitial = initialBuild;
+    initialBuild = false;
+
+    if (!isInitial && !hasContentChanges()) {
+        ERUDIT.log.info('Skipping global content — nothing changed.');
+        return;
+    }
 
     const linkObject = await buildLinkObject();
 
@@ -17,7 +29,21 @@ export async function buildGlobalContent() {
         'utf-8',
     );
 
-    ERUDIT.log.success('Global content built successfully!');
+    ERUDIT.log.success(
+        isInitial
+            ? 'Global content build complete!'
+            : 'Global content updated!',
+    );
+}
+
+function hasContentChanges() {
+    for (const file of (ERUDIT.changedFiles || new Set<string>()).values()) {
+        if (file.startsWith(`${contentRoot()}/`)) {
+            return true;
+        }
+    }
+
+    return false;
 }
 
 function linkObjectToTypes(linkObject: any): string {

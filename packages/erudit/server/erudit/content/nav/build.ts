@@ -1,19 +1,31 @@
 import chalk from 'chalk';
 import { globSync } from 'glob';
-import { readdirSync } from 'node:fs';
+import { existsSync, readdirSync } from 'node:fs';
 import { contentTypes, type ContentType } from '@erudit-js/core/content/type';
 
 import type { ContentNavNode, ContentNavMap } from './types';
 
+let initialBuild = true;
+
+const contentRoot = () => `${ERUDIT.config.paths.project}/content`;
+
 export async function buildContentNav() {
     ERUDIT.log.debug.start('Building content navigation...');
+
+    const isInitial = initialBuild;
+    initialBuild = false;
+
+    if (!isInitial && !hasContentChanges()) {
+        ERUDIT.log.info('Skipping content navigation — nothing changed.');
+        return;
+    }
 
     ERUDIT.contentNav.id2Node = new Map();
     ERUDIT.contentNav.id2Root = new Map();
     ERUDIT.contentNav.id2Books = new Map();
     ERUDIT.contentNav.short2Full = new Map();
 
-    const cwd = ERUDIT.config.paths.project + '/content';
+    const cwd = contentRoot();
     const contentDirectories = globSync('**/*/', {
         cwd,
         posix: true,
@@ -122,7 +134,11 @@ export async function buildContentNav() {
         ? getContentNavStats(ERUDIT.contentNav.id2Node)
         : chalk.gray('empty');
 
-    ERUDIT.log.success(`Content navigation built successfully! (${stats})`);
+    ERUDIT.log.success(
+        isInitial
+            ? `Content navigation build complete! (${stats})`
+            : `Content navigation updated! (${stats})`,
+    );
 }
 
 /**
@@ -136,7 +152,13 @@ async function createStandaloneContentNavNode(
     const parsedContentPath = parseContentPath(relPath);
     if (!parsedContentPath) return;
 
-    const files = readdirSync(cwd + '/' + relPath).reduce<Record<string, null>>(
+    const dirPath = `${cwd}/${relPath}`;
+
+    if (!existsSync(dirPath)) {
+        return;
+    }
+
+    const files = readdirSync(dirPath).reduce<Record<string, null>>(
         (acc, name) => {
             acc[name] = null;
             return acc;
@@ -269,6 +291,16 @@ function getContentNavStats(id2Node: ContentNavMap) {
     }
 
     return parts.join('; ');
+}
+
+function hasContentChanges() {
+    for (const file of (ERUDIT.changedFiles || new Set<string>()).values()) {
+        if (file.startsWith(`${contentRoot()}/`)) {
+            return true;
+        }
+    }
+
+    return false;
 }
 
 //
