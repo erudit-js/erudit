@@ -16,7 +16,7 @@ defineProps<{
             :style="{ '--level': level ? +level : 0 }"
             :class="[
                 `px-normal py-small hocus:bg-bg-accent flex cursor-pointer
-                items-center gap-[calc(var(--spacing-normal)/1.6)] text-sm
+                items-center gap-[calc(var(--spacing-normal)/2)] text-[.85em]
                 transition-[background,color]`,
                 'pl-[calc(var(--spacing-normal)*(var(--level)+1)-2px)]',
                 {
