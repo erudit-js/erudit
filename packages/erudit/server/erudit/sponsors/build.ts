@@ -1,6 +1,10 @@
-import { readdirSync, readFileSync } from 'node:fs';
+import { readdirSync, readFileSync, existsSync } from 'node:fs';
 import { eq } from 'drizzle-orm';
 import type { Sponsor, SponsorConfig } from '@erudit-js/core/sponsor';
+
+let initialBuild = true;
+
+const sponsorsRoot = () => `${ERUDIT.config.paths.project}/sponsors`;
 
 export async function buildSponsors() {
     if (!ERUDIT.config.public.project.sponsors?.enabled) {
@@ -9,31 +13,79 @@ export async function buildSponsors() {
 
     ERUDIT.log.debug.start('Building sponsors...');
 
-    await ERUDIT.db.delete(ERUDIT.db.schema.sponsors);
-    await ERUDIT.db
-        .delete(ERUDIT.db.schema.files)
-        .where(eq(ERUDIT.db.schema.files.role, 'sponsor-avatar'));
+    const isInitial = initialBuild;
+    initialBuild = false;
 
-    let sponsorIds: string[] = [];
+    const sponsorIds = collectSponsorIds(isInitial);
 
-    try {
-        sponsorIds = readdirSync(ERUDIT.config.paths.project + '/sponsors', {
-            withFileTypes: true,
-        })
-            .filter((entry) => entry.isDirectory())
-            .map((entry) => entry.name);
-    } catch {}
-
-    let sponsorCount = 0;
+    if (!sponsorIds.size) {
+        ERUDIT.log.info(
+            isInitial
+                ? 'Skipping sponsors — no sponsors found.'
+                : 'Skipping sponsors — nothing changed.',
+        );
+        return;
+    }
 
     for (const sponsorId of sponsorIds) {
+        await cleanupSponsor(sponsorId);
+    }
+
+    const existingIds = [...sponsorIds].filter((id) =>
+        existsSync(`${sponsorsRoot()}/${id}`),
+    );
+
+    if (!existingIds.length) {
+        return;
+    }
+
+    for (const sponsorId of existingIds) {
         await buildSponsor(sponsorId);
-        sponsorCount++;
     }
 
     ERUDIT.log.success(
-        `Sponsors build complete! (${ERUDIT.log.stress(sponsorCount)})`,
+        isInitial
+            ? `Sponsors build complete! (${ERUDIT.log.stress(sponsorIds.size)})`
+            : `Sponsors updated: ${ERUDIT.log.stress(existingIds.join(', '))}`,
     );
+}
+
+//
+//
+//
+
+function collectSponsorIds(initial: boolean): Set<string> {
+    if (initial) {
+        try {
+            return new Set(
+                readdirSync(sponsorsRoot(), { withFileTypes: true })
+                    .filter((entry) => entry.isDirectory())
+                    .map((entry) => entry.name),
+            );
+        } catch {
+            return new Set();
+        }
+    }
+
+    const ids = new Set<string>();
+
+    for (const file of ERUDIT.changedFiles.values()) {
+        if (!file.startsWith(`${sponsorsRoot()}/`)) continue;
+        const id = file.replace(`${sponsorsRoot()}/`, '').split('/')[0];
+        if (id) ids.add(id);
+    }
+
+    return ids;
+}
+
+async function cleanupSponsor(sponsorId: string) {
+    await ERUDIT.db
+        .delete(ERUDIT.db.schema.sponsors)
+        .where(eq(ERUDIT.db.schema.sponsors.sponsorId, sponsorId));
+
+    await ERUDIT.db
+        .delete(ERUDIT.db.schema.files)
+        .where(eq(ERUDIT.db.schema.files.role, 'sponsor-avatar'));
 }
 
 async function buildSponsor(sponsorId: string) {
@@ -41,11 +93,10 @@ async function buildSponsor(sponsorId: string) {
         `Building sponsor ${ERUDIT.log.stress(sponsorId)}...`,
     );
 
-    const sponsorDirectory =
-        ERUDIT.config.paths.project + '/sponsors/' + sponsorId;
-    const sponsorFiles = readdirSync(sponsorDirectory);
+    const dir = `${sponsorsRoot()}/${sponsorId}`;
+    const files = readdirSync(dir);
 
-    const hasConfig = sponsorFiles.some(
+    const hasConfig = files.some(
         (file) => file === 'sponsor.ts' || file === 'sponsor.js',
     );
 
@@ -60,7 +111,7 @@ async function buildSponsor(sponsorId: string) {
 
     try {
         sponsorConfig = (await ERUDIT.import(
-            `${sponsorDirectory}/sponsor`,
+            `${dir}/sponsor`,
         )) as SponsorConfig;
     } catch (error) {
         const message = error instanceof Error ? error.message : String(error);
@@ -70,14 +121,14 @@ async function buildSponsor(sponsorId: string) {
         return;
     }
 
-    const avatarExtension = sponsorFiles
+    const avatarExtension = files
         .find((file) => file.startsWith('avatar.'))
         ?.split('.')
         .pop();
 
     if (avatarExtension) {
         await ERUDIT.repository.db.pushFile(
-            `${sponsorDirectory}/avatar.${avatarExtension}`,
+            `${dir}/avatar.${avatarExtension}`,
             'sponsor-avatar',
         );
     }
@@ -87,9 +138,9 @@ async function buildSponsor(sponsorId: string) {
             return sponsorConfig.icon;
         }
 
-        const iconFile = sponsorFiles.find((file) => file === 'icon.svg');
+        const iconFile = files.find((file) => file === 'icon.svg');
         if (iconFile) {
-            return readFileSync(sponsorDirectory + '/' + iconFile, 'utf-8');
+            return readFileSync(dir + '/' + iconFile, 'utf-8');
         }
     })();
 

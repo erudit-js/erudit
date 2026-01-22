@@ -1,50 +1,111 @@
-import { readdirSync, writeFileSync } from 'node:fs';
-import { like } from 'drizzle-orm';
+import { existsSync, readdirSync, writeFileSync } from 'node:fs';
+import { eq, like } from 'drizzle-orm';
 import { globSync } from 'glob';
 import { isRawElement, type AnySchema, type ProseElement } from '@jsprose/core';
 import {
+    contributorIdToPropertyName,
     globalContributorsObject,
     globalContributorsTypes,
     type ContributorDefinition,
 } from '@erudit-js/core/contributor';
 
-// Trigger globalThis update
 $CONTRIBUTOR;
 
+let initialBuild = true;
+
+const contributorsRoot = () => `${ERUDIT.config.paths.project}/contributors`;
+
+const contributorsTypesPath = () =>
+    `${ERUDIT.config.paths.build}/types/contributors.d.ts`;
+
 export async function buildContributors() {
-    if (!ERUDIT.config.public.project.contributors?.enabled) {
-        return;
-    }
+    if (!ERUDIT.config.public.project.contributors?.enabled) return;
 
     ERUDIT.log.debug.start('Building contributors...');
 
-    await ERUDIT.db.delete(ERUDIT.db.schema.contributors);
-    await ERUDIT.db
-        .delete(ERUDIT.db.schema.files)
-        .where(like(ERUDIT.db.schema.files.role, 'contributor:%'));
+    const isInitial = initialBuild;
+    initialBuild = false;
 
-    const contributorIds = globSync(
-        `${ERUDIT.config.paths.project}/contributors/*/`,
-        { posix: true },
-    ).map((dirPath) => dirPath.split('/').pop() as string);
+    const contributorIds = collectContributorIds(isInitial);
 
-    for (const key in $CONTRIBUTOR) {
-        delete $CONTRIBUTOR[key];
+    if (!contributorIds.size) {
+        ERUDIT.log.info(
+            isInitial
+                ? 'Skipping contributors — no contributors found.'
+                : 'Skipping contributors — nothing changed.',
+        );
+        return;
     }
 
-    Object.assign($CONTRIBUTOR, globalContributorsObject(contributorIds));
+    for (const id of contributorIds) {
+        await cleanupContributor(id);
+    }
 
-    writeFileSync(
-        `${ERUDIT.config.paths.build}/types/contributors.d.ts`,
-        globalContributorsTypes($CONTRIBUTOR),
+    const existingIds = [...contributorIds].filter((id) =>
+        existsSync(`${contributorsRoot()}/${id}`),
     );
 
-    for (const contributorId of contributorIds) {
-        await buildContributor(contributorId);
+    syncContributorGlobals(existingIds);
+
+    if (!existingIds.length) {
+        return;
+    }
+
+    for (const id of existingIds) {
+        await buildContributor(id);
     }
 
     ERUDIT.log.success(
-        `Contributors build complete! (${ERUDIT.log.stress(contributorIds.length)})`,
+        isInitial
+            ? `Contributors build complete! (${ERUDIT.log.stress(contributorIds.size)})`
+            : `Contributors updated: ${ERUDIT.log.stress(existingIds.join(', '))}`,
+    );
+}
+
+//
+//
+//
+
+function collectContributorIds(initial: boolean): Set<string> {
+    if (initial) {
+        return new Set(
+            globSync(`${contributorsRoot()}/*/`, { posix: true }).map(
+                (p) => p.split('/').at(-1)!,
+            ),
+        );
+    }
+
+    const ids = new Set<string>();
+
+    for (const file of ERUDIT.changedFiles.values()) {
+        if (!file.startsWith(`${contributorsRoot()}/`)) continue;
+        const id = file.replace(`${contributorsRoot()}/`, '').split('/')[0];
+        if (id) ids.add(id);
+    }
+
+    return ids;
+}
+
+async function cleanupContributor(contributorId: string) {
+    await ERUDIT.db
+        .delete(ERUDIT.db.schema.contributors)
+        .where(eq(ERUDIT.db.schema.contributors.contributorId, contributorId));
+
+    await ERUDIT.db
+        .delete(ERUDIT.db.schema.files)
+        .where(
+            like(ERUDIT.db.schema.files.role, `contributor:${contributorId}%`),
+        );
+
+    delete $CONTRIBUTOR[contributorIdToPropertyName(contributorId)];
+}
+
+function syncContributorGlobals(contributorIds: string[]) {
+    Object.assign($CONTRIBUTOR, globalContributorsObject(contributorIds));
+
+    writeFileSync(
+        contributorsTypesPath(),
+        globalContributorsTypes($CONTRIBUTOR),
     );
 }
 
@@ -53,59 +114,53 @@ async function buildContributor(contributorId: string) {
         `Building contributor ${ERUDIT.log.stress(contributorId)}...`,
     );
 
-    const directory = `${ERUDIT.config.paths.project}/contributors/${contributorId}`;
-    const files = readdirSync(directory);
+    const dir = `${contributorsRoot()}/${contributorId}`;
+    const files = readdirSync(dir);
 
-    const avatarExtension = files
-        .find((file) => file.startsWith('avatar.'))
-        ?.split('.')
-        .pop();
-
-    if (avatarExtension) {
+    const avatar = files.find((f) => f.startsWith('avatar.'));
+    if (avatar) {
         await ERUDIT.repository.db.pushFile(
-            `${directory}/avatar.${avatarExtension}`,
+            `${dir}/${avatar}`,
             `contributor:${contributorId}`,
         );
     }
 
-    let moduleDefault: ContributorDefinition | undefined;
+    let def: ContributorDefinition | undefined;
 
     try {
-        moduleDefault = await ERUDIT.import(`${directory}/contributor`);
-    } catch (error) {
-        if (!String(error).includes('Cannot find module')) {
-            ERUDIT.log.error(
-                `Failed to load contributor ${ERUDIT.log.stress(contributorId)} module:\n`,
-            );
-            console.log(error);
+        def = await ERUDIT.import(`${dir}/contributor`);
+    } catch (err) {
+        if (!String(err).includes('Cannot find module')) {
+            ERUDIT.log.error(`Failed to load contributor ${contributorId}:`);
+            console.error(err);
         }
     }
 
     let description: ProseElement<AnySchema> | undefined;
 
-    if (isRawElement(moduleDefault?.description)) {
-        const resolveResult = await ERUDIT.repository.prose.resolve(
-            moduleDefault.description,
+    if (isRawElement(def?.description)) {
+        const resolved = await ERUDIT.repository.prose.resolve(
+            def.description,
             false,
         );
 
-        for (const file of resolveResult.files) {
+        for (const file of resolved.files) {
             await ERUDIT.repository.db.pushFile(
                 file,
                 `contributor:${contributorId}`,
             );
         }
 
-        description = resolveResult.proseElement;
+        description = resolved.proseElement;
     }
 
     await ERUDIT.db.insert(ERUDIT.db.schema.contributors).values({
         contributorId,
-        avatarExtension,
-        displayName: moduleDefault?.displayName,
-        short: moduleDefault?.short,
-        links: moduleDefault?.links,
-        editor: moduleDefault?.editor,
-        description: description,
+        avatarExtension: avatar?.split('.').pop(),
+        displayName: def?.displayName,
+        short: def?.short,
+        links: def?.links,
+        editor: def?.editor,
+        description,
     });
 }
