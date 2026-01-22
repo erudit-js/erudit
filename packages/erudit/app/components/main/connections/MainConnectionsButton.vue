@@ -4,7 +4,7 @@ import type { MyIconName } from '#my-icons';
 const { type, active } = defineProps<{
     type: 'hardDependencies' | 'autoDependencies' | 'dependents' | 'externals';
     active?: boolean;
-    count: number;
+    count?: number;
 }>();
 
 const isHard = type === 'hardDependencies';
@@ -75,6 +75,7 @@ const dynamicClasses = computed(() => {
     >
         <MyIcon :name="icon" class="text-[1.2em]" />
         <span>{{ formatText(title) }}</span>
-        <span class="font-bold">{{ count }}</span>
+        <span v-if="count" class="font-bold">{{ count }}</span>
+        <slot name="after"></slot>
     </button>
 </template>

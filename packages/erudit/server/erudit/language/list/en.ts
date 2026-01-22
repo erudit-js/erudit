@@ -97,6 +97,8 @@ const en: LanguagePhrases = {
         `Summary of the topic "${contentTitle}": key definitions, theorems, properties and examples of their use. All the most important things in a concise form!`,
     practice_seo_description: (contentTitle: string) =>
         `Various problems with hints and answers on the topic "${contentTitle}". Interesting conditions, hints and detailed solutions. Turn knowledge into a skill!`,
+    externals_own: 'Own',
+    externals_from: 'From',
 
     default_index_title: 'Erudit',
     default_index_short: 'Modern digital textbooks!',

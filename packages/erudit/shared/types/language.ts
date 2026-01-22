@@ -93,6 +93,8 @@ export type LanguagePhrases = Phrases<{
     article_seo_description: (contentTitle: string) => string;
     summary_seo_description: (contentTitle: string) => string;
     practice_seo_description: (contentTitle: string) => string;
+    externals_own: string;
+    externals_from: string;
 
     default_index_title: string;
     default_index_short: string;

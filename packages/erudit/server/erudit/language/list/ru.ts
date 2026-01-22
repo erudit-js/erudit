@@ -98,6 +98,8 @@ const ru: LanguagePhrases = {
         `Конспект темы «${contentTitle}»: ключевые определения, теоремы, свойства и примеры их использвания. Все самое важное и в кратком виде!`,
     practice_seo_description: (contentTitle: string) =>
         `Разнообразные задачи с подсказками и ответами по теме «${contentTitle}». Интересные условия, подсказки и подробные решения. Превратите знания в навык!`,
+    externals_own: 'Собственные',
+    externals_from: 'Из',
 
     default_index_title: 'Erudit',
     default_index_short: 'Современные цифровые учебники!',

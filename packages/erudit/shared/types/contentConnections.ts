@@ -1,4 +1,4 @@
-import type { ContentExternal } from '@erudit-js/core/content/externals';
+import type { ContentExternals } from '@erudit-js/core/content/externals';
 import type { ContentType } from '@erudit-js/core/content/type';
 
 interface BaseContentDep {
@@ -23,5 +23,5 @@ export interface ContentConnections {
     hardDependencies?: ContentHardDep[];
     autoDependencies?: ContentAutoDep[];
     dependents?: ContentAutoDep[];
-    externals?: ContentExternal[];
+    externals?: ContentExternals;
 }

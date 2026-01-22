@@ -5,7 +5,7 @@ defineProps<{ deps: ContentDep[] }>();
 </script>
 
 <template>
-    <ScrollPane>
+    <ScrollPane class="py-normal gap-main-half flex max-h-[500px] flex-col">
         <div v-for="dep of deps" class="gap-small flex">
             <MyIcon
                 :name="ICONS[dep.contentType]"
