@@ -22,8 +22,14 @@ const gap = (() => {
             :style="{ justifyContent: justify, gap }"
             class="flex flex-wrap items-center"
         >
-            <template v-for="item of element.children">
-                <div>
+            <template v-for="(item, i) of element.children">
+                <div
+                    :style="{
+                        flex: element.data?.flexes
+                            ? element.data.flexes[i]
+                            : undefined,
+                    }"
+                >
                     <Render :element="item" />
                 </div>
             </template>

@@ -11,6 +11,7 @@ import { defineEruditProseCoreElement } from '../../coreElement.js';
 export interface FlexData {
     gap?: string;
     justifyContent?: string;
+    flexes?: string[];
 }
 
 export const flexSchema = defineSchema({
@@ -26,7 +27,7 @@ export const flexSchema = defineSchema({
 export const Flex = defineEruditTag({
     tagName: 'Flex',
     schema: flexSchema,
-})<{ gap?: string; justify?: string } & TagChildren>(({
+})<{ gap?: string; justify?: string; flexes?: string[] } & TagChildren>(({
     element,
     tagName,
     children,
@@ -44,6 +45,11 @@ export const Flex = defineEruditTag({
     if (props.justify) {
         element.data = element.data || {};
         element.data.justifyContent = props.justify;
+    }
+
+    if (props.flexes) {
+        element.data = element.data || {};
+        element.data.flexes = props.flexes;
     }
 });
 
