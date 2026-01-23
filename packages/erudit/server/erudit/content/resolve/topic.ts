@@ -2,6 +2,7 @@ import { eq } from 'drizzle-orm';
 import {
     isDocument,
     isRawElement,
+    walkElements,
     type AnyDocument,
     type AnySchema,
 } from '@jsprose/core';
@@ -114,40 +115,104 @@ export async function resolveTopic(topicNode: ContentNavNode) {
                     },
                 );
 
+                let finalTocItems = resolvedTopicPart.tocItems;
+
                 if (
-                    resolvedTopicPart.tocItems?.length ||
-                    (topicPart === 'practice' &&
-                        practiceProblemsTocItems.length)
+                    topicPart === 'practice' &&
+                    practiceProblemsTocItems.length
                 ) {
-                    let tocItems = resolvedTopicPart.tocItems || [];
+                    // Map elementId -> TocItem for both headings and problems
+                    const itemMap = new Map<string, ResolvedTocItem>();
 
-                    if (topicPart === 'practice') {
-                        // Combine regular toc items with practice problems
-                        const combined = [
-                            ...tocItems,
-                            ...practiceProblemsTocItems,
-                        ];
-
-                        // Deduplicate based on elementId
-                        const seen = new Set<string>();
-                        tocItems = combined.filter((item) => {
-                            if (item.type === 'element' && item.elementId) {
-                                if (seen.has(item.elementId)) {
-                                    return false;
-                                }
-                                seen.add(item.elementId);
-                                return true;
+                    // Collect all existing TOC items (headings) recursively
+                    const collectItems = (items: ResolvedTocItem[]) => {
+                        for (const item of items) {
+                            if (item.elementId) {
+                                itemMap.set(item.elementId, item);
                             }
-                            return true;
-                        });
-                    }
+                            if (
+                                item.type === 'heading' &&
+                                item.children?.length
+                            ) {
+                                collectItems(item.children);
+                            }
+                        }
+                    };
+                    collectItems(resolvedTopicPart.tocItems || []);
 
-                    await ERUDIT.db.insert(ERUDIT.db.schema.contentToc).values({
-                        fullId: topicNode.fullId,
-                        topicPart,
-                        toc: tocItems,
+                    // Add practice problems to the map
+                    practiceProblemsTocItems.forEach((p) => {
+                        if (p.elementId) {
+                            itemMap.set(p.elementId, p);
+                        }
                     });
+
+                    // Rebuild TOC in document order using walkElements
+                    const result: ResolvedTocItem[] = [];
+                    const stack: ResolvedTocItem[] = [];
+
+                    await walkElements(
+                        resolvedTopicPart.proseElement,
+                        (element) => {
+                            if (element.id && itemMap.has(element.id)) {
+                                const item = itemMap.get(element.id)!;
+
+                                if (item.type === 'heading') {
+                                    // Pop headings at same or deeper level
+                                    while (stack.length > 0) {
+                                        const last = stack[stack.length - 1];
+                                        if (
+                                            last.type === 'heading' &&
+                                            last.level >= item.level
+                                        ) {
+                                            stack.pop();
+                                        } else {
+                                            break;
+                                        }
+                                    }
+
+                                    // Create new heading with empty children array
+                                    const newItem: ResolvedTocItem = {
+                                        ...item,
+                                        children: [],
+                                    };
+
+                                    // Add to parent heading or root
+                                    if (stack.length > 0) {
+                                        const parent = stack[stack.length - 1];
+                                        if (parent.type === 'heading') {
+                                            parent.children.push(newItem);
+                                        }
+                                    } else {
+                                        result.push(newItem);
+                                    }
+
+                                    stack.push(newItem);
+                                } else {
+                                    // Non-heading item (problems, etc.)
+                                    if (stack.length > 0) {
+                                        const parent = stack[stack.length - 1];
+                                        if (parent.type === 'heading') {
+                                            parent.children.push(item);
+                                        } else {
+                                            result.push(item);
+                                        }
+                                    } else {
+                                        result.push(item);
+                                    }
+                                }
+                            }
+                        },
+                    );
+
+                    finalTocItems = result;
                 }
+
+                await ERUDIT.db.insert(ERUDIT.db.schema.contentToc).values({
+                    fullId: topicNode.fullId,
+                    topicPart,
+                    toc: finalTocItems,
+                });
 
                 await ERUDIT.db
                     .update(ERUDIT.db.schema.topics)
