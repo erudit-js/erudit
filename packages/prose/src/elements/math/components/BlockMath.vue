@@ -23,7 +23,7 @@ const mathGroup: _MathGroup = blockMathStorage;
 
 <template>
     <Block :element>
-        <div :style="{ '--mathRowGap': '.6em' }">
+        <div :style="{ '--mathRowGap': '1em' }">
             <MathGroup :mathGroup :freeze="Boolean(element.data.freeze)" />
         </div>
     </Block>
