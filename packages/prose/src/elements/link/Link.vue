@@ -88,7 +88,9 @@ function linkClick() {
                 :name="icon"
                 class="micro:pr-1.5 inline pr-1 text-[1.3em]"
             />
-            <span>{{ formatText(element.data.label) }}</span>
+            <span class="whitespace-normal">
+                {{ formatText(element.data.label) }}
+            </span>
         </EruditLink>
     </Inliner>
 </template>
