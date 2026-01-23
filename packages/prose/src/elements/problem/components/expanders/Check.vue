@@ -81,6 +81,35 @@ function doCheck() {
         return;
     }
 
+    if (check.data.set) {
+        const { separator, values } = check.data.set;
+
+        // Create a regex that matches the separator with optional whitespace around it
+        const separatorRegex = new RegExp(
+            `\\s*${separator.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\s*`,
+        );
+
+        // Split the input and normalize each value
+        const inputValues = newInput
+            ? newInput
+                  .split(separatorRegex)
+                  .map((v) => v.trim())
+                  .filter((v) => v)
+                  .sort()
+            : [];
+
+        // Sort the expected values for comparison
+        const expectedValues = [...values].sort();
+
+        // Compare the sorted arrays
+        const isCorrect =
+            inputValues.length === expectedValues.length &&
+            inputValues.every((val, idx) => val === expectedValues[idx]);
+
+        state.value = isCorrect ? 'correct' : 'wrong';
+        return;
+    }
+
     const isCorrect = check.data.answers?.includes(newInput);
     state.value = isCorrect ? 'correct' : 'wrong';
 }

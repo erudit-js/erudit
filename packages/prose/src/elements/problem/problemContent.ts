@@ -238,6 +238,10 @@ export interface ProblemCheckData {
     label?: string;
     hint?: string;
     placeholder?: string;
+    set?: {
+        separator: string;
+        values: string[];
+    };
     answers?: (string | undefined)[];
     script?: string;
 }
@@ -252,19 +256,26 @@ export const problemCheckSchema = defineSchema({
     Children: BlockSchema[];
 }>();
 
+type UndefinedOnly<T> = {
+    [K in keyof T]?: undefined;
+};
+
+type OneOf<T extends Record<string, any>> = {
+    [K in keyof T]: Pick<T, K> & UndefinedOnly<Omit<T, K>>;
+}[keyof T];
+
 export const ProblemCheck = defineEruditTag({
     tagName: 'ProblemCheck',
     schema: problemCheckSchema,
 })<
-    { label?: string; hint?: string; placeholder?: string } & (
-        | { answer: string | number; answers?: undefined; script?: undefined }
-        | {
-              answers: (string | number)[];
-              answer?: undefined;
-              script?: undefined;
-          }
-        | { script: string; answers?: undefined; answer?: undefined }
-    ) &
+    { label?: string; hint?: string; placeholder?: string } & OneOf<{
+        answer: string | number;
+        answers: (string | number)[];
+        set:
+            | (string | number)[]
+            | { separator: string; values: (string | number)[] };
+        script: string;
+    }> &
         NoTagChildren
 >(({ element, tagName, props, children }) => {
     ensureTagNoChildren(tagName, children);
@@ -284,6 +295,24 @@ export const ProblemCheck = defineEruditTag({
             ...element.data,
             script: props.script,
         };
+    } else if (props.set !== undefined) {
+        if (Array.isArray(props.set)) {
+            element.data = {
+                ...element.data,
+                set: {
+                    separator: ',',
+                    values: props.set.map(String),
+                },
+            };
+        } else {
+            element.data = {
+                ...element.data,
+                set: {
+                    separator: props.set.separator,
+                    values: props.set.values.map(String),
+                },
+            };
+        }
     }
 
     if (props.label !== undefined) {
