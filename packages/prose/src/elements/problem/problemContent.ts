@@ -234,16 +234,113 @@ export type CheckFunction = (args: {
     answers: Record<string, string | undefined>;
 }) => boolean;
 
+export interface ProblemCheckRegex {
+    pattern: string;
+    flags: string;
+}
+
+export type ProblemCheckValue = string | ProblemCheckRegex;
+
 export interface ProblemCheckData {
     label?: string;
     hint?: string;
     placeholder?: string;
     set?: {
         separator: string;
-        values: string[];
+        values: (ProblemCheckValue | ProblemCheckValue[])[];
     };
-    answers?: (string | undefined)[];
+    answers?: ProblemCheckValue[];
     script?: string;
+}
+
+export function checkValue(
+    input: string | undefined,
+    data: ProblemCheckData,
+): boolean {
+    const normalizedInput = input?.trim().replace(/\s+/g, ' ') || undefined;
+
+    const matchSingle = (
+        val: string | undefined,
+        condition: ProblemCheckValue,
+    ) => {
+        const v = val || '';
+        if (typeof condition === 'string') {
+            return v === condition;
+        }
+        try {
+            const re = new RegExp(condition.pattern, condition.flags);
+            return re.test(v);
+        } catch {
+            return false;
+        }
+    };
+
+    if (data.answers) {
+        if (!normalizedInput) return false;
+        return data.answers.some((ans) => matchSingle(normalizedInput, ans));
+    }
+
+    if (data.set) {
+        const { separator, values } = data.set;
+
+        const separatorRegex = new RegExp(
+            `\\s*${separator.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\s*`,
+        );
+
+        const inputValues = normalizedInput
+            ? normalizedInput
+                  .split(separatorRegex)
+                  .map((v) => v.trim())
+                  .filter((v) => v)
+            : [];
+
+        if (inputValues.length !== values.length) {
+            return false;
+        }
+
+        const canMatch = (
+            inputVal: string,
+            expectedVal: ProblemCheckValue | ProblemCheckValue[],
+        ) => {
+            if (Array.isArray(expectedVal)) {
+                return expectedVal.some((ev) => matchSingle(inputVal, ev));
+            }
+            return matchSingle(inputVal, expectedVal);
+        };
+
+        const adj = inputValues.map((inputVal) =>
+            values
+                .map((v, idx) => (canMatch(inputVal, v) ? idx : -1))
+                .filter((idx) => idx !== -1),
+        );
+
+        const matchV = new Array(values.length).fill(-1);
+        const vis = new Array(values.length).fill(false);
+
+        const dfs = (u: number) => {
+            for (const v of adj[u]) {
+                if (vis[v]) continue;
+                vis[v] = true;
+                if (matchV[v] < 0 || dfs(matchV[v])) {
+                    matchV[v] = u;
+                    return true;
+                }
+            }
+            return false;
+        };
+
+        let matches = 0;
+        for (let i = 0; i < inputValues.length; i++) {
+            vis.fill(false);
+            if (dfs(i)) {
+                matches++;
+            }
+        }
+
+        return matches === values.length;
+    }
+
+    return false;
 }
 
 export const problemCheckSchema = defineSchema({
@@ -269,26 +366,43 @@ export const ProblemCheck = defineEruditTag({
     schema: problemCheckSchema,
 })<
     { label?: string; hint?: string; placeholder?: string } & OneOf<{
-        answer: string | number;
-        answers: (string | number)[];
+        answer: string | number | RegExp;
+        answers: (string | number | RegExp)[];
         set:
-            | (string | number)[]
-            | { separator: string; values: (string | number)[] };
+            | (string | number | RegExp | (string | number | RegExp)[])[]
+            | {
+                  separator: string;
+                  values: (
+                      | string
+                      | number
+                      | RegExp
+                      | (string | number | RegExp)[]
+                  )[];
+              };
         script: string;
     }> &
         NoTagChildren
 >(({ element, tagName, props, children }) => {
     ensureTagNoChildren(tagName, children);
 
+    const normalizeCheckValue = (
+        val: string | number | RegExp,
+    ): ProblemCheckValue => {
+        if (val instanceof RegExp) {
+            return { pattern: val.source, flags: val.flags };
+        }
+        return String(val);
+    };
+
     if (props.answer !== undefined) {
         element.data = {
             ...element.data,
-            answers: [String(props.answer)],
+            answers: [normalizeCheckValue(props.answer)],
         };
     } else if (props.answers !== undefined) {
         element.data = {
             ...element.data,
-            answers: props.answers.map(String),
+            answers: props.answers.map(normalizeCheckValue),
         };
     } else if (props.script !== undefined) {
         element.data = {
@@ -296,12 +410,19 @@ export const ProblemCheck = defineEruditTag({
             script: props.script,
         };
     } else if (props.set !== undefined) {
+        const normalizeSetItem = (
+            v: string | number | RegExp | (string | number | RegExp)[],
+        ): ProblemCheckValue | ProblemCheckValue[] =>
+            Array.isArray(v)
+                ? v.map(normalizeCheckValue)
+                : normalizeCheckValue(v);
+
         if (Array.isArray(props.set)) {
             element.data = {
                 ...element.data,
                 set: {
                     separator: ',',
-                    values: props.set.map(String),
+                    values: props.set.map(normalizeSetItem),
                 },
             };
         } else {
@@ -309,7 +430,7 @@ export const ProblemCheck = defineEruditTag({
                 ...element.data,
                 set: {
                     separator: props.set.separator,
-                    values: props.set.values.map(String),
+                    values: props.set.values.map(normalizeSetItem),
                 },
             };
         }

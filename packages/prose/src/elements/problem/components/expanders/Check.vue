@@ -2,7 +2,7 @@
 import { useTemplateRef, ref, watch } from 'vue';
 import type { ProseElement } from '@jsprose/core';
 
-import type { problemCheckSchema } from '../../problemContent.js';
+import { checkValue, type problemCheckSchema } from '../../problemContent.js';
 import checkIcon from '../../assets/actions/check.svg?raw';
 import plusIcon from '../../../../app/shared/assets/plus.svg?raw';
 import successIcon from '../../../../app/shared/assets/check.svg?raw';
@@ -81,37 +81,7 @@ function doCheck() {
         return;
     }
 
-    if (check.data.set) {
-        const { separator, values } = check.data.set;
-
-        // Create a regex that matches the separator with optional whitespace around it
-        const separatorRegex = new RegExp(
-            `\\s*${separator.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\s*`,
-        );
-
-        // Split the input and normalize each value
-        const inputValues = newInput
-            ? newInput
-                  .split(separatorRegex)
-                  .map((v) => v.trim())
-                  .filter((v) => v)
-                  .sort()
-            : [];
-
-        // Sort the expected values for comparison
-        const expectedValues = [...values].sort();
-
-        // Compare the sorted arrays
-        const isCorrect =
-            inputValues.length === expectedValues.length &&
-            inputValues.every((val, idx) => val === expectedValues[idx]);
-
-        state.value = isCorrect ? 'correct' : 'wrong';
-        return;
-    }
-
-    const isCorrect = check.data.answers?.includes(newInput);
-    state.value = isCorrect ? 'correct' : 'wrong';
+    state.value = checkValue(newInput, check.data) ? 'correct' : 'wrong';
 }
 </script>
 

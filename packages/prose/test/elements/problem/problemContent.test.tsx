@@ -29,6 +29,7 @@ import {
     ProblemCheck,
     problemCheckSchema,
     validateProblemContent,
+    checkValue,
 } from '@erudit-js/prose/elements/problem/problemContent';
 
 export const prepareRegistry = () =>
@@ -159,9 +160,111 @@ describe('Problem Check', () => {
                 'baz',
             ]);
 
+            const regexAnswerCheck = asEruditRaw(
+                <ProblemCheck answer={/yes|no/i} />,
+            );
+            expect(regexAnswerCheck.data.answers).toEqual([
+                { pattern: 'yes|no', flags: 'i' },
+            ]);
+
             const scriptCheck = asEruditRaw(<ProblemCheck script="check1" />);
             expect(scriptCheck.data.script).toBe('check1');
         });
+    });
+});
+
+describe('checkValue', () => {
+    it('should check single answer', () => {
+        expect(checkValue('foo', { answers: ['foo'] })).toBe(true);
+        expect(checkValue('bar', { answers: ['foo'] })).toBe(false);
+        expect(checkValue(undefined, { answers: ['foo'] })).toBe(false);
+    });
+
+    it('should check multiple answers', () => {
+        expect(checkValue('foo', { answers: ['foo', 'bar'] })).toBe(true);
+        expect(checkValue('bar', { answers: ['foo', 'bar'] })).toBe(true);
+        expect(checkValue('baz', { answers: ['foo', 'bar'] })).toBe(false);
+    });
+
+    it('should check regex answer', () => {
+        const regexData = {
+            answers: [{ pattern: '^[0-9]+$', flags: '' }],
+        };
+        expect(checkValue('123', regexData)).toBe(true);
+        expect(checkValue('abc', regexData)).toBe(false);
+
+        const regexFlagsData = {
+            answers: [{ pattern: 'foo', flags: 'i' }],
+        };
+        expect(checkValue('FoO', regexFlagsData)).toBe(true);
+    });
+
+    it('should check set', () => {
+        const setData = {
+            set: {
+                separator: ',',
+                values: [['1'], ['2']],
+            },
+        };
+
+        expect(checkValue('1, 2', setData)).toBe(true);
+        expect(checkValue('2, 1', setData)).toBe(true);
+        expect(checkValue('1, 1', setData)).toBe(false); // Duplicates not allowed in set def unless defined
+        expect(checkValue('1, 3', setData)).toBe(false);
+        expect(checkValue('1, 2, 3', setData)).toBe(false);
+    });
+
+    it('should check set with duplicates allowed', () => {
+        const setData = {
+            set: {
+                separator: ',',
+                values: [['1'], ['1'], ['2']],
+            },
+        };
+        expect(checkValue('1, 2, 1', setData)).toBe(true);
+        expect(checkValue('1, 1', setData)).toBe(false);
+        expect(checkValue('1, 3', setData)).toBe(false);
+    });
+
+    it('should check set with alternatives', () => {
+        const setData = {
+            set: {
+                separator: ',',
+                values: [['1'], ['2', '3']],
+            },
+        };
+        expect(checkValue('1, 2', setData)).toBe(true);
+        expect(checkValue('1, 3', setData)).toBe(true);
+        expect(checkValue('3, 1', setData)).toBe(true);
+        expect(checkValue('2, 2', setData)).toBe(false);
+    });
+
+    it('should check set with regex', () => {
+        const setData = {
+            set: {
+                separator: ',',
+                values: [['1'], [{ pattern: '^[a-z]+$', flags: '' }]],
+            },
+        };
+        expect(checkValue('1, abc', setData)).toBe(true);
+        expect(checkValue('xyz, 1', setData)).toBe(true);
+        expect(checkValue('1, 123', setData)).toBe(false);
+    });
+
+    it('should normalise input', () => {
+        expect(
+            checkValue('  foo  ', {
+                answers: ['foo'],
+            }),
+        ).toBe(true);
+
+        const setData = {
+            set: {
+                separator: ',',
+                values: [['1'], ['2']],
+            },
+        };
+        expect(checkValue(' 1 ,  2 ', setData)).toBe(true);
     });
 });
 
