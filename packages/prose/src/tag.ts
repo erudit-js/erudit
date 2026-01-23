@@ -69,7 +69,9 @@ export function defineEruditTag<
 
             // Use every possibility to get human-readable slug whether it is set manually or taken from snippet or toc
             args.element.slug ||=
-                args.element.snippet?.title || args.element.toc?.title;
+                args.element.snippet?.title ||
+                args.element.toc?.title ||
+                args.element.title;
         });
 
         return eruditTag;

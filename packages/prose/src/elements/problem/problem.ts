@@ -47,9 +47,10 @@ export const Problem = defineEruditTag({
             | { script: ProblemScriptInstance; children?: undefined }
         )
 >(({ element, tagName, props, children }) => {
-    element.data = { info: problemProps2Info(props) };
+    const problemInfo = problemProps2Info(props);
 
-    element.title = element.data.info.title;
+    element.data = { info: problemInfo };
+    element.title = problemInfo.title;
 
     if (children && props.script) {
         throw new ProseError(

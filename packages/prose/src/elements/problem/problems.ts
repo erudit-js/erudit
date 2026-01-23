@@ -133,8 +133,9 @@ export const Problems = defineEruditTag({
     }
 
     element.children = [...otherChildren, ...subProblemChildren];
-    element.data = problemProps2Info(props);
-    element.title = element.data.title;
+    const problemInfo = problemProps2Info(props);
+    element.data = problemInfo;
+    element.title = problemInfo.title;
 });
 
 export const problemsRegistryItem = defineRegistryItem({
