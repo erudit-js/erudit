@@ -10,11 +10,13 @@ import { preview } from './preview.js';
 import { launch } from './launch.js';
 import { generate } from './generate.js';
 
+const version = '{{ VERSION }}';
+
 export const main = defineCommand({
     meta: {
         name: 'Erudit CLI',
         description: 'Command Line Interface for Erudit!',
-        version: '{{ VERSION }}',
+        version,
     },
     subCommands: {
         init,
@@ -27,5 +29,6 @@ export const main = defineCommand({
     },
     setup() {
         console.log(brandColorLogotype);
+        console.log(`Version ${version}\n`);
     },
 });
