@@ -4,7 +4,7 @@ import type { MaybeMyIconName, MyIconName } from '#my-icons';
 
 const { quote } = defineProps<{
     quote: Quote;
-    hasBecomeLink?: boolean;
+    canJoin?: boolean;
     hasNextLink?: boolean;
 }>();
 const emit = defineEmits(['next']);
@@ -126,12 +126,12 @@ const phrase = await usePhrases('add_quote', 'next_quote');
                         />
                     </div>
                     <div
-                        v-if="hasBecomeLink || hasNextLink"
+                        v-if="canJoin || hasNextLink"
                         class="gap-normal micro:text-[1.5em] flex items-center
                             text-[1.2em]"
                     >
                         <EruditLink
-                            v-if="hasBecomeLink"
+                            v-if="canJoin"
                             :to="PAGES.sponsors"
                             :title="phrase.add_quote"
                             class="hocus:text-(--colorIcon)

@@ -78,7 +78,7 @@ onMounted(() => {
     <section v-if="quote" :key="quoteKey" class="px-main py-main-half">
         <MainQuote
             :quote
-            :hasBecomeLink="true"
+            :canJoin="ERUDIT.config.project.sponsors?.enabled"
             :hasNextLink="hasMultipleQuotes"
             @next="!loadingQuote && nextQuote()"
         />
