@@ -114,12 +114,12 @@ await usePhrases(
             <div
                 ref="preview"
                 :class="[
-                    `border-border bg-bg-main micro:max-h-[70dvh]
-                    pointer-events-auto absolute bottom-0 max-h-[90dvh] w-full
-                    touch-auto overflow-hidden rounded-[25px] rounded-b-none
-                    border-t transition-[max-height,height,translate]`,
+                    `bg-bg-main micro:max-h-[70dvh] pointer-events-auto absolute
+                    bottom-0 max-h-[90dvh] w-full touch-auto overflow-hidden
+                    rounded-[25px] rounded-b-none
+                    transition-[max-height,height,translate]`,
                     previewState.opened
-                        ? `translate-y-0
+                        ? `border-border translate-y-0 border-t
                             shadow-[0px_-10px_15px_5px_light-dark(rgba(0,0,0,0.1),rgba(255,255,255,0.05))]`
                         : 'translate-y-full shadow-none',
                 ]"
