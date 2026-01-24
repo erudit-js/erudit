@@ -34,12 +34,12 @@
         "play:preview": "bun erudit preview playground"
     },
     "devDependencies": {
-        "prettier": "^3.8.0",
+        "prettier": "^3.8.1",
         "prettier-plugin-classnames": "^0.8.6",
         "prettier-plugin-merge": "^0.8.0",
         "prettier-plugin-tailwindcss": "^0.7.2",
         "typescript": "^5.9.3",
-        "vitest": "^4.0.17"
+        "vitest": "^4.0.18"
     },
     "dependencies": {
         "slash": "^5.1.0"
