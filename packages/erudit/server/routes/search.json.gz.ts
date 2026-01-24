@@ -7,7 +7,7 @@ import {
     searchIndexSnippets,
 } from '@erudit/server/content/search';
 
-export default defineEventHandler(async () => {
+export default defineEventHandler(async (event) => {
     const entryLists: SearchEntriesList[] = [
         await searchIndexContributors(),
         ...(await searchIndexContentTypes()),
@@ -68,6 +68,8 @@ export default defineEventHandler(async () => {
     });
 
     const gzipped = await zip(JSON.stringify(exported));
+
+    setHeader(event, 'Content-Type', 'application/gzip');
 
     return gzipped;
 });
