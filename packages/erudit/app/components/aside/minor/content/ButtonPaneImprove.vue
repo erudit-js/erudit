@@ -66,18 +66,21 @@ const phrase = await usePhrases(
                             icon="question-circle"
                             :main="phrase.how_to_improve"
                             :to="howToImproveLink"
+                            target="_blank"
                         />
                         <AsideListItem
                             v-if="reportIssueLink"
                             icon="bug"
                             :main="phrase.report_issue"
                             :to="reportIssueLink"
+                            target="_blank"
                         />
                         <AsideListItem
                             v-if="editLink"
                             icon="draw"
                             :main="phrase.edit_page"
                             :to="editLink"
+                            target="_blank"
                         />
                     </div>
                     <div
