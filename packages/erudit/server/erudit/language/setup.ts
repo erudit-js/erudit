@@ -2,7 +2,7 @@ import { serverLanguages } from './list';
 
 export async function setupServerLanguage() {
     ERUDIT.language = {
-        phrases: {},
+        phrases: {} as any,
         functions: {},
     };
 
@@ -19,7 +19,7 @@ export async function setupServerLanguage() {
 
         const languageModule = await serverLanguages[targetLanguage]();
 
-        ERUDIT.language.phrases = languageModule.default;
+        ERUDIT.language.phrases = languageModule.phrases;
 
         for (const [funcKey, funcValue] of Object.entries(languageModule)) {
             if (typeof funcValue === 'function') {

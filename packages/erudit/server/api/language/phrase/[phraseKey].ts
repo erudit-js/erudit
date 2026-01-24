@@ -9,7 +9,10 @@ export default defineEventHandler<Promise<PayloadLanguagePhraseValue>>(
             });
         }
 
-        let phraseValue = ERUDIT.language.phrases[phraseKey];
+        let phraseValue =
+            ERUDIT.language.phrases[
+                phraseKey as keyof typeof ERUDIT.language.phrases
+            ];
 
         if (phraseValue) {
             if (typeof phraseValue === 'string') {

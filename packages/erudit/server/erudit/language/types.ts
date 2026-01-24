@@ -6,8 +6,8 @@ export interface EruditServerLanguage {
 }
 
 export interface ServerLanguageModule {
-    default: LanguagePhrases;
-    [key: string]: any;
+    phrases: LanguagePhrases;
+    [key: string]: Function | LanguagePhrases;
 }
 
 export type ServerLanguageModules = Record<

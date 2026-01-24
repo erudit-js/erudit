@@ -1,4 +1,4 @@
-const en: LanguagePhrases = {
+export const phrases: LanguagePhrases = {
     language_code: 'en',
     language_name: 'English',
     erudit: 'Erudit',
@@ -104,8 +104,6 @@ const en: LanguagePhrases = {
     default_index_short: 'Modern digital textbooks!',
     default_site_info_short: 'Modern textbook',
 };
-
-export default en;
 
 export function m(
     number: number,

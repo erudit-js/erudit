@@ -1,10 +1,10 @@
 export default defineEventHandler(async () => {
     const strFunctions: Record<string, string> = {};
 
-    for (const [funcName, funcStr] of Object.entries(
+    for (const [funcName, funcValue] of Object.entries(
         ERUDIT.language.functions,
     )) {
-        strFunctions[funcName] = funcStr.toString();
+        strFunctions[funcValue.name] = funcValue.toString();
     }
 
     return strFunctions;
