@@ -45,8 +45,11 @@ useStandartSeo({
             <div class="h-main-half"></div>
             <MainAction
                 icon="users"
+                :newTab="true"
                 :label="phrase.become_contributor"
-                :link="'https://google.com'"
+                :link="
+                    ERUDIT.config.project.contributors!.becomeContributorLink
+                "
             />
             <div class="h-main-half"></div>
         </template>

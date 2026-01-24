@@ -33,6 +33,7 @@ useStandartSeo({
         <div class="h-main-half"></div>
         <MainAction
             icon="diamond"
+            :newTab="true"
             :label="phrase.become_sponsor"
             :link="ERUDIT.config.project.sponsors!.becomeSponsorLink"
         />
