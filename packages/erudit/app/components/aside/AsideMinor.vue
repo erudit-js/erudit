@@ -63,10 +63,7 @@ onUnmounted(() => {
                         class="absolute top-0 left-0 grid h-full w-full
                             place-items-center"
                     >
-                        <MyRuntimeIcon
-                            :svg="loadingSvg"
-                            class="text-text-disabled text-[60px]"
-                        />
+                        <Loading class="text-text-disabled text-[65px]" />
                     </div>
                     <div v-else></div>
                 </template>

@@ -106,10 +106,10 @@ const pharse = await usePhrases('to_index', 'about_textbook');
             </div>
             <div
                 v-else
-                class="text-text-dimmed absolute top-0 left-0 flex h-full w-full
-                    items-center justify-center text-[50px] transition-opacity"
+                class="absolute top-0 left-0 flex h-full w-full items-center
+                    justify-center transition-opacity"
             >
-                <MyRuntimeIcon :svg="loadingSvg" />
+                <Loading class="text-text-dimmed text-[65px]" />
             </div>
         </TransitionFade>
     </AsideMajorPaneTemplate>

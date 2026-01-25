@@ -145,10 +145,7 @@ await usePhrases(
                         class="bg-bg-main absolute bottom-0 flex h-full w-full
                             items-center justify-center"
                     >
-                        <MyRuntimeIcon
-                            :svg="loadingSvg"
-                            class="text-text-dimmed text-[50px]"
-                        />
+                        <Loading class="text-text-dimmed text-[50px]" />
                     </div>
                 </TransitionFade>
 

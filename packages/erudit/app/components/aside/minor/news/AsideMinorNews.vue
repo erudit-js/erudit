@@ -122,7 +122,7 @@ const phrase = await usePhrases('news', 'no_news', 'show_more');
                             w-auto cursor-pointer items-center rounded border-2
                             border-transparent text-sm transition-[border]"
                     >
-                        <MyRuntimeIcon v-if="newsLoading" :svg="loadingSvg" />
+                        <Loading v-if="newsLoading" />
                         <span>{{ phrase.show_more }}</span>
                     </button>
                 </TransitionFade>

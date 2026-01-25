@@ -9,6 +9,8 @@ const { quote } = defineProps<{
 }>();
 const emit = defineEmits(['next']);
 
+const loadingSvg = useLoadingSvg();
+
 const color = quote.color ?? stringColor(quote.name);
 
 const message = (() => {

@@ -1,6 +1,8 @@
 <script lang="ts" setup>
 import type { MaybeMyIconName } from '#my-icons';
 
+const loadingSvg = useLoadingSvg();
+
 const icon = ref<MaybeMyIconName>(loadingSvg);
 const themeName = ref<string>();
 

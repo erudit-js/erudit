@@ -38,4 +38,5 @@ export type EruditSite = Partial<{
     style: Partial<{
         brandColor: string;
     }>;
+    loadingSvg: string;
 }>;

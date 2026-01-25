@@ -10,6 +10,7 @@ const { element, storage, useHashUrl } = defineProps<{
     useHashUrl: boolean;
 }>();
 
+const loadingSvg = useLoadingSvg();
 const route = useRoute();
 
 const hashUrl = computed(() => {

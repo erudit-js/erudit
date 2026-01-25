@@ -4,6 +4,7 @@ import { isContentType } from '@erudit-js/core/content/type';
 import type { MaybeMyIconName, MyIconName } from '#my-icons';
 
 const { result } = defineProps<{ result: SearchEntry }>();
+const loadingSvg = useLoadingSvg();
 
 const ELEMENT_PREFIX = 'element:';
 const isElementCategory = result.category?.startsWith(ELEMENT_PREFIX);
@@ -33,6 +34,8 @@ watch(icon, () => {
 });
 
 async function requestElementIcon(elementName: string) {
+    icon.value = loadingSvg;
+
     try {
         icon.value = await getElementIcon(elementName);
     } catch {

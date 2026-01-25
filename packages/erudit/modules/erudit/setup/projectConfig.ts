@@ -68,6 +68,7 @@ async function transferConfigData(
                     ? { default: projectConfig.site?.favicon }
                     : projectConfig.site?.favicon
                 : undefined,
+            loadingSvg: projectConfig.site?.loadingSvg,
         },
         seo: projectConfig.seo,
         debug: {

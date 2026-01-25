@@ -6,6 +6,8 @@ import SearchResult from './SearchResult.vue';
 
 const runtimeConfig = useRuntimeConfig();
 
+const loadingSvg = useLoadingSvg();
+
 const phrase = await usePhrases(
     'no_results',
     'searching_more',

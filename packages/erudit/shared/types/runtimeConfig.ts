@@ -40,6 +40,7 @@ export interface EruditPublicRuntimeConfig {
             short?: string | false;
             logotype?: string | false;
             favicon?: EruditSiteFaviconResolved;
+            loadingSvg?: string;
         };
         seo?: EruditSeo;
         debug: {
