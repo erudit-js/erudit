@@ -14,11 +14,26 @@ export async function latexToHtml(katex: string, mode: 'block' | 'inline') {
     const katexLib = (await import('katex')).default;
     const macros = (await import('./macros.js')).default;
 
-    const html = katexLib.renderToString(katex, {
-        displayMode: mode === 'block',
-        strict: false,
-        macros,
-    });
+    const originalWarn = console.warn;
 
-    return html;
+    // Horrible hack to stop KaTeX complaining about weird characters like emojis
+    console.warn = (...args: any[]) => {
+        if (
+            typeof args[0] === 'string' &&
+            args[0].startsWith('No character metrics for ')
+        ) {
+            return; // swallow it
+        }
+        originalWarn(...args);
+    };
+
+    try {
+        return katexLib.renderToString(katex, {
+            displayMode: mode === 'block',
+            strict: 'ignore',
+            macros,
+        });
+    } finally {
+        console.warn = originalWarn; // always restore
+    }
 }
