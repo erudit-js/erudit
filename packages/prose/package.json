@@ -1,7 +1,7 @@
 {
     "type": "module",
     "name": "@erudit-js/prose",
-    "version": "4.0.0-dev.2",
+    "version": "4.0.0-dev.5",
     "description": "📝 JSX prose subsystem for Erudit sites",
     "main": "./dist/index.js",
     "types": "./dist/index.d.ts",
@@ -32,7 +32,7 @@
         "prepack": "bun run build"
     },
     "dependencies": {
-        "@erudit-js/core": "workspace:4.0.0-dev.2",
+        "@erudit-js/core": "workspace:4.0.0-dev.5",
         "@jsprose/core": "catalog:",
         "vue": "catalog:",
         "@floating-ui/vue": "catalog:",

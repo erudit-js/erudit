@@ -8,23 +8,23 @@
         "slash": "^5.1.0",
       },
       "devDependencies": {
-        "prettier": "^3.8.0",
+        "prettier": "^3.8.1",
         "prettier-plugin-classnames": "^0.8.6",
         "prettier-plugin-merge": "^0.8.0",
         "prettier-plugin-tailwindcss": "^0.7.2",
         "typescript": "^5.9.3",
-        "vitest": "^4.0.17",
+        "vitest": "^4.0.18",
       },
     },
     "packages/cli": {
       "name": "@erudit-js/cli",
-      "version": "4.0.0-dev.2",
+      "version": "4.0.0-dev.5",
       "bin": {
         "erudit-cli": "bin/erudit-cli.js",
         "erudit": "bin/erudit-cli.js",
       },
       "dependencies": {
-        "@erudit-js/core": "workspace:4.0.0-dev.2",
+        "@erudit-js/core": "workspace:4.0.0-dev.5",
         "chalk": "catalog:",
         "citty": "^0.1.6",
         "consola": "catalog:",
@@ -32,7 +32,7 @@
     },
     "packages/core": {
       "name": "@erudit-js/core",
-      "version": "4.0.0-dev.2",
+      "version": "4.0.0-dev.5",
       "dependencies": {
         "@jsprose/core": "catalog:",
         "gradient-string": "^3.0.0",
@@ -40,15 +40,15 @@
     },
     "packages/erudit": {
       "name": "erudit",
-      "version": "4.0.0-dev.2",
+      "version": "4.0.0-dev.5",
       "bin": {
         "erudit-cli": "bin/erudit.mjs",
         "erudit": "bin/erudit.mjs",
       },
       "dependencies": {
-        "@erudit-js/cli": "workspace:4.0.0-dev.2",
-        "@erudit-js/core": "workspace:4.0.0-dev.2",
-        "@erudit-js/prose": "workspace:4.0.0-dev.2",
+        "@erudit-js/cli": "workspace:4.0.0-dev.5",
+        "@erudit-js/core": "workspace:4.0.0-dev.5",
+        "@erudit-js/prose": "workspace:4.0.0-dev.5",
         "@floating-ui/vue": "catalog:",
         "@jsprose/core": "catalog:",
         "@tailwindcss/vite": "^4.1.17",
@@ -77,9 +77,9 @@
     },
     "packages/prose": {
       "name": "@erudit-js/prose",
-      "version": "4.0.0-dev.2",
+      "version": "4.0.0-dev.5",
       "dependencies": {
-        "@erudit-js/core": "workspace:4.0.0-dev.2",
+        "@erudit-js/core": "workspace:4.0.0-dev.5",
         "@floating-ui/vue": "catalog:",
         "@jsprose/core": "catalog:",
         "image-size": "catalog:",
