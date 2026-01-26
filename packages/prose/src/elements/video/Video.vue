@@ -74,6 +74,7 @@ onUnmounted(() => {
             preload="metadata"
             loop
             muted
+            playsinline
             controls
             :class="[
                 'm-auto rounded-xl',
