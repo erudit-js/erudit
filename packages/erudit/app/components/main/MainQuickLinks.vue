@@ -18,7 +18,7 @@ const phrase = await usePhrases('key_elements');
 </script>
 
 <template>
-    <template v-if="elementSnippets">
+    <template v-if="quickLinks">
         <section v-if="mode === 'single'" class="px-main py-main-half">
             <MainSubTitle :title="phrase.key_elements + ':'" />
             <div
