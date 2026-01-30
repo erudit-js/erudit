@@ -25,13 +25,10 @@
             "import": "./proxy/prose.app.ts"
         }
     },
-    "scripts": {
-        "test": "bun vitest run"
-    },
     "dependencies": {
-        "@erudit-js/cli": "workspace:4.0.0-dev.5",
-        "@erudit-js/core": "workspace:4.0.0-dev.5",
-        "@erudit-js/prose": "workspace:4.0.0-dev.5",
+        "@erudit-js/cli": "workspace:*",
+        "@erudit-js/core": "workspace:*",
+        "@erudit-js/prose": "workspace:*",
         "@floating-ui/vue": "catalog:",
         "@jsprose/core": "catalog:",
         "@tailwindcss/vite": "^4.1.17",

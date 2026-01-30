@@ -32,7 +32,7 @@
         "prepack": "bun run build"
     },
     "dependencies": {
-        "@erudit-js/core": "workspace:4.0.0-dev.5",
+        "@erudit-js/core": "workspace:*",
         "@jsprose/core": "catalog:",
         "vue": "catalog:",
         "@floating-ui/vue": "catalog:",

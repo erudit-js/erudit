@@ -24,7 +24,8 @@
     },
     "scripts": {
         "pretty": "prettier --write .",
-        "build": "bun run scripts/build",
+        "version": "bun run scripts/version.ts",
+        "build": "bun --workspaces run build",
         "publish": "bun run scripts/publish",
         "play": "bun erudit dev playground --eruditPath=./packages/erudit",
         "play:prepare": "bun erudit prepare playground",
@@ -34,6 +35,7 @@
         "play:preview": "bun erudit preview playground"
     },
     "devDependencies": {
+        "chalk": "catalog:",
         "prettier": "^3.8.1",
         "prettier-plugin-classnames": "^0.8.6",
         "prettier-plugin-merge": "^0.8.0",

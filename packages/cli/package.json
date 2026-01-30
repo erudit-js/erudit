@@ -32,7 +32,7 @@
         "dist"
     ],
     "dependencies": {
-        "@erudit-js/core": "workspace:4.0.0-dev.5",
+        "@erudit-js/core": "workspace:*",
         "chalk": "catalog:",
         "citty": "^0.1.6",
         "consola": "catalog:"
