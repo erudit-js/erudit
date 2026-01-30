@@ -6,7 +6,6 @@ import { prepare } from '../shared/prepare.js';
 import { spawnNuxt } from '../shared/nuxt.js';
 import {
     contentTargetsArg,
-    eruditPathArg,
     projectPathArg,
     resolveArgPaths,
 } from '../shared/args.js';
@@ -18,20 +17,15 @@ export const dev = defineCommand({
     },
     args: {
         ...projectPathArg,
-        ...eruditPathArg,
         ...contentTargetsArg,
     },
     async run({ args }) {
         logCommand('dev');
 
-        const { projectPath, eruditPath } = resolveArgPaths(
-            args.projectPath,
-            args.eruditPath,
-        );
+        const { projectPath } = resolveArgPaths(args.projectPath);
 
         await prepare({
             projectPath,
-            eruditPath,
             contentTargets: args.target,
         });
 

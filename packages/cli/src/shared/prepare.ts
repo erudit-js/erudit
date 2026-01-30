@@ -1,18 +1,15 @@
 import { existsSync, mkdirSync, rmSync, writeFileSync } from 'node:fs';
 import { consola } from 'consola';
 
+import { CONFIG } from '../config.js';
+
 interface PrepareData {
     projectPath: string;
-    eruditPath: string;
     //
     contentTargets?: string | string[];
 }
 
-export async function prepare({
-    projectPath,
-    eruditPath,
-    contentTargets,
-}: PrepareData) {
+export async function prepare({ projectPath, contentTargets }: PrepareData) {
     const eruditBuildDir = `${projectPath}/.erudit`;
     const distDir = `${projectPath}/.output`;
 
@@ -33,8 +30,8 @@ export async function prepare({
         `${eruditBuildDir}/nuxt/nuxt.config.ts`,
         `
         export default {
-            compatibilityDate: '2025-07-20',
-            extends: ['${eruditPath}'],
+            compatibilityDate: '2026-01-01',
+            extends: ['${CONFIG.ERUDIT_PATH}'],
         }
         `,
     );

@@ -11,8 +11,7 @@
         "directory": "packages/erudit"
     },
     "bin": {
-        "erudit-cli": "bin/erudit.mjs",
-        "erudit": "bin/erudit.mjs"
+        "erudit": "bin/erudit.js"
     },
     "exports": {
         ".": {

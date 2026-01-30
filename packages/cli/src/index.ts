@@ -1,1 +1,1 @@
-export { run } from './run.js';
+export { version } from './inject.js';

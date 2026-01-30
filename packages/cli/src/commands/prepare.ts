@@ -4,11 +4,7 @@ import { defineCommand } from 'citty';
 import { logCommand } from '../shared/log.js';
 import { prepare as _prepare } from '../shared/prepare.js';
 import { spawnNuxt } from '../shared/nuxt.js';
-import {
-    eruditPathArg,
-    projectPathArg,
-    resolveArgPaths,
-} from '../shared/args.js';
+import { projectPathArg, resolveArgPaths } from '../shared/args.js';
 
 export const prepare = defineCommand({
     meta: {
@@ -18,19 +14,14 @@ export const prepare = defineCommand({
     },
     args: {
         ...projectPathArg,
-        ...eruditPathArg,
     },
     async run({ args }) {
         logCommand('prepare');
 
-        const { projectPath, eruditPath } = resolveArgPaths(
-            args.projectPath,
-            args.eruditPath,
-        );
+        const { projectPath } = resolveArgPaths(args.projectPath);
 
         await _prepare({
             projectPath,
-            eruditPath,
         });
 
         consola.start('Generating Nuxt build files...');

@@ -4,7 +4,6 @@ import { defineCommand } from 'citty';
 
 import {
     contentTargetsArg,
-    eruditPathArg,
     nitroPresetArg,
     projectPathArg,
     resolveArgPaths,
@@ -21,21 +20,16 @@ export const build = defineCommand({
     },
     args: {
         ...projectPathArg,
-        ...eruditPathArg,
         ...contentTargetsArg,
         ...nitroPresetArg,
     },
     async run({ args }) {
         logCommand('build');
 
-        const { projectPath, eruditPath } = resolveArgPaths(
-            args.projectPath,
-            args.eruditPath,
-        );
+        const { projectPath } = resolveArgPaths(args.projectPath);
 
         await prepare({
             projectPath,
-            eruditPath,
             contentTargets: args.target,
         });
 

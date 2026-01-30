@@ -16,11 +16,10 @@
             "import": "./dist/index.js",
             "types": "./dist/index.d.ts"
         },
-        "./cli": "./bin/erudit-cli.js"
-    },
-    "bin": {
-        "erudit-cli": "bin/erudit-cli.js",
-        "erudit": "bin/erudit-cli.js"
+        "./cli": {
+            "import": "./dist/cli.js",
+            "types": "./dist/cli.d.ts"
+        }
     },
     "scripts": {
         "build": "rm -rf dist && bun tsc --project ./tsconfig.src.json && bun run postBuild.ts",
@@ -28,7 +27,6 @@
         "prepack": "bun run build"
     },
     "files": [
-        "bin",
         "dist"
     ],
     "dependencies": {
