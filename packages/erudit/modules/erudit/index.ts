@@ -51,7 +51,11 @@ export default defineNuxtModule({
 
         if (nuxtAugmentations) {
             for (const augment of nuxtAugmentations) {
-                await augment(nuxt);
+                await augment({
+                    nuxt,
+                    projectPath: eruditRuntimeConfig.paths.project,
+                    eruditPath: eruditRuntimeConfig.paths.package,
+                });
             }
         }
 

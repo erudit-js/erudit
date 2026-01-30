@@ -32,5 +32,15 @@ export interface EruditConfig {
      * Erudit uses Nuxt under the hood.
      * Use this to alter Nuxt configuration.
      */
-    nuxtAugmentations?: [(nuxt: Nuxt) => Promise<void> | void];
+    nuxtAugmentations?: [
+        ({
+            nuxt,
+            projectPath,
+            eruditPath,
+        }: {
+            nuxt: Nuxt;
+            projectPath: string;
+            eruditPath: string;
+        }) => Promise<void> | void,
+    ];
 }
