@@ -62,8 +62,8 @@ export default defineNuxtConfig({
             },
         },
         output: {
-            dir: sn(PROJECT_PATH!, '.output'),
-            publicDir: sn(PROJECT_PATH!, '.output/public', BASE_URL || ''),
+            dir: sn(PROJECT_PATH, '.output'),
+            publicDir: sn(PROJECT_PATH, '.output/public', BASE_URL || ''),
         },
     },
     vite: {

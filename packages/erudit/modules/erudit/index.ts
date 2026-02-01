@@ -38,8 +38,9 @@ export default defineNuxtModule({
             for (const augment of nuxtAugmentations) {
                 await augment({
                     nuxt,
-                    projectPath: PROJECT_PATH!,
-                    eruditPath: ERUDIT_PATH!,
+                    nitro: nuxt.options.nitro,
+                    projectPath: PROJECT_PATH,
+                    eruditPath: ERUDIT_PATH,
                 });
             }
         }

@@ -1,4 +1,5 @@
 import type { Nuxt } from '@nuxt/schema';
+import type { NitroConfig } from 'nitropack';
 
 import type { EruditIndexPage } from './indexPage.js';
 import type { EruditSponsors } from '../sponsor.js';
@@ -34,10 +35,12 @@ export interface EruditConfig {
     nuxtAugmentations?: [
         ({
             nuxt,
+            nitro,
             projectPath,
             eruditPath,
         }: {
             nuxt: Nuxt;
+            nitro: NitroConfig;
             projectPath: string;
             eruditPath: string;
         }) => Promise<void> | void,
