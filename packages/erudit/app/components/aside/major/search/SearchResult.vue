@@ -3,7 +3,7 @@ import { isContentType } from '@erudit-js/core/content/type';
 
 import type { MaybeMyIconName, MyIconName } from '#my-icons';
 
-const { result } = defineProps<{ result: SearchEntry }>();
+const { result, query } = defineProps<{ result: SearchEntry; query: string }>();
 const loadingSvg = useLoadingSvg();
 
 const ELEMENT_PREFIX = 'element:';
@@ -47,6 +47,46 @@ if (isElementCategory) {
     const elementName = result.category!.slice(ELEMENT_PREFIX.length);
     requestElementIcon(elementName);
 }
+
+function splitQueryTokens(input: string) {
+    return input.toLowerCase().trim().split(/\s+/g).filter(Boolean);
+}
+
+function scoreTokenMatches(tokens: string[], haystack: string) {
+    // Basic forward look: query is space-separated, treat each token as substring.
+    const text = haystack.toLowerCase();
+    let score = 0;
+    for (const token of tokens) {
+        if (text.includes(token)) score += 1;
+    }
+    return score;
+}
+
+const matchedSynonym = computed(() => {
+    if (!query) return undefined;
+    if (!result.synonyms?.length) return undefined;
+
+    const tokens = splitQueryTokens(query);
+    if (tokens.length === 0) return undefined;
+
+    // If title already matches any query token, keep normal title.
+    if (scoreTokenMatches(tokens, result.title) > 0) return undefined;
+
+    // Otherwise pick the synonym with best token match score.
+    let bestSynonym: string | undefined;
+    let bestScore = 0;
+    for (const synonym of result.synonyms) {
+        const score = scoreTokenMatches(tokens, synonym);
+        if (score > bestScore) {
+            bestScore = score;
+            bestSynonym = synonym;
+        }
+    }
+
+    return bestScore > 0 ? bestSynonym : undefined;
+});
+
+const primaryTitle = computed(() => matchedSynonym.value ?? result.title);
 </script>
 
 <template>
@@ -66,7 +106,9 @@ if (isElementCategory) {
                             />
                         </TransitionFade>
                     </div>
-                    <div>{{ formatText(result.title) }}</div>
+                    <div class="first-letter:uppercase">
+                        {{ formatText(primaryTitle) }}
+                    </div>
                 </div>
                 <div>
                     <div
@@ -74,19 +116,6 @@ if (isElementCategory) {
                         class="text-text-dimmed pt-small text-xs"
                     >
                         {{ formatText(result.description) }}
-                    </div>
-                    <div
-                        v-if="result.synonyms?.length"
-                        class="pt-small flex flex-wrap gap-2 text-xs"
-                    >
-                        <span
-                            v-for="synonym in result.synonyms"
-                            class="text-text-dimmed group-hocus:bg-bg-aside
-                                rounded bg-neutral-200 px-[5px] py-[3px]
-                                transition-[background] dark:bg-neutral-800"
-                        >
-                            {{ formatText(synonym) }}
-                        </span>
                     </div>
                     <div
                         v-if="result.location"

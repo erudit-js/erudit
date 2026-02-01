@@ -30,6 +30,7 @@ const STATUS = defineStatuses({
 const worker = shallowRef<Worker>() as Ref<Worker>;
 const results = shallowRef<SearchEntry[]>([]);
 const status = ref<SearchStatusVariant>(STATUS.default);
+const query = ref('');
 
 let searchId = 0;
 
@@ -70,8 +71,11 @@ onUnmounted(() => {
     worker.value.terminate();
 });
 
-function newSearch(query: string) {
-    if (!query) {
+function newSearch(newQuery: string) {
+    const trimmed = newQuery.trim();
+    query.value = trimmed;
+
+    if (!trimmed) {
         results.value = [];
         status.value = STATUS.default;
         return;
@@ -84,7 +88,7 @@ function newSearch(query: string) {
     const searchCommand: SearchCommandSearch = {
         type: 'search',
         id: newSearchId,
-        query,
+        query: trimmed,
     };
 
     worker.value.postMessage(searchCommand);
@@ -135,7 +139,11 @@ function defineStatuses<
         <ScrollHolder direction="rtl" class="flex-1">
             <div v-if="results.length">
                 <ol>
-                    <SearchResult v-for="result in results" :result="result" />
+                    <SearchResult
+                        v-for="result in results"
+                        :result="result"
+                        :query="query"
+                    />
                 </ol>
             </div>
             <SearchStatus
