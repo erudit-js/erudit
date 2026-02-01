@@ -4,6 +4,9 @@ import { isContentType } from '@erudit-js/core/content/type';
 import type { MaybeMyIconName, MyIconName } from '#my-icons';
 
 const { result, query } = defineProps<{ result: SearchEntry; query: string }>();
+
+const route = useRoute();
+const router = useRouter();
 const loadingSvg = useLoadingSvg();
 
 const ELEMENT_PREFIX = 'element:';
@@ -87,15 +90,36 @@ const matchedSynonym = computed(() => {
 });
 
 const primaryTitle = computed(() => matchedSynonym.value ?? result.title);
+const secondaryTitle = computed(() =>
+    matchedSynonym.value ? result.title : undefined,
+);
+
+async function searchResultClick() {
+    await router.replace({ ...route, hash: '' });
+    await nextTick();
+    await navigateTo(result.link);
+}
 </script>
 
 <template>
     <li>
-        <AsideListItem :to="result.link">
+        <AsideListItem @click="searchResultClick">
             <div
                 class="group p-normal text-text-muted hocus:text-text text-sm
                     transition-[color]"
             >
+                <div
+                    v-if="secondaryTitle"
+                    class="text-text-muted pb-small gap-small flex items-center
+                        text-xs"
+                >
+                    <MyIcon
+                        name="arrow/up-to-right"
+                        class="relative top-[4px] shrink-0 rotate-90
+                            text-[1.3em]"
+                    />
+                    {{ formatText(secondaryTitle) }}
+                </div>
                 <div class="gap-small text-text flex items-center">
                     <div class="relative size-[1.2em]">
                         <TransitionFade>
@@ -106,7 +130,7 @@ const primaryTitle = computed(() => matchedSynonym.value ?? result.title);
                             />
                         </TransitionFade>
                     </div>
-                    <div class="first-letter:uppercase">
+                    <div>
                         {{ formatText(primaryTitle) }}
                     </div>
                 </div>
