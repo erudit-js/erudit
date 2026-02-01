@@ -106,64 +106,57 @@ await usePhrases(
 </script>
 
 <template>
-    <div class="sticky top-0 z-100">
-        <div
-            class="pointer-events-none absolute top-0 right-0 left-0 h-dvh
-                touch-none"
-        >
+    <div
+        ref="preview"
+        :class="[
+            `fixed-main bg-bg-main micro:max-h-[70dvh] border-border
+            pointer-events-auto bottom-0 z-100 max-h-[90dvh] touch-auto
+            overflow-hidden rounded-[25px] rounded-b-none border-t
+            transition-[max-height,height,translate,box-shadow]`,
+            previewState.opened
+                ? `translate-y-0
+                    shadow-[0px_-10px_15px_5px_light-dark(rgba(0,0,0,0.1),rgba(255,255,255,0.05))]`
+                : 'translate-y-full shadow-transparent',
+        ]"
+    >
+        <!-- Screen -->
+        <TransitionFade>
             <div
-                ref="preview"
-                :class="[
-                    `bg-bg-main micro:max-h-[70dvh] pointer-events-auto absolute
-                    bottom-0 max-h-[90dvh] w-full touch-auto overflow-hidden
-                    rounded-[25px] rounded-b-none
-                    transition-[max-height,height,translate]`,
-                    previewState.opened
-                        ? `border-border translate-y-0 border-t
-                            shadow-[0px_-10px_15px_5px_light-dark(rgba(0,0,0,0.1),rgba(255,255,255,0.05))]`
-                        : 'translate-y-full shadow-none',
-                ]"
+                v-if="CurrentScreen"
+                :key="screenKey"
+                ref="previewScreen"
+                class="absolute bottom-0 max-h-[inherit] w-full"
             >
-                <!-- Screen -->
-                <TransitionFade>
-                    <div
-                        v-if="CurrentScreen"
-                        :key="screenKey"
-                        ref="previewScreen"
-                        class="absolute bottom-0 max-h-[inherit] w-full"
-                    >
-                        <Suspense @resolve="suspenseResolved">
-                            <CurrentScreen :request="currentRequest" />
-                        </Suspense>
-                    </div>
-                </TransitionFade>
-
-                <!-- Loading overlay -->
-                <TransitionFade>
-                    <div
-                        v-if="loading"
-                        class="bg-bg-main absolute bottom-0 flex h-full w-full
-                            items-center justify-center"
-                    >
-                        <Loading class="text-text-dimmed text-[50px]" />
-                    </div>
-                </TransitionFade>
-
-                <!-- Blink overlay -->
-                <TransitionFade>
-                    <div
-                        v-if="previewState.blink"
-                        :key="previewState.blink"
-                        class="pointer-events-none absolute top-0 left-0 h-full
-                            w-full touch-none"
-                    >
-                        <div
-                            class="bg-brand animate-opacity-blink absolute top-0
-                                left-0 h-full w-full opacity-0"
-                        ></div>
-                    </div>
-                </TransitionFade>
+                <Suspense @resolve="suspenseResolved">
+                    <CurrentScreen :request="currentRequest" />
+                </Suspense>
             </div>
-        </div>
+        </TransitionFade>
+
+        <!-- Loading overlay -->
+        <TransitionFade>
+            <div
+                v-if="loading"
+                class="bg-bg-main absolute bottom-0 flex h-full w-full
+                    items-center justify-center"
+            >
+                <Loading class="text-text-dimmed text-[50px]" />
+            </div>
+        </TransitionFade>
+
+        <!-- Blink overlay -->
+        <TransitionFade>
+            <div
+                v-if="previewState.blink"
+                :key="previewState.blink"
+                class="pointer-events-none absolute top-0 left-0 h-full w-full
+                    touch-none"
+            >
+                <div
+                    class="bg-brand animate-opacity-blink absolute top-0 left-0
+                        h-full w-full opacity-0"
+                ></div>
+            </div>
+        </TransitionFade>
     </div>
 </template>

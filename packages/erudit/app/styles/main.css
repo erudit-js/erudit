@@ -170,3 +170,7 @@
 @utility text-size-h1 {
     @apply micro:text-[36px] text-[26px];
 }
+
+@utility fixed-main {
+    @apply aside1:w-[calc(100%-var(--w-aside))] aside2:w-[min(var(--w-max-main),calc(100%-2*var(--w-aside)))] fixed w-full;
+}
