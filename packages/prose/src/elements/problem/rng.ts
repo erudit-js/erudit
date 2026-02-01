@@ -16,7 +16,7 @@ export function normalizeSeed(seed: ProblemSeed) {
     return hash;
 }
 
-export class Random {
+export class ProblemRandom {
     private _rng: () => number;
 
     constructor(seed: ProblemSeed) {

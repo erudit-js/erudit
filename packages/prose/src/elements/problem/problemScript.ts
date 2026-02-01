@@ -10,7 +10,7 @@ import {
     type WrapSchemas,
 } from '@jsprose/core';
 
-import { DEFAULT_SEED, type ProblemSeed, Random } from './rng.js';
+import { DEFAULT_SEED, type ProblemSeed, ProblemRandom } from './rng.js';
 import {
     validateProblemContent,
     type CheckFunction,
@@ -77,7 +77,7 @@ export function defineProblemScript<
               }
             : {}) &
             (TDefinition['isGenerator'] extends true
-                ? { initial: boolean; random: Random }
+                ? { initial: boolean; random: ProblemRandom }
                 : {}),
     ) =>
         | RawElement<AnySchema>
@@ -140,7 +140,7 @@ export function defineProblemScript<
                         ...(definition.isGenerator
                             ? {
                                   initial: finalizedSeed === DEFAULT_SEED,
-                                  random: new Random(finalizedSeed),
+                                  random: new ProblemRandom(finalizedSeed),
                               }
                             : {}),
                     } as any);

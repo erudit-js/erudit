@@ -110,9 +110,14 @@ export async function registerGlobalContentTypes() {
     }
 
     const contentTypes: ContentType[] = [];
+    const contentTypeAliases: ContentType[] = [];
 
     const addContentTypes = (types: ContentType[]) => {
         contentTypes.push(...types);
+    };
+
+    const addContentTypeAliases = (types: ContentType[]) => {
+        contentTypeAliases.push(...types);
     };
 
     //
@@ -174,6 +179,13 @@ export async function registerGlobalContentTypes() {
         },
     ]);
 
+    addContentTypeAliases([
+        {
+            name: 'ProblemRandom',
+            from: '@erudit-js/prose/elements/problem/rng',
+        },
+    ]);
+
     //
     //
     //
@@ -182,6 +194,10 @@ export async function registerGlobalContentTypes() {
 
     for (const contentType of contentTypes) {
         erudit_d_ts += `    const ${contentType.name}: typeof import('${contentType.from}')['${contentType.name}']\n`;
+    }
+
+    for (const contentType of contentTypeAliases) {
+        erudit_d_ts += `    type ${contentType.name} = import('${contentType.from}').${contentType.name}\n`;
     }
 
     erudit_d_ts += `}\n`;
