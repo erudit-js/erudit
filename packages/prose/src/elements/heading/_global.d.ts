@@ -5,15 +5,12 @@
  * * `<H3>` - sub-subsections (rarely used)
  *
  * Headings have special behavior:
- * * Always appear in search results
  * * Always appear in Table of Contents
  * * Automatically generate snippet titles so you don't have to manually write them.
  *
- * That is why you want to always write meaningful titles and never use general words!
+ * When adding heading to search make sure to specify a snippet title that will be understandable out of context.
  * * **Don't** "Description" -> **Do** "Description of Euclidean algorithm"
  * * **Don't** "Problem" -> **Do** "Problem with integers division"
- *
- * If you really need to use general words, provide specified snippet title or search synonyms.
  *
  * **Caution:** never use headings inside other blocks! They are only allowed at the top level of prose!
  *
@@ -33,7 +30,7 @@
  * // ... Content ...
  *
  * // Provide more specific title for search
- * <H3 snippet={{ title: 'Pythagorean theorem in physics' }}>
+ * <H3 snippet={{ search: true, title: 'Pythagorean theorem in physics' }}>
  *   Usage in physics
  * </H3>
  *

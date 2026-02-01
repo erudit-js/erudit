@@ -32,28 +32,27 @@ export type HeadingProps = TagChildren & NoToc;
 export const H1 = defineEruditTag({
     tagName: 'H1',
     schema: headingSchema,
-})<HeadingProps>(({ tagName, element, props, children }) => {
-    processHeadingElement(1, tagName, props, element, children);
+})<HeadingProps>(({ tagName, element, children }) => {
+    processHeadingElement(1, tagName, element, children);
 });
 
 export const H2 = defineEruditTag({
     tagName: 'H2',
     schema: headingSchema,
-})<HeadingProps>(({ tagName, element, props, children }) => {
-    processHeadingElement(2, tagName, props, element, children);
+})<HeadingProps>(({ tagName, element, children }) => {
+    processHeadingElement(2, tagName, element, children);
 });
 
 export const H3 = defineEruditTag({
     tagName: 'H3',
     schema: headingSchema,
-})<HeadingProps>(({ tagName, element, props, children }) => {
-    processHeadingElement(3, tagName, props, element, children);
+})<HeadingProps>(({ tagName, element, children }) => {
+    processHeadingElement(3, tagName, element, children);
 });
 
 function processHeadingElement(
     level: 1 | 2 | 3,
     tagName: string,
-    props: any,
     element: EruditRawElement<typeof headingSchema>,
     children: NormalizedChildren,
 ) {
@@ -71,14 +70,6 @@ function processHeadingElement(
     };
 
     element.title = title;
-    element.snippet ||= {};
-    element.snippet.search ??= true;
-
-    // Only auto-enable SEO if quick is set in props
-    // Otherwise explicitly disable it to prevent auto-enablement from search flag
-    if (!props.snippet?.quick) {
-        element.snippet.seo ??= false;
-    }
 
     element.toc = {
         add: true,

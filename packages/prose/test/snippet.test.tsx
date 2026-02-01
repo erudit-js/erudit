@@ -470,17 +470,8 @@ describe('snippetStep', () => {
                 ),
             });
 
-            expect(snippets).toHaveLength(4);
+            expect(snippets).toHaveLength(3);
             expect(snippets).toEqual<ResolvedSnippet[]>([
-                {
-                    snippetData: {
-                        search: true,
-                        title: 'Heading 1 Title',
-                    },
-                    schemaName: 'heading',
-                    isUnique: false,
-                    elementId: proseElement.children![0].id!,
-                },
                 {
                     schemaName: 'emphasis',
                     snippetData: {
@@ -578,6 +569,7 @@ describe('snippetStep', () => {
                             synonyms: ['lookup', 'find', 'query'],
                         },
                         title: 'Advanced Search',
+                        seo: true,
                     },
                 },
                 {

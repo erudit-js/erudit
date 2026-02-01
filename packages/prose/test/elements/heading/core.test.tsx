@@ -41,10 +41,7 @@ describe('Heading', () => {
             expect(h1.snippet).toStrictEqual({
                 title: 'Heading Level 1',
                 search: true,
-            });
-            expect(h1.snippet).toStrictEqual({
-                search: true,
-                title: 'Heading Level 1',
+                seo: true,
             });
             expect(h1.toc).toStrictEqual({
                 title: 'Heading Level 1',
@@ -58,7 +55,6 @@ describe('Heading', () => {
             expect(h2.slug).toBe('Heading Level 2');
             expect(h2.title).toBe('Heading Level 2');
             expect(h2.snippet).toStrictEqual({
-                search: true,
                 quick: true,
                 seo: true,
                 title: 'Heading Level 2',
@@ -72,7 +68,6 @@ describe('Heading', () => {
             expect(h3.title).toBe('Heading Level 3');
             expect(h3.snippet).toStrictEqual({
                 title: 'Heading Level 3',
-                search: true,
                 seo: {
                     title: 'Custom Title',
                     description: 'Custom Description',
@@ -93,7 +88,6 @@ describe('Heading', () => {
 
             expect(h3SeoString.snippet).toStrictEqual({
                 title: 'Another Heading 3',
-                search: true,
                 quick: true,
                 seo: 'Где используют уравнения в жизни?',
                 description: `Подборка проблем и ситуаций из реальной жизни, которые можно решить, если перевести их в уравнения.`,
@@ -121,6 +115,7 @@ describe('Heading', () => {
                 title: 'Manual Snippet Title',
                 description: 'Test description',
                 search: true,
+                seo: true,
             });
 
             expect(
@@ -136,52 +131,6 @@ describe('Heading', () => {
             expect(() => {
                 <H2> </H2>;
             }).toThrow();
-        });
-    });
-
-    it('should only auto-enable SEO when quick flag is present', () => {
-        isolateProse(() => {
-            PROSE_REGISTRY.setItems(headingRegistryItem);
-
-            // Heading with only search (default) - should NOT auto-enable SEO
-            const headingWithSearch = asEruditRaw(<H1>Default Heading</H1>);
-            expect(headingWithSearch.snippet).toStrictEqual({
-                title: 'Default Heading',
-                search: true,
-            });
-            expect(headingWithSearch.snippet?.seo).toBeUndefined();
-
-            // Heading with explicit search - should NOT auto-enable SEO
-            const headingWithExplicitSearch = asEruditRaw(
-                <H2 snippet={{ search: true }}>Search Only Heading</H2>,
-            );
-            expect(headingWithExplicitSearch.snippet).toStrictEqual({
-                title: 'Search Only Heading',
-                search: true,
-            });
-            expect(headingWithExplicitSearch.snippet?.seo).toBeUndefined();
-
-            // Heading with quick flag - SHOULD auto-enable SEO
-            const headingWithQuick = asEruditRaw(
-                <H3 snippet={{ quick: true }}>Quick Heading</H3>,
-            );
-            expect(headingWithQuick.snippet).toStrictEqual({
-                title: 'Quick Heading',
-                search: true,
-                quick: true,
-                seo: true,
-            });
-
-            // Heading with quick and explicit seo=false - should respect explicit disable
-            const headingWithQuickButNoSeo = asEruditRaw(
-                <H1 snippet={{ quick: true, seo: false }}>Quick But No SEO</H1>,
-            );
-            expect(headingWithQuickButNoSeo.snippet).toStrictEqual({
-                title: 'Quick But No SEO',
-                search: true,
-                quick: true,
-            });
-            expect(headingWithQuickButNoSeo.snippet?.seo).toBeUndefined();
         });
     });
 });
