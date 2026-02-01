@@ -1,7 +1,7 @@
 import { resolve } from 'node:path';
 import { build, type Plugin } from 'esbuild';
 
-import { STATIC_ASSET_EXTENSIONS } from '@erudit/server/prose/transform/extensions';
+import { STATIC_ASSET_EXTENSIONS } from '#layers/erudit/server/erudit/prose/transform/extensions';
 import { createGlobalContent } from '@erudit-js/core/content/global';
 
 export default defineEventHandler<Promise<string>>(async (event) => {
@@ -12,9 +12,7 @@ export default defineEventHandler<Promise<string>>(async (event) => {
     ); // remove .js
 
     const buildResult = await build({
-        entryPoints: [
-            ERUDIT.config.paths.project + '/' + problemScriptPath + '.tsx',
-        ],
+        entryPoints: [`${ERUDIT.paths.project(problemScriptPath)}.tsx`],
         charset: 'utf8',
         bundle: true,
         treeShaking: true,
@@ -27,8 +25,8 @@ export default defineEventHandler<Promise<string>>(async (event) => {
         jsx: 'automatic',
         plugins: [jsxRuntimePlugin, staticFilesPlugin],
         alias: {
-            '#project': ERUDIT.config.paths.project + '/',
-            '#content': ERUDIT.config.paths.project + '/content/',
+            '#project': ERUDIT.paths.project() + '/',
+            '#content': ERUDIT.paths.project('content') + '/',
         },
     });
 

@@ -4,10 +4,10 @@ import type { Sponsor, SponsorConfig } from '@erudit-js/core/sponsor';
 
 let initialBuild = true;
 
-const sponsorsRoot = () => `${ERUDIT.config.paths.project}/sponsors`;
+const sponsorsRoot = () => ERUDIT.paths.project('sponsors');
 
 export async function buildSponsors() {
-    if (!ERUDIT.config.public.project.sponsors?.enabled) {
+    if (!ERUDIT.config.public.sponsors?.enabled) {
         return;
     }
 

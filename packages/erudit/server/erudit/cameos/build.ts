@@ -4,7 +4,7 @@ import type { Cameo, CameoConfig } from '@erudit-js/core/cameo';
 
 let initialBuild = true;
 
-const cameosRoot = () => `${ERUDIT.config.paths.project}/cameos`;
+const cameosRoot = () => ERUDIT.paths.project('cameos');
 
 export async function buildCameos() {
     ERUDIT.log.debug.start('Building cameos...');

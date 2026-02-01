@@ -4,6 +4,8 @@ import type { ListContributor } from '@erudit-js/core/contributor';
 const { showNewsAside } = useAsideMinor();
 showNewsAside();
 
+const withBaseUrl = useBaseUrl();
+
 const nuxtApp = useNuxtApp();
 const payloadKey = 'list-contributors';
 const listContributors: ListContributor[] =
@@ -23,7 +25,7 @@ const phrase = await usePhrases(
 
 const description =
     phrase.contributors_description +
-    (ERUDIT.config.project.contributors?.becomeContributorLink
+    (ERUDIT.config.contributors?.becomeContributorLink
         ? ' ' + phrase.contributors_invite
         : '');
 
@@ -39,17 +41,13 @@ useStandartSeo({
     <MainSectionPreamble>
         <MainTitle icon="users" :title="phrase.contributors" />
         <MainDescription :description />
-        <template
-            v-if="ERUDIT.config.project.contributors?.becomeContributorLink"
-        >
+        <template v-if="ERUDIT.config.contributors?.becomeContributorLink">
             <div class="h-main-half"></div>
             <MainAction
                 icon="users"
                 :newTab="true"
                 :label="phrase.become_contributor"
-                :link="
-                    ERUDIT.config.project.contributors!.becomeContributorLink
-                "
+                :link="ERUDIT.config.contributors!.becomeContributorLink"
             />
             <div class="h-main-half"></div>
         </template>

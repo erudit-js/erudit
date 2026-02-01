@@ -4,7 +4,7 @@ import type { EruditAds } from '@erudit-js/core/eruditConfig/ads';
 const adsData = ref<EruditAds>();
 
 onMounted(() => {
-    const asideAds = ERUDIT.config.project.ads!.aside!;
+    const asideAds = ERUDIT.config.ads!.aside!;
 
     if (asideAds.provider === 'custom') {
         let banners =

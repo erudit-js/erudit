@@ -1,7 +1,7 @@
 import { Document, Encoder } from 'flexsearch';
 
-import { encoderAugments } from '@erudit/shared/search/encoders';
-import { unzip } from '@erudit/shared/utils/zip';
+import { unzip } from '#layers/erudit/shared/utils/zip';
+import { encoderAugments } from '#layers/erudit/shared/search/encoders';
 
 const batchSize = 50;
 

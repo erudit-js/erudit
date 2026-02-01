@@ -13,9 +13,11 @@ export async function createProblemScriptStorage(
         return;
     }
 
+    const runtimeConfig = useRuntimeConfig();
+
     storage[element.storageKey!] = _createProblemScriptStorage(
-        ERUDIT.config.paths.project,
-        ERUDIT.config.public.project.baseUrl,
+        ERUDIT.paths.project(),
+        runtimeConfig.app.baseURL,
         element.storageKey.replace('problemScript:', ''),
     );
 }

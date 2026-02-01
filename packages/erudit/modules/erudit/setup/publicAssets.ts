@@ -1,15 +1,13 @@
 import type { Nuxt } from '@nuxt/schema';
+import { sn } from 'unslash';
 
-import type { EruditRuntimeConfig } from '../../../shared/types/runtimeConfig';
 import {
     PUBLIC_ERUDIT_BASE_URL,
     PUBLIC_PROJECT_BASE_URL,
 } from '../globals/public';
+import { ERUDIT_PATH, PROJECT_PATH } from '../env';
 
-export async function setupEruditPublicAssets(
-    nuxt: Nuxt,
-    runtimeConfig: EruditRuntimeConfig,
-) {
+export async function setupEruditPublicAssets(nuxt: Nuxt) {
     const nitro = nuxt.options.nitro;
     const nitroPublicAssets = (nitro.publicAssets ||= []);
     const nitroModules = (nitro.modules ||= []);
@@ -19,14 +17,13 @@ export async function setupEruditPublicAssets(
         nitro.options.publicAssets = nitro.options.publicAssets?.filter(
             (item) => {
                 const wantsToCopyToRoot = item.baseURL === '/';
-                const fromPackagePublic =
-                    item.dir === runtimeConfig.paths.package + '/public';
+                const fromEruditPublic = item.dir === sn(ERUDIT_PATH, 'public');
                 const fromProjectPublic =
-                    item.dir === runtimeConfig.paths.project + '/public';
+                    item.dir === sn(PROJECT_PATH, 'public');
 
                 if (
                     wantsToCopyToRoot &&
-                    (fromPackagePublic || fromProjectPublic)
+                    (fromEruditPublic || fromProjectPublic)
                 ) {
                     return false;
                 }
@@ -40,12 +37,12 @@ export async function setupEruditPublicAssets(
     nitroPublicAssets.push(
         {
             baseURL: PUBLIC_ERUDIT_BASE_URL,
-            dir: runtimeConfig.paths.package + '/public',
+            dir: sn(ERUDIT_PATH, 'public'),
             maxAge: 60 * 60 * 24 * 365,
         },
         {
             baseURL: PUBLIC_PROJECT_BASE_URL,
-            dir: runtimeConfig.paths.project + '/public',
+            dir: sn(PROJECT_PATH, 'public'),
             maxAge: 60 * 60 * 24 * 365,
         },
     );

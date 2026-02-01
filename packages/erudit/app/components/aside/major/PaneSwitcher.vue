@@ -3,7 +3,7 @@ import PaneSwitcherButton from './PaneSwitcherButton.vue';
 
 const asideMajorPane = useAsideMajorPane();
 
-const translations = ERUDIT.config.project.language.translations;
+const translations = ERUDIT.config.language.translations;
 
 const underlinePaneIndex = computed(() => {
     const paneIndex = asideMajorPanes.indexOf(asideMajorPane.value);

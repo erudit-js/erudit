@@ -1,11 +1,12 @@
 import { Document, Encoder } from 'flexsearch';
 
-import { encoderAugments } from '@erudit/shared/search/encoders';
-import { searchIndexContributors } from '@erudit/server/contributors/search';
+import { zip } from '#layers/erudit/shared/utils/zip';
+import { encoderAugments } from '#layers/erudit/shared/search/encoders';
+import { searchIndexContributors } from '#layers/erudit/server/erudit/contributors/search';
 import {
     searchIndexContentTypes,
     searchIndexSnippets,
-} from '@erudit/server/content/search';
+} from '#layers/erudit/server/erudit/content/search';
 
 export default defineEventHandler(async (event) => {
     const entryLists: SearchEntriesList[] = [
@@ -28,7 +29,7 @@ export default defineEventHandler(async (event) => {
         ],
     };
 
-    const language = ERUDIT.config.public.project.language.current;
+    const language = ERUDIT.config.public.language.current;
     const encoder = new Encoder();
     encoderAugments[language]?.(encoder);
 

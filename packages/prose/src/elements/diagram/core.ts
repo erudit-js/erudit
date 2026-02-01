@@ -46,9 +46,5 @@ export default defineEruditProseCoreElement({
     registryItem: diagramRegistryItem,
     dependencies: {
         ...photoswipeDependency,
-        mermaid: {
-            optimize: true,
-            transpile: true,
-        },
     },
 });

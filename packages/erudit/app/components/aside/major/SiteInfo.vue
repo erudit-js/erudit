@@ -1,5 +1,7 @@
 <script lang="ts" setup>
-const siteInfo = ERUDIT.config.project.siteInfo;
+const withBaseUrl = useBaseUrl();
+
+const siteInfo = ERUDIT.config.siteInfo;
 
 const fetchPhrases: LanguagePhraseKey[] = [];
 

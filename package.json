@@ -19,7 +19,8 @@
             "@floating-ui/vue": "^1.1.9",
             "image-size": "^2.0.2",
             "chalk": "^5.6.2",
-            "consola": "^3.4.2"
+            "consola": "^3.4.2",
+            "unslash": "^2.0.0"
         }
     },
     "scripts": {
@@ -42,8 +43,5 @@
         "prettier-plugin-tailwindcss": "^0.7.2",
         "typescript": "^5.9.3",
         "vitest": "^4.0.18"
-    },
-    "dependencies": {
-        "slash": "^5.1.0"
     }
 }

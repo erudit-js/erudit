@@ -69,10 +69,7 @@ export async function problemScripts() {
         routes.push(
             `/api/problemScript/` +
                 dbProblemScript
-                    .problemScript!.replace(
-                        ERUDIT.config.paths.project + '/',
-                        '',
-                    )
+                    .problemScript!.replace(ERUDIT.paths.project() + '/', '')
                     .replace('.tsx', '') +
                 '.js',
         );

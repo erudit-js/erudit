@@ -4,6 +4,8 @@ import type { PageSponsor } from '@erudit-js/core/sponsor';
 const { showNewsAside } = useAsideMinor();
 showNewsAside();
 
+const withBaseUrl = useBaseUrl();
+
 const nuxtApp = useNuxtApp();
 const payloadKey = 'page-sponsors';
 const pageSponsors: PageSponsor[] =
@@ -35,7 +37,7 @@ useStandartSeo({
             icon="diamond"
             :newTab="true"
             :label="phrase.become_sponsor"
-            :link="ERUDIT.config.project.sponsors!.becomeSponsorLink"
+            :link="ERUDIT.config.sponsors!.becomeSponsorLink"
         />
         <div class="h-main-half"></div>
     </MainSectionPreamble>

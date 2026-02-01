@@ -26,10 +26,10 @@ const { setPreview, closePreview } = usePreview();
 const context: ProseContext = {
     appElements,
     mode: ERUDIT.config.mode,
-    languageCode: ERUDIT.config.project.language.current,
+    languageCode: ERUDIT.config.language.current,
     formatText,
     pathUrl: route.path,
-    baseUrl: ERUDIT.config.project.baseUrl,
+    baseUrl: ERUDIT.config.baseUrl,
     hashUrl,
     eruditIcons: ICONS,
     EruditIcon: MaybeMyIcon,

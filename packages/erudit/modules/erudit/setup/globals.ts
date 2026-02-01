@@ -1,9 +1,10 @@
 import { writeFileSync } from 'node:fs';
 import { addImports, addServerImports } from 'nuxt/kit';
+import { sn } from 'unslash';
 
 import { defineEruditConfig } from '../globals/eruditConfig';
 import { eruditPublic, projectPublic } from '../globals/public';
-import type { EruditRuntimeConfig } from '../../../shared/types/runtimeConfig';
+import { ERUDIT_PATH, PROJECT_PATH } from '../env';
 
 //
 // Module
@@ -23,19 +24,19 @@ export async function registerModuleGlobals() {
 // App
 //
 
-export async function registerAppGlobals(runtimeConfig: EruditRuntimeConfig) {
+export async function registerAppGlobals() {
     addImports([
         {
             name: 'ERUDIT',
-            from: `${runtimeConfig.paths.app}/plugins/appSetup/global`,
+            from: sn(ERUDIT_PATH, 'app/plugins/appSetup/global'),
         },
         {
             name: 'eruditPublic',
-            from: `${runtimeConfig.paths.module}/globals/public`,
+            from: sn(ERUDIT_PATH, 'modules/erudit/globals/public'),
         },
         {
             name: 'defineProblemScript',
-            from: `${runtimeConfig.paths.module}/globals/problem`,
+            from: sn(ERUDIT_PATH, 'modules/erudit/globals/problem'),
         },
     ]);
 }
@@ -44,25 +45,23 @@ export async function registerAppGlobals(runtimeConfig: EruditRuntimeConfig) {
 // Server
 //
 
-export async function registerServerGlobals(
-    runtimeConfig: EruditRuntimeConfig,
-) {
+export async function registerServerGlobals() {
     addServerImports([
         {
             name: 'ERUDIT',
-            from: `${runtimeConfig.paths.server}/global`,
+            from: sn(ERUDIT_PATH, 'server/erudit/global'),
         },
         {
             name: '$CONTRIBUTOR',
-            from: `${runtimeConfig.paths.server}/contributors/global`,
+            from: sn(ERUDIT_PATH, 'server/erudit/contributors/global'),
         },
         {
             name: '$CONTENT',
-            from: `${runtimeConfig.paths.server}/content/global`,
+            from: sn(ERUDIT_PATH, 'server/erudit/content/global'),
         },
         {
             name: 'defineContributor',
-            from: `${runtimeConfig.paths.module}/globals/contributor`,
+            from: sn(ERUDIT_PATH, 'modules/erudit/globals/contributor'),
         },
         {
             name: 'defineSponsor',
@@ -74,24 +73,24 @@ export async function registerServerGlobals(
         },
         {
             name: 'defineBook',
-            from: `${runtimeConfig.paths.module}/globals/content`,
+            from: sn(ERUDIT_PATH, 'modules/erudit/globals/content'),
         },
         {
             name: 'defineTopic',
-            from: `${runtimeConfig.paths.module}/globals/content`,
+            from: sn(ERUDIT_PATH, 'modules/erudit/globals/content'),
         },
         {
             name: 'definePage',
-            from: `${runtimeConfig.paths.module}/globals/content`,
+            from: sn(ERUDIT_PATH, 'modules/erudit/globals/content'),
         },
 
         {
             name: 'defineGroup',
-            from: `${runtimeConfig.paths.module}/globals/content`,
+            from: sn(ERUDIT_PATH, 'modules/erudit/globals/content'),
         },
         {
             name: 'defineProse',
-            from: `${runtimeConfig.paths.module}/globals/prose`,
+            from: sn(ERUDIT_PATH, 'modules/erudit/globals/prose'),
         },
         {
             name: 'Include',
@@ -104,9 +103,7 @@ export async function registerServerGlobals(
 // Content Types
 //
 
-export async function registerGlobalContentTypes(
-    runtimeConfig: EruditRuntimeConfig,
-) {
+export async function registerGlobalContentTypes() {
     interface ContentType {
         name: string;
         from: string;
@@ -125,19 +122,19 @@ export async function registerGlobalContentTypes(
     addContentTypes([
         {
             name: 'defineEruditConfig',
-            from: `${runtimeConfig.paths.module}/globals/eruditConfig`,
+            from: sn(ERUDIT_PATH, 'modules/erudit/globals/eruditConfig'),
         },
         {
             name: 'projectPublic',
-            from: `${runtimeConfig.paths.module}/globals/public`,
+            from: sn(ERUDIT_PATH, 'modules/erudit/globals/public'),
         },
         {
             name: 'eruditPublic',
-            from: `${runtimeConfig.paths.module}/globals/public`,
+            from: sn(ERUDIT_PATH, 'modules/erudit/globals/public'),
         },
         {
             name: 'defineContributor',
-            from: `${runtimeConfig.paths.module}/globals/contributor`,
+            from: sn(ERUDIT_PATH, 'modules/erudit/globals/contributor'),
         },
         {
             name: 'defineSponsor',
@@ -149,27 +146,27 @@ export async function registerGlobalContentTypes(
         },
         {
             name: 'defineProblemScript',
-            from: `${runtimeConfig.paths.module}/globals/problem`,
+            from: sn(ERUDIT_PATH, 'modules/erudit/globals/problem'),
         },
         {
             name: 'defineBook',
-            from: `${runtimeConfig.paths.module}/globals/content`,
+            from: sn(ERUDIT_PATH, 'modules/erudit/globals/content'),
         },
         {
             name: 'defineTopic',
-            from: `${runtimeConfig.paths.module}/globals/content`,
+            from: sn(ERUDIT_PATH, 'modules/erudit/globals/content'),
         },
         {
             name: 'definePage',
-            from: `${runtimeConfig.paths.module}/globals/content`,
+            from: sn(ERUDIT_PATH, 'modules/erudit/globals/content'),
         },
         {
             name: 'defineGroup',
-            from: `${runtimeConfig.paths.module}/globals/content`,
+            from: sn(ERUDIT_PATH, 'modules/erudit/globals/content'),
         },
         {
             name: 'defineProse',
-            from: `${runtimeConfig.paths.module}/globals/prose`,
+            from: sn(ERUDIT_PATH, 'modules/erudit/globals/prose'),
         },
         {
             name: 'Include',
@@ -189,8 +186,5 @@ export async function registerGlobalContentTypes(
 
     erudit_d_ts += `}\n`;
 
-    writeFileSync(
-        `${runtimeConfig.paths.build}/types/erudit.d.ts`,
-        erudit_d_ts,
-    );
+    writeFileSync(sn(PROJECT_PATH, '.erudit/types/erudit.d.ts'), erudit_d_ts);
 }

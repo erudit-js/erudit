@@ -33,13 +33,12 @@
     },
     "dependencies": {
         "@erudit-js/core": "workspace:*",
-        "@jsprose/core": "catalog:",
-        "vue": "catalog:",
-        "@floating-ui/vue": "catalog:",
-        "image-size": "catalog:",
-        "katex": "^0.16.25",
-        "mermaid": "^11.12.1",
-        "photoswipe": "^5.4.4"
+        "@floating-ui/vue": "^1.1.10",
+        "@jsprose/core": "^1.0.0",
+        "image-size": "^2.0.2",
+        "katex": "^0.16.28",
+        "photoswipe": "^5.4.4",
+        "vue": "^3.5.27"
     },
     "devDependencies": {
         "glob": "11.0.3",

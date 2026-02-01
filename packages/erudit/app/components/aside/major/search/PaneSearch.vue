@@ -5,6 +5,7 @@ import SearchStatus from './SearchStatus.vue';
 import SearchResult from './SearchResult.vue';
 
 const runtimeConfig = useRuntimeConfig();
+const withBaseUrl = useBaseUrl();
 
 const loadingSvg = useLoadingSvg();
 
@@ -38,7 +39,7 @@ onMounted(() => {
     const initCommand: SearchCommandInit = {
         type: 'init',
         baseUrl: withBaseUrl('/'),
-        language: ERUDIT.config.project.language.current,
+        language: ERUDIT.config.language.current,
         cacheId: String(
             import.meta.dev ? Date.now() : runtimeConfig.public.buildTimestamp,
         ),

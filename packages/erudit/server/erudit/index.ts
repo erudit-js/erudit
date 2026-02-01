@@ -1,4 +1,5 @@
 import chalk from 'chalk';
+import type { EruditMode } from '@erudit-js/core/mode';
 
 import { setupServerLogger } from './logger';
 import { setupServerRuntimeConfig } from './config';
@@ -8,6 +9,7 @@ import { setupServerImporter } from './importer';
 import { setupServerRepository } from './repository';
 import { setupServerContentNav } from './content/nav/setup';
 import { buildServerErudit, tryServerWatchProject } from './build';
+import { setupServerPaths } from './path';
 
 let serverSetupPromise: Promise<void>;
 
@@ -62,6 +64,10 @@ async function setupServer() {
         const { registerProseGlobals } = await import('#erudit/prose/global');
         registerProseGlobals();
 
+        const runtimeConfig = useRuntimeConfig();
+
+        ERUDIT.mode = runtimeConfig.public.eruditMode as EruditMode;
+        await setupServerPaths();
         await setupServerRuntimeConfig();
         await setupServerLogger();
         await setupServerImporter();

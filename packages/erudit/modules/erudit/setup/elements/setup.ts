@@ -10,6 +10,7 @@ import { createTagsTable } from './tagsTable';
 import { createGlobalTypes } from './globalTypes';
 import { createGlobalTemplate } from './globalTemplate';
 import { createAppTemplate } from './appTemplate';
+import { PROJECT_PATH } from '../../env';
 
 const BUILTIN_ELEMENT_PATHS = [
     '@erudit-js/prose/elements/callout',
@@ -43,7 +44,7 @@ export async function setupProseElements(
 
     const elementPaths: string[] = [
         ...BUILTIN_ELEMENT_PATHS,
-        ...runtimeConfig.project.elements,
+        ...runtimeConfig.elements,
     ];
 
     for (const elementPath of elementPaths) {
@@ -67,7 +68,7 @@ export async function setupProseElements(
 
         const corePath = elementPath + '/core';
         const coreAbsPath = await findPath(corePath, {
-            cwd: runtimeConfig.paths.project,
+            cwd: PROJECT_PATH,
             extensions: ['.ts', '.js'],
         });
 
@@ -85,7 +86,7 @@ export async function setupProseElements(
 
         const appPath = elementPath + '/app';
         const appAbsPath = await findPath(appPath, {
-            cwd: runtimeConfig.paths.project,
+            cwd: PROJECT_PATH,
             extensions: ['.ts', '.js'],
         });
 
@@ -148,7 +149,7 @@ export async function setupProseElements(
         elementsData.push(elementData);
     }
 
-    createGlobalTypes(runtimeConfig, elementsData);
+    createGlobalTypes(elementsData);
     createGlobalTemplate(nuxt, elementsData);
     createAppTemplate(nuxt, elementsData);
 

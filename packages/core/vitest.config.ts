@@ -13,7 +13,7 @@ export default defineConfig({
     },
     resolve: {
         alias: {
-            '@erudit-js/core/': rel('./src/'),
+            '@src/': rel('./src/'),
         },
     },
 });

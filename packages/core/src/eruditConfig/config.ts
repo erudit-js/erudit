@@ -16,7 +16,6 @@ import type { EruditContributors } from '../contributor.js';
 export interface EruditConfig {
     language?: EruditLanguage;
     debug?: EruditDebug;
-    contentTargets?: string[];
     analytics?: EruditAnalytics;
     ads?: EruditAdsBanners;
     site?: EruditSite;

@@ -1,9 +1,9 @@
 <script lang="ts" setup>
 import type { EruditTranslations } from '@erudit-js/core/eruditConfig/language';
 
-const currentLanguage = ERUDIT.config.project.language.current;
-const translations = ERUDIT.config.project.language.translations;
-const contribute = ERUDIT.config.project.language.contribute;
+const currentLanguage = ERUDIT.config.language.current;
+const translations = ERUDIT.config.language.translations;
+const contribute = ERUDIT.config.language.contribute;
 
 const sortedTranslations = <EruditTranslations>(() => {
     if (!translations || !currentLanguage) {

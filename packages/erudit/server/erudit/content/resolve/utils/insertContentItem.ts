@@ -95,10 +95,7 @@ async function resolveHardDependencies(
 
 async function resolveDecorationExtension(navNode: ContentNavNode) {
     const decorationExtension = globSync(
-        ERUDIT.config.paths.project +
-            '/content/' +
-            navNode.contentRelPath +
-            '/decoration.*',
+        ERUDIT.paths.project(`content/${navNode.contentRelPath}/decoration.*`),
         {
             posix: true,
         },
@@ -109,11 +106,9 @@ async function resolveDecorationExtension(navNode: ContentNavNode) {
 
     if (decorationExtension) {
         await ERUDIT.repository.db.pushFile(
-            ERUDIT.config.paths.project +
-                '/content/' +
-                navNode.contentRelPath +
-                '/decoration.' +
-                decorationExtension,
+            ERUDIT.paths.project(
+                `content/${navNode.contentRelPath}/decoration.${decorationExtension}`,
+            ),
             'content-decoration:' + navNode.fullId,
         );
     }

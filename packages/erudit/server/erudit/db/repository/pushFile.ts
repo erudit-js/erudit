@@ -1,9 +1,9 @@
-import slash from 'slash';
+import { sn } from 'unslash';
 
 export async function pushFile(filepath: string, role: string): Promise<void> {
-    filepath = slash(filepath);
+    filepath = sn(filepath);
 
-    if (!filepath.startsWith(ERUDIT.config.paths.project)) {
+    if (!filepath.startsWith(ERUDIT.paths.project())) {
         throw createError({
             statusCode: 400,
             statusMessage: 'File is outside of project directory!',
@@ -11,10 +11,7 @@ export async function pushFile(filepath: string, role: string): Promise<void> {
         });
     }
 
-    const relativePath = filepath.replace(
-        ERUDIT.config.paths.project + '/',
-        '',
-    );
+    const relativePath = filepath.replace(ERUDIT.paths.project() + '/', '');
 
     await ERUDIT.db
         .insert(ERUDIT.db.schema.files)

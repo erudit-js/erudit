@@ -1,10 +1,10 @@
 export default defineEventHandler<Promise<IndexPage>>(async () => {
     const title =
-        ERUDIT.config.project.indexPage?.title ||
+        ERUDIT.config.indexPage?.title ||
         ERUDIT.language.phrases.default_index_title;
 
     const short =
-        ERUDIT.config.project.indexPage?.short ||
+        ERUDIT.config.indexPage?.short ||
         ERUDIT.language.phrases.default_index_short;
 
     const indexPage: IndexPage = {
@@ -12,13 +12,13 @@ export default defineEventHandler<Promise<IndexPage>>(async () => {
         short,
     };
 
-    const description = ERUDIT.config.project.indexPage?.description;
+    const description = ERUDIT.config.indexPage?.description;
 
     if (description) {
         indexPage.description = description;
     }
 
-    const topImage = ERUDIT.config.project.indexPage?.topImage;
+    const topImage = ERUDIT.config.indexPage?.topImage;
 
     if (topImage) {
         indexPage.topImage = topImage;
@@ -36,7 +36,7 @@ export default defineEventHandler<Promise<IndexPage>>(async () => {
         indexPage.stats = stats;
     }
 
-    const seo = ERUDIT.config.project.indexPage?.seo;
+    const seo = ERUDIT.config.indexPage?.seo;
     if (seo) {
         indexPage.seo = seo;
     }

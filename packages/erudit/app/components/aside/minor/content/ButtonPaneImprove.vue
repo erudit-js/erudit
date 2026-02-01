@@ -10,11 +10,11 @@ const { contentType, contentRelativePath, topicPart } = defineProps<{
 
 const optionsOpened = ref(false);
 
-const howToImproveLink = ERUDIT.config.project.contributors?.howToImproveLink;
-const reportIssueLink = ERUDIT.config.project.contributors?.reportIssueLink;
+const howToImproveLink = ERUDIT.config.contributors?.howToImproveLink;
+const reportIssueLink = ERUDIT.config.contributors?.reportIssueLink;
 
 const editLink = computed(() => {
-    const prefix = ERUDIT.config.project.contributors?.editLinkPrefix;
+    const prefix = ERUDIT.config.contributors?.editLinkPrefix;
 
     if (prefix) {
         const postfix = (() => {
@@ -34,7 +34,7 @@ const editLink = computed(() => {
     }
 });
 
-const contributorsEnabled = ERUDIT.config.project.contributors?.enabled;
+const contributorsEnabled = ERUDIT.config.contributors?.enabled;
 const canImprove =
     contributorsEnabled && (howToImproveLink || reportIssueLink || editLink);
 

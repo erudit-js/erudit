@@ -69,7 +69,7 @@ export async function getContentStats(
     }
 
     // Possible merge arrays of schema names into single stats entry
-    const actualElementStats = ERUDIT.config.project.countElements.reduce<
+    const actualElementStats = ERUDIT.config.countElements.reduce<
         Record<string, number>
     >((acc, current) => {
         if (Array.isArray(current)) {

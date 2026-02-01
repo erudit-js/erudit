@@ -8,7 +8,7 @@ export async function resolveEruditProse(
 ) {
     return await resolveEruditRawElement({
         context: {
-            language: ERUDIT.config.public.project.language.current,
+            language: ERUDIT.config.public.language.current,
             linkable,
         },
         rawElement,

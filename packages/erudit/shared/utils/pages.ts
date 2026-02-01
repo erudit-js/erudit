@@ -1,24 +1,23 @@
+import { sn } from 'unslash';
 import type { TopicPart } from '@erudit-js/core/content/topic';
 
 export const PAGES = {
     index: '/',
     contributors: '/contributors/',
     contributor: (contributorId?: string) => {
-        return slasher(`/contributor/${contributorId ?? ''}/`);
+        return sn(`/contributor/${contributorId ?? ''}/`);
     },
     sponsors: '/sponsors/',
     ['book']: (shortId: string) => {
-        return slasher(`/book/${shortId}/`);
+        return sn(`/book/${shortId}/`);
     },
     ['group']: (shortId: string) => {
-        return slasher(`/group/${shortId}/`);
+        return sn(`/group/${shortId}/`);
     },
     ['page']: (shortId: string, elementId?: string) => {
-        return slasher(`/page/${shortId}/${elementId ? '#' + elementId : ''}`);
+        return sn(`/page/${shortId}/${elementId ? '#' + elementId : ''}`);
     },
     ['topic']: (part: TopicPart, shortId: string, elementId?: string) => {
-        return slasher(
-            `/${part}/${shortId}/${elementId ? '#' + elementId : ''}`,
-        );
+        return sn(`/${part}/${shortId}/${elementId ? '#' + elementId : ''}`);
     },
 };

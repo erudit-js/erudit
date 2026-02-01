@@ -2,6 +2,8 @@
 import type { ContentContribution } from '@erudit-js/core/content/contributions';
 
 defineProps<{ contribution: ContentContribution }>();
+
+const withBaseUrl = useBaseUrl();
 </script>
 
 <template>

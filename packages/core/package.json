@@ -20,7 +20,7 @@
         "prepack": "bun run build"
     },
     "dependencies": {
-        "@jsprose/core": "catalog:",
+        "@jsprose/core": "^1.0.0",
         "gradient-string": "^3.0.0"
     }
 }

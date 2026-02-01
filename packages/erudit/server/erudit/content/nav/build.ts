@@ -7,7 +7,7 @@ import type { ContentNavNode, ContentNavMap } from './types';
 
 let initialBuild = true;
 
-const contentRoot = () => `${ERUDIT.config.paths.project}/content`;
+const contentRoot = () => ERUDIT.paths.project('content');
 
 export async function buildContentNav() {
     ERUDIT.log.debug.start('Building content navigation...');
@@ -386,9 +386,7 @@ const topicsWithoutPartsValidator: ContentNavValidator = () => {
         step(navNode) {
             if (navNode.type === 'topic') {
                 const files = readdirSync(
-                    ERUDIT.config.paths.project +
-                        '/content/' +
-                        navNode.contentRelPath,
+                    ERUDIT.paths.project(`content/${navNode.contentRelPath}`),
                 );
                 const hasPart = files.some((file) =>
                     /^(article|summary|practice)\.(jsx|tsx)$/.test(file),

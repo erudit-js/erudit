@@ -6,9 +6,11 @@ export async function createVideoStorage(
     element: ProseElement<typeof videoSchema>,
     storage: GenericStorage,
 ) {
+    const runtimeConfig = useRuntimeConfig();
+
     storage[element.storageKey!] = _createVideoStorage(
-        ERUDIT.config.paths.project,
-        ERUDIT.config.public.project.baseUrl,
+        ERUDIT.paths.project(),
+        runtimeConfig.app.baseURL,
         element.data.src,
     );
 }

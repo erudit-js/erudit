@@ -7,7 +7,7 @@ const contentTypePath = stringifyContentTypePath('group', groupId);
 const mainContent = await useMainContent<MainContentGroup>(contentTypePath);
 
 const { showNewsAside, showContentContributionsAside } = useAsideMinor();
-if (ERUDIT.config.project.contributors?.enabled) {
+if (ERUDIT.config.contributors?.enabled) {
     showContentContributionsAside(
         mainContent.contentRelativePath,
         mainContent.type,

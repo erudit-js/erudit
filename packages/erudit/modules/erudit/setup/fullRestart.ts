@@ -1,18 +1,13 @@
 import type { Nuxt } from '@nuxt/schema';
 import { debounce } from 'perfect-debounce';
-import { globSync } from 'glob';
 import chalk from 'chalk';
-import slash from 'slash';
+import { sn } from 'unslash';
 
 import { ERUDIT_PACKAGE_WATCHER, ERUDIT_PROJECT_WATCHER } from '../watcher';
 import { moduleLogger } from '../logger';
-import type { EruditRuntimeConfig } from '../../../shared/types/runtimeConfig';
+import { ERUDIT_PATH, PROJECT_PATH } from '../env';
 
-export async function setupEruditFullRestart(
-    nuxt: Nuxt,
-    runtimeConfig: EruditRuntimeConfig,
-) {
-    const paths = runtimeConfig.paths;
+export async function setupEruditFullRestart(nuxt: Nuxt) {
     const changedPaths = new Set<string>();
 
     const tryRestartNuxt = debounce(async () => {
@@ -31,26 +26,23 @@ export async function setupEruditFullRestart(
     }, 300);
 
     const isTargetFile = (path: string): boolean => {
-        // Check if it's in the module directory
-        if (path.startsWith(paths.module)) {
+        // Check if it is in Erudit Nuxt Layer "modules" directory
+        if (path.startsWith(sn(ERUDIT_PATH, 'modules'))) {
             return true;
         }
 
-        // Check if it's in package/shared
-        if (path.startsWith(paths.package + '/shared')) {
+        // Check if it is in Erudit Nuxt Layer "shared" directory
+        if (path.startsWith(sn(ERUDIT_PATH, 'shared'))) {
             return true;
         }
 
-        // Check if it's nuxt.config.ts in package
-        if (path === paths.package + '/nuxt.config.ts') {
+        // Check if it is Erudit Nuxt Layer "nuxt.config.ts" file
+        if (path === sn(ERUDIT_PATH, 'nuxt.config.ts')) {
             return true;
         }
 
-        // Check if it's erudit.config.{js,ts} in project
-        const configFiles = globSync(
-            paths.project + '/erudit.config.{js,ts}',
-        ).map((p) => slash(p));
-        if (configFiles.includes(path)) {
+        // Check if it is project "erudit.config.ts" file
+        if (path === sn(PROJECT_PATH, 'erudit.config.ts')) {
             return true;
         }
 
@@ -58,7 +50,7 @@ export async function setupEruditFullRestart(
     };
 
     const handleFileChange = (_event: string, path: string) => {
-        path = slash(path);
+        path = sn(path);
 
         if (path.trim() && isTargetFile(path)) {
             changedPaths.add(String(path));

@@ -22,14 +22,14 @@ const starsFormatted = computed(() => {
 
 onMounted(async () => {
     try {
-        const useFakeApi = ERUDIT.config.project.debug.fakeApi.repository;
+        const useFakeApi = ERUDIT.config.debug.fakeApi.repository;
 
         if (useFakeApi) {
             stars.value = 1337;
             return;
         }
 
-        const repository = ERUDIT.config.project?.repository;
+        const repository = ERUDIT.config?.repository;
 
         if (!repository || repository.type !== 'github') {
             return;

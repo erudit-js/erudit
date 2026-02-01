@@ -6,9 +6,11 @@ export async function createCalloutStorage(
     element: ProseElement<typeof calloutSchema>,
     storage: GenericStorage,
 ) {
+    const runtimeConfig = useRuntimeConfig();
+
     storage[element.storageKey!] = _createCalloutStorage(
-        ERUDIT.config.paths.project,
-        ERUDIT.config.public.project.baseUrl,
+        ERUDIT.paths.project(),
+        runtimeConfig.app.baseURL,
         element.data.iconSrc,
     );
 }

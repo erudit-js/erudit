@@ -2,6 +2,8 @@
 const { showNewsAside } = useAsideMinor();
 showNewsAside();
 
+const withBaseUrl = useBaseUrl();
+
 const nuxtApp = useNuxtApp();
 const payloadKey = 'index-page';
 const indexPage: IndexPage =

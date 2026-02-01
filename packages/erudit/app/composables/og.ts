@@ -1,16 +1,18 @@
 import type { ContentSeo } from '@erudit-js/core/content/seo';
 
 export function initOgImage() {
+    const withSiteUrl = useSiteUrl();
+
     const fallbackOgImage = {
         src: eruditPublic('og.png'),
         width: 500,
         height: 500,
     };
 
-    const ogImage = ERUDIT.config.project.seo?.image || fallbackOgImage;
+    const ogImage = ERUDIT.config.seo?.image || fallbackOgImage;
     useSeoMeta({
         ogImage: {
-            url: withFullUrl(ogImage.src),
+            url: withSiteUrl(ogImage.src),
             width: ogImage.width,
             height: ogImage.height,
         },
@@ -31,8 +33,8 @@ export function useStandartSeo(args: {
     urlPath: string;
 }) {
     const seoSiteTitle =
-        ERUDIT.config.project.seo?.siteTitle ||
-        ERUDIT.config.project.siteInfo.title ||
+        ERUDIT.config.seo?.siteTitle ||
+        ERUDIT.config.siteInfo.title ||
         'Erudit';
 
     const fullTitle = args.title + ' - ' + seoSiteTitle;
@@ -53,13 +55,13 @@ export async function useContentSeo(args: {
     seo?: ContentSeo;
     snippets?: ElementSnippet[];
 }) {
-    const canUseBookTitle = ERUDIT.config.project.seo?.useBookSiteTitle;
+    const canUseBookTitle = ERUDIT.config.seo?.useBookSiteTitle;
 
     const seoSiteTitle =
         canUseBookTitle && args.bookTitle
             ? args.bookTitle
-            : ERUDIT.config.project.seo?.siteTitle ||
-              ERUDIT.config.project.siteInfo.title ||
+            : ERUDIT.config.seo?.siteTitle ||
+              ERUDIT.config.siteInfo.title ||
               'Erudit';
 
     const fullTitle =
@@ -152,6 +154,8 @@ function setupSeo(seo: {
     description?: string;
     urlPath: string;
 }) {
+    const withSiteUrl = useSiteUrl();
+
     function seoNormalize(text: string): string;
     function seoNormalize(text: undefined): undefined;
     function seoNormalize(text: string | undefined): string | undefined;
@@ -167,7 +171,7 @@ function setupSeo(seo: {
             {
                 key: 'canonical',
                 rel: 'canonical',
-                href: withFullUrl(seo.urlPath),
+                href: withSiteUrl(seo.urlPath),
             },
         ],
     });
@@ -177,6 +181,6 @@ function setupSeo(seo: {
         description,
         ogTitle: title,
         ogDescription: description,
-        ogUrl: withFullUrl(seo.urlPath),
+        ogUrl: withSiteUrl(seo.urlPath),
     });
 }

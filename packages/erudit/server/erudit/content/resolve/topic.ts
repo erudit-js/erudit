@@ -32,10 +32,7 @@ export async function resolveTopic(topicNode: ContentNavNode) {
 
     try {
         const topicModule = await ERUDIT.import<{ default: TopicContentItem }>(
-            ERUDIT.config.paths.project +
-                '/content/' +
-                topicNode.contentRelPath +
-                '/topic',
+            ERUDIT.paths.project(`content/${topicNode.contentRelPath}/topic`),
         );
 
         if (!isContentItem<TopicContentItem>(topicModule?.default, 'topic')) {
@@ -55,11 +52,9 @@ export async function resolveTopic(topicNode: ContentNavNode) {
             const topicPartDocument = await ERUDIT.import<{
                 default: AnyDocument;
             }>(
-                ERUDIT.config.paths.project +
-                    '/content/' +
-                    topicNode.contentRelPath +
-                    '/' +
-                    topicPart,
+                ERUDIT.paths.project(
+                    `content/${topicNode.contentRelPath}/${topicPart}`,
+                ),
                 { try: true },
             );
 
@@ -105,7 +100,7 @@ export async function resolveTopic(topicNode: ContentNavNode) {
                         }
 
                         if (
-                            ERUDIT.config.project.countElements
+                            ERUDIT.config.countElements
                                 .flat()
                                 .includes(rawElement.schemaName)
                         ) {

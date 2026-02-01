@@ -4,10 +4,10 @@ import type {
 } from '@erudit-js/core/eruditConfig/analytics';
 
 export function initAnalytics() {
-    const analytics = ERUDIT.config.project.analytics;
+    const analytics = ERUDIT.config.analytics;
 
     const analyticsEnabled = (() => {
-        const debugValue = ERUDIT.config.project.debug.analytics;
+        const debugValue = ERUDIT.config.debug.analytics;
 
         if (typeof debugValue === 'boolean') {
             return debugValue;

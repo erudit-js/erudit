@@ -1,4 +1,6 @@
 export function useRoutePath() {
     const route = useRoute();
-    return computed(() => slasher(route.path, { trailing: true }));
+    return computed(() =>
+        route.path.endsWith('/') ? route.path : route.path + '/',
+    );
 }

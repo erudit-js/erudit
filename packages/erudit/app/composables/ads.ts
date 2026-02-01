@@ -1,11 +1,11 @@
 export function adsAllowed() {
-    const debugAllowed = ERUDIT.config.project.debug?.ads;
+    const debugAllowed = ERUDIT.config.debug?.ads;
 
     if (debugAllowed === true) {
         return true;
     }
 
-    const adsConfig = ERUDIT.config.project.ads;
+    const adsConfig = ERUDIT.config.ads;
 
     if (adsConfig === undefined) {
         return false;
@@ -15,9 +15,9 @@ export function adsAllowed() {
 }
 
 export function adsAsideAllowed() {
-    return adsAllowed() && Boolean(ERUDIT.config.project.ads?.aside);
+    return adsAllowed() && Boolean(ERUDIT.config.ads?.aside);
 }
 
 export function adsBottomAllowed() {
-    return adsAllowed() && Boolean(ERUDIT.config.project.ads?.bottom);
+    return adsAllowed() && Boolean(ERUDIT.config.ads?.bottom);
 }

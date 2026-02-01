@@ -13,13 +13,13 @@ $CONTRIBUTOR;
 
 let initialBuild = true;
 
-const contributorsRoot = () => `${ERUDIT.config.paths.project}/contributors`;
+const contributorsRoot = () => ERUDIT.paths.project(`contributors`);
 
 const contributorsTypesPath = () =>
-    `${ERUDIT.config.paths.build}/types/contributors.d.ts`;
+    ERUDIT.paths.project(`.erudit/types/contributors.d.ts`);
 
 export async function buildContributors() {
-    if (!ERUDIT.config.public.project.contributors?.enabled) return;
+    if (!ERUDIT.config.public.contributors?.enabled) return;
 
     ERUDIT.log.debug.start('Building contributors...');
 

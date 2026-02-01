@@ -1,25 +1,41 @@
 import type { ArgDef } from 'citty';
-import { consola } from 'consola';
-import chalk from 'chalk';
-
-import { CONFIG } from '../config.js';
-import { resolvePath } from './path.js';
 
 export const projectPathArg = {
     projectPath: {
         type: 'positional',
-        description: 'Erudit project location',
+        description:
+            'Erudit project directory. Can also be set via ERUDIT_PROJECT_PATH env variable.',
         required: false,
-        default: '.',
+        valueHint: '.',
     },
 } satisfies { projectPath: ArgDef };
+
+export const siteUrlArg = {
+    siteUrl: {
+        type: 'string',
+        description:
+            'Erudit full site URL. Can also be set via ERUDIT_SITE_URL env variable.',
+        required: false,
+        valueHint: 'https://my-awesome-site.com/',
+    },
+} satisfies { siteUrl: ArgDef };
+
+export const basePathArg = {
+    basePath: {
+        type: 'string',
+        description:
+            'Base path for Erudit site. Can also be set via ERUDIT_BASE_PATH env variable.',
+        required: false,
+        valueHint: '/subfolder/',
+    },
+} satisfies { basePath: ArgDef };
 
 export const contentTargetsArg = {
     target: {
         type: 'string',
         description: 'Content targets to process',
         required: false,
-        default: '',
+        valueHint: '"combinatorics"',
     },
 } satisfies { target: ArgDef };
 
@@ -27,22 +43,7 @@ export const nitroPresetArg = {
     preset: {
         type: 'string',
         required: false,
-        description: '(Nuxt Build Flag) Nitro preset to use for building',
+        description:
+            '(Nuxt Build Flag) Nitro preset to use for building. Can also be set via ERUDIT_NITRO_PRESET env variable.',
     },
 } satisfies { preset: ArgDef };
-
-export function resolveArgPaths(projectPath: string) {
-    consola.start('Resolving project path...');
-    projectPath = resolvePath(projectPath);
-    consola.success('Resolved project path:', chalk.greenBright(projectPath));
-
-    consola.start('Resolving Erudit Nuxt Layer path...');
-    consola.success(
-        'Resolved Erudit path:',
-        chalk.greenBright(CONFIG.ERUDIT_PATH),
-    );
-
-    return {
-        projectPath,
-    };
-}

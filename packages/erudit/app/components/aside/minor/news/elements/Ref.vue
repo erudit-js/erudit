@@ -3,6 +3,7 @@ import type { ProseElement } from '@jsprose/core';
 import type { refSchema } from '@erudit-js/prose/elements/link/reference/core';
 import type { LinkStorage } from '@erudit-js/prose/elements/link/storage';
 
+const withBaseUrl = useBaseUrl();
 const { closePreview, setPreview } = usePreview();
 const { element } = defineProps<{ element: ProseElement<typeof refSchema> }>();
 const linkStorage = (element as any).storageValue as LinkStorage;

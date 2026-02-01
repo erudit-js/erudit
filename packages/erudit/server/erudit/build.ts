@@ -1,7 +1,7 @@
 import chalk from 'chalk';
 import chokidar from 'chokidar';
 import { debounce } from 'perfect-debounce';
-import slash from 'slash';
+import { sn } from 'unslash';
 
 // Builders
 import { buildContributors } from './contributors/build';
@@ -59,10 +59,7 @@ export async function buildServerErudit() {
 //
 
 export async function tryServerWatchProject() {
-    if (
-        ERUDIT.config.public.mode !== 'write' &&
-        ERUDIT.config.public.mode !== 'dev'
-    ) {
+    if (ERUDIT.mode === 'static') {
         return;
     }
 
@@ -91,33 +88,33 @@ export async function tryServerWatchProject() {
     }, 300);
 
     function isWatched(path: string) {
-        if (path.startsWith(ERUDIT.config.paths.project + '/content/')) {
+        if (path.startsWith(ERUDIT.paths.project('content') + '/')) {
             return true;
         }
 
-        if (path.startsWith(ERUDIT.config.paths.project + '/contributors/')) {
+        if (path.startsWith(ERUDIT.paths.project('contributors') + '/')) {
             return true;
         }
 
-        if (path.startsWith(ERUDIT.config.paths.project + '/cameos/')) {
+        if (path.startsWith(ERUDIT.paths.project('cameos') + '/')) {
             return true;
         }
 
-        if (path.startsWith(ERUDIT.config.paths.project + '/sponsors/')) {
+        if (path.startsWith(ERUDIT.paths.project('sponsors') + '/')) {
             return true;
         }
 
-        if (path.startsWith(ERUDIT.config.paths.project + '/news/')) {
+        if (path.startsWith(ERUDIT.paths.project('news') + '/')) {
             return true;
         }
     }
 
-    const watcher = chokidar.watch(ERUDIT.config.paths.project, {
+    const watcher = chokidar.watch(ERUDIT.paths.project(), {
         ignoreInitial: true,
     });
 
     watcher.on('all', (_, path) => {
-        path = slash(path);
+        path = sn(path);
 
         if (!isWatched(path)) {
             return;

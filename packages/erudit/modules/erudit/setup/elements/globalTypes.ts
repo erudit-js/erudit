@@ -1,13 +1,11 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
+import { sn } from 'unslash';
 
-import type { EruditRuntimeConfig } from '../../../../shared/types/runtimeConfig';
 import type { ElementData } from './shared';
+import { PROJECT_PATH } from '../../env';
 
-export function createGlobalTypes(
-    runtimeConfig: EruditRuntimeConfig,
-    elementsData: ElementData[],
-) {
+export function createGlobalTypes(elementsData: ElementData[]) {
     for (const elementData of elementsData) {
         // Collect all tag names from registry
         const allRegistryTagNames = new Set<string>();
@@ -108,15 +106,15 @@ export {};
         `.trim();
 
         mkdirSync(
-            runtimeConfig.paths.build + '/types/elements/' + elementData.name,
+            sn(PROJECT_PATH, `.erudit/types/elements/${elementData.name}`),
             { recursive: true },
         );
 
         writeFileSync(
-            runtimeConfig.paths.build +
-                '/types/elements/' +
-                elementData.name +
-                '/global.d.ts',
+            sn(
+                PROJECT_PATH,
+                `.erudit/types/elements/${elementData.name}/global.d.ts`,
+            ),
             finalDts,
             'utf-8',
         );

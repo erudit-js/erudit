@@ -5,7 +5,7 @@ export const appElements: Record<string, AppElement> = { ..._appElements };
 
 export async function initAppElements() {
     for (const [name, element] of Object.entries(appElements)) {
-        const languageCode = ERUDIT.config.project.language.current;
+        const languageCode = ERUDIT.config.language.current;
         if (!element.languages[languageCode]) {
             throw createError({
                 statusCode: 500,
@@ -22,7 +22,7 @@ export async function getElementIcon(elementName: string) {
 
 export async function getElementPhrase(elementName: string) {
     const appElement = getAppElement(elementName);
-    const languageCode = ERUDIT.config.project.language.current;
+    const languageCode = ERUDIT.config.language.current;
     return await appElement.languages[languageCode]!();
 }
 

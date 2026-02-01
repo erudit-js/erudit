@@ -18,12 +18,7 @@ export async function resolvePage(pageNode: ContentNavNode) {
         const pageModule = await ERUDIT.import<{
             content: AnyDocument;
             page: PageContentItem;
-        }>(
-            ERUDIT.config.paths.project +
-                '/content/' +
-                pageNode.contentRelPath +
-                '/page',
-        );
+        }>(ERUDIT.paths.project(`content/${pageNode.contentRelPath}/page`));
 
         if (!isContentItem<PageContentItem>(pageModule?.page, 'page')) {
             throw new Error('Page `page` export must be a page content item!');
@@ -49,7 +44,7 @@ export async function resolvePage(pageNode: ContentNavNode) {
                 }
 
                 if (
-                    ERUDIT.config.project.countElements
+                    ERUDIT.config.countElements
                         .flat()
                         .includes(rawElement.schemaName)
                 ) {

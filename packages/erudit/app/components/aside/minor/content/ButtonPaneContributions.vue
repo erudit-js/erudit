@@ -3,6 +3,8 @@ import type { ContentContribution } from '@erudit-js/core/content/contributions'
 
 import Contribution from './Contribution.vue';
 
+const withBaseUrl = useBaseUrl();
+
 const { contributions } = defineProps<{
     contributions?: ContentContribution[];
 }>();

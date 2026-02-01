@@ -1,4 +1,3 @@
-import type { EruditMode } from '@erudit-js/core/mode';
 import type { EruditAdsBanners } from '@erudit-js/core/eruditConfig/ads';
 import type { EruditLanguage } from '@erudit-js/core/eruditConfig/language';
 import type { EruditCustomLinks } from '@erudit-js/core/eruditConfig/links';
@@ -10,56 +9,38 @@ import type { EruditSiteFaviconResolved } from '@erudit-js/core/eruditConfig/sit
 import type { EruditSeo } from '@erudit-js/core/eruditConfig/seo';
 import type { EruditAnalytics } from '@erudit-js/core/eruditConfig/analytics';
 
-export interface EruditRuntimeConfigPaths {
-    package: string;
-    module: string;
-    app: string;
-    server: string;
-    project: string;
-    build: string;
-}
-
 export interface EruditRuntimeConfig {
-    paths: EruditRuntimeConfigPaths;
-    project: {
-        elements: string[];
-        countElements: (string | string[])[];
-        indexPage?: EruditIndexPage;
-    };
+    elements: string[];
+    countElements: (string | string[])[];
+    indexPage?: EruditIndexPage;
 }
 
 export interface EruditPublicRuntimeConfig {
-    mode: EruditMode;
-    version: string;
-    project: {
-        language: EruditLanguage;
-        originUrl: string;
-        baseUrl: string;
-        siteInfo: {
-            title?: string;
-            short?: string | false;
-            logotype?: string | false;
-            favicon?: EruditSiteFaviconResolved;
-            loadingSvg?: string;
-        };
-        seo?: EruditSeo;
-        debug: {
-            log: boolean;
-            slowTransition: boolean;
-            ads: boolean;
-            fakeApi: {
-                repository: boolean;
-            };
-            analytics?: boolean;
-        };
-        repository?: EruditRepository & { _link: string };
-        style?: {
-            brandColor?: string;
-        };
-        customLinks?: EruditCustomLinks;
-        contributors?: EruditContributors;
-        sponsors?: EruditSponsors;
-        ads?: EruditAdsBanners;
-        analytics?: EruditAnalytics;
+    language: EruditLanguage;
+    siteInfo: {
+        title?: string;
+        short?: string | false;
+        logotype?: string | false;
+        favicon?: EruditSiteFaviconResolved;
+        loadingSvg?: string;
     };
+    seo?: EruditSeo;
+    debug: {
+        log: boolean;
+        slowTransition: boolean;
+        ads: boolean;
+        fakeApi: {
+            repository: boolean;
+        };
+        analytics?: boolean;
+    };
+    repository?: EruditRepository & { _link: string };
+    style?: {
+        brandColor?: string;
+    };
+    customLinks?: EruditCustomLinks;
+    contributors?: EruditContributors;
+    sponsors?: EruditSponsors;
+    ads?: EruditAdsBanners;
+    analytics?: EruditAnalytics;
 }

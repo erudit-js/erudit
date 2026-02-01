@@ -1,6 +1,6 @@
 import { createJiti, type Jiti, type JitiOptions } from 'jiti';
-import slash from 'slash';
 import { insertDocumentId } from '@jsprose/core';
+import { sn } from 'unslash';
 import {
     pathToDocumentId,
     stringifyDocumentId,
@@ -17,11 +17,11 @@ export type EruditServerImporter = Jiti['import'];
 export let jiti: Jiti;
 
 export async function setupServerImporter() {
-    const jitiId = ERUDIT.config.paths.project;
+    const jitiId = ERUDIT.paths.project();
     const defaultJiti = createJiti(jitiId, createBaseJitiOptions());
     const getDefaultCode = defaultJiti.transform.bind(defaultJiti);
 
-    jiti = createJiti(ERUDIT.config.paths.project, {
+    jiti = createJiti(jitiId, {
         ...createBaseJitiOptions(),
         extensions: EXTENSIONS.map((ext) => '.' + ext),
         transform: (opts) => {
@@ -29,7 +29,7 @@ export async function setupServerImporter() {
                 return { code: getDefaultCode(opts) };
             }
 
-            const filename = slash(opts.filename).replace('file://', '');
+            const filename = sn(opts.filename).replace('file://', '');
 
             const staticAssetModule = tryStaticAssetModule(filename);
             if (staticAssetModule) {
@@ -44,7 +44,7 @@ export async function setupServerImporter() {
 
             const documentId = pathToDocumentId(
                 filename,
-                ERUDIT.config.paths.project,
+                ERUDIT.paths.project(),
             );
 
             if (documentId) {
@@ -75,8 +75,8 @@ function createBaseJitiOptions(): JitiOptions {
         fsCache: false,
         moduleCache: false,
         alias: {
-            '#project/': ERUDIT.config.paths.project + '/',
-            '#content/': ERUDIT.config.paths.project + '/content/',
+            '#project/': ERUDIT.paths.project() + '/',
+            '#content/': ERUDIT.paths.project('content') + '/',
         },
         jsx: {
             runtime: 'automatic',

@@ -1,6 +1,8 @@
 <script lang="ts" setup>
 import type { PageContributor } from '@erudit-js/core/contributor';
 
+const withBaseUrl = useBaseUrl();
+
 const nuxtApp = useNuxtApp();
 const route = useRoute();
 const contributorId = computed(() => String(route.params.contributorId));

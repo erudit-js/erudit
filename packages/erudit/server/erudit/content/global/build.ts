@@ -7,7 +7,7 @@ $CONTENT;
 
 let initialBuild = true;
 
-const contentRoot = () => `${ERUDIT.config.paths.project}/content`;
+const contentRoot = () => ERUDIT.paths.project('content');
 
 export async function buildGlobalContent() {
     ERUDIT.log.debug.start('Building global content...');
@@ -24,7 +24,7 @@ export async function buildGlobalContent() {
 
     const linkTypes = linkObjectToTypes(linkObject);
     writeFileSync(
-        ERUDIT.config.paths.build + '/types/content.d.ts',
+        ERUDIT.paths.project('.erudit/types/content.d.ts'),
         linkTypes,
         'utf-8',
     );
@@ -131,7 +131,9 @@ async function buildLinkObject() {
         //
 
         if (navItem.type === 'page') {
-            const pathToFile = `${ERUDIT.config.paths.project}/content/${navItem.contentRelPath}/${navItem.type}.tsx`;
+            const pathToFile = ERUDIT.paths.project(
+                `content/${navItem.contentRelPath}/${navItem.type}.tsx`,
+            );
             const moduleContent = readFileSync(pathToFile, 'utf-8');
             const title = tryGetTitle(moduleContent);
 
@@ -155,7 +157,9 @@ ${jsdoc}
                 ),
             };
         } else if (navItem.type === 'topic') {
-            const pathToTopicFile = `${ERUDIT.config.paths.project}/content/${navItem.contentRelPath}/topic.ts`;
+            const pathToTopicFile = ERUDIT.paths.project(
+                `content/${navItem.contentRelPath}/topic.ts`,
+            );
             const topicModuleContent = readFileSync(pathToTopicFile, 'utf-8');
             const title = tryGetTitle(topicModuleContent);
 
@@ -176,7 +180,9 @@ ${jsdoc}
 
             for (const part of topicParts) {
                 try {
-                    const pathToFile = `${ERUDIT.config.paths.project}/content/${navItem.contentRelPath}/${part}.tsx`;
+                    const pathToFile = ERUDIT.paths.project(
+                        `content/${navItem.contentRelPath}/${part}.tsx`,
+                    );
                     const partContent = readFileSync(pathToFile, 'utf-8');
 
                     const jsdoc = jsdocLines([
@@ -202,7 +208,9 @@ ${jsdoc}
                 } catch {}
             }
         } else {
-            const pathToFile = `${ERUDIT.config.paths.project}/content/${navItem.contentRelPath}/${navItem.type}.ts`;
+            const pathToFile = ERUDIT.paths.project(
+                `content/${navItem.contentRelPath}/${navItem.type}.ts`,
+            );
             const moduleContent = readFileSync(pathToFile, 'utf-8');
             const title = tryGetTitle(moduleContent);
 

@@ -1,10 +1,10 @@
 import { existsSync } from 'node:fs';
 
-import { serveStaticFile } from '@erudit/server/staticFile';
+import { serveStaticFile } from '#layers/erudit/server/erudit/staticFile';
 
 export default defineEventHandler(async (event) => {
     const path = event.context.params?.path;
-    const fullPath = ERUDIT.config.paths.project + '/' + path;
+    const fullPath = ERUDIT.paths.project(path!);
 
     if (!existsSync(fullPath)) {
         throw createError({

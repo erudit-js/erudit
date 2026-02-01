@@ -6,11 +6,11 @@
         "verbatimModuleSyntax": true,
         "skipLibCheck": true,
         "target": "esnext",
-        "module": "esnext",
-        "moduleResolution": "bundler",
+        "module": "nodenext",
+        "moduleResolution": "nodenext",
         "lib": ["ESNext"],
         "paths": {
-            "@erudit-js/cli/*": ["./src/*"]
+            "@src/*": ["./src/*"]
         }
     },
     "include": ["test/**/*"]

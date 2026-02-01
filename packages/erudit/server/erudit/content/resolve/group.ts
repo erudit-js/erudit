@@ -12,10 +12,7 @@ export async function resolveGroup(groupNode: ContentNavNode) {
 
     try {
         const groupModule = await ERUDIT.import<{ default: GroupContentItem }>(
-            ERUDIT.config.paths.project +
-                '/content/' +
-                groupNode.contentRelPath +
-                '/group',
+            ERUDIT.paths.project(`content/${groupNode.contentRelPath}/group`),
         );
 
         if (!isContentItem<GroupContentItem>(groupModule?.default, 'group')) {

@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import type { EruditRepositoryType } from '@erudit-js/core/eruditConfig/repository';
 
-const repository = ERUDIT.config.project.repository;
+const repository = ERUDIT.config.repository;
 const phrase = await usePhrases('content');
 
 type SecondaryComponents = Record<EruditRepositoryType, any>;

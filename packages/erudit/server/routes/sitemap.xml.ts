@@ -1,3 +1,5 @@
+import { sn } from 'unslash';
+
 export default defineEventHandler(async (event) => {
     const urls = new Set<string>();
     urls.add(PAGES.index);
@@ -6,7 +8,7 @@ export default defineEventHandler(async (event) => {
     // Contributors
     //
 
-    if (ERUDIT.config.public.project.contributors?.enabled) {
+    if (ERUDIT.config.public.contributors?.enabled) {
         urls.add(PAGES.contributors);
 
         const dbContributors = await ERUDIT.db.query.contributors.findMany({
@@ -22,7 +24,7 @@ export default defineEventHandler(async (event) => {
     // Sponsors
     //
 
-    if (ERUDIT.config.public.project.sponsors?.enabled) {
+    if (ERUDIT.config.public.sponsors?.enabled) {
         urls.add(PAGES.sponsors);
     }
 
@@ -64,18 +66,19 @@ export default defineEventHandler(async (event) => {
     // Build XML
     //
 
-    setHeader(event, 'Content-Type', 'application/xml');
+    const runtimeConfig = useRuntimeConfig();
 
     const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${Array.from(urls)
     .map(
         (url) => `    <url>
-        <loc>${slasher(ERUDIT.config.public.project.originUrl + ERUDIT.config.public.project.baseUrl + url)}</loc>
+        <loc>${sn(runtimeConfig.public.siteUrl, url)}</loc>
     </url>`,
     )
     .join('\n')}
 </urlset>`.trim();
 
+    setHeader(event, 'Content-Type', 'application/xml');
     return xml;
 });

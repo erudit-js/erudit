@@ -9,10 +9,12 @@ export async function createImageStorage(
     element: ProseElement<typeof imageSchema>,
     storage: GenericStorage,
 ) {
+    const runtimeConfig = useRuntimeConfig();
+
     const imageAbsPath = element.data.src;
     const imageStorage = await _createImageStorage(
-        ERUDIT.config.paths.project,
-        ERUDIT.config.public.project.baseUrl,
+        ERUDIT.paths.project(),
+        runtimeConfig.app.baseURL,
         imageAbsPath,
     );
 

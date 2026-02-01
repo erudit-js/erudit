@@ -4,7 +4,7 @@ import {
     contributorIdToPropertyName,
     globalContributorsObject,
     globalContributorsTypes,
-} from '@erudit-js/core/contributor';
+} from '@src/contributor.js';
 
 describe('Contributors Global', () => {
     describe('contributorIdToPropertyName', () => {
@@ -63,7 +63,9 @@ describe('Contributors Global', () => {
         it('should generate types declaration for empty object', () => {
             const result = globalContributorsTypes({});
             expect(result).toBe(
-                `export {};
+                `import type { GlobalContributorTypeguard } from '@erudit-js/core/contributor';
+
+export {};
 
 declare global {
     const $CONTRIBUTOR: {
@@ -81,12 +83,14 @@ declare global {
             });
 
             expect(result).toBe(
-                `export {};
+                `import type { GlobalContributorTypeguard } from '@erudit-js/core/contributor';
+
+export {};
 
 declare global {
     const $CONTRIBUTOR: {
-        contributorA: "contributorA";
-        testContributorB: "test-contributor-b";
+        contributorA: GlobalContributorTypeguard;
+        testContributorB: GlobalContributorTypeguard;
     };
 }
 `,
@@ -100,9 +104,9 @@ declare global {
                 bobSmith: 'bob-smith',
             });
 
-            expect(result).toContain('john: "john";');
-            expect(result).toContain('janeDoe: "jane-doe";');
-            expect(result).toContain('bobSmith: "bob-smith";');
+            expect(result).toContain('john: GlobalContributorTypeguard;');
+            expect(result).toContain('janeDoe: GlobalContributorTypeguard;');
+            expect(result).toContain('bobSmith: GlobalContributorTypeguard;');
         });
     });
 });

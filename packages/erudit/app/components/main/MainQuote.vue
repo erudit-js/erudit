@@ -9,6 +9,7 @@ const { quote } = defineProps<{
 }>();
 const emit = defineEmits(['next']);
 
+const withBaseUrl = useBaseUrl();
 const loadingSvg = useLoadingSvg();
 
 const color = quote.color ?? stringColor(quote.name);
@@ -19,7 +20,7 @@ const message = (() => {
             ? quote.messages
             : [
                   ...(quote.messages ?? []),
-                  ...ERUDIT.config.project.sponsors?.defaultSponsorMessages!,
+                  ...ERUDIT.config.sponsors?.defaultSponsorMessages!,
               ];
 
     const randomMessageI = Math.floor(Math.random() * messages.length);

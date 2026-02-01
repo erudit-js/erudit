@@ -31,8 +31,9 @@
     ],
     "dependencies": {
         "@erudit-js/core": "workspace:*",
-        "chalk": "catalog:",
-        "citty": "^0.1.6",
-        "consola": "catalog:"
+        "http-server": "^14.1.1",
+        "chalk": "^5.6.2",
+        "citty": "^0.2.0",
+        "dotenv": "^17.2.3"
     }
 }

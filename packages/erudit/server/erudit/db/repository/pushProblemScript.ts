@@ -4,7 +4,7 @@ export async function pushProblemScript(
 ): Promise<void> {
     const parsedId = problemScriptSrc;
 
-    if (!problemScriptSrc.startsWith(ERUDIT.config.paths.project)) {
+    if (!problemScriptSrc.startsWith(ERUDIT.paths.project())) {
         throw createError({
             statusCode: 400,
             statusMessage: 'Problem script is outside of project directory!',

@@ -1,10 +1,10 @@
 <script lang="ts" setup>
-const nuxtApp = useNuxtApp();
-const language = ERUDIT.config.project.language.current;
-const buildTimestamp = nuxtApp.$config.public.buildTimestamp;
+const runtimeConfig = useRuntimeConfig();
+const language = ERUDIT.config.language.current;
+const buildTime = runtimeConfig.public.buildTime;
 
 const formattedBuildDate = computed(() => {
-    let date = new Date(buildTimestamp);
+    let date = new Date(buildTime);
     return new Intl.DateTimeFormat(language, {
         day: '2-digit',
         month: 'short',

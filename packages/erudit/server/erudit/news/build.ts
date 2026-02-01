@@ -7,7 +7,7 @@ import { resolveEruditProse } from '../prose/repository/resolve';
 
 let initialBuild = true;
 
-const newsRoot = () => `${ERUDIT.config.paths.project}/news`;
+const newsRoot = () => ERUDIT.paths.project(`news`);
 
 export async function buildNews() {
     ERUDIT.log.debug.start('Building news...');

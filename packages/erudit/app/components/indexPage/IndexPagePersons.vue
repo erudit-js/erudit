@@ -8,6 +8,8 @@ const { personType, persons } = defineProps<{
     persons: IndexPagePersons;
 }>();
 
+const withBaseUrl = useBaseUrl();
+
 const changeInterval = 2500;
 
 const personIds = Object.keys(persons);

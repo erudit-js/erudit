@@ -11,7 +11,7 @@ export default defineEventHandler(async () => {
     // Contributors
     //
 
-    if (ERUDIT.config.public.project.contributors?.enabled) {
+    if (ERUDIT.config.public.contributors?.enabled) {
         routes.push(PAGES.contributors);
 
         const dbContributors = await ERUDIT.db.query.contributors.findMany({
@@ -27,7 +27,7 @@ export default defineEventHandler(async () => {
     // Sponsors
     //
 
-    if (ERUDIT.config.public.project.sponsors?.enabled) {
+    if (ERUDIT.config.public.sponsors?.enabled) {
         routes.push(PAGES.sponsors);
     }
 

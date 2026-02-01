@@ -1,48 +1,79 @@
-import { defineCommand } from 'citty';
-import { consola } from 'consola';
-import chalk from 'chalk';
 import { existsSync } from 'node:fs';
 import { spawn } from 'node:child_process';
+import { defineCommand } from 'citty';
+import type { EruditMode } from '@erudit-js/core/mode';
 
-import { resolvePath } from '../shared/path.js';
+import {
+    basePathArg,
+    contentTargetsArg,
+    projectPathArg,
+    siteUrlArg,
+} from '../shared/args.js';
+import {
+    logProjectPath,
+    normalizeProjectPath,
+    retrieveProjectPath,
+} from '../shared/projectPath.js';
+import { loadEnvFiles } from '../shared/env.js';
+import {
+    logUrlProps,
+    normalizeUrlProps,
+    retrieveUrlProps,
+} from '../shared/urlProps.js';
+import { cliError } from '../shared/cliError.js';
+import { CONFIG } from '../config.js';
+import { version } from '../inject.js';
 
 export const launch = defineCommand({
     meta: {
-        name: 'Launch',
-        description: 'Launch builded Erudit server',
+        name: 'launch',
+        description: 'Launchs already built Erudit project for content writing',
     },
     args: {
-        project: {
-            type: 'positional',
-            description: 'Project path',
-            required: false,
-            default: '.',
-        },
+        ...projectPathArg,
+        ...siteUrlArg,
+        ...basePathArg,
+        ...contentTargetsArg,
     },
     async run({ args }) {
-        consola.start('Resolving project path...');
-        const projectPath = resolvePath(args.project);
-        consola.success(
-            'Resolved project path:',
-            chalk.greenBright(projectPath),
+        const absProjectPath = normalizeProjectPath(
+            retrieveProjectPath(args.projectPath),
         );
+        logProjectPath(absProjectPath);
 
-        const distPath = `${projectPath}/.output/server`;
+        loadEnvFiles([`${absProjectPath}/.env.prod`, `${absProjectPath}/.env`]);
 
-        if (!existsSync(distPath))
-            throw new Error(
-                `No ".output/server" folder found! Did you run 'erudit build'?`,
+        const urlProps = normalizeUrlProps(
+            retrieveUrlProps(args.siteUrl, args.basePath),
+        );
+        logUrlProps(urlProps);
+
+        const logProjectPathStr = args.projectPath
+            ? ` "${args.projectPath}"`
+            : '';
+        const didYouRun = `Did you run 'erudit build${logProjectPathStr}'?`;
+
+        const serverIndexPath = `${absProjectPath}/.output/server/index.mjs`;
+
+        if (!existsSync(serverIndexPath)) {
+            throw cliError(
+                `Failed to find built Erudit project at "${absProjectPath}"!\n${didYouRun}`,
             );
+        }
 
-        spawn(`node index.mjs`, {
-            shell: true,
+        console.log('Launching Erudit project...');
+        spawn('node', [serverIndexPath], {
             stdio: 'inherit',
             env: {
-                ...process.env,
                 ERUDIT_COMMAND: 'launch',
-                ERUDIT_MODE: 'write',
+                NUXT_ERUDIT_PATH: CONFIG.ERUDIT_PATH,
+                NUXT_PROJECT_PATH: absProjectPath,
+                NUXT_CONTENT_TARGETS: args.target,
+                NUXT_PUBLIC_ERUDIT_MODE: <EruditMode>'write',
+                NUXT_PUBLIC_ERUDIT_VERSION: version,
+                NUXT_APP_BASE_URL: urlProps.basePath,
+                NUXT_PUBLIC_SITE_URL: urlProps.siteUrl,
             },
-            cwd: distPath,
         });
     },
 });

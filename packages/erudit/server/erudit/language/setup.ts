@@ -7,7 +7,7 @@ export async function setupServerLanguage() {
     };
 
     try {
-        const targetLanguage = ERUDIT.config.public.project.language.current;
+        const targetLanguage = ERUDIT.config.public.language.current;
 
         if (!targetLanguage.trim()) {
             throw new Error('No language specified in Erudit config!');

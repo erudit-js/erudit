@@ -14,18 +14,6 @@ export type EruditSiteFaviconResolved = Partial<
 >;
 
 export type EruditSite = Partial<{
-    /**
-     * `https://en.erudit.io/base-url/article/my-article`
-     *
-     * Origin URL: `https://en.erudit.io/`
-     */
-    originUrl: string;
-    /**
-     * `https://en.erudit.io/base-url/article/my-article`
-     *
-     * Base URL: `/base-url/`
-     */
-    baseUrl: string;
     title: string;
     short: string | false;
     /**

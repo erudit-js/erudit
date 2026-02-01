@@ -1,9 +1,7 @@
-import { dirname } from 'node:path';
-import { fileURLToPath } from 'node:url';
-
 import tailwindcss from '@tailwindcss/vite';
+import { sn } from 'unslash';
 
-const currentDir = dirname(fileURLToPath(import.meta.url));
+import { BASE_URL, ERUDIT_COMMAND, PROJECT_PATH } from './modules/erudit/env';
 
 /**
  * This is context-unaware or "static" Nuxt configuration.
@@ -11,17 +9,34 @@ const currentDir = dirname(fileURLToPath(import.meta.url));
  * If you need to use context (e.g. paths to package/project or Erudit project config), use `./modules/erudit/setup/nuxtConfig.ts` file.
  */
 export default defineNuxtConfig({
-    compatibilityDate: '2025-07-20',
+    compatibilityDate: '2026-01-01',
     devtools: { enabled: true },
     $meta: { name: 'erudit' },
-    modules: [currentDir + '/modules/erudit', 'nuxt-my-icons'],
-    css: ['@erudit/app/styles/main.css'],
+    modules: ['#layers/erudit/modules/erudit', 'nuxt-my-icons'],
+    css: ['#layers/erudit/app/styles/main.css'],
     myicons: {
-        iconsDir: '@erudit/app/assets/icons',
+        iconsDir: '#layers/erudit/app/assets/icons',
     },
-    plugins: ['@erudit/app/plugins/appSetup'],
+    plugins: ['#layers/erudit/app/plugins/appSetup'],
+    runtimeConfig: {
+        eruditPath: '',
+        projectPath: '',
+        contentTargets: '',
+        public: {
+            eruditVersion: '',
+            eruditMode: '',
+            siteUrl: '',
+        },
+    },
     nitro: {
-        plugins: ['@erudit/server'],
+        plugins: ['#layers/erudit/server/erudit'],
+        prerender:
+            ERUDIT_COMMAND === 'build'
+                ? undefined
+                : {
+                      crawlLinks: false,
+                      routes: ['/'],
+                  },
         esbuild: {
             options: {
                 charset: 'utf8',
@@ -45,6 +60,10 @@ export default defineNuxtConfig({
                     }
                 }
             },
+        },
+        output: {
+            dir: sn(PROJECT_PATH!, '.output'),
+            publicDir: sn(PROJECT_PATH!, '.output/public', BASE_URL || ''),
         },
     },
     vite: {

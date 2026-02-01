@@ -4,7 +4,7 @@ import {
     parseDocumentId,
     pathToDocumentId,
     stringifyDocumentId,
-} from '@erudit-js/core/prose/documentId';
+} from '@src/prose/documentId.js';
 
 describe('stringify/parse document ID', () => {
     it('should throw for unknown document ID types', () => {

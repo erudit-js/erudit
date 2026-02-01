@@ -7,7 +7,7 @@ import Database from 'better-sqlite3';
 import * as schema from './schema';
 
 export async function setupServerDatabase() {
-    const buildDir = ERUDIT.config.paths.build;
+    const buildDir = ERUDIT.paths.project('.erudit');
     const nowTs = Date.now();
     const dbFilename = `erudit-${nowTs}.db`;
     const dbPath = join(buildDir, dbFilename);

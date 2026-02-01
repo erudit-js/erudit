@@ -9,7 +9,7 @@ import { resolveTopic } from './topic';
 
 let initialResolve = true;
 
-const contentRoot = () => `${ERUDIT.config.paths.project}/content`;
+const contentRoot = () => ERUDIT.paths.project('content');
 
 export async function resolveContent() {
     ERUDIT.log.debug.start('Resolving content...');
@@ -82,7 +82,7 @@ function collectContentIdsToResolve(isInitial: boolean): Set<string> {
         if (!changedFile.startsWith(`${contentRoot()}/`)) continue;
 
         const contentId =
-            contentPathToId(changedFile, ERUDIT.config.paths.project, 'full') ||
+            contentPathToId(changedFile, ERUDIT.paths.project(), 'full') ||
             deriveContentIdFromPath(changedFile);
 
         if (!contentId) continue;

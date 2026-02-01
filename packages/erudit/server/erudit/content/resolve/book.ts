@@ -12,10 +12,7 @@ export async function resolveBook(bookNode: ContentNavNode) {
 
     try {
         const bookModule = await ERUDIT.import<{ default: BookContentItem }>(
-            ERUDIT.config.paths.project +
-                '/content/' +
-                bookNode.contentRelPath +
-                '/book',
+            ERUDIT.paths.project(`content/${bookNode.contentRelPath}/book`),
         );
 
         if (!isContentItem<BookContentItem>(bookModule?.default, 'book')) {

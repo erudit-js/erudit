@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 const routePath = useRoutePath();
 
-const customLinks = ERUDIT.config.project.customLinks;
+const customLinks = ERUDIT.config.customLinks;
 
 const { data: pagesData } =
     useNuxtData<AsideMajorPagesData>(asideMajorPagesKey);
@@ -16,8 +16,8 @@ const activeState = computed(() => {
     };
 });
 
-const contributorsEnabled = !!ERUDIT.config.project.contributors?.enabled;
-const sponsorsEnabled = !!ERUDIT.config.project.sponsors?.enabled;
+const contributorsEnabled = !!ERUDIT.config.contributors?.enabled;
+const sponsorsEnabled = !!ERUDIT.config.sponsors?.enabled;
 
 const phrase = await usePhrases('main_page', 'contributors', 'sponsors');
 </script>

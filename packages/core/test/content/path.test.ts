@@ -1,9 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import {
-    contentPathToId,
-    parseContentPathPart,
-} from '@erudit-js/core/content/path';
+import { contentPathToId, parseContentPathPart } from '@src/content/path.js';
 
 describe('parseContentPathPart', () => {
     it('should return undefined for invalid parts', () => {

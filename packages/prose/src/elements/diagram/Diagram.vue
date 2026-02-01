@@ -185,7 +185,9 @@ async function diagramIntersectHit(entries: IntersectionObserverEntry[]) {
 }
 
 async function renderDiagram() {
-    const mermaid = (await import('mermaid')).default;
+    const mermaid = //@ts-ignore
+        (await import('https://cdn.jsdelivr.net/npm/mermaid@11.12.2/+esm'))
+            .default;
 
     mermaid.initialize({
         startOnLoad: false,

@@ -4,7 +4,7 @@ import type { EruditAds } from '@erudit-js/core/eruditConfig/ads';
 const adsData = ref<EruditAds>();
 
 onMounted(() => {
-    adsData.value = ERUDIT.config.project.ads!.bottom!;
+    adsData.value = ERUDIT.config.ads!.bottom!;
 });
 </script>
 

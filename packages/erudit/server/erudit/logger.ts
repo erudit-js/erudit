@@ -17,7 +17,7 @@ export type EruditServerLogger = Logger & {
 export async function setupServerLogger() {
     const serverLogger = createLogger(brandColorTitle + ' Server');
     const serverDebugLogger = createLogger(brandColorTitle + ' Server Debug');
-    const debugLogEnabled = !!ERUDIT.config.public.project.debug.log;
+    const debugLogEnabled = !!ERUDIT.config.public.debug.log;
 
     ERUDIT.log = new Proxy(serverLogger, {
         get(target, prop) {
@@ -54,9 +54,7 @@ function createLogger(tag: string): Logger {
             );
         },
         success(message: any) {
-            console.log(
-                `${formattedTag} ${chalk.greenBright('✔')} ${message}`,
-            );
+            console.log(`${formattedTag} ${chalk.greenBright('✔')} ${message}`);
         },
         warn(message: any) {
             console.log(

@@ -14,7 +14,7 @@ export async function getQuoteIds(): Promise<QuoteIds> {
         );
     }
 
-    if (ERUDIT.config.public.project.sponsors?.enabled) {
+    if (ERUDIT.config.public.sponsors?.enabled) {
         const dbSponsors = await ERUDIT.db.query.sponsors.findMany({
             columns: { sponsorId: true },
             where: eq(ERUDIT.db.schema.sponsors.hasMessages, true),
