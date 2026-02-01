@@ -14,9 +14,10 @@ defineProps<{ element: ProseElement<typeof listSchema> }>();
             :is="element.data.type"
             class="micro:[--proseGap:18px]"
             :style="{
-                '--liBorder': 'var(--color-text-disabled)',
+                '--liBorder':
+                    'color-mix(in hsl, var(--accentText, var(--color-text-muted)) 50%, var(--color-bg-main))',
                 '--liBackground':
-                    'color-mix(in hsl, var(--accentText, var(--color-text)) 12%, var(--color-bg-main))',
+                    'color-mix(in hsl, var(--accentBackground, var(--color-text-disabled)) 40%, var(--color-bg-main))',
                 '--liText': 'var(--accentText, var(--color-text-muted))',
             }"
             v-bind="
@@ -30,8 +31,8 @@ defineProps<{ element: ProseElement<typeof listSchema> }>();
                 class="relative flex not-last-of-type:mb-(--proseGap)"
             >
                 <div
-                    class="micro:left-[11px] bg-text-disabled micro:w-[2px]
-                        absolute top-[3px] bottom-[5px] left-[9px] w-[1px]"
+                    class="micro:left-[11px] micro:w-[2px] absolute top-[3px]
+                        bottom-[5px] left-[9px] w-[1px] bg-(--liBorder)"
                 ></div>
                 <div class="relative shrink-0">
                     <div
