@@ -1,57 +1,123 @@
 <script setup lang="ts">
-import { ref } from 'vue';
-import type { ProseElement } from '@jsprose/core';
+import { computed, ref } from 'vue';
+import { isProseElement, type ProseElement } from '@jsprose/core';
 
-import type {
-    CheckFunction,
-    problemCheckSchema,
-} from '../../problemContent.js';
+import type { CheckFunction } from '../../problemContent.js';
+import { problemCheckSchema } from '../../problemContent.js';
 import ProblemExpander from '../ProblemExpander.vue';
 import Check from './Check.vue';
 
+type CheckProseElement = ProseElement<typeof problemCheckSchema>;
+type CheckStatus = 'default' | 'correct' | 'wrong';
+
 const { value } = defineProps<{
     value: {
-        checkElements: ProseElement<typeof problemCheckSchema>[];
+        checkElements: CheckProseElement[];
         checkFunction?: CheckFunction;
     };
 }>();
 
-const scriptCheckFunction = (answer: string | undefined, name: string) => {
+let checkIdCounter = 0;
+const checkIdMap = new WeakMap<CheckProseElement, string>();
+
+function getCheckId(check: CheckProseElement) {
+    if (!checkIdMap.has(check)) {
+        checkIdMap.set(check, `check-${++checkIdCounter}`);
+    }
+    return checkIdMap.get(check)!;
+}
+
+function collectAllChecks(
+    checks: CheckProseElement[],
+    parent?: CheckProseElement,
+): CheckProseElement[] {
+    const result: CheckProseElement[] = [];
+
+    for (const check of checks) {
+        // attach parent reference if not present
+        (check as any)._parent = parent ?? null;
+        result.push(check);
+
+        const children = (check.children ?? []).filter((child) =>
+            isProseElement(child, problemCheckSchema),
+        ) as CheckProseElement[];
+
+        if (children.length) {
+            result.push(...collectAllChecks(children, check));
+        }
+    }
+
+    return result;
+}
+
+const allChecks = computed(() => collectAllChecks(value.checkElements));
+
+const checkStatus = ref<Record<string, CheckStatus>>({});
+
+function setStatus(check: CheckProseElement, status: CheckStatus) {
+    checkStatus.value[getCheckId(check)] = status;
+}
+
+function isVisible(check: CheckProseElement) {
+    const parent = (check as any)._parent as CheckProseElement | null;
+
+    if (!parent) return true;
+
+    // Check all ancestors in the parent tree
+    let current: CheckProseElement | null = parent;
+    while (current) {
+        const status = checkStatus.value[getCheckId(current)];
+        if (status !== 'correct') {
+            return false;
+        }
+        current = (current as any)._parent as CheckProseElement | null;
+    }
+
+    return true;
+}
+
+const scriptAnswers = ref<Record<string, string | undefined>>({});
+
+const scriptCheckNameMap = computed(() => {
+    const map = new Map<CheckProseElement, string>();
+    for (const check of allChecks.value) {
+        if (check.data.script) {
+            map.set(check, check.data.script);
+        }
+    }
+    return map;
+});
+
+function scriptCheckFunction(
+    check: CheckProseElement,
+    answer: string | undefined,
+) {
     if (!value.checkFunction) {
         console.warn('No check function defined for script checks!');
         return false;
     }
 
-    const checkResult = value.checkFunction({
-        answer,
+    const name = scriptCheckNameMap.value.get(check)!;
+
+    const result = value.checkFunction({
         name,
+        answer,
         answers: scriptAnswers.value,
     });
 
-    if (checkResult === true) {
+    if (result === true) {
         scriptAnswers.value[name] = answer;
     } else {
         delete scriptAnswers.value[name];
     }
 
-    return checkResult;
-};
-
-const scriptClearFunction = (name: string) => {
-    delete scriptAnswers.value[name];
-};
-
-const scriptCheckNameMap = new Map<
-    ProseElement<typeof problemCheckSchema>,
-    string
->();
-for (const checkElement of value.checkElements) {
-    if (checkElement.data.script) {
-        scriptCheckNameMap.set(checkElement, checkElement.data.script);
-    }
+    return result;
 }
 
-const scriptAnswers = ref<Record<string, string | undefined>>({});
+function scriptClearFunction(check: CheckProseElement) {
+    const name = scriptCheckNameMap.value.get(check);
+    if (name) delete scriptAnswers.value[name];
+}
 </script>
 
 <template>
@@ -61,22 +127,20 @@ const scriptAnswers = ref<Record<string, string | undefined>>({});
                 p-(--proseAsideWidth)"
         >
             <Check
-                v-for="check of value.checkElements"
-                :check
+                v-for="check in allChecks"
+                :key="getCheckId(check)"
+                :check="check"
+                v-show="isVisible(check)"
                 :script="
                     check.data.script
                         ? {
-                              check: (answer: string | undefined) => {
-                                  const name = scriptCheckNameMap.get(check)!;
-                                  return scriptCheckFunction(answer, name);
-                              },
-                              clear: () => {
-                                  const name = scriptCheckNameMap.get(check)!;
-                                  scriptClearFunction(name);
-                              },
+                              check: (answer) =>
+                                  scriptCheckFunction(check, answer),
+                              clear: () => scriptClearFunction(check),
                           }
                         : undefined
                 "
+                @status-change="(status) => setStatus(check, status)"
             />
         </div>
     </ProblemExpander>

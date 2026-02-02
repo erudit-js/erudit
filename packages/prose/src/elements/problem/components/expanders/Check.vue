@@ -1,4 +1,4 @@
-<script lang="ts" setup>
+<script setup lang="ts">
 import { useTemplateRef, ref, watch } from 'vue';
 import type { ProseElement } from '@jsprose/core';
 
@@ -11,6 +11,7 @@ import { useProseContext } from '../../../../app/index.js';
 import { useProblemPhrase } from '../../composables/phrase.js';
 
 type CheckStatus = 'default' | 'correct' | 'wrong';
+
 type CheckState = {
     icon: string;
     iconClass?: string;
@@ -25,6 +26,10 @@ const { check, script } = defineProps<{
         check: (answer: string | undefined) => boolean;
         clear: () => void;
     };
+}>();
+
+const emit = defineEmits<{
+    (event: 'status-change', status: CheckStatus): void;
 }>();
 
 const states: Record<CheckStatus, CheckState> = {
@@ -56,32 +61,34 @@ const formatText = useFormatText();
 const { EruditIcon, EruditTransition } = useProseContext();
 const phrase = await useProblemPhrase();
 
-const answerInputElement = useTemplateRef('answer');
-const answerInput = ref<string>('');
+const answerInputElement = useTemplateRef<HTMLInputElement>('answer');
+const answerInput = ref('');
 const lastCheckedInput = ref<string | undefined | null>(null);
 
 watch(answerInput, () => {
     state.value = 'default';
     lastCheckedInput.value = null;
     script?.clear();
+    emit('status-change', 'default');
 });
 
 function doCheck() {
-    let newInput = answerInput.value.trim().replace(/\s+/g, ' ') || undefined;
+    const newInput = answerInput.value.trim().replace(/\s+/g, ' ') || undefined;
 
-    if (newInput === lastCheckedInput.value) {
-        return;
-    }
+    if (newInput === lastCheckedInput.value) return;
 
     lastCheckedInput.value = newInput;
 
     if (script) {
-        const isCorrect = script.check(newInput);
-        state.value = isCorrect ? 'correct' : 'wrong';
+        const ok = script.check(newInput);
+        state.value = ok ? 'correct' : 'wrong';
+        emit('status-change', state.value);
         return;
     }
 
     state.value = checkValue(newInput, check.data) ? 'correct' : 'wrong';
+
+    emit('status-change', state.value);
 }
 </script>
 
@@ -97,14 +104,14 @@ function doCheck() {
                 {{ formatText(check.data.label ?? phrase.action_answer) + ':' }}
             </span>
         </div>
+
         <form class="flex" @submit.prevent="doCheck">
             <input
                 ref="answer"
-                type="text"
-                name="answer"
                 v-model="answerInput"
-                :placeholder="check.data.placeholder"
+                type="text"
                 autocomplete="off"
+                :placeholder="check.data.placeholder"
                 :class="[
                     `bg-bg-main text-main-sm relative z-10 min-w-0 flex-1
                     rounded rounded-tr-none rounded-br-none border border-r-0
@@ -112,6 +119,7 @@ function doCheck() {
                     states[state].inputClass,
                 ]"
             />
+
             <button
                 type="submit"
                 :class="[

@@ -169,112 +169,230 @@ describe('Problem Check', () => {
 
             const scriptCheck = asEruditRaw(<ProblemCheck script="check1" />);
             expect(scriptCheck.data.script).toBe('check1');
+
+            const undefinedAnswerCheck = asEruditRaw(
+                <ProblemCheck answer={undefined} />,
+            );
+            expect(undefinedAnswerCheck.data.answers).toEqual([undefined]);
+
+            const multipleWithUndefinedCheck = asEruditRaw(
+                <ProblemCheck answers={['foo', undefined, 42]} />,
+            );
+            expect(multipleWithUndefinedCheck.data.answers).toEqual([
+                'foo',
+                undefined,
+                '42',
+            ]);
+        });
+    });
+
+    it('should allow nested checks', () => {
+        isolateProse(() => {
+            prepareRegistry();
+
+            const nestedCheck = asEruditRaw(
+                <ProblemCheck answer="foo">
+                    <ProblemCheck answer="bar" />
+                </ProblemCheck>,
+            );
+
+            expect(isRawElement(nestedCheck, problemCheckSchema)).toBe(true);
+            expect(nestedCheck.children).toHaveLength(1);
+            expect(
+                isRawElement(nestedCheck.children![0], problemCheckSchema),
+            ).toBe(true);
         });
     });
 });
 
 describe('checkValue', () => {
-    it('should check single answer', () => {
-        expect(checkValue('foo', { answers: ['foo'] })).toBe(true);
-        expect(checkValue('bar', { answers: ['foo'] })).toBe(false);
-        expect(checkValue(undefined, { answers: ['foo'] })).toBe(false);
-    });
+    describe('single and multiple answers', () => {
+        const cases = [
+            { input: 'foo', answers: ['foo'], expected: true },
+            { input: 'bar', answers: ['foo'], expected: false },
+            { input: undefined, answers: ['foo'], expected: false },
 
-    it('should check multiple answers', () => {
-        expect(checkValue('foo', { answers: ['foo', 'bar'] })).toBe(true);
-        expect(checkValue('bar', { answers: ['foo', 'bar'] })).toBe(true);
-        expect(checkValue('baz', { answers: ['foo', 'bar'] })).toBe(false);
-    });
+            { input: 'foo', answers: ['foo', 'bar'], expected: true },
+            { input: 'bar', answers: ['foo', 'bar'], expected: true },
+            { input: 'baz', answers: ['foo', 'bar'], expected: false },
+        ];
 
-    it('should check regex answer', () => {
-        const regexData = {
-            answers: [{ pattern: '^[0-9]+$', flags: '' }],
-        };
-        expect(checkValue('123', regexData)).toBe(true);
-        expect(checkValue('abc', regexData)).toBe(false);
-
-        const regexFlagsData = {
-            answers: [{ pattern: 'foo', flags: 'i' }],
-        };
-        expect(checkValue('FoO', regexFlagsData)).toBe(true);
-    });
-
-    it('should check set', () => {
-        const setData = {
-            set: {
-                separator: ',',
-                values: [['1'], ['2']],
+        it.each(cases)(
+            'checks input $input against answers $answers',
+            ({ input, answers, expected }) => {
+                expect(checkValue(input, { answers })).toBe(expected);
             },
-        };
-
-        expect(checkValue('1, 2', setData)).toBe(true);
-        expect(checkValue('2, 1', setData)).toBe(true);
-        expect(checkValue('1, 1', setData)).toBe(false); // Duplicates not allowed in set def unless defined
-        expect(checkValue('1, 3', setData)).toBe(false);
-        expect(checkValue('1, 2, 3', setData)).toBe(false);
+        );
     });
 
-    it('should check set with duplicates allowed', () => {
-        const setData = {
-            set: {
-                separator: ',',
-                values: [['1'], ['1'], ['2']],
+    describe('undefined and empty normalization', () => {
+        const cases = [
+            { input: undefined, answers: [undefined], expected: true },
+            { input: '', answers: [undefined], expected: true },
+            { input: '   ', answers: [undefined], expected: true },
+            { input: 'foo', answers: [undefined], expected: false },
+        ];
+
+        it.each(cases)(
+            'checks input $input against answers $answers',
+            ({ input, answers, expected }) => {
+                expect(checkValue(input, { answers })).toBe(expected);
             },
-        };
-        expect(checkValue('1, 2, 1', setData)).toBe(true);
-        expect(checkValue('1, 1', setData)).toBe(false);
-        expect(checkValue('1, 3', setData)).toBe(false);
+        );
+
+        it('normalizes internal whitespace', () => {
+            expect(
+                checkValue('hello    world', { answers: ['hello world'] }),
+            ).toBe(true);
+        });
     });
 
-    it('should check set with alternatives', () => {
-        const setData = {
-            set: {
-                separator: ',',
-                values: [['1'], ['2', '3']],
-            },
-        };
-        expect(checkValue('1, 2', setData)).toBe(true);
-        expect(checkValue('1, 3', setData)).toBe(true);
-        expect(checkValue('3, 1', setData)).toBe(true);
-        expect(checkValue('2, 2', setData)).toBe(false);
+    describe('regex answers', () => {
+        it('matches regex patterns', () => {
+            expect(
+                checkValue('123', {
+                    answers: [{ pattern: '^[0-9]+$', flags: '' }],
+                }),
+            ).toBe(true);
+
+            expect(
+                checkValue('abc', {
+                    answers: [{ pattern: '^[0-9]+$', flags: '' }],
+                }),
+            ).toBe(false);
+        });
+
+        it('supports regex flags', () => {
+            expect(
+                checkValue('FoO', {
+                    answers: [{ pattern: 'foo', flags: 'i' }],
+                }),
+            ).toBe(true);
+        });
+
+        it('does not match undefined or empty input', () => {
+            const data = {
+                answers: [{ pattern: '.*', flags: '' }],
+            };
+
+            expect(checkValue(undefined, data)).toBe(false);
+            expect(checkValue('', data)).toBe(false);
+            expect(checkValue('foo', data)).toBe(true);
+        });
+
+        it('fails safely on invalid regex', () => {
+            expect(
+                checkValue('test', {
+                    answers: [{ pattern: '[', flags: '' }],
+                }),
+            ).toBe(false);
+        });
     });
 
-    it('should check set with regex', () => {
-        const setData = {
-            set: {
-                separator: ',',
-                values: [['1'], [{ pattern: '^[a-z]+$', flags: '' }]],
-            },
-        };
-        expect(checkValue('1, abc', setData)).toBe(true);
-        expect(checkValue('xyz, 1', setData)).toBe(true);
-        expect(checkValue('1, 123', setData)).toBe(false);
+    describe('set matching', () => {
+        it('matches unordered sets', () => {
+            const data = {
+                set: {
+                    separator: ',',
+                    values: [['1'], ['2']],
+                },
+            };
+
+            expect(checkValue('1, 2', data)).toBe(true);
+            expect(checkValue('2, 1', data)).toBe(true);
+        });
+
+        it('rejects mismatched length or values', () => {
+            const data = {
+                set: {
+                    separator: ',',
+                    values: [['1'], ['2']],
+                },
+            };
+
+            expect(checkValue('1, 1', data)).toBe(false);
+            expect(checkValue('1, 3', data)).toBe(false);
+            expect(checkValue('1, 2, 3', data)).toBe(false);
+        });
+
+        it('supports duplicate values when explicitly defined', () => {
+            const data = {
+                set: {
+                    separator: ',',
+                    values: [['1'], ['1'], ['2']],
+                },
+            };
+
+            expect(checkValue('1, 2, 1', data)).toBe(true);
+            expect(checkValue('1, 1', data)).toBe(false);
+        });
+
+        it('supports alternatives per position', () => {
+            const data = {
+                set: {
+                    separator: ',',
+                    values: [['1'], ['2', '3']],
+                },
+            };
+
+            expect(checkValue('1, 2', data)).toBe(true);
+            expect(checkValue('1, 3', data)).toBe(true);
+            expect(checkValue('3, 1', data)).toBe(true);
+            expect(checkValue('2, 2', data)).toBe(false);
+        });
+
+        it('supports regex values', () => {
+            const data = {
+                set: {
+                    separator: ',',
+                    values: [['1'], [{ pattern: '^[a-z]+$', flags: '' }]],
+                },
+            };
+
+            expect(checkValue('1, abc', data)).toBe(true);
+            expect(checkValue('xyz, 1', data)).toBe(true);
+            expect(checkValue('1, 123', data)).toBe(false);
+        });
+
+        it('rejects undefined or empty input', () => {
+            const data = {
+                set: {
+                    separator: ',',
+                    values: [['1'], ['2']],
+                },
+            };
+
+            expect(checkValue(undefined, data)).toBe(false);
+            expect(checkValue('', data)).toBe(false);
+            expect(checkValue('   ', data)).toBe(false);
+        });
+
+        it('normalizes spacing around separators', () => {
+            const data = {
+                set: {
+                    separator: ',',
+                    values: [['1'], ['2']],
+                },
+            };
+
+            expect(checkValue(' 1 ,  2 ', data)).toBe(true);
+        });
     });
 
-    it('should normalise input', () => {
-        expect(
-            checkValue('  foo  ', {
-                answers: ['foo'],
-            }),
-        ).toBe(true);
-
-        const setData = {
-            set: {
-                separator: ',',
-                values: [['1'], ['2']],
-            },
-        };
-        expect(checkValue(' 1 ,  2 ', setData)).toBe(true);
+    describe('numeric strings', () => {
+        it.each(['42', '42.5', '0'])('accepts %s', (value) => {
+            expect(checkValue(value, { answers: [value] })).toBe(true);
+        });
     });
 });
 
 describe('validateProblemContent', () => {
-    it('should throw when invalid child is present', () => {
+    it('throws on invalid child', () => {
         isolateProse(() => {
             prepareRegistry();
 
             expect(() => {
-                const problemContent = asEruditRaw(
+                const content = asEruditRaw(
                     <>
                         <ProblemDescription>
                             <P>Valid description</P>
@@ -282,32 +400,38 @@ describe('validateProblemContent', () => {
                         <P>Invalid paragraph</P>
                     </>,
                 );
-                validateProblemContent('Foo', problemContent.children as any);
+
+                validateProblemContent('Foo', content.children as any);
             }).toThrow(ProseError);
         });
     });
 
-    it('should not throw when all children are valid', () => {
+    it('accepts valid problem content', () => {
         isolateProse(() => {
             prepareRegistry();
+
             expect(() => {
-                const problemContent = asEruditRaw(
+                const content = asEruditRaw(
                     <>
                         <ProblemDescription>
                             <P>Valid description</P>
                         </ProblemDescription>
+
                         <ProblemAnswer>
-                            <ProblemSection title="Answer Section">
+                            <ProblemSection title="Answer">
                                 <P>Answer content</P>
                             </ProblemSection>
                         </ProblemAnswer>
+
                         <ProblemHint>
-                            <P>Valid hint</P>
+                            <P>Hint</P>
                         </ProblemHint>
-                        <ProblemCheck hint="Foo Hint" answer="42" />
+
+                        <ProblemCheck hint="Hint" answer="42" />
                     </>,
                 );
-                validateProblemContent('Foo', problemContent.children as any);
+
+                validateProblemContent('Foo', content.children as any);
             }).not.toThrow();
         });
     });
