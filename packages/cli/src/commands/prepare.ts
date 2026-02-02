@@ -1,4 +1,3 @@
-import { rmSync } from 'node:fs';
 import { defineCommand } from 'citty';
 import type { EruditMode } from '@erudit-js/core/mode';
 
@@ -13,11 +12,10 @@ import { spawnNuxt } from '../shared/nuxt.js';
 import { CONFIG } from '../config.js';
 import { version } from '../inject.js';
 
-export const build = defineCommand({
+export const prepare = defineCommand({
     meta: {
-        name: 'build',
-        description:
-            'Builds Erudit project that can be launched for fast content writing',
+        name: 'prepare',
+        description: 'Creates necessary files for Erudit project',
     },
     args: {
         ...projectPathArg,
@@ -32,23 +30,17 @@ export const build = defineCommand({
             absProjectPath,
         });
 
-        console.log('Building Erudit Nuxt Layer...');
+        console.log('Preparing Erudit Nuxt Layer...');
         await spawnNuxt({
-            command: 'build',
+            command: 'prepare',
             absProjectPath,
             env: {
-                ERUDIT_COMMAND: 'build',
+                ERUDIT_COMMAND: 'prepare',
                 NUXT_ERUDIT_PATH: CONFIG.ERUDIT_PATH,
                 NUXT_PROJECT_PATH: absProjectPath,
                 NUXT_PUBLIC_ERUDIT_MODE: <EruditMode>'write',
                 NUXT_PUBLIC_ERUDIT_VERSION: version,
             },
-        });
-
-        // Just fucking remove @jsprose because not a single fucking option inside Nuxt/Nitro allows NOT TO bundle it!
-        rmSync(`${absProjectPath}/.output/server/node_modules/@jsprose`, {
-            recursive: true,
-            force: true,
         });
     },
 });

@@ -1,7 +1,7 @@
 import { spawn } from 'node:child_process';
 
 interface NuxtConfig {
-    command: 'dev' | 'build' | 'generate';
+    command: 'prepare' | 'dev' | 'build' | 'generate';
     absProjectPath: string;
     restArgs?: string | string[];
     env?: Record<string, string>;

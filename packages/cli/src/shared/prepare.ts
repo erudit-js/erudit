@@ -24,6 +24,43 @@ export async function prepareProject({
 
     mkdirSync(nuxtLayerPath, { recursive: true });
 
+    if (!existsSync(`${absProjectPath}/erudit.config.ts`)) {
+        writeFileSync(
+            `${absProjectPath}/erudit.config.ts`,
+            `export default defineEruditConfig({\n  /* Adjust Erudit to your needs here... */\n});`,
+        );
+    }
+
+    if (!existsSync(`${absProjectPath}/tsconfig.json`)) {
+        writeFileSync(
+            `${absProjectPath}/tsconfig.json`,
+            JSON.stringify(
+                {
+                    files: [],
+                    references: [
+                        {
+                            path: './.erudit/tsconfig.erudit.json',
+                        },
+                        {
+                            path: './.erudit/tsconfig.nuxt.app.json',
+                        },
+                        {
+                            path: './.erudit/tsconfig.nuxt.server.json',
+                        },
+                        {
+                            path: './.erudit/tsconfig.nuxt.shared.json',
+                        },
+                        {
+                            path: './.erudit/tsconfig.nuxt.node.json',
+                        },
+                    ],
+                },
+                null,
+                2,
+            ),
+        );
+    }
+
     writeFileSync(
         `${nuxtLayerPath}/nuxt.config.ts`,
         `

@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+const runtimeConfig = useRuntimeConfig();
 const phrase = await usePhrases('erudit');
 </script>
 
@@ -8,6 +9,6 @@ const phrase = await usePhrases('erudit');
         to="https://github.com/erudit-js/erudit"
         target="_blank"
         :main="phrase.erudit"
-        :secondary="ERUDIT.config.version"
+        :secondary="runtimeConfig.public.eruditVersion"
     />
 </template>

@@ -24,7 +24,7 @@
         }
     },
     "scripts": {
-        "pretty": "prettier --write .",
+        "format": "prettier --write .",
         "version": "bun run scripts/version.ts",
         "build": "bun --workspaces run build",
         "publish": "bun run scripts/publish",

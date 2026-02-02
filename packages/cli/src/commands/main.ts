@@ -7,6 +7,7 @@ import { logCommand } from '../shared/logCommand.js';
 import { CONFIG } from '../config.js';
 
 // Sub commands
+import { prepare } from './prepare.js';
 import { dev } from './dev.js';
 import { build } from './build.js';
 import { launch } from './launch.js';
@@ -20,6 +21,7 @@ export const main = defineCommand({
         version,
     },
     subCommands: {
+        prepare,
         dev,
         build,
         launch,
