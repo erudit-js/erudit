@@ -8,15 +8,15 @@ import ProblemHeader from './ProblemHeader.vue';
 import ProblemContent from './ProblemContent.vue';
 
 const { element } = defineProps<{
-    element: ProseElement<typeof problemSchema>;
+  element: ProseElement<typeof problemSchema>;
 }>();
 </script>
 
 <template>
-    <Block :element>
-        <ProblemContainer>
-            <ProblemHeader :info="element.data.info" />
-            <ProblemContent :element :initialElements="element.children" />
-        </ProblemContainer>
-    </Block>
+  <Block :element>
+    <ProblemContainer>
+      <ProblemHeader :info="element.data.info" />
+      <ProblemContent :element :initialElements="element.children" />
+    </ProblemContainer>
+  </Block>
 </template>

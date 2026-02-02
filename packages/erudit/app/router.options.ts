@@ -1,5 +1,5 @@
 export default {
-    scrollBehavior() {
-        return false;
-    },
+  scrollBehavior() {
+    return false;
+  },
 };

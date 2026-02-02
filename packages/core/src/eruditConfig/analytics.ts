@@ -1,14 +1,14 @@
 export type YandexAnalytics = {
-    metricsId?: string;
-    verification?: string;
+  metricsId?: string;
+  verification?: string;
 };
 
 export type GoogleAnalytics = {
-    gtag?: string;
-    verification?: string;
+  gtag?: string;
+  verification?: string;
 };
 
 export interface EruditAnalytics {
-    google?: GoogleAnalytics;
-    yandex?: YandexAnalytics;
+  google?: GoogleAnalytics;
+  yandex?: YandexAnalytics;
 }

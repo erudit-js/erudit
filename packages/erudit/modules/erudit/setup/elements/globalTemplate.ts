@@ -5,41 +5,41 @@ import { addTemplate } from 'nuxt/kit';
 import type { ElementData } from './shared';
 
 export function createGlobalTemplate(nuxt: Nuxt, elementsData: ElementData[]) {
-    const defaultImportName = (type: 'core' | 'global', elementName: string) =>
-        `${type}_${elementName}`;
+  const defaultImportName = (type: 'core' | 'global', elementName: string) =>
+    `${type}_${elementName}`;
 
-    const cores: Record<string, string> = {};
-    const globals: Record<string, string> = {};
+  const cores: Record<string, string> = {};
+  const globals: Record<string, string> = {};
 
-    for (const elementData of elementsData) {
-        cores[defaultImportName('core', elementData.name)] =
-            elementData.absCorePath;
+  for (const elementData of elementsData) {
+    cores[defaultImportName('core', elementData.name)] =
+      elementData.absCorePath;
 
-        if (existsSync(elementData.absDirectory + '/_global.ts')) {
-            globals[defaultImportName('global', elementData.name)] =
-                elementData.absDirectory + '/_global.ts';
-        }
+    if (existsSync(elementData.absDirectory + '/_global.ts')) {
+      globals[defaultImportName('global', elementData.name)] =
+        elementData.absDirectory + '/_global.ts';
     }
+  }
 
-    const template = `
+  const template = `
 import { PROSE_REGISTRY } from '@jsprose/core';
 import { jsx, jsxs, Fragment } from '@jsprose/core/jsx-runtime';
 import type { EruditProseCoreElement } from '@erudit-js/prose';
 import { defineProblemScript } from '@erudit-js/prose/elements/problem/problemScript';
 
 ${Object.entries(cores)
-    .map(
-        ([importName, importPath]) =>
-            `import ${importName} from '${importPath.replace(/\.(ts|js)$/, '')}';`,
-    )
-    .join('\n')}
+  .map(
+    ([importName, importPath]) =>
+      `import ${importName} from '${importPath.replace(/\.(ts|js)$/, '')}';`,
+  )
+  .join('\n')}
 
 ${Object.entries(globals)
-    .map(
-        ([importName, importPath]) =>
-            `import ${importName} from '${importPath.replace(/\.(ts|js)$/, '')}';`,
-    )
-    .join('\n')}
+  .map(
+    ([importName, importPath]) =>
+      `import ${importName} from '${importPath.replace(/\.(ts|js)$/, '')}';`,
+  )
+  .join('\n')}
 
 const coreElements: EruditProseCoreElement[] = [
     ${Object.keys(cores).join(',\n    ')}
@@ -47,8 +47,8 @@ const coreElements: EruditProseCoreElement[] = [
 
 const elementsGlobals = {
     ${Object.keys(globals)
-        .map((key) => `...${key}`)
-        .join(',\n    ')}
+      .map((key) => `...${key}`)
+      .join(',\n    ')}
 }
 
 export function registerProseGlobals() {
@@ -70,13 +70,13 @@ export function registerProseGlobals() {
 }
     `.trim();
 
-    addTemplate({
-        write: true,
-        filename: '#erudit/prose/global.ts',
-        getContents: () => template,
-    });
+  addTemplate({
+    write: true,
+    filename: '#erudit/prose/global.ts',
+    getContents: () => template,
+  });
 
-    const alias = (nuxt.options.alias ||= {});
-    alias['#erudit/prose/global'] =
-        nuxt.options.buildDir + `/#erudit/prose/global.ts`;
+  const alias = (nuxt.options.alias ||= {});
+  alias['#erudit/prose/global'] =
+    nuxt.options.buildDir + `/#erudit/prose/global.ts`;
 }

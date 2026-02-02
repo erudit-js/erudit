@@ -1,35 +1,35 @@
 export default defineEventHandler(async () => {
-    const routes: string[] = [];
+  const routes: string[] = [];
 
-    //
-    // Index
-    //
+  //
+  // Index
+  //
 
-    routes.push(PAGES.index);
+  routes.push(PAGES.index);
 
-    //
-    // Contributors
-    //
+  //
+  // Contributors
+  //
 
-    if (ERUDIT.config.public.contributors?.enabled) {
-        routes.push(PAGES.contributors);
+  if (ERUDIT.config.public.contributors?.enabled) {
+    routes.push(PAGES.contributors);
 
-        const dbContributors = await ERUDIT.db.query.contributors.findMany({
-            columns: { contributorId: true },
-        });
+    const dbContributors = await ERUDIT.db.query.contributors.findMany({
+      columns: { contributorId: true },
+    });
 
-        for (const dbContributor of dbContributors) {
-            routes.push(PAGES.contributor(dbContributor.contributorId));
-        }
+    for (const dbContributor of dbContributors) {
+      routes.push(PAGES.contributor(dbContributor.contributorId));
     }
+  }
 
-    //
-    // Sponsors
-    //
+  //
+  // Sponsors
+  //
 
-    if (ERUDIT.config.public.sponsors?.enabled) {
-        routes.push(PAGES.sponsors);
-    }
+  if (ERUDIT.config.public.sponsors?.enabled) {
+    routes.push(PAGES.sponsors);
+  }
 
-    return routes;
+  return routes;
 });

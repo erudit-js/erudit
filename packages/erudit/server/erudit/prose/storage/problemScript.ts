@@ -4,20 +4,20 @@ import type { subProblemSchema } from '@erudit-js/prose/elements/problem/problem
 import { createProblemScriptStorage as _createProblemScriptStorage } from '@erudit-js/prose/elements/problem/storage';
 
 export async function createProblemScriptStorage(
-    element:
-        | ProseElement<typeof problemSchema>
-        | ProseElement<typeof subProblemSchema>,
-    storage: GenericStorage,
+  element:
+    | ProseElement<typeof problemSchema>
+    | ProseElement<typeof subProblemSchema>,
+  storage: GenericStorage,
 ) {
-    if (!element.storageKey) {
-        return;
-    }
+  if (!element.storageKey) {
+    return;
+  }
 
-    const runtimeConfig = useRuntimeConfig();
+  const runtimeConfig = useRuntimeConfig();
 
-    storage[element.storageKey!] = _createProblemScriptStorage(
-        ERUDIT.paths.project(),
-        runtimeConfig.app.baseURL,
-        element.storageKey.replace('problemScript:', ''),
-    );
+  storage[element.storageKey!] = _createProblemScriptStorage(
+    ERUDIT.paths.project(),
+    runtimeConfig.app.baseURL,
+    element.storageKey.replace('problemScript:', ''),
+  );
 }

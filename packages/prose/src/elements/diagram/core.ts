@@ -1,10 +1,10 @@
 import {
-    defineRegistryItem,
-    defineSchema,
-    ensureRawElement,
-    ensureTagChildren,
-    textSchema,
-    type TagChildren,
+  defineRegistryItem,
+  defineSchema,
+  ensureRawElement,
+  ensureTagChildren,
+  textSchema,
+  type TagChildren,
 } from '@jsprose/core';
 
 import { captionSchema } from '../caption/core.js';
@@ -13,38 +13,38 @@ import { defineEruditProseCoreElement } from '../../coreElement.js';
 import { photoswipeDependency } from '../../shared/photoswipe.js';
 
 export const diagramSchema = defineSchema({
-    name: 'diagram',
-    type: 'block',
-    linkable: true,
+  name: 'diagram',
+  type: 'block',
+  linkable: true,
 })<{
-    Data: undefined;
-    Storage: undefined;
-    Children: [typeof textSchema] | [typeof textSchema, typeof captionSchema];
+  Data: undefined;
+  Storage: undefined;
+  Children: [typeof textSchema] | [typeof textSchema, typeof captionSchema];
 }>();
 
 export const Diagram = defineEruditTag({
-    tagName: 'Diagram',
-    schema: diagramSchema,
+  tagName: 'Diagram',
+  schema: diagramSchema,
 })<TagChildren>(({ element, tagName, children }) => {
-    ensureTagChildren(tagName, children, [textSchema, captionSchema]);
+  ensureTagChildren(tagName, children, [textSchema, captionSchema]);
 
-    ensureRawElement(children[0], textSchema);
-    element.children = [children[0]];
+  ensureRawElement(children[0], textSchema);
+  element.children = [children[0]];
 
-    if (children[1]) {
-        ensureRawElement(children[1], captionSchema);
-        element.children = [children[0], children[1]];
-    }
+  if (children[1]) {
+    ensureRawElement(children[1], captionSchema);
+    element.children = [children[0], children[1]];
+  }
 });
 
 export const diagramRegistryItem = defineRegistryItem({
-    schema: diagramSchema,
-    tags: [Diagram],
+  schema: diagramSchema,
+  tags: [Diagram],
 });
 
 export default defineEruditProseCoreElement({
-    registryItem: diagramRegistryItem,
-    dependencies: {
-        ...photoswipeDependency,
-    },
+  registryItem: diagramRegistryItem,
+  dependencies: {
+    ...photoswipeDependency,
+  },
 });

@@ -1,47 +1,47 @@
 {
-    "type": "module",
-    "name": "@erudit-js/prose",
-    "version": "4.0.0-dev.5",
-    "description": "📝 JSX prose subsystem for Erudit sites",
-    "main": "./dist/index.js",
-    "types": "./dist/index.d.ts",
-    "exports": {
-        ".": {
-            "import": "./dist/index.js",
-            "types": "./dist/index.d.ts"
-        },
-        "./app": {
-            "import": "./dist/app/index.js",
-            "types": "./dist/app/index.d.ts"
-        },
-        "./elements/*": {
-            "import": "./dist/elements/*.js",
-            "types": "./dist/elements/*.d.ts"
-        },
-        "./types": "./types.d.ts"
+  "type": "module",
+  "name": "@erudit-js/prose",
+  "version": "4.0.0-dev.5",
+  "description": "📝 JSX prose subsystem for Erudit sites",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
     },
-    "files": [
-        "dist",
-        "types.d.ts"
-    ],
-    "license": "MIT",
-    "scripts": {
-        "build": "bun run script/build.ts",
-        "dev": "bun run script/dev.ts",
-        "test": "bun vitest run",
-        "prepack": "bun run build"
+    "./app": {
+      "import": "./dist/app/index.js",
+      "types": "./dist/app/index.d.ts"
     },
-    "dependencies": {
-        "@erudit-js/core": "workspace:*",
-        "@floating-ui/vue": "^1.1.10",
-        "@jsprose/core": "^1.0.0",
-        "image-size": "^2.0.2",
-        "katex": "^0.16.28",
-        "photoswipe": "^5.4.4",
-        "vue": "^3.5.27"
+    "./elements/*": {
+      "import": "./dist/elements/*.js",
+      "types": "./dist/elements/*.d.ts"
     },
-    "devDependencies": {
-        "glob": "11.0.3",
-        "oxc-transform": "0.94.0"
-    }
+    "./types": "./types.d.ts"
+  },
+  "files": [
+    "dist",
+    "types.d.ts"
+  ],
+  "license": "MIT",
+  "scripts": {
+    "build": "bun run script/build.ts",
+    "dev": "bun run script/dev.ts",
+    "test": "bun vitest run",
+    "prepack": "bun run build"
+  },
+  "dependencies": {
+    "@erudit-js/core": "workspace:*",
+    "@floating-ui/vue": "^1.1.10",
+    "@jsprose/core": "^1.0.0",
+    "image-size": "^2.0.2",
+    "katex": "^0.16.28",
+    "photoswipe": "^5.4.4",
+    "vue": "^3.5.27"
+  },
+  "devDependencies": {
+    "glob": "11.0.3",
+    "oxc-transform": "0.94.0"
+  }
 }

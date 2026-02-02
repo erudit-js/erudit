@@ -1,3 +1,3 @@
 export default {
-    math: String.raw,
+  math: String.raw,
 };

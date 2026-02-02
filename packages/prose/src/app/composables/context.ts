@@ -6,24 +6,24 @@ import type { FormatText } from '@erudit-js/core/formatText';
 import type { AppElement } from '../appElement.js';
 
 export interface ProseContext {
-    mode: EruditMode;
-    languageCode: EruditLanguageCode;
-    appElements: Record<string, AppElement>;
-    formatText: FormatText;
-    pathUrl: string;
-    baseUrl: string;
-    hashUrl: Ref<string | undefined>;
-    eruditIcons: Record<string, string>;
-    EruditTransition: Component;
-    EruditIcon: Component;
-    EruditLink: Component;
-    setPreview: (previewRequest: any) => void;
-    closePreview: () => void;
-    loadingSvg: string;
+  mode: EruditMode;
+  languageCode: EruditLanguageCode;
+  appElements: Record<string, AppElement>;
+  formatText: FormatText;
+  pathUrl: string;
+  baseUrl: string;
+  hashUrl: Ref<string | undefined>;
+  eruditIcons: Record<string, string>;
+  EruditTransition: Component;
+  EruditIcon: Component;
+  EruditLink: Component;
+  setPreview: (previewRequest: any) => void;
+  closePreview: () => void;
+  loadingSvg: string;
 }
 
 export const proseContextSymbol = Symbol() as InjectionKey<ProseContext>;
 
 export function useProseContext() {
-    return inject(proseContextSymbol)!;
+  return inject(proseContextSymbol)!;
 }

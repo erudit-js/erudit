@@ -6,61 +6,61 @@ import { defineResolveStep } from './resolveStep.js';
 import type { EruditRawElement } from './rawElement.js';
 
 export type Toc = {
-    title?: string;
-    add?: boolean;
+  title?: string;
+  add?: boolean;
 };
 
 export type ObjPropToc = {
-    /** Show element in the table of contents */
-    toc?: boolean | string;
+  /** Show element in the table of contents */
+  toc?: boolean | string;
 };
 
 export type ObjRawElementToc = {
-    toc?: Toc;
+  toc?: Toc;
 };
 
 export function finalizeToc(
-    processTagArgs: EruditProcessTagArgs,
+  processTagArgs: EruditProcessTagArgs,
 ): Toc | undefined {
-    const propToc = processTagArgs.props.toc;
+  const propToc = processTagArgs.props.toc;
 
-    if (propToc === false) {
-        return undefined;
-    }
+  if (propToc === false) {
+    return undefined;
+  }
 
-    if (propToc === true) {
-        const title = finalizeTocTitle(processTagArgs);
-        return { title };
-    }
+  if (propToc === true) {
+    const title = finalizeTocTitle(processTagArgs);
+    return { title };
+  }
 
-    if (typeof propToc === 'string') {
-        const manualTocTitle = finalizeTocTitle(processTagArgs);
-        return { title: manualTocTitle };
-    }
+  if (typeof propToc === 'string') {
+    const manualTocTitle = finalizeTocTitle(processTagArgs);
+    return { title: manualTocTitle };
+  }
 
-    if (processTagArgs.element.toc) {
-        if (processTagArgs.element.toc.add) {
-            const tocTitle = finalizeTocTitle(processTagArgs);
-            return { title: tocTitle };
-        }
+  if (processTagArgs.element.toc) {
+    if (processTagArgs.element.toc.add) {
+      const tocTitle = finalizeTocTitle(processTagArgs);
+      return { title: tocTitle };
     }
+  }
 }
 
 function finalizeTocTitle(
-    processTagArgs: EruditProcessTagArgs,
+  processTagArgs: EruditProcessTagArgs,
 ): string | undefined {
-    const title =
-        (typeof processTagArgs.props.toc === 'string'
-            ? processTagArgs.props.toc.trim()
-            : '') ||
-        processTagArgs.element.toc?.title?.trim() ||
-        processTagArgs.element.title?.trim();
+  const title =
+    (typeof processTagArgs.props.toc === 'string'
+      ? processTagArgs.props.toc.trim()
+      : '') ||
+    processTagArgs.element.toc?.title?.trim() ||
+    processTagArgs.element.title?.trim();
 
-    if (title) {
-        return title;
-    }
+  if (title) {
+    return title;
+  }
 
-    throw new ProseError('Unable to finalize TOC title!');
+  throw new ProseError('Unable to finalize TOC title!');
 }
 
 //
@@ -68,41 +68,41 @@ function finalizeTocTitle(
 //
 
 export type ResolvedTocHeading = {
-    type: 'heading';
-    level: 1 | 2 | 3;
-    title: string;
-    elementId: string;
-    children: ResolvedTocItem[];
+  type: 'heading';
+  level: 1 | 2 | 3;
+  title: string;
+  elementId: string;
+  children: ResolvedTocItem[];
 };
 
 export type ResolvedTocElement = {
-    type: 'element';
-    schemaName: string;
-    title: string;
-    elementId: string;
+  type: 'element';
+  schemaName: string;
+  title: string;
+  elementId: string;
 };
 
 export type ResolvedTocItem = ResolvedTocHeading | ResolvedTocElement;
 
 export const tocItemStep = defineResolveStep(({ rawElement, proseElement }) => {
-    if (rawElement.toc?.title && proseElement.id) {
-        if (rawElement.schemaName === headingSchema.name) {
-            const tocItem: ResolvedTocHeading = {
-                type: 'heading',
-                level: rawElement.data.level,
-                title: rawElement.toc.title,
-                elementId: proseElement.id,
-                children: [],
-            };
-            return tocItem;
-        } else {
-            const tocItem: ResolvedTocElement = {
-                type: 'element',
-                schemaName: rawElement.schemaName,
-                title: rawElement.toc.title,
-                elementId: proseElement.id,
-            };
-            return tocItem;
-        }
+  if (rawElement.toc?.title && proseElement.id) {
+    if (rawElement.schemaName === headingSchema.name) {
+      const tocItem: ResolvedTocHeading = {
+        type: 'heading',
+        level: rawElement.data.level,
+        title: rawElement.toc.title,
+        elementId: proseElement.id,
+        children: [],
+      };
+      return tocItem;
+    } else {
+      const tocItem: ResolvedTocElement = {
+        type: 'element',
+        schemaName: rawElement.schemaName,
+        title: rawElement.toc.title,
+        elementId: proseElement.id,
+      };
+      return tocItem;
     }
+  }
 });

@@ -1,3 +1,3 @@
 export const ERUDIT: {
-    config: EruditPublicRuntimeConfig;
+  config: EruditPublicRuntimeConfig;
 } = {} as any;

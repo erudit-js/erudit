@@ -1,10 +1,10 @@
 import {
-    defineRegistryItem,
-    defineSchema,
-    ensureTagBlockChildren,
-    isRawElement,
-    type BlockSchema,
-    type TagChildren,
+  defineRegistryItem,
+  defineSchema,
+  ensureTagBlockChildren,
+  isRawElement,
+  type BlockSchema,
+  type TagChildren,
 } from '@jsprose/core';
 
 import type { Invert } from '../../shared/invert.js';
@@ -13,57 +13,57 @@ import { defineEruditProseCoreElement } from '../../coreElement.js';
 import { defineResolveStep } from '../../resolveStep.js';
 
 export interface CalloutData {
-    iconSrc: string;
-    iconInvert?: Invert;
-    title: string;
+  iconSrc: string;
+  iconInvert?: Invert;
+  title: string;
 }
 
 export interface CalloutStorage {
-    resolvedIconSrc: string;
+  resolvedIconSrc: string;
 }
 
 export const calloutSchema = defineSchema({
-    name: 'callout',
-    type: 'block',
-    linkable: true,
+  name: 'callout',
+  type: 'block',
+  linkable: true,
 })<{
-    Data: CalloutData;
-    Storage: CalloutStorage;
-    Children: BlockSchema[];
+  Data: CalloutData;
+  Storage: CalloutStorage;
+  Children: BlockSchema[];
 }>();
 
 export const Callout = defineEruditTag({
-    tagName: 'Callout',
-    schema: calloutSchema,
+  tagName: 'Callout',
+  schema: calloutSchema,
 })<{ icon: string; invert?: Invert; title: string } & TagChildren>(({
-    element,
-    tagName,
-    props,
-    children,
-    registry,
+  element,
+  tagName,
+  props,
+  children,
+  registry,
 }) => {
-    ensureTagBlockChildren(tagName, children, registry);
-    element.children = children;
+  ensureTagBlockChildren(tagName, children, registry);
+  element.children = children;
 
-    element.data = {
-        iconSrc: props.icon,
-        title: props.title,
-    };
+  element.data = {
+    iconSrc: props.icon,
+    title: props.title,
+  };
 
-    element.storageKey = props.icon;
+  element.storageKey = props.icon;
 
-    if (props.invert) {
-        element.data.iconInvert = props.invert;
-    }
+  if (props.invert) {
+    element.data.iconInvert = props.invert;
+  }
 });
 
 export const calloutRegistryItem = defineRegistryItem({
-    schema: calloutSchema,
-    tags: [Callout],
+  schema: calloutSchema,
+  tags: [Callout],
 });
 
 export default defineEruditProseCoreElement({
-    registryItem: calloutRegistryItem,
+  registryItem: calloutRegistryItem,
 });
 
 //
@@ -71,7 +71,7 @@ export default defineEruditProseCoreElement({
 //
 
 export const calloutIconSrcStep = defineResolveStep(({ rawElement }) => {
-    if (isRawElement(rawElement, calloutSchema)) {
-        return rawElement.data.iconSrc;
-    }
+  if (isRawElement(rawElement, calloutSchema)) {
+    return rawElement.data.iconSrc;
+  }
 });

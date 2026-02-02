@@ -3,8 +3,8 @@ import { Text, h } from 'vue';
 import type { ProseElement, textSchema } from '@jsprose/core';
 
 import {
-    useFormatText,
-    useFormatTextState,
+  useFormatText,
+  useFormatTextState,
 } from '../composables/formatText.js';
 
 const { element } = defineProps<{ element: ProseElement<typeof textSchema> }>();
@@ -21,5 +21,5 @@ const TextComponent = h(Text, textWithSpaces);
 </script>
 
 <template>
-    <component :is="TextComponent" />
+  <component :is="TextComponent" />
 </template>

@@ -22,5 +22,5 @@ const defaultLoadingSvg = `
 `;
 
 export function useLoadingSvg() {
-    return ERUDIT.config.siteInfo.loadingSvg || defaultLoadingSvg;
+  return ERUDIT.config.siteInfo.loadingSvg || defaultLoadingSvg;
 }

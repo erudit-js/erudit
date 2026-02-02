@@ -1,75 +1,75 @@
 import type {
-    GoogleAnalytics,
-    YandexAnalytics,
+  GoogleAnalytics,
+  YandexAnalytics,
 } from '@erudit-js/core/eruditConfig/analytics';
 
 export function initAnalytics() {
-    const analytics = ERUDIT.config.analytics;
+  const analytics = ERUDIT.config.analytics;
 
-    const analyticsEnabled = (() => {
-        const debugValue = ERUDIT.config.debug.analytics;
+  const analyticsEnabled = (() => {
+    const debugValue = ERUDIT.config.debug.analytics;
 
-        if (typeof debugValue === 'boolean') {
-            return debugValue;
-        }
-
-        return ERUDIT.config.mode === 'static' ? true : false;
-    })();
-
-    if (!analytics || !analyticsEnabled) {
-        return;
+    if (typeof debugValue === 'boolean') {
+      return debugValue;
     }
 
-    if (analytics.google) {
-        googleAnalytics(analytics.google);
-    }
+    return ERUDIT.config.mode === 'static' ? true : false;
+  })();
 
-    if (analytics.yandex) {
-        yandexAnalytics(analytics.yandex);
-    }
+  if (!analytics || !analyticsEnabled) {
+    return;
+  }
+
+  if (analytics.google) {
+    googleAnalytics(analytics.google);
+  }
+
+  if (analytics.yandex) {
+    yandexAnalytics(analytics.yandex);
+  }
 }
 
 function googleAnalytics(analytics: GoogleAnalytics) {
-    if (analytics.gtag) {
-        useHead({
-            script: [
-                {
-                    key: 'google-analytics-script',
-                    src: `https://www.googletagmanager.com/gtag/js?id=${analytics.gtag}`,
-                    async: true,
-                },
-                {
-                    key: 'google-analytics-inline-script',
-                    innerHTML: `
+  if (analytics.gtag) {
+    useHead({
+      script: [
+        {
+          key: 'google-analytics-script',
+          src: `https://www.googletagmanager.com/gtag/js?id=${analytics.gtag}`,
+          async: true,
+        },
+        {
+          key: 'google-analytics-inline-script',
+          innerHTML: `
 window.dataLayer = window.dataLayer || [];
 function gtag(){dataLayer.push(arguments);}
 gtag('js', new Date());
 gtag('config', '${analytics.gtag}');
                     `.trim(),
-                },
-            ],
-        });
-    }
+        },
+      ],
+    });
+  }
 
-    if (analytics.verification) {
-        useHead({
-            meta: [
-                {
-                    name: 'google-site-verification',
-                    content: analytics.verification,
-                },
-            ],
-        });
-    }
+  if (analytics.verification) {
+    useHead({
+      meta: [
+        {
+          name: 'google-site-verification',
+          content: analytics.verification,
+        },
+      ],
+    });
+  }
 }
 
 function yandexAnalytics(analytics: YandexAnalytics) {
-    if (analytics.metricsId) {
-        useHead({
-            script: [
-                {
-                    key: 'yandex-metrica-script',
-                    innerHTML: `
+  if (analytics.metricsId) {
+    useHead({
+      script: [
+        {
+          key: 'yandex-metrica-script',
+          innerHTML: `
 (function(m,e,t,r,i,k,a){
     m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
     m[i].l=1*new Date();
@@ -84,19 +84,19 @@ ym(${analytics.metricsId}, "init", {
     webvisor:true
 });
                     `.trim(),
-                },
-            ],
-        });
-    }
+        },
+      ],
+    });
+  }
 
-    if (analytics.verification) {
-        useHead({
-            meta: [
-                {
-                    name: 'yandex-verification',
-                    content: analytics.verification,
-                },
-            ],
-        });
-    }
+  if (analytics.verification) {
+    useHead({
+      meta: [
+        {
+          name: 'yandex-verification',
+          content: analytics.verification,
+        },
+      ],
+    });
+  }
 }

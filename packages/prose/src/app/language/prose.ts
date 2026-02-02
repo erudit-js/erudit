@@ -1,14 +1,14 @@
 type Phrases<TPhrases extends Record<string, string>> = TPhrases;
 
 export type ProsePhrases = Phrases<{
-    copy_link: string;
-    copied: string;
+  copy_link: string;
+  copied: string;
 }>;
 
 export const proseLanguages: Record<
-    string,
-    () => Promise<{ default: ProsePhrases }>
+  string,
+  () => Promise<{ default: ProsePhrases }>
 > = {
-    en: () => import('./list/en.js'),
-    ru: () => import('./list/ru.js'),
+  en: () => import('./list/en.js'),
+  ru: () => import('./list/ru.js'),
 };

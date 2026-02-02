@@ -9,47 +9,47 @@ const themeName = ref<string>();
 let cycleThemeClick = () => {};
 
 const phrase = await usePhrases(
-    'theme',
-    'theme_light',
-    'theme_dark',
-    'theme_system',
+  'theme',
+  'theme_light',
+  'theme_dark',
+  'theme_system',
 );
 
 onMounted(() => {
-    const { themePref, cycleTheme } = useTheme();
+  const { themePref, cycleTheme } = useTheme();
 
-    watch(
-        themePref,
-        (newThemePref) => {
-            switch (newThemePref) {
-                case 'system':
-                    icon.value = 'sun-moon';
-                    themeName.value = phrase.theme_system;
-                    break;
-                case 'light':
-                    icon.value = 'sun';
-                    themeName.value = phrase.theme_light;
-                    break;
-                case 'dark':
-                    icon.value = 'moon';
-                    themeName.value = phrase.theme_dark;
-                    break;
-            }
-        },
-        { immediate: true },
-    );
+  watch(
+    themePref,
+    (newThemePref) => {
+      switch (newThemePref) {
+        case 'system':
+          icon.value = 'sun-moon';
+          themeName.value = phrase.theme_system;
+          break;
+        case 'light':
+          icon.value = 'sun';
+          themeName.value = phrase.theme_light;
+          break;
+        case 'dark':
+          icon.value = 'moon';
+          themeName.value = phrase.theme_dark;
+          break;
+      }
+    },
+    { immediate: true },
+  );
 
-    cycleThemeClick = () => {
-        cycleTheme();
-    };
+  cycleThemeClick = () => {
+    cycleTheme();
+  };
 });
 </script>
 
 <template>
-    <AsideListItem
-        :icon
-        :main="phrase.theme"
-        :secondary="themeName"
-        @click="cycleThemeClick"
-    />
+  <AsideListItem
+    :icon
+    :main="phrase.theme"
+    :secondary="themeName"
+    @click="cycleThemeClick"
+  />
 </template>

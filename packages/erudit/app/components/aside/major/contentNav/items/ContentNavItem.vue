@@ -7,27 +7,27 @@ import ContentNavFolder from './ContentNavFolder.vue';
 import ContentNavFlags from './Flags.vue';
 
 const { navItem } = defineProps<{
-    navItem: FrontContentNavItem;
+  navItem: FrontContentNavItem;
 }>();
 
 const NavItemComponent = (() => {
-    switch (navItem.type) {
-        case 'topic':
-            return ContentNavTopic;
-        case 'page':
-            return ContentNavPage;
-        case 'book':
-            return ContentNavBook;
-        case 'group':
-            return navItem.separator ? ContentNavSeparator : ContentNavFolder;
-    }
+  switch (navItem.type) {
+    case 'topic':
+      return ContentNavTopic;
+    case 'page':
+      return ContentNavPage;
+    case 'book':
+      return ContentNavBook;
+    case 'group':
+      return navItem.separator ? ContentNavSeparator : ContentNavFolder;
+  }
 })();
 </script>
 
 <template>
-    <NavItemComponent :navItem="navItem as any">
-        <template v-slot:secondary>
-            <ContentNavFlags v-if="navItem.flags" :flags="navItem.flags" />
-        </template>
-    </NavItemComponent>
+  <NavItemComponent :navItem="navItem as any">
+    <template v-slot:secondary>
+      <ContentNavFlags v-if="navItem.flags" :flags="navItem.flags" />
+    </template>
+  </NavItemComponent>
 </template>

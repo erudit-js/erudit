@@ -7,5 +7,5 @@ defineProps<{ element: ProseElement<typeof mixSchema> }>();
 </script>
 
 <template>
-    <RenderNewsElement v-for="child of element.children" :element="child" />
+  <RenderNewsElement v-for="child of element.children" :element="child" />
 </template>

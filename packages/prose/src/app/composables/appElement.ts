@@ -6,22 +6,22 @@ import { useProseContext } from './context.js';
 export function useAppElement(schemaName: string): AppElement;
 export function useAppElement(element: ProseElement<AnySchema>): AppElement;
 export function useAppElement(
-    elementOrName: string | ProseElement<AnySchema>,
+  elementOrName: string | ProseElement<AnySchema>,
 ): AppElement {
-    let schemaName: string;
+  let schemaName: string;
 
-    if (typeof elementOrName === 'string') {
-        schemaName = elementOrName;
-    } else {
-        schemaName = elementOrName.schemaName;
-    }
+  if (typeof elementOrName === 'string') {
+    schemaName = elementOrName;
+  } else {
+    schemaName = elementOrName.schemaName;
+  }
 
-    const { appElements } = useProseContext();
-    const appElement = appElements[schemaName];
+  const { appElements } = useProseContext();
+  const appElement = appElements[schemaName];
 
-    if (!appElement) {
-        throw new ProseError(`No AppElement found for schema "${schemaName}"!`);
-    }
+  if (!appElement) {
+    throw new ProseError(`No AppElement found for schema "${schemaName}"!`);
+  }
 
-    return appElement;
+  return appElement;
 }

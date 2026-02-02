@@ -5,14 +5,14 @@ const { navItem } = defineProps<{ navItem: FrontContentNavTopic }>();
 const { shortContentId } = useContentId();
 
 const active = computed(() => {
-    return navItem.shortId === shortContentId.value;
+  return navItem.shortId === shortContentId.value;
 });
 </script>
 
 <template>
-    <ItemTemplate
-        icon="array-lines"
-        :navItem
-        :state="active ? 'active' : undefined"
-    />
+  <ItemTemplate
+    icon="array-lines"
+    :navItem
+    :state="active ? 'active' : undefined"
+  />
 </template>

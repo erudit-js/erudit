@@ -11,28 +11,28 @@ import type { EruditServerPaths } from './path';
 import type { EruditServerRepository } from './repository';
 
 export const ERUDIT: {
-    buildError: EruditServerBuildError;
-    buildPromise: Promise<void>;
-    changedFiles: EruditServerChangedFiles;
-    config: EruditServerConfig;
-    log: EruditServerLogger;
-    language: EruditServerLanguage;
-    db: EruditServerDatabase;
-    repository: EruditServerRepository;
-    contentNav: EruditServerContentNav;
-    paths: EruditServerPaths;
-    mode: EruditMode;
-    import: EruditServerImporter;
+  buildError: EruditServerBuildError;
+  buildPromise: Promise<void>;
+  changedFiles: EruditServerChangedFiles;
+  config: EruditServerConfig;
+  log: EruditServerLogger;
+  language: EruditServerLanguage;
+  db: EruditServerDatabase;
+  repository: EruditServerRepository;
+  contentNav: EruditServerContentNav;
+  paths: EruditServerPaths;
+  mode: EruditMode;
+  import: EruditServerImporter;
 } = {} as any;
 
 Object.assign(globalThis, {
-    defineContributor,
-    defineSponsor,
-    defineCameo,
-    defineBook,
-    defineTopic,
-    definePage,
-    defineGroup,
-    defineProse,
-    Include,
+  defineContributor,
+  defineSponsor,
+  defineCameo,
+  defineBook,
+  defineTopic,
+  definePage,
+  defineGroup,
+  defineProse,
+  Include,
 });

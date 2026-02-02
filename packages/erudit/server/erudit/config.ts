@@ -1,13 +1,13 @@
 export type EruditServerConfig = EruditRuntimeConfig & {
-    public: EruditPublicRuntimeConfig;
+  public: EruditPublicRuntimeConfig;
 };
 
 export async function setupServerRuntimeConfig() {
-    const runtimeConfig = useRuntimeConfig();
-    ERUDIT.config = {
-        ...runtimeConfig.erudit,
-        public: {
-            ...runtimeConfig.public.erudit,
-        },
-    } as EruditServerConfig;
+  const runtimeConfig = useRuntimeConfig();
+  ERUDIT.config = {
+    ...runtimeConfig.erudit,
+    public: {
+      ...runtimeConfig.public.erudit,
+    },
+  } as EruditServerConfig;
 }

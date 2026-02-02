@@ -5,8 +5,8 @@ import { fileURLToPath } from 'node:url';
 import { runCli } from '@erudit-js/cli/cli';
 
 const absEruditPath = resolve(
-    dirname(fileURLToPath(import.meta.url)),
-    '..',
+  dirname(fileURLToPath(import.meta.url)),
+  '..',
 ).replace(/\\/g, '/');
 
 runCli(absEruditPath);

@@ -9,19 +9,17 @@ defineProps<{ element: ProseElement<typeof paragraphSchema> }>();
 </script>
 
 <template>
-    <Block :element>
-        <div
-            :class="[
-                'wrap-break-word',
-                element.data?.center
-                    ? 'text-center'
-                    : 'micro:text-justify text-left',
-                {
-                    'font-serif': element.data?.serif,
-                },
-            ]"
-        >
-            <Render v-for="child of element.children" :element="child" />
-        </div>
-    </Block>
+  <Block :element>
+    <div
+      :class="[
+        'wrap-break-word',
+        element.data?.center ? 'text-center' : 'micro:text-justify text-left',
+        {
+          'font-serif': element.data?.serif,
+        },
+      ]"
+    >
+      <Render v-for="child of element.children" :element="child" />
+    </div>
+  </Block>
 </template>

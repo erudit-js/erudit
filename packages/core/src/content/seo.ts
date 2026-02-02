@@ -1,4 +1,4 @@
 export interface ContentSeo {
-    title?: string;
-    description?: string;
+  title?: string;
+  description?: string;
 }

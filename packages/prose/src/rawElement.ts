@@ -5,18 +5,18 @@ import type { ObjRawElementToc } from './toc.js';
 import type { ObjRawElementTitle } from './title.js';
 
 export type EruditRawElement<
-    TSchema extends AnySchema,
-    TTagName extends string = string,
+  TSchema extends AnySchema,
+  TTagName extends string = string,
 > = RawElement<TSchema, TTagName> &
-    ObjRawElementSnippet &
-    ObjRawElementToc &
-    ObjRawElementTitle;
+  ObjRawElementSnippet &
+  ObjRawElementToc &
+  ObjRawElementTitle;
 
 export function asEruditRaw<
-    TSchema extends AnySchema,
-    TRawElement extends RawElement<TSchema>,
+  TSchema extends AnySchema,
+  TRawElement extends RawElement<TSchema>,
 >(
-    rawElement: TRawElement,
+  rawElement: TRawElement,
 ): EruditRawElement<TRawElement[typeof schemaKind], TRawElement['tagName']> {
-    return rawElement as any;
+  return rawElement as any;
 }

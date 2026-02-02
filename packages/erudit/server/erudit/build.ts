@@ -16,42 +16,42 @@ export type EruditServerChangedFiles = Set<string>;
 export type EruditServerBuildError = Error | undefined;
 
 export async function buildServerErudit() {
-    ERUDIT.buildPromise = (async () => {
-        ERUDIT.buildError = undefined;
+  ERUDIT.buildPromise = (async () => {
+    ERUDIT.buildError = undefined;
 
-        try {
-            ERUDIT.log.start('Building...');
-            await buildContributors();
-            await buildSponsors();
-            await buildCameos();
-            await buildNews();
-            await buildContentNav();
-            await buildGlobalContent();
-            await resolveContent();
-            ERUDIT.log.success(chalk.green('Build Complete!'));
-        } catch (buildError) {
-            requestFullContentResolve();
+    try {
+      ERUDIT.log.start('Building...');
+      await buildContributors();
+      await buildSponsors();
+      await buildCameos();
+      await buildNews();
+      await buildContentNav();
+      await buildGlobalContent();
+      await resolveContent();
+      ERUDIT.log.success(chalk.green('Build Complete!'));
+    } catch (buildError) {
+      requestFullContentResolve();
 
-            if (buildError instanceof Error) {
-                ERUDIT.buildError = buildError;
-                if (buildError.stack) {
-                    ERUDIT.log.error(buildError.stack);
-                }
-            } else {
-                ERUDIT.buildError = createError({
-                    statusCode: 500,
-                    statusMessage: 'Unknown Erudit Build Error!',
-                    message:
-                        typeof buildError === 'string'
-                            ? buildError
-                            : 'An unknown error occurred!',
-                });
-                ERUDIT.log.error(ERUDIT.buildError.message);
-            }
+      if (buildError instanceof Error) {
+        ERUDIT.buildError = buildError;
+        if (buildError.stack) {
+          ERUDIT.log.error(buildError.stack);
         }
-    })();
+      } else {
+        ERUDIT.buildError = createError({
+          statusCode: 500,
+          statusMessage: 'Unknown Erudit Build Error!',
+          message:
+            typeof buildError === 'string'
+              ? buildError
+              : 'An unknown error occurred!',
+        });
+        ERUDIT.log.error(ERUDIT.buildError.message);
+      }
+    }
+  })();
 
-    await ERUDIT.buildPromise;
+  await ERUDIT.buildPromise;
 }
 
 //
@@ -59,76 +59,74 @@ export async function buildServerErudit() {
 //
 
 export async function tryServerWatchProject() {
-    if (ERUDIT.mode === 'static') {
-        return;
+  if (ERUDIT.mode === 'static') {
+    return;
+  }
+
+  let pendingRebuild = false;
+  ERUDIT.changedFiles = new Set<string>();
+
+  const tryRebuildErudit = debounce(async () => {
+    pendingRebuild = true;
+    try {
+      await ERUDIT.buildPromise;
+      const files = Array.from(ERUDIT.changedFiles);
+      console.log();
+      ERUDIT.log.warn(
+        `${chalk.yellow('Rebuilding due to file change(s):')}\n\n` +
+          files.map((p, i) => chalk.gray(`${i + 1} -`) + ` "${p}"`).join('\n'),
+      );
+      console.log();
+      await buildServerErudit();
+      ERUDIT.changedFiles.clear();
+    } finally {
+      ERUDIT.changedFiles.clear();
+      pendingRebuild = false;
+    }
+  }, 300);
+
+  function isWatched(path: string) {
+    if (path.startsWith(ERUDIT.paths.project('content') + '/')) {
+      return true;
     }
 
-    let pendingRebuild = false;
-    ERUDIT.changedFiles = new Set<string>();
-
-    const tryRebuildErudit = debounce(async () => {
-        pendingRebuild = true;
-        try {
-            await ERUDIT.buildPromise;
-            const files = Array.from(ERUDIT.changedFiles);
-            console.log();
-            ERUDIT.log.warn(
-                `${chalk.yellow('Rebuilding due to file change(s):')}\n\n` +
-                    files
-                        .map((p, i) => chalk.gray(`${i + 1} -`) + ` "${p}"`)
-                        .join('\n'),
-            );
-            console.log();
-            await buildServerErudit();
-            ERUDIT.changedFiles.clear();
-        } finally {
-            ERUDIT.changedFiles.clear();
-            pendingRebuild = false;
-        }
-    }, 300);
-
-    function isWatched(path: string) {
-        if (path.startsWith(ERUDIT.paths.project('content') + '/')) {
-            return true;
-        }
-
-        if (path.startsWith(ERUDIT.paths.project('contributors') + '/')) {
-            return true;
-        }
-
-        if (path.startsWith(ERUDIT.paths.project('cameos') + '/')) {
-            return true;
-        }
-
-        if (path.startsWith(ERUDIT.paths.project('sponsors') + '/')) {
-            return true;
-        }
-
-        if (path.startsWith(ERUDIT.paths.project('news') + '/')) {
-            return true;
-        }
+    if (path.startsWith(ERUDIT.paths.project('contributors') + '/')) {
+      return true;
     }
 
-    const watcher = chokidar.watch(ERUDIT.paths.project(), {
-        ignoreInitial: true,
-    });
+    if (path.startsWith(ERUDIT.paths.project('cameos') + '/')) {
+      return true;
+    }
 
-    watcher.on('all', (_, path) => {
-        path = sn(path);
+    if (path.startsWith(ERUDIT.paths.project('sponsors') + '/')) {
+      return true;
+    }
 
-        if (!isWatched(path)) {
-            return;
-        }
+    if (path.startsWith(ERUDIT.paths.project('news') + '/')) {
+      return true;
+    }
+  }
 
-        if (pendingRebuild) {
-            return;
-        }
+  const watcher = chokidar.watch(ERUDIT.paths.project(), {
+    ignoreInitial: true,
+  });
 
-        if (path.trim()) {
-            ERUDIT.changedFiles.add(String(path));
-            tryRebuildErudit();
-        }
-    });
+  watcher.on('all', (_, path) => {
+    path = sn(path);
 
-    ERUDIT.log.success('Server project watcher is active 👀');
+    if (!isWatched(path)) {
+      return;
+    }
+
+    if (pendingRebuild) {
+      return;
+    }
+
+    if (path.trim()) {
+      ERUDIT.changedFiles.add(String(path));
+      tryRebuildErudit();
+    }
+  });
+
+  ERUDIT.log.success('Server project watcher is active 👀');
 }

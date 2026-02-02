@@ -6,12 +6,12 @@ import EngineVersion from './EngineVersion.vue';
 </script>
 
 <template>
-    <AsideMajorPaneTemplate>
-        <ScrollHolder direction="rtl">
-            <ThemeSwitcher />
-            <BuildTime />
-            <Repository />
-            <EngineVersion />
-        </ScrollHolder>
-    </AsideMajorPaneTemplate>
+  <AsideMajorPaneTemplate>
+    <ScrollHolder direction="rtl">
+      <ThemeSwitcher />
+      <BuildTime />
+      <Repository />
+      <EngineVersion />
+    </ScrollHolder>
+  </AsideMajorPaneTemplate>
 </template>

@@ -4,12 +4,12 @@ import { inlinerMathRegistryItem } from './inliner.js';
 import { katexDependency } from './katex.js';
 
 export default defineEruditProseCoreElements(
-    {
-        registryItem: inlinerMathRegistryItem,
-        dependencies: katexDependency,
-    },
-    {
-        registryItem: blockMathRegistryItem,
-        dependencies: katexDependency,
-    },
+  {
+    registryItem: inlinerMathRegistryItem,
+    dependencies: katexDependency,
+  },
+  {
+    registryItem: blockMathRegistryItem,
+    dependencies: katexDependency,
+  },
 );

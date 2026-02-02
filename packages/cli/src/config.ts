@@ -1,3 +1,3 @@
 export const CONFIG = {
-    ERUDIT_PATH: '',
+  ERUDIT_PATH: '',
 };

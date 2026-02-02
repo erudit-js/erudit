@@ -8,7 +8,7 @@ defineProps<{ element: ProseElement<typeof paragraphSchema> }>();
 </script>
 
 <template>
-    <p>
-        <RenderNewsElement v-for="child of element.children" :element="child" />
-    </p>
+  <p>
+    <RenderNewsElement v-for="child of element.children" :element="child" />
+  </p>
 </template>

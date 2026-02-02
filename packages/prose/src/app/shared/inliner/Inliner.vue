@@ -5,7 +5,7 @@ defineProps<{ element: ProseElement<InlinerSchema> }>();
 </script>
 
 <template>
-    <span>
-        <slot></slot>
-    </span>
+  <span>
+    <slot></slot>
+  </span>
 </template>

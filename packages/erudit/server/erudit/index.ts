@@ -14,25 +14,25 @@ import { setupServerPaths } from './path';
 let serverSetupPromise: Promise<void>;
 
 export default defineNitroPlugin((nitro) => {
-    serverSetupPromise = setupServer();
+  serverSetupPromise = setupServer();
 
-    nitro.hooks.hook('request', async (event) => {
-        await serverSetupPromise;
-        await ERUDIT.buildPromise;
+  nitro.hooks.hook('request', async (event) => {
+    await serverSetupPromise;
+    await ERUDIT.buildPromise;
 
-        if (ERUDIT.buildError) {
-            const accept = getHeader(event, 'accept') || '';
-            if (accept.includes('text/html')) {
-                function escapeHtml(str: string) {
-                    return str
-                        .replace(/&/g, '&amp;')
-                        .replace(/</g, '&lt;')
-                        .replace(/>/g, '&gt;')
-                        .replace(/"/g, '&quot;')
-                        .replace(/'/g, '&#39;');
-                }
+    if (ERUDIT.buildError) {
+      const accept = getHeader(event, 'accept') || '';
+      if (accept.includes('text/html')) {
+        function escapeHtml(str: string) {
+          return str
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+        }
 
-                event.node.res.end(`
+        event.node.res.end(`
 <!DOCTYPE html>
 <html>
     <head>
@@ -52,45 +52,45 @@ ${escapeHtml(ERUDIT.buildError.stack || '')}
     </body>
 </html>
   `);
-            }
-        }
-    });
+      }
+    }
+  });
 
-    nitro.hooks.hook('close', async () => {});
+  nitro.hooks.hook('close', async () => {});
 });
 
 async function setupServer() {
-    try {
-        const { registerProseGlobals } = await import('#erudit/prose/global');
-        registerProseGlobals();
+  try {
+    const { registerProseGlobals } = await import('#erudit/prose/global');
+    registerProseGlobals();
 
-        const runtimeConfig = useRuntimeConfig();
+    const runtimeConfig = useRuntimeConfig();
 
-        ERUDIT.mode = runtimeConfig.public.eruditMode as EruditMode;
-        await setupServerPaths();
-        await setupServerRuntimeConfig();
-        await setupServerLogger();
-        await setupServerImporter();
-        await setupServerLanguage();
-        await setupServerDatabase();
-        await setupServerRepository();
-        await setupServerContentNav();
-        ERUDIT.log.success(chalk.green('Setup Complete!'));
+    ERUDIT.mode = runtimeConfig.public.eruditMode as EruditMode;
+    await setupServerPaths();
+    await setupServerRuntimeConfig();
+    await setupServerLogger();
+    await setupServerImporter();
+    await setupServerLanguage();
+    await setupServerDatabase();
+    await setupServerRepository();
+    await setupServerContentNav();
+    ERUDIT.log.success(chalk.green('Setup Complete!'));
 
-        await tryServerWatchProject();
-        await buildServerErudit();
-    } catch (buildError) {
-        if (buildError instanceof Error) {
-            ERUDIT.buildError = buildError;
-        } else {
-            ERUDIT.buildError = createError({
-                statusCode: 500,
-                statusMessage: 'Unknown Erudit Server Error',
-                message:
-                    typeof buildError === 'string'
-                        ? buildError
-                        : 'An unknown error occurred!',
-            });
-        }
+    await tryServerWatchProject();
+    await buildServerErudit();
+  } catch (buildError) {
+    if (buildError instanceof Error) {
+      ERUDIT.buildError = buildError;
+    } else {
+      ERUDIT.buildError = createError({
+        statusCode: 500,
+        statusMessage: 'Unknown Erudit Server Error',
+        message:
+          typeof buildError === 'string'
+            ? buildError
+            : 'An unknown error occurred!',
+      });
     }
+  }
 }

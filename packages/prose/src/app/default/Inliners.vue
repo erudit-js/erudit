@@ -7,5 +7,5 @@ defineProps<{ element: ProseElement<typeof inlinersSchema> }>();
 </script>
 
 <template>
-    <Render v-for="child of element.children" :element="child" />
+  <Render v-for="child of element.children" :element="child" />
 </template>

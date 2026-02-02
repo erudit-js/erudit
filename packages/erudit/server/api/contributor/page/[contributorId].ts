@@ -2,67 +2,67 @@ import { eq } from 'drizzle-orm';
 import type { PageContributor } from '@erudit-js/core/contributor';
 
 export default defineEventHandler<Promise<PageContributor>>(async (event) => {
-    const contributorId = event.context.params?.contributorId;
+  const contributorId = event.context.params?.contributorId;
 
-    if (!contributorId) {
-        throw createError({
-            statusCode: 400,
-            message: 'Contributor ID is required!',
-        });
-    }
-
-    const dbContributor = await ERUDIT.db.query.contributors.findFirst({
-        where: eq(ERUDIT.db.schema.contributors.contributorId, contributorId),
+  if (!contributorId) {
+    throw createError({
+      statusCode: 400,
+      message: 'Contributor ID is required!',
     });
+  }
 
-    if (!dbContributor) {
-        throw createError({
-            statusCode: 404,
-            message: `Failed to find contributor with ID "${contributorId}"!`,
-        });
-    }
+  const dbContributor = await ERUDIT.db.query.contributors.findFirst({
+    where: eq(ERUDIT.db.schema.contributors.contributorId, contributorId),
+  });
 
-    const pageContributor: PageContributor = {
-        id: dbContributor.contributorId,
-    };
+  if (!dbContributor) {
+    throw createError({
+      statusCode: 404,
+      message: `Failed to find contributor with ID "${contributorId}"!`,
+    });
+  }
 
-    if (dbContributor.displayName) {
-        pageContributor.displayName = dbContributor.displayName;
-    }
+  const pageContributor: PageContributor = {
+    id: dbContributor.contributorId,
+  };
 
-    if (dbContributor.short) {
-        pageContributor.short = dbContributor.short;
-    }
+  if (dbContributor.displayName) {
+    pageContributor.displayName = dbContributor.displayName;
+  }
 
-    if (dbContributor.links) {
-        pageContributor.links = dbContributor.links;
-    }
+  if (dbContributor.short) {
+    pageContributor.short = dbContributor.short;
+  }
 
-    if (dbContributor.avatarExtension) {
-        pageContributor.avatarUrl = ERUDIT.repository.contributors.avatarUrl(
-            dbContributor.contributorId,
-            dbContributor.avatarExtension,
-        );
-    }
+  if (dbContributor.links) {
+    pageContributor.links = dbContributor.links;
+  }
 
-    if (dbContributor.editor) {
-        pageContributor.editor = dbContributor.editor;
-    }
+  if (dbContributor.avatarExtension) {
+    pageContributor.avatarUrl = ERUDIT.repository.contributors.avatarUrl(
+      dbContributor.contributorId,
+      dbContributor.avatarExtension,
+    );
+  }
 
-    if (dbContributor.description) {
-        pageContributor.description = await ERUDIT.repository.prose.finalize(
-            dbContributor.description,
-        );
-    }
+  if (dbContributor.editor) {
+    pageContributor.editor = dbContributor.editor;
+  }
 
-    const contributions =
-        await ERUDIT.repository.contributors.contributorContributions(
-            contributorId,
-        );
+  if (dbContributor.description) {
+    pageContributor.description = await ERUDIT.repository.prose.finalize(
+      dbContributor.description,
+    );
+  }
 
-    if (contributions) {
-        pageContributor.contributions = contributions;
-    }
+  const contributions =
+    await ERUDIT.repository.contributors.contributorContributions(
+      contributorId,
+    );
 
-    return pageContributor;
+  if (contributions) {
+    pageContributor.contributions = contributions;
+  }
+
+  return pageContributor;
 });

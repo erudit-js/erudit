@@ -15,34 +15,34 @@ import type { EruditElements } from './elements.js';
 import type { EruditContributors } from '../contributor.js';
 
 export interface EruditConfig {
-    language?: EruditLanguage;
-    debug?: EruditDebug;
-    analytics?: EruditAnalytics;
-    ads?: EruditAdsBanners;
-    site?: EruditSite;
-    indexPage?: EruditIndexPage;
-    contributors?: EruditContributors;
-    sponsors?: EruditSponsors;
-    seo?: EruditSeo;
-    repository?: EruditRepository;
-    customLinks?: EruditCustomLinks;
-    elements?: EruditElements;
-    countElements?: (string | string[])[];
-    /**
-     * Erudit uses Nuxt under the hood.
-     * Use this to alter Nuxt configuration.
-     */
-    nuxtAugmentations?: [
-        ({
-            nuxt,
-            nitro,
-            projectPath,
-            eruditPath,
-        }: {
-            nuxt: Nuxt;
-            nitro: NitroConfig;
-            projectPath: string;
-            eruditPath: string;
-        }) => Promise<void> | void,
-    ];
+  language?: EruditLanguage;
+  debug?: EruditDebug;
+  analytics?: EruditAnalytics;
+  ads?: EruditAdsBanners;
+  site?: EruditSite;
+  indexPage?: EruditIndexPage;
+  contributors?: EruditContributors;
+  sponsors?: EruditSponsors;
+  seo?: EruditSeo;
+  repository?: EruditRepository;
+  customLinks?: EruditCustomLinks;
+  elements?: EruditElements;
+  countElements?: (string | string[])[];
+  /**
+   * Erudit uses Nuxt under the hood.
+   * Use this to alter Nuxt configuration.
+   */
+  nuxtAugmentations?: [
+    ({
+      nuxt,
+      nitro,
+      projectPath,
+      eruditPath,
+    }: {
+      nuxt: Nuxt;
+      nitro: NitroConfig;
+      projectPath: string;
+      eruditPath: string;
+    }) => Promise<void> | void,
+  ];
 }

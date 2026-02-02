@@ -3,5 +3,5 @@ const loadingSvg = useLoadingSvg();
 </script>
 
 <template>
-    <MyRuntimeIcon :svg="loadingSvg" />
+  <MyRuntimeIcon :svg="loadingSvg" />
 </template>

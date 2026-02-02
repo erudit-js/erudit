@@ -1,4 +1,4 @@
 export interface AsideMajorPagesData {
-    contributorsCount: number;
-    sponsorsCount: number;
+  contributorsCount: number;
+  sponsorsCount: number;
 }

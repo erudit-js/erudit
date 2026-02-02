@@ -1,10 +1,10 @@
 export function getSponsorAvatarUrl(
-    sponsorId: string,
-    avatarExtension: string | undefined,
+  sponsorId: string,
+  avatarExtension: string | undefined,
 ): string | undefined {
-    if (!avatarExtension) {
-        return undefined;
-    }
+  if (!avatarExtension) {
+    return undefined;
+  }
 
-    return '/file/sponsors/' + sponsorId + '/avatar.' + avatarExtension;
+  return '/file/sponsors/' + sponsorId + '/avatar.' + avatarExtension;
 }

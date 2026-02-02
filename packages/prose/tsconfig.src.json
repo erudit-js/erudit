@@ -1,21 +1,21 @@
 {
-    "compilerOptions": {
-        "strict": true,
-        "forceConsistentCasingInFileNames": true,
-        "declaration": true,
-        "emitDeclarationOnly": true,
-        "verbatimModuleSyntax": true,
-        "skipLibCheck": true,
-        "target": "esnext",
-        "module": "nodenext",
-        "moduleResolution": "nodenext",
-        "outDir": "dist",
-        "types": ["./env.d.ts"]
-    },
-    "include": ["src/**/*"],
-    "exclude": [
-        "src/elements/**/_docs.ts",
-        "src/elements/**/_global.d.ts",
-        "src/elements/**/_global.ts"
-    ]
+  "compilerOptions": {
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "verbatimModuleSyntax": true,
+    "skipLibCheck": true,
+    "target": "esnext",
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
+    "outDir": "dist",
+    "types": ["./env.d.ts"]
+  },
+  "include": ["src/**/*"],
+  "exclude": [
+    "src/elements/**/_docs.ts",
+    "src/elements/**/_global.d.ts",
+    "src/elements/**/_global.ts"
+  ]
 }

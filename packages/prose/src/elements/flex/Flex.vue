@@ -8,31 +8,29 @@ import Render from '../../app/shared/Render.vue';
 const { element } = defineProps<{ element: ProseElement<typeof flexSchema> }>();
 
 const justify = (() => {
-    return element?.data?.justifyContent ?? 'center';
+  return element?.data?.justifyContent ?? 'center';
 })();
 
 const gap = (() => {
-    return element?.data?.gap ?? 'var(--spacing-big)';
+  return element?.data?.gap ?? 'var(--spacing-big)';
 })();
 </script>
 
 <template>
-    <Block :element>
+  <Block :element>
+    <div
+      :style="{ justifyContent: justify, gap }"
+      class="flex flex-wrap items-center"
+    >
+      <template v-for="(item, i) of element.children">
         <div
-            :style="{ justifyContent: justify, gap }"
-            class="flex flex-wrap items-center"
+          :style="{
+            flex: element.data?.flexes ? element.data.flexes[i] : undefined,
+          }"
         >
-            <template v-for="(item, i) of element.children">
-                <div
-                    :style="{
-                        flex: element.data?.flexes
-                            ? element.data.flexes[i]
-                            : undefined,
-                    }"
-                >
-                    <Render :element="item" />
-                </div>
-            </template>
+          <Render :element="item" />
         </div>
-    </Block>
+      </template>
+    </div>
+  </Block>
 </template>

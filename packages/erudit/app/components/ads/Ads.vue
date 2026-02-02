@@ -2,9 +2,9 @@
 import type { EruditAds } from '@erudit-js/core/eruditConfig/ads';
 
 import {
-    LazyAdsProviderCustom,
-    LazyAdsProviderYandex,
-    LazyAdsReplacer,
+  LazyAdsProviderCustom,
+  LazyAdsProviderYandex,
+  LazyAdsReplacer,
 } from '#components';
 
 const props = defineProps<{ data: EruditAds }>();
@@ -14,26 +14,26 @@ const adsKey = ref(0);
 const AdsComponent = shallowRef<Component>();
 
 function updateAds() {
-    AdsComponent.value = (() => {
-        switch (props.data?.provider) {
-            case 'replacer':
-                return LazyAdsReplacer;
-            case 'yandex':
-                return LazyAdsProviderYandex;
-            case 'custom':
-                return LazyAdsProviderCustom;
-        }
+  AdsComponent.value = (() => {
+    switch (props.data?.provider) {
+      case 'replacer':
+        return LazyAdsReplacer;
+      case 'yandex':
+        return LazyAdsProviderYandex;
+      case 'custom':
+        return LazyAdsProviderCustom;
+    }
 
-        return undefined;
-    })();
-    adsKey.value++;
+    return undefined;
+  })();
+  adsKey.value++;
 }
 
 onMounted(() => {
-    watch(() => route.path, updateAds, { immediate: true });
+  watch(() => route.path, updateAds, { immediate: true });
 });
 </script>
 
 <template>
-    <AdsComponent v-if="AdsComponent" :data :key="adsKey" />
+  <AdsComponent v-if="AdsComponent" :data :key="adsKey" />
 </template>

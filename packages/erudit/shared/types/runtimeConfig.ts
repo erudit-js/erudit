@@ -10,37 +10,37 @@ import type { EruditSeo } from '@erudit-js/core/eruditConfig/seo';
 import type { EruditAnalytics } from '@erudit-js/core/eruditConfig/analytics';
 
 export interface EruditRuntimeConfig {
-    elements: string[];
-    countElements: (string | string[])[];
-    indexPage?: EruditIndexPage;
+  elements: string[];
+  countElements: (string | string[])[];
+  indexPage?: EruditIndexPage;
 }
 
 export interface EruditPublicRuntimeConfig {
-    language: EruditLanguage;
-    siteInfo: {
-        title?: string;
-        short?: string | false;
-        logotype?: string | false;
-        favicon?: EruditSiteFaviconResolved;
-        loadingSvg?: string;
+  language: EruditLanguage;
+  siteInfo: {
+    title?: string;
+    short?: string | false;
+    logotype?: string | false;
+    favicon?: EruditSiteFaviconResolved;
+    loadingSvg?: string;
+  };
+  seo?: EruditSeo;
+  debug: {
+    log: boolean;
+    slowTransition: boolean;
+    ads: boolean;
+    fakeApi: {
+      repository: boolean;
     };
-    seo?: EruditSeo;
-    debug: {
-        log: boolean;
-        slowTransition: boolean;
-        ads: boolean;
-        fakeApi: {
-            repository: boolean;
-        };
-        analytics?: boolean;
-    };
-    repository?: EruditRepository & { _link: string };
-    style?: {
-        brandColor?: string;
-    };
-    customLinks?: EruditCustomLinks;
-    contributors?: EruditContributors;
-    sponsors?: EruditSponsors;
-    ads?: EruditAdsBanners;
-    analytics?: EruditAnalytics;
+    analytics?: boolean;
+  };
+  repository?: EruditRepository & { _link: string };
+  style?: {
+    brandColor?: string;
+  };
+  customLinks?: EruditCustomLinks;
+  contributors?: EruditContributors;
+  sponsors?: EruditSponsors;
+  ads?: EruditAdsBanners;
+  analytics?: EruditAnalytics;
 }

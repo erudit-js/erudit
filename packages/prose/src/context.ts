@@ -1,4 +1,4 @@
 export interface EruditProseContext {
-    language: string;
-    linkable?: boolean;
+  language: string;
+  linkable?: boolean;
 }

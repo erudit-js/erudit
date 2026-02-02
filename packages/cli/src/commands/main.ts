@@ -15,25 +15,25 @@ import { generate } from './generate.js';
 import { preview } from './preview.js';
 
 export const main = defineCommand({
-    meta: {
-        name: 'erudit',
-        description: 'CLI for Erudit',
-        version,
-    },
-    subCommands: {
-        prepare,
-        dev,
-        build,
-        launch,
-        generate,
-        preview,
-    },
-    setup({ args }) {
-        console.log(brandColorLogotype);
-        console.log(`Version: ${chalk.bold.cyan(version)}`);
-        if (args._[0]) {
-            logCommand(args._[0]);
-        }
-        console.log(`Erudit path: ${chalk.bold.cyan(CONFIG.ERUDIT_PATH)}`);
-    },
+  meta: {
+    name: 'erudit',
+    description: 'CLI for Erudit',
+    version,
+  },
+  subCommands: {
+    prepare,
+    dev,
+    build,
+    launch,
+    generate,
+    preview,
+  },
+  setup({ args }) {
+    console.log(brandColorLogotype);
+    console.log(`Version: ${chalk.bold.cyan(version)}`);
+    if (args._[0]) {
+      logCommand(args._[0]);
+    }
+    console.log(`Erudit path: ${chalk.bold.cyan(CONFIG.ERUDIT_PATH)}`);
+  },
 });

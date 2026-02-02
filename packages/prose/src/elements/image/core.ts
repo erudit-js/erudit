@@ -1,8 +1,8 @@
 import {
-    defineRegistryItem,
-    defineSchema,
-    ensureTagChild,
-    isRawElement,
+  defineRegistryItem,
+  defineSchema,
+  ensureTagChild,
+  isRawElement,
 } from '@jsprose/core';
 
 import { captionSchema } from '../caption/core.js';
@@ -13,66 +13,66 @@ import { photoswipeDependency } from '../../shared/photoswipe.js';
 import type { Invert } from '../../shared/invert.js';
 
 export interface ImageData {
-    src: string;
-    invert?: Invert;
-    width?: string;
+  src: string;
+  invert?: Invert;
+  width?: string;
 }
 
 export interface ImageStorage {
-    resolvedSrc: string;
-    width: number;
-    height: number;
+  resolvedSrc: string;
+  width: number;
+  height: number;
 }
 
 export const imageSchema = defineSchema({
-    name: 'image',
-    type: 'block',
-    linkable: true,
+  name: 'image',
+  type: 'block',
+  linkable: true,
 })<{
-    Data: ImageData;
-    Storage: ImageStorage;
-    Children: [typeof captionSchema] | undefined;
+  Data: ImageData;
+  Storage: ImageStorage;
+  Children: [typeof captionSchema] | undefined;
 }>();
 
 export const Image = defineEruditTag({
-    tagName: 'Image',
-    schema: imageSchema,
+  tagName: 'Image',
+  schema: imageSchema,
 })<{ src: string; invert?: Invert; width?: string; children?: {} }>(({
-    element,
-    tagName,
-    props,
-    children,
+  element,
+  tagName,
+  props,
+  children,
 }) => {
-    if (children) {
-        ensureTagChild(tagName, children, captionSchema);
-        element.children = children;
-    }
+  if (children) {
+    ensureTagChild(tagName, children, captionSchema);
+    element.children = children;
+  }
 
-    element.data = {
-        src: props.src,
-    };
+  element.data = {
+    src: props.src,
+  };
 
-    element.storageKey = props.src;
+  element.storageKey = props.src;
 
-    if (props.width) {
-        element.data.width = props.width;
-    }
+  if (props.width) {
+    element.data.width = props.width;
+  }
 
-    if (props.invert) {
-        element.data.invert = props.invert;
-    }
+  if (props.invert) {
+    element.data.invert = props.invert;
+  }
 });
 
 export const imageRegistryItem = defineRegistryItem({
-    schema: imageSchema,
-    tags: [Image],
+  schema: imageSchema,
+  tags: [Image],
 });
 
 export default defineEruditProseCoreElement({
-    registryItem: imageRegistryItem,
-    dependencies: {
-        ...photoswipeDependency,
-    },
+  registryItem: imageRegistryItem,
+  dependencies: {
+    ...photoswipeDependency,
+  },
 });
 
 //
@@ -80,7 +80,7 @@ export default defineEruditProseCoreElement({
 //
 
 export const imageSrcStep = defineResolveStep(({ rawElement }) => {
-    if (isRawElement(rawElement, imageSchema)) {
-        return rawElement.data.src;
-    }
+  if (isRawElement(rawElement, imageSchema)) {
+    return rawElement.data.src;
+  }
 });

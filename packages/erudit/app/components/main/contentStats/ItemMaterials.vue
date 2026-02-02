@@ -7,5 +7,5 @@ const phrase = await usePhrases('materials');
 </script>
 
 <template>
-    <Item icon="files" :label="phrase.materials" :count="count" />
+  <Item icon="files" :label="phrase.materials" :count="count" />
 </template>

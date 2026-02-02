@@ -5,15 +5,15 @@ import { problemSchema } from './problem.js';
 import { subProblemSchema } from './problems.js';
 
 export const problemScriptStep = defineResolveStep(({ rawElement }) => {
-    if (
-        !isRawElement(rawElement, problemSchema) &&
-        !isRawElement(rawElement, subProblemSchema)
-    ) {
-        return;
-    }
+  if (
+    !isRawElement(rawElement, problemSchema) &&
+    !isRawElement(rawElement, subProblemSchema)
+  ) {
+    return;
+  }
 
-    const script = rawElement.storageKey?.replace('problemScript:', '');
-    if (script) {
-        return script;
-    }
+  const script = rawElement.storageKey?.replace('problemScript:', '');
+  if (script) {
+    return script;
+  }
 });

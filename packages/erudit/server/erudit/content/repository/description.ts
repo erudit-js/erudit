@@ -1,11 +1,11 @@
 import { eq } from 'drizzle-orm';
 
 export async function getContentDescription(
-    fullContentId: string,
+  fullContentId: string,
 ): Promise<string | undefined> {
-    const dbContentItem = (await ERUDIT.db.query.content.findFirst({
-        where: eq(ERUDIT.db.schema.content.fullId, fullContentId),
-    }))!;
+  const dbContentItem = (await ERUDIT.db.query.content.findFirst({
+    where: eq(ERUDIT.db.schema.content.fullId, fullContentId),
+  }))!;
 
-    return dbContentItem.description || undefined;
+  return dbContentItem.description || undefined;
 }

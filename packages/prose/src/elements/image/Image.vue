@@ -9,7 +9,7 @@ defineProps<{ element: ProseElement<typeof imageSchema> }>();
 </script>
 
 <template>
-    <Block :element>
-        <ImageElement :element />
-    </Block>
+  <Block :element>
+    <ImageElement :element />
+  </Block>
 </template>

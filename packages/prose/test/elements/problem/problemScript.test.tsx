@@ -1,99 +1,97 @@
 import { describe, expect, it } from 'vitest';
 import {
-    defineUnique,
-    isolateProse,
-    isProseElement,
-    isRawElement,
+  defineUnique,
+  isolateProse,
+  isProseElement,
+  isRawElement,
 } from '@jsprose/core';
 
 import { P } from '@erudit-js/prose/elements/paragraph/core';
 import {
-    defineProblemScript,
-    insertProblemScriptId,
+  defineProblemScript,
+  insertProblemScriptId,
 } from '@erudit-js/prose/elements/problem/problemScript';
 import {
-    ProblemCheck,
-    problemCheckSchema,
-    ProblemDescription,
-    problemDescriptionSchema,
+  ProblemCheck,
+  problemCheckSchema,
+  ProblemDescription,
+  problemDescriptionSchema,
 } from '@erudit-js/prose/elements/problem/problemContent';
 
 import { prepareRegistry } from './problemContent.test';
 
 describe('Problem Script', () => {
-    it('should throw when ID is not provided', () => {
-        expect(() => {
-            defineProblemScript({});
-        }).toThrow();
+  it('should throw when ID is not provided', () => {
+    expect(() => {
+      defineProblemScript({});
+    }).toThrow();
+  });
+
+  const createUniqueP = () => {
+    return defineUnique({
+      documentId: 'doc1',
+      name: 'myP',
+      tag: P,
     });
+  };
 
-    const createUniqueP = () => {
-        return defineUnique({
-            documentId: 'doc1',
-            name: 'myP',
-            tag: P,
-        });
-    };
+  it('should throw when incorrect problem content builder is provided', async () => {
+    isolateProse(async () => {
+      prepareRegistry();
 
-    it('should throw when incorrect problem content builder is provided', async () => {
-        isolateProse(async () => {
-            prepareRegistry();
+      const problemScript = defineProblemScript('script1/TestScript', {
+        uniques: {
+          myP: P,
+        },
+      })(({ uniques }) => {
+        return (
+          <>
+            <P $={uniques.myP}>This is paragraph</P>
+          </>
+        );
+      });
 
-            const problemScript = defineProblemScript('script1/TestScript', {
-                uniques: {
-                    myP: P,
-                },
-            })(({ uniques }) => {
-                return (
-                    <>
-                        <P $={uniques.myP}>This is paragraph</P>
-                    </>
-                );
-            });
-
-            expect(() =>
-                problemScript({
-                    myP: createUniqueP(),
-                }).generate(),
-            ).toThrow(/\[Problem Script\]/);
-        });
+      expect(() =>
+        problemScript({
+          myP: createUniqueP(),
+        }).generate(),
+      ).toThrow(/\[Problem Script\]/);
     });
+  });
 
-    it('should create problem script correctly', async () => {
-        isolateProse(async () => {
-            prepareRegistry();
-            const problemScript = defineProblemScript('script1/TestScript', {
-                isGenerator: true,
-                uniques: {
-                    myP: P,
-                },
-            })(({ uniques, initial, random }) => {
-                return (
-                    <>
-                        <ProblemDescription>
-                            <P $={uniques.myP}>Problem Description</P>
-                        </ProblemDescription>
-                        <ProblemCheck answer={42} />
-                    </>
-                );
-            });
+  it('should create problem script correctly', async () => {
+    isolateProse(async () => {
+      prepareRegistry();
+      const problemScript = defineProblemScript('script1/TestScript', {
+        isGenerator: true,
+        uniques: {
+          myP: P,
+        },
+      })(({ uniques, initial, random }) => {
+        return (
+          <>
+            <ProblemDescription>
+              <P $={uniques.myP}>Problem Description</P>
+            </ProblemDescription>
+            <ProblemCheck answer={42} />
+          </>
+        );
+      });
 
-            const problemContent = problemScript({
-                myP: createUniqueP(),
-            }).generate(1337).problemContent;
+      const problemContent = problemScript({
+        myP: createUniqueP(),
+      }).generate(1337).problemContent;
 
-            expect(problemContent).toHaveLength(2);
-            expect(
-                isRawElement(problemContent[0], problemDescriptionSchema),
-            ).toBe(true);
-            expect(isRawElement(problemContent[1], problemCheckSchema)).toBe(
-                true,
-            );
-        });
+      expect(problemContent).toHaveLength(2);
+      expect(isRawElement(problemContent[0], problemDescriptionSchema)).toBe(
+        true,
+      );
+      expect(isRawElement(problemContent[1], problemCheckSchema)).toBe(true);
     });
+  });
 
-    it('should insert script ID correctly', () => {
-        const code = `
+  it('should insert script ID correctly', () => {
+    const code = `
 export default defineProblemScript({
   foo: 1
 });
@@ -108,11 +106,11 @@ export default defineProblemScript()(() => <></>);
 
         `.trim();
 
-        const scriptSrc = 'myScriptSource';
-        const transformedCode = insertProblemScriptId(scriptSrc, code);
+    const scriptSrc = 'myScriptSource';
+    const transformedCode = insertProblemScriptId(scriptSrc, code);
 
-        expect(transformedCode).toBe(
-            `
+    expect(transformedCode).toBe(
+      `
 export default defineProblemScript('myScriptSource', {
   foo: 1
 });
@@ -125,14 +123,14 @@ export default defineProblemScript('myScriptSource', { d: 4 });
 
 export default defineProblemScript('myScriptSource', )(() => <></>);
         `.trim(),
-        );
-    });
+    );
+  });
 
-    it('should not throw when defining problem script without arg object', () => {
-        expect(() => {
-            defineProblemScript('scriptSrc/scriptName')(() => (
-                <ProblemDescription>Description</ProblemDescription>
-            ));
-        }).not.toThrow();
-    });
+  it('should not throw when defining problem script without arg object', () => {
+    expect(() => {
+      defineProblemScript('scriptSrc/scriptName')(() => (
+        <ProblemDescription>Description</ProblemDescription>
+      ));
+    }).not.toThrow();
+  });
 });

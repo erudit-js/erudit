@@ -1,29 +1,29 @@
 <script lang="ts" setup>
 import {
-    computed,
-    onMounted,
-    ref,
-    shallowRef,
-    useTemplateRef,
-    watchEffect,
-    type Component,
+  computed,
+  onMounted,
+  ref,
+  shallowRef,
+  useTemplateRef,
+  watchEffect,
+  type Component,
 } from 'vue';
 import { autoUpdate, offset, useFloating } from '@floating-ui/vue';
 import {
-    isProseElement,
-    resolveRawElement,
-    type ProseElement,
+  isProseElement,
+  resolveRawElement,
+  type ProseElement,
 } from '@jsprose/core';
 
 import {
-    problemAnswer,
-    problemCheckSchema,
-    problemDescriptionSchema,
-    problemHintSchema,
-    problemNote,
-    problemSolution,
-    type CheckFunction,
-    type ProblemContentChild,
+  problemAnswer,
+  problemCheckSchema,
+  problemDescriptionSchema,
+  problemHintSchema,
+  problemNote,
+  problemSolution,
+  type CheckFunction,
+  type ProblemContentChild,
 } from '../problemContent.js';
 import { useProseContext } from '../../../app/composables/context.js';
 import { useProblemPhrase } from '../composables/phrase.js';
@@ -44,102 +44,102 @@ import ProblemButton from './ProblemButton.vue';
 import Checks from './expanders/Checks.vue';
 
 const { element, initialElements } = defineProps<{
-    element:
-        | ProseElement<typeof problemSchema>
-        | ProseElement<typeof subProblemSchema>;
-    initialElements: ProseElement<ProblemContentChild>[];
+  element:
+    | ProseElement<typeof problemSchema>
+    | ProseElement<typeof subProblemSchema>;
+  initialElements: ProseElement<ProblemContentChild>[];
 }>();
 
 const { EruditIcon, EruditTransition } = useProseContext();
 const phrase = await useProblemPhrase();
 
 const actionIcons: Record<ProblemAction, string> = Object.fromEntries(
-    Object.entries(
-        // @ts-ignore
-        import.meta.glob('../assets/actions/*.svg', {
-            query: 'raw',
-            eager: true,
-            import: 'default',
-        }),
-    ).map(([key, value]) => {
-        const name = key.split('/').pop()?.replace('.svg', '') ?? key;
-        return [name as any, value as string];
+  Object.entries(
+    // @ts-ignore
+    import.meta.glob('../assets/actions/*.svg', {
+      query: 'raw',
+      eager: true,
+      import: 'default',
     }),
+  ).map(([key, value]) => {
+    const name = key.split('/').pop()?.replace('.svg', '') ?? key;
+    return [name as any, value as string];
+  }),
 );
 
 const key = ref(0);
 const elements =
-    shallowRef<ProseElement<ProblemContentChild>[]>(initialElements);
+  shallowRef<ProseElement<ProblemContentChild>[]>(initialElements);
 
 const description = computed(() => {
-    return elements.value.find((element) =>
-        isProseElement(element, problemDescriptionSchema),
-    )!;
+  return elements.value.find((element) =>
+    isProseElement(element, problemDescriptionSchema),
+  )!;
 });
 
 const expanderComponents: Record<
-    Exclude<ProblemAction, 'generate'>,
-    Component
+  Exclude<ProblemAction, 'generate'>,
+  Component
 > = {
-    check: Checks,
-    hint: Hint,
-    answer: DefaultPlusSections,
-    solution: DefaultPlusSections,
-    note: DefaultPlusSections,
+  check: Checks,
+  hint: Hint,
+  answer: DefaultPlusSections,
+  solution: DefaultPlusSections,
+  note: DefaultPlusSections,
 };
 
 const expandableActions = computed(() => {
-    type ActionMap<T> =
-        T extends Partial<Exclude<Record<ProblemAction, any>, 'generate'>>
-            ? T
-            : never;
+  type ActionMap<T> =
+    T extends Partial<Exclude<Record<ProblemAction, any>, 'generate'>>
+      ? T
+      : never;
 
-    const actionMap: ActionMap<{
-        hint?: ProseElement<typeof problemHintSchema>[];
-        answer?: ProseElement<typeof problemAnswer.schema>;
-        solution?: ProseElement<typeof problemSolution.schema>;
-        note?: ProseElement<typeof problemNote.schema>;
-        check?: {
-            checkElements: ProseElement<typeof problemCheckSchema>[];
-            checkFunction?: CheckFunction;
-        };
-    }> = {};
+  const actionMap: ActionMap<{
+    hint?: ProseElement<typeof problemHintSchema>[];
+    answer?: ProseElement<typeof problemAnswer.schema>;
+    solution?: ProseElement<typeof problemSolution.schema>;
+    note?: ProseElement<typeof problemNote.schema>;
+    check?: {
+      checkElements: ProseElement<typeof problemCheckSchema>[];
+      checkFunction?: CheckFunction;
+    };
+  }> = {};
 
-    const checks = elements.value.filter((element) =>
-        isProseElement(element, problemCheckSchema),
-    );
-    if (checks.length > 0) {
-        actionMap.check = {
-            checkElements: checks,
-            checkFunction: scriptCheck.value,
-        };
-    }
+  const checks = elements.value.filter((element) =>
+    isProseElement(element, problemCheckSchema),
+  );
+  if (checks.length > 0) {
+    actionMap.check = {
+      checkElements: checks,
+      checkFunction: scriptCheck.value,
+    };
+  }
 
-    const hints = elements.value.filter((element) =>
-        isProseElement(element, problemHintSchema),
-    );
-    if (hints.length > 0) {
-        actionMap.hint = hints;
-    }
+  const hints = elements.value.filter((element) =>
+    isProseElement(element, problemHintSchema),
+  );
+  if (hints.length > 0) {
+    actionMap.hint = hints;
+  }
 
-    (['answer', 'solution', 'note'] as const).forEach((action) => {
-        const actionElements = elements.value.filter((element) => {
-            switch (action) {
-                case 'answer':
-                    return isProseElement(element, problemAnswer.schema);
-                case 'solution':
-                    return isProseElement(element, problemSolution.schema);
-                case 'note':
-                    return isProseElement(element, problemNote.schema);
-            }
-        });
-
-        if (actionElements.length > 0) {
-            actionMap[action] = actionElements[0]! as any;
-        }
+  (['answer', 'solution', 'note'] as const).forEach((action) => {
+    const actionElements = elements.value.filter((element) => {
+      switch (action) {
+        case 'answer':
+          return isProseElement(element, problemAnswer.schema);
+        case 'solution':
+          return isProseElement(element, problemSolution.schema);
+        case 'note':
+          return isProseElement(element, problemNote.schema);
+      }
     });
 
-    return actionMap;
+    if (actionElements.length > 0) {
+      actionMap[action] = actionElements[0]! as any;
+    }
+  });
+
+  return actionMap;
 });
 
 const currentAction = ref<Exclude<ProblemAction, 'generate'>>();
@@ -147,28 +147,28 @@ const currentAction = ref<Exclude<ProblemAction, 'generate'>>();
 const containsAnchorArray = useArrayContainsAnchor(elements.value);
 
 watchEffect(() => {
-    const anchorIndex = containsAnchorArray.value;
+  const anchorIndex = containsAnchorArray.value;
 
-    if (anchorIndex === undefined) {
-        return;
-    }
+  if (anchorIndex === undefined) {
+    return;
+  }
 
-    const anchorElement = elements.value.at(anchorIndex);
+  const anchorElement = elements.value.at(anchorIndex);
 
-    switch (true) {
-        case isProseElement(anchorElement, problemHintSchema):
-            currentAction.value = 'hint';
-            break;
-        case isProseElement(anchorElement, problemAnswer.schema):
-            currentAction.value = 'answer';
-            break;
-        case isProseElement(anchorElement, problemSolution.schema):
-            currentAction.value = 'solution';
-            break;
-        case isProseElement(anchorElement, problemNote.schema):
-            currentAction.value = 'note';
-            break;
-    }
+  switch (true) {
+    case isProseElement(anchorElement, problemHintSchema):
+      currentAction.value = 'hint';
+      break;
+    case isProseElement(anchorElement, problemAnswer.schema):
+      currentAction.value = 'answer';
+      break;
+    case isProseElement(anchorElement, problemSolution.schema):
+      currentAction.value = 'solution';
+      break;
+    case isProseElement(anchorElement, problemNote.schema):
+      currentAction.value = 'note';
+      break;
+  }
 });
 
 //
@@ -177,22 +177,21 @@ watchEffect(() => {
 
 const scriptInstance = shallowRef<ProblemScriptInstance>();
 const scriptStorage = (await useElementStorage(
-    element as any,
+  element as any,
 )) as ProblemScriptStorage;
 const isGenerator = computed(() => Boolean(scriptInstance.value?.isGenerator));
 const scriptCheck = shallowRef<CheckFunction>();
 
 onMounted(async () => {
-    scriptInstance.value = await createProblemScriptInstance(
-        scriptStorage?.resolvedScriptSrc,
-        element.data.scriptUniques,
-    );
+  scriptInstance.value = await createProblemScriptInstance(
+    scriptStorage?.resolvedScriptSrc,
+    element.data.scriptUniques,
+  );
 
-    if (scriptInstance.value) {
-        const initialGenerateResult =
-            scriptInstance.value!.generate(DEFAULT_SEED);
-        scriptCheck.value = initialGenerateResult.check;
-    }
+  if (scriptInstance.value) {
+    const initialGenerateResult = scriptInstance.value!.generate(DEFAULT_SEED);
+    scriptCheck.value = initialGenerateResult.check;
+  }
 });
 
 const generateRotation = ref(0);
@@ -201,44 +200,44 @@ const seed = ref<ProblemSeed>(DEFAULT_SEED);
 const usingCustomSeed = ref(false);
 
 async function doGenerate() {
-    if (!scriptInstance.value) {
-        return;
-    }
+  if (!scriptInstance.value) {
+    return;
+  }
 
-    generateRotation.value += 180;
+  generateRotation.value += 180;
 
-    if (generating.value) {
-        return;
-    }
+  if (generating.value) {
+    return;
+  }
 
-    generating.value = true;
+  generating.value = true;
 
-    if (usingCustomSeed.value) {
-        usingCustomSeed.value = false;
-    } else {
-        seed.value = Math.floor(Math.random() * 1000000000) + 1;
-    }
+  if (usingCustomSeed.value) {
+    usingCustomSeed.value = false;
+  } else {
+    seed.value = Math.floor(Math.random() * 1000000000) + 1;
+  }
 
-    const generateResult = scriptInstance.value.generate(seed.value);
+  const generateResult = scriptInstance.value.generate(seed.value);
 
-    if (generateResult.check) {
-        scriptCheck.value = generateResult.check;
-    }
+  if (generateResult.check) {
+    scriptCheck.value = generateResult.check;
+  }
 
-    const rawElements = generateResult.problemContent;
-    const proseElements: ProseElement<ProblemContentChild>[] = [];
-    for (const rawElement of rawElements) {
-        const resolveResult = await resolveRawElement({
-            rawElement,
-            linkable: false,
-        });
-        proseElements.push(resolveResult.proseElement as any);
-    }
+  const rawElements = generateResult.problemContent;
+  const proseElements: ProseElement<ProblemContentChild>[] = [];
+  for (const rawElement of rawElements) {
+    const resolveResult = await resolveRawElement({
+      rawElement,
+      linkable: false,
+    });
+    proseElements.push(resolveResult.proseElement as any);
+  }
 
-    elements.value = proseElements;
+  elements.value = proseElements;
 
-    key.value++;
-    generating.value = false;
+  key.value++;
+  generating.value = false;
 }
 
 //
@@ -250,122 +249,108 @@ const seedReferenceElement = useTemplateRef('seedReference');
 const seedPopupElement = useTemplateRef('seedPopup');
 
 const { floatingStyles: seedFloatingStyles } = useFloating(
-    seedReferenceElement,
-    seedPopupElement,
-    {
-        whileElementsMounted: autoUpdate,
-        placement: 'top',
-    },
+  seedReferenceElement,
+  seedPopupElement,
+  {
+    whileElementsMounted: autoUpdate,
+    placement: 'top',
+  },
 );
 </script>
 
 <template>
-    <div>
-        <Suspense suspensible>
-            <div class="py-(--proseAsideWidth)" :key>
-                <Render
-                    v-for="child of description.children"
-                    :element="child"
-                />
-            </div>
-        </Suspense>
+  <div>
+    <Suspense suspensible>
+      <div class="py-(--proseAsideWidth)" :key>
+        <Render v-for="child of description.children" :element="child" />
+      </div>
+    </Suspense>
 
-        <div
-            v-if="Object.values(expandableActions).some(Boolean) || isGenerator"
-            class="gap-small micro:gap-normal flex flex-wrap
-                p-(--proseAsideWidth) pt-0"
+    <div
+      v-if="Object.values(expandableActions).some(Boolean) || isGenerator"
+      class="gap-small micro:gap-normal flex flex-wrap p-(--proseAsideWidth)
+        pt-0"
+    >
+      <ProblemButton
+        v-for="(_, actionKey) in expandableActions"
+        :key="actionKey"
+        @click="
+          currentAction = actionKey === currentAction ? undefined : actionKey
+        "
+        :active="actionKey === currentAction"
+        class="flex items-center gap-[7px]"
+      >
+        <EruditIcon :name="actionIcons[actionKey]" class="text-[1.3em]" />
+        <span>{{ phrase[`action_${actionKey}`] }}</span>
+      </ProblemButton>
+      <div
+        v-if="isGenerator"
+        ref="seedReference"
+        @mouseenter="seedPopupVisible = true"
+        @mouseleave="seedPopupVisible = false"
+      >
+        <ProblemButton
+          @touchstart="seedPopupVisible = seedPopupVisible ? false : true"
+          @click="doGenerate"
+          class="flex items-center gap-[7px]"
         >
-            <ProblemButton
-                v-for="(_, actionKey) in expandableActions"
-                :key="actionKey"
+          <EruditIcon
+            :name="actionIcons.generate"
+            :style="{ transform: `rotate(${generateRotation}deg)` }"
+            class="text-[1.3em] transition-[transform] backface-hidden"
+          />
+          <span>{{ phrase.action_generate }}</span>
+        </ProblemButton>
+        <EruditTransition>
+          <div
+            v-if="seedPopupVisible"
+            ref="seedPopup"
+            :style="seedFloatingStyles"
+            class="pb-2.5"
+          >
+            <form
+              class="shadow-border text-main-xs flex rounded bg-neutral-900
+                text-white shadow-lg dark:bg-neutral-200 dark:text-black"
+              @submit.prevent="doGenerate"
+            >
+              <input
+                type="text"
+                v-model="seed"
+                @input="usingCustomSeed = true"
+                :title="phrase.seed_explain"
+                @focus="($event as any).target.select()"
+                class="max-w-[100px] flex-1 p-[5px] text-center outline-none"
+              />
+              <button
+                v-if="seed !== DEFAULT_SEED"
+                type="button"
                 @click="
-                    currentAction =
-                        actionKey === currentAction ? undefined : actionKey
+                  seed = DEFAULT_SEED;
+                  usingCustomSeed = true;
+                  doGenerate();
                 "
-                :active="actionKey === currentAction"
-                class="flex items-center gap-[7px]"
-            >
+                class="cursor-pointer pr-[3px]"
+              >
                 <EruditIcon
-                    :name="actionIcons[actionKey]"
-                    class="text-[1.3em]"
+                  :name="plusIcon"
+                  class="hocus:text-white dark:hocus:text-black rotate-45
+                    text-[1.3em] text-neutral-400 transition-[color]
+                    dark:text-neutral-600"
                 />
-                <span>{{ phrase[`action_${actionKey}`] }}</span>
-            </ProblemButton>
-            <div
-                v-if="isGenerator"
-                ref="seedReference"
-                @mouseenter="seedPopupVisible = true"
-                @mouseleave="seedPopupVisible = false"
-            >
-                <ProblemButton
-                    @touchstart="
-                        seedPopupVisible = seedPopupVisible ? false : true
-                    "
-                    @click="doGenerate"
-                    class="flex items-center gap-[7px]"
-                >
-                    <EruditIcon
-                        :name="actionIcons.generate"
-                        :style="{ transform: `rotate(${generateRotation}deg)` }"
-                        class="text-[1.3em] transition-[transform]
-                            backface-hidden"
-                    />
-                    <span>{{ phrase.action_generate }}</span>
-                </ProblemButton>
-                <EruditTransition>
-                    <div
-                        v-if="seedPopupVisible"
-                        ref="seedPopup"
-                        :style="seedFloatingStyles"
-                        class="pb-2.5"
-                    >
-                        <form
-                            class="shadow-border text-main-xs flex rounded
-                                bg-neutral-900 text-white shadow-lg
-                                dark:bg-neutral-200 dark:text-black"
-                            @submit.prevent="doGenerate"
-                        >
-                            <input
-                                type="text"
-                                v-model="seed"
-                                @input="usingCustomSeed = true"
-                                :title="phrase.seed_explain"
-                                @focus="($event as any).target.select()"
-                                class="max-w-[100px] flex-1 p-[5px] text-center
-                                    outline-none"
-                            />
-                            <button
-                                v-if="seed !== DEFAULT_SEED"
-                                type="button"
-                                @click="
-                                    seed = DEFAULT_SEED;
-                                    usingCustomSeed = true;
-                                    doGenerate();
-                                "
-                                class="cursor-pointer pr-[3px]"
-                            >
-                                <EruditIcon
-                                    :name="plusIcon"
-                                    class="hocus:text-white
-                                        dark:hocus:text-black rotate-45
-                                        text-[1.3em] text-neutral-400
-                                        transition-[color]
-                                        dark:text-neutral-600"
-                                />
-                            </button>
-                        </form>
-                    </div>
-                </EruditTransition>
-            </div>
-        </div>
-
-        <Suspense suspensible>
-            <component
-                v-if="currentAction"
-                :key="`${key}-${currentAction}`"
-                :is="expanderComponents[currentAction]"
-                :value="expandableActions[currentAction]"
-            />
-        </Suspense>
+              </button>
+            </form>
+          </div>
+        </EruditTransition>
+      </div>
     </div>
+
+    <Suspense suspensible>
+      <component
+        v-if="currentAction"
+        :key="`${key}-${currentAction}`"
+        :is="expanderComponents[currentAction]"
+        :value="expandableActions[currentAction]"
+      />
+    </Suspense>
+  </div>
 </template>

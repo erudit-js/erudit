@@ -12,17 +12,17 @@
 //
 
 import {
-    defineRegistryItem,
-    defineSchema,
-    ensureTagChildren,
-    ensureTagNoChildren,
-    isRawElement,
-    ProseError,
-    type AnySchema,
-    type BlockSchema,
-    type NormalizedChildren,
-    type NoTagChildren,
-    type TagChildren,
+  defineRegistryItem,
+  defineSchema,
+  ensureTagChildren,
+  ensureTagNoChildren,
+  isRawElement,
+  ProseError,
+  type AnySchema,
+  type BlockSchema,
+  type NormalizedChildren,
+  type NoTagChildren,
+  type TagChildren,
 } from '@jsprose/core';
 
 import { defineEruditTag } from '../../tag.js';
@@ -36,31 +36,31 @@ import { tryParagraphWrap } from '../../shared/paragraphWrap.js';
 /* --------------------------------------------------------- */
 
 function defineParagraphBlock<TName extends string>(opts: {
-    name: TName;
-    tagName: UppercaseFirst<TName>;
+  name: TName;
+  tagName: UppercaseFirst<TName>;
 }) {
-    const schema = defineSchema({
-        name: opts.name,
-        type: 'block',
-        linkable: false,
-    })<{
-        Data: undefined;
-        Storage: undefined;
-        Children: AnySchema[];
-    }>();
+  const schema = defineSchema({
+    name: opts.name,
+    type: 'block',
+    linkable: false,
+  })<{
+    Data: undefined;
+    Storage: undefined;
+    Children: AnySchema[];
+  }>();
 
-    const tag = defineEruditTag({
-        tagName: opts.tagName,
-        schema,
-    })<TagChildren>(({ element, tagName, children }) => {
-        ensureTagChildren(tagName, children);
-        element.children = tryParagraphWrap(children) ?? children;
-    });
+  const tag = defineEruditTag({
+    tagName: opts.tagName,
+    schema,
+  })<TagChildren>(({ element, tagName, children }) => {
+    ensureTagChildren(tagName, children);
+    element.children = tryParagraphWrap(children) ?? children;
+  });
 
-    const registryItem = defineRegistryItem({ schema, tags: [tag] });
-    const coreElement = defineEruditProseCoreElement({ registryItem });
+  const registryItem = defineRegistryItem({ schema, tags: [tag] });
+  const coreElement = defineEruditProseCoreElement({ registryItem });
 
-    return { schema, tag, registryItem, coreElement };
+  return { schema, tag, registryItem, coreElement };
 }
 
 /* --------------------------------------------------------- */
@@ -68,27 +68,27 @@ function defineParagraphBlock<TName extends string>(opts: {
 /* --------------------------------------------------------- */
 
 export const problemDescription = defineParagraphBlock({
-    name: 'problemDescription',
-    tagName: 'ProblemDescription',
+  name: 'problemDescription',
+  tagName: 'ProblemDescription',
 });
 
 export const problemHint = defineParagraphBlock({
-    name: 'problemHint',
-    tagName: 'ProblemHint',
+  name: 'problemHint',
+  tagName: 'ProblemHint',
 });
 
 export const {
-    schema: problemDescriptionSchema,
-    tag: ProblemDescription,
-    registryItem: problemDescriptionRegistryItem,
-    coreElement: problemDescriptionCoreElement,
+  schema: problemDescriptionSchema,
+  tag: ProblemDescription,
+  registryItem: problemDescriptionRegistryItem,
+  coreElement: problemDescriptionCoreElement,
 } = problemDescription;
 
 export const {
-    schema: problemHintSchema,
-    tag: ProblemHint,
-    registryItem: problemHintRegistryItem,
-    coreElement: problemHintCoreElement,
+  schema: problemHintSchema,
+  tag: ProblemHint,
+  registryItem: problemHintRegistryItem,
+  coreElement: problemHintCoreElement,
 } = problemHint;
 
 /* --------------------------------------------------------- */
@@ -96,37 +96,37 @@ export const {
 /* --------------------------------------------------------- */
 
 export const problemSectionSchema = defineSchema({
-    name: 'problemSection',
-    type: 'block',
-    linkable: false,
+  name: 'problemSection',
+  type: 'block',
+  linkable: false,
 })<{
-    Data: string;
-    Storage: undefined;
-    Children: AnySchema[];
+  Data: string;
+  Storage: undefined;
+  Children: AnySchema[];
 }>();
 
 export const ProblemSection = defineEruditTag({
-    tagName: 'ProblemSection',
-    schema: problemSectionSchema,
+  tagName: 'ProblemSection',
+  schema: problemSectionSchema,
 })<{ title: string } & TagChildren>(({ element, tagName, props, children }) => {
-    ensureTagChildren(tagName, children);
-    element.children = tryParagraphWrap(children) ?? children;
+  ensureTagChildren(tagName, children);
+  element.children = tryParagraphWrap(children) ?? children;
 
-    const title = props.title.trim();
-    if (!title) {
-        throw new ProseError(`${tagName} title must be non-empty.`);
-    }
+  const title = props.title.trim();
+  if (!title) {
+    throw new ProseError(`${tagName} title must be non-empty.`);
+  }
 
-    element.data = title;
+  element.data = title;
 });
 
 export const problemSectionRegistryItem = defineRegistryItem({
-    schema: problemSectionSchema,
-    tags: [ProblemSection],
+  schema: problemSectionSchema,
+  tags: [ProblemSection],
 });
 
 export const problemSectionCoreElement = defineEruditProseCoreElement({
-    registryItem: problemSectionRegistryItem,
+  registryItem: problemSectionRegistryItem,
 });
 
 /* --------------------------------------------------------- */
@@ -134,49 +134,49 @@ export const problemSectionCoreElement = defineEruditProseCoreElement({
 /* --------------------------------------------------------- */
 
 function defineProblemSectionContainer<T extends string>(name: T) {
-    const cap = uppercaseFirst(name);
-    const schemaName = `problem${cap}` as `problem${UppercaseFirst<T>}`;
-    const tagName = `Problem${cap}` as `Problem${UppercaseFirst<T>}`;
+  const cap = uppercaseFirst(name);
+  const schemaName = `problem${cap}` as `problem${UppercaseFirst<T>}`;
+  const tagName = `Problem${cap}` as `Problem${UppercaseFirst<T>}`;
 
-    const schema = defineSchema({
-        name: schemaName,
-        type: 'block',
-        linkable: false,
-    })<{ Data: undefined; Storage: undefined; Children: AnySchema[] }>();
+  const schema = defineSchema({
+    name: schemaName,
+    type: 'block',
+    linkable: false,
+  })<{ Data: undefined; Storage: undefined; Children: AnySchema[] }>();
 
-    const tag = defineEruditTag({ tagName, schema })<TagChildren>(({
-        element,
-        children,
-    }) => {
-        const head: EruditRawElement<AnySchema>[] = [];
-        const sections: EruditRawElement<typeof problemSectionSchema>[] = [];
+  const tag = defineEruditTag({ tagName, schema })<TagChildren>(({
+    element,
+    children,
+  }) => {
+    const head: EruditRawElement<AnySchema>[] = [];
+    const sections: EruditRawElement<typeof problemSectionSchema>[] = [];
 
-        let seenSection = false;
+    let seenSection = false;
 
-        for (const child of children!) {
-            if (isRawElement(child, problemSectionSchema)) {
-                seenSection = true;
-                sections.push(child);
-            } else {
-                if (seenSection) {
-                    throw new ProseError(
-                        `${tagName}: non-section children must come before <ProblemSection>.`,
-                    );
-                }
-                head.push(child);
-            }
+    for (const child of children!) {
+      if (isRawElement(child, problemSectionSchema)) {
+        seenSection = true;
+        sections.push(child);
+      } else {
+        if (seenSection) {
+          throw new ProseError(
+            `${tagName}: non-section children must come before <ProblemSection>.`,
+          );
         }
+        head.push(child);
+      }
+    }
 
-        element.children = [
-            ...(tryParagraphWrap(head as NormalizedChildren) ?? head),
-            ...sections,
-        ];
-    });
+    element.children = [
+      ...(tryParagraphWrap(head as NormalizedChildren) ?? head),
+      ...sections,
+    ];
+  });
 
-    const registryItem = defineRegistryItem({ schema, tags: [tag] });
-    const coreElement = defineEruditProseCoreElement({ registryItem });
+  const registryItem = defineRegistryItem({ schema, tags: [tag] });
+  const coreElement = defineEruditProseCoreElement({ registryItem });
 
-    return { schema, tag, registryItem, coreElement };
+  return { schema, tag, registryItem, coreElement };
 }
 
 export const problemNote = defineProblemSectionContainer('note');
@@ -188,29 +188,29 @@ export const problemAnswer = defineProblemSectionContainer('answer');
 /* --------------------------------------------------------- */
 
 export type CheckFunction = (args: {
-    answer: string | undefined;
-    name: string;
-    answers: Record<string, string | undefined>;
+  answer: string | undefined;
+  name: string;
+  answers: Record<string, string | undefined>;
 }) => boolean;
 
 export interface ProblemCheckRegex {
-    pattern: string;
-    flags: string;
+  pattern: string;
+  flags: string;
 }
 
 export type ProblemCheckValue = string | ProblemCheckRegex | undefined;
 export type ProblemCheckSetValue = string | ProblemCheckRegex;
 
 export interface ProblemCheckData {
-    label?: string;
-    hint?: string;
-    placeholder?: string;
-    answers?: ProblemCheckValue[];
-    set?: {
-        separator: string;
-        values: (ProblemCheckSetValue | ProblemCheckSetValue[])[];
-    };
-    script?: string;
+  label?: string;
+  hint?: string;
+  placeholder?: string;
+  answers?: ProblemCheckValue[];
+  set?: {
+    separator: string;
+    values: (ProblemCheckSetValue | ProblemCheckSetValue[])[];
+  };
+  script?: string;
 }
 
 /* --------------------------------------------------------- */
@@ -220,96 +220,94 @@ export interface ProblemCheckData {
 type Answer = string | number | RegExp | undefined;
 
 function normalizeValue(v: Answer): ProblemCheckValue {
-    if (v === undefined) return undefined;
-    if (v instanceof RegExp) {
-        return { pattern: v.source, flags: v.flags };
-    }
-    return String(v);
+  if (v === undefined) return undefined;
+  if (v instanceof RegExp) {
+    return { pattern: v.source, flags: v.flags };
+  }
+  return String(v);
 }
 
 function safeRegexTest(re: ProblemCheckRegex, value: string): boolean {
-    try {
-        return new RegExp(re.pattern, re.flags).test(value);
-    } catch {
-        return false;
-    }
+  try {
+    return new RegExp(re.pattern, re.flags).test(value);
+  } catch {
+    return false;
+  }
 }
 
 function matchSingle(
-    value: string | undefined,
-    expected: ProblemCheckValue,
+  value: string | undefined,
+  expected: ProblemCheckValue,
 ): boolean {
-    // Handle null as undefined (from JSON serialization)
-    const normalizedExpected = expected === null ? undefined : expected;
-    const normalizedValue = value === null ? undefined : value;
+  // Handle null as undefined (from JSON serialization)
+  const normalizedExpected = expected === null ? undefined : expected;
+  const normalizedValue = value === null ? undefined : value;
 
-    if (normalizedExpected === undefined) return normalizedValue === undefined;
-    if (typeof normalizedExpected === 'string')
-        return normalizedValue === normalizedExpected;
-    if (normalizedValue === undefined) return false;
-    return safeRegexTest(normalizedExpected, normalizedValue);
+  if (normalizedExpected === undefined) return normalizedValue === undefined;
+  if (typeof normalizedExpected === 'string')
+    return normalizedValue === normalizedExpected;
+  if (normalizedValue === undefined) return false;
+  return safeRegexTest(normalizedExpected, normalizedValue);
 }
 
 function matchSet(
-    value: string,
-    set: NonNullable<ProblemCheckData['set']>,
+  value: string,
+  set: NonNullable<ProblemCheckData['set']>,
 ): boolean {
-    const sep = new RegExp(
-        `\\s*${set.separator.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\s*`,
-    );
+  const sep = new RegExp(
+    `\\s*${set.separator.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\s*`,
+  );
 
-    const inputs = value.split(sep).filter(Boolean);
-    if (inputs.length !== set.values.length) return false;
+  const inputs = value.split(sep).filter(Boolean);
+  if (inputs.length !== set.values.length) return false;
 
-    const canMatch = (
-        v: string,
-        expected: ProblemCheckSetValue | ProblemCheckSetValue[],
-    ): boolean =>
-        Array.isArray(expected)
-            ? expected.some((e) =>
-                  typeof e === 'string' ? v === e : safeRegexTest(e, v),
-              )
-            : typeof expected === 'string'
-              ? v === expected
-              : safeRegexTest(expected, v);
+  const canMatch = (
+    v: string,
+    expected: ProblemCheckSetValue | ProblemCheckSetValue[],
+  ): boolean =>
+    Array.isArray(expected)
+      ? expected.some((e) =>
+          typeof e === 'string' ? v === e : safeRegexTest(e, v),
+        )
+      : typeof expected === 'string'
+        ? v === expected
+        : safeRegexTest(expected, v);
 
-    const adj = inputs.map((v) =>
-        set.values
-            .map((e, i) => (canMatch(v, e) ? i : -1))
-            .filter((i) => i !== -1),
-    );
+  const adj = inputs.map((v) =>
+    set.values.map((e, i) => (canMatch(v, e) ? i : -1)).filter((i) => i !== -1),
+  );
 
-    const match = new Array(set.values.length).fill(-1);
+  const match = new Array(set.values.length).fill(-1);
 
-    const dfs = (u: number, seen: boolean[]): boolean =>
-        adj[u].some((v) => {
-            if (seen[v]) return false;
-            seen[v] = true;
-            return match[v] === -1 || dfs(match[v], seen)
-                ? ((match[v] = u), true)
-                : false;
-        });
+  const dfs = (u: number, seen: boolean[]): boolean =>
+    adj[u].some((v) => {
+      if (seen[v]) return false;
+      seen[v] = true;
+      return match[v] === -1 || dfs(match[v], seen)
+        ? ((match[v] = u), true)
+        : false;
+    });
 
-    return inputs.every((_, i) =>
-        dfs(i, new Array(set.values.length).fill(false)),
-    );
+  return inputs.every((_, i) =>
+    dfs(i, new Array(set.values.length).fill(false)),
+  );
 }
 
 export function checkValue(
-    input: string | undefined,
-    data: ProblemCheckData,
+  input: string | undefined,
+  data: ProblemCheckData,
 ): boolean {
-    const normalized = input?.trim().replace(/\s+/g, ' ') || undefined;
+  const normalized = input?.trim().replace(/\s+/g, ' ') || undefined;
 
-    if (data.answers) {
-        return data.answers.some((a) => matchSingle(normalized, a));
-    }
+  if (data.answers) {
+    return data.answers.some((a) => matchSingle(normalized, a));
+  }
 
-    if (data.set && normalized !== undefined) {
-        return matchSet(normalized, data.set);
-    }
+  if (data.set && normalized !== undefined) {
+    return matchSet(normalized, data.set);
+  }
 
-    return false;
+  return false;
 }
 
 /* --------------------------------------------------------- */
@@ -317,105 +315,105 @@ export function checkValue(
 /* --------------------------------------------------------- */
 
 export const problemCheckSchema = defineSchema({
-    name: 'problemCheck',
-    type: 'block',
-    linkable: false,
+  name: 'problemCheck',
+  type: 'block',
+  linkable: false,
 })<{
-    Data: ProblemCheckData;
-    Storage: undefined;
-    Children: BlockSchema[];
+  Data: ProblemCheckData;
+  Storage: undefined;
+  Children: BlockSchema[];
 }>();
 
 type UndefinedOnly<T> = { [K in keyof T]?: undefined };
 
 type OneOf<T extends Record<string, any>> = {
-    [K in keyof T]: Pick<T, K> & UndefinedOnly<Omit<T, K>>;
+  [K in keyof T]: Pick<T, K> & UndefinedOnly<Omit<T, K>>;
 }[keyof T];
 
 export const ProblemCheck = defineEruditTag({
-    tagName: 'ProblemCheck',
-    schema: problemCheckSchema,
+  tagName: 'ProblemCheck',
+  schema: problemCheckSchema,
 })<
-    { label?: string; hint?: string; placeholder?: string } & OneOf<{
-        answer: Answer;
-        answers: Answer[];
-        set:
-            | (Answer | Answer[])[]
-            | {
-                  separator: string;
-                  values: (Answer | Answer[])[];
-              };
-        script: string;
-    }> &
-        (TagChildren | NoTagChildren)
->(({ element, tagName, props, children }) => {
-    if (children && children.length > 0) {
-        ensureTagChildren(tagName, children, problemCheckSchema);
-        element.children = children as any;
-    } else {
-        ensureTagNoChildren(tagName, children);
-    }
-
-    const data: ProblemCheckData = {};
-
-    if ('answer' in props) {
-        data.answers = [normalizeValue(props.answer)];
-    } else if ('answers' in props) {
-        data.answers = props.answers!.map(normalizeValue);
-    } else if ('script' in props) {
-        data.script = props.script;
-    } else if ('set' in props) {
-        const normalizeSetItem = (
-            v: Answer | Answer[],
-        ): ProblemCheckSetValue | ProblemCheckSetValue[] => {
-            if (Array.isArray(v)) {
-                return v.map((x) => {
-                    const nv = normalizeValue(x);
-                    if (!nv) {
-                        throw new ProseError(
-                            `${tagName}: undefined not allowed in set values.`,
-                        );
-                    }
-                    return nv;
-                });
-            }
-
-            const nv = normalizeValue(v);
-            if (!nv) {
-                throw new ProseError(
-                    `${tagName}: undefined not allowed in set values.`,
-                );
-            }
-            return nv;
+  { label?: string; hint?: string; placeholder?: string } & OneOf<{
+    answer: Answer;
+    answers: Answer[];
+    set:
+      | (Answer | Answer[])[]
+      | {
+          separator: string;
+          values: (Answer | Answer[])[];
         };
+    script: string;
+  }> &
+    (TagChildren | NoTagChildren)
+>(({ element, tagName, props, children }) => {
+  if (children && children.length > 0) {
+    ensureTagChildren(tagName, children, problemCheckSchema);
+    element.children = children as any;
+  } else {
+    ensureTagNoChildren(tagName, children);
+  }
 
-        if (Array.isArray(props.set)) {
-            data.set = {
-                separator: ',',
-                values: props.set.map(normalizeSetItem),
-            };
-        } else {
-            data.set = {
-                separator: props.set.separator,
-                values: props.set.values.map(normalizeSetItem),
-            };
-        }
+  const data: ProblemCheckData = {};
+
+  if ('answer' in props) {
+    data.answers = [normalizeValue(props.answer)];
+  } else if ('answers' in props) {
+    data.answers = props.answers!.map(normalizeValue);
+  } else if ('script' in props) {
+    data.script = props.script;
+  } else if ('set' in props) {
+    const normalizeSetItem = (
+      v: Answer | Answer[],
+    ): ProblemCheckSetValue | ProblemCheckSetValue[] => {
+      if (Array.isArray(v)) {
+        return v.map((x) => {
+          const nv = normalizeValue(x);
+          if (!nv) {
+            throw new ProseError(
+              `${tagName}: undefined not allowed in set values.`,
+            );
+          }
+          return nv;
+        });
+      }
+
+      const nv = normalizeValue(v);
+      if (!nv) {
+        throw new ProseError(
+          `${tagName}: undefined not allowed in set values.`,
+        );
+      }
+      return nv;
+    };
+
+    if (Array.isArray(props.set)) {
+      data.set = {
+        separator: ',',
+        values: props.set.map(normalizeSetItem),
+      };
+    } else {
+      data.set = {
+        separator: props.set.separator,
+        values: props.set.values.map(normalizeSetItem),
+      };
     }
+  }
 
-    if (props.label !== undefined) data.label = props.label;
-    if (props.hint !== undefined) data.hint = props.hint;
-    if (props.placeholder !== undefined) data.placeholder = props.placeholder;
+  if (props.label !== undefined) data.label = props.label;
+  if (props.hint !== undefined) data.hint = props.hint;
+  if (props.placeholder !== undefined) data.placeholder = props.placeholder;
 
-    element.data = data;
+  element.data = data;
 });
 
 export const problemCheckRegistryItem = defineRegistryItem({
-    schema: problemCheckSchema,
-    tags: [ProblemCheck],
+  schema: problemCheckSchema,
+  tags: [ProblemCheck],
 });
 
 export const problemCheckCoreElement = defineEruditProseCoreElement({
-    registryItem: problemCheckRegistryItem,
+  registryItem: problemCheckRegistryItem,
 });
 
 /* --------------------------------------------------------- */
@@ -423,45 +421,45 @@ export const problemCheckCoreElement = defineEruditProseCoreElement({
 /* --------------------------------------------------------- */
 
 export type ProblemContentChild =
-    | typeof problemDescriptionSchema
-    | typeof problemHintSchema
-    | typeof problemNote.schema
-    | typeof problemSolution.schema
-    | typeof problemAnswer.schema
-    | typeof problemCheckSchema;
+  | typeof problemDescriptionSchema
+  | typeof problemHintSchema
+  | typeof problemNote.schema
+  | typeof problemSolution.schema
+  | typeof problemAnswer.schema
+  | typeof problemCheckSchema;
 
 export function validateProblemContent(
-    source: string,
-    children: NormalizedChildren,
+  source: string,
+  children: NormalizedChildren,
 ) {
-    ensureTagChildren(source, children, [
-        problemDescriptionSchema,
-        problemHintSchema,
-        problemNote.schema,
-        problemSolution.schema,
-        problemAnswer.schema,
-        problemCheckSchema,
-    ]);
+  ensureTagChildren(source, children, [
+    problemDescriptionSchema,
+    problemHintSchema,
+    problemNote.schema,
+    problemSolution.schema,
+    problemAnswer.schema,
+    problemCheckSchema,
+  ]);
 
-    const uniques = [
-        { schema: problemDescriptionSchema, label: 'ProblemDescription' },
-        { schema: problemSolution.schema, label: 'ProblemSolution' },
-        { schema: problemAnswer.schema, label: 'ProblemAnswer' },
-    ] as const;
+  const uniques = [
+    { schema: problemDescriptionSchema, label: 'ProblemDescription' },
+    { schema: problemSolution.schema, label: 'ProblemSolution' },
+    { schema: problemAnswer.schema, label: 'ProblemAnswer' },
+  ] as const;
 
-    const seen = new Set<string>();
+  const seen = new Set<string>();
 
-    for (const child of children) {
-        for (const { schema, label } of uniques) {
-            if (isRawElement(child, schema)) {
-                if (seen.has(label)) {
-                    throw new ProseError(
-                        `Invalid problem content at ${source}: only one <${label}> allowed.`,
-                    );
-                }
-                seen.add(label);
-                break;
-            }
+  for (const child of children) {
+    for (const { schema, label } of uniques) {
+      if (isRawElement(child, schema)) {
+        if (seen.has(label)) {
+          throw new ProseError(
+            `Invalid problem content at ${source}: only one <${label}> allowed.`,
+          );
         }
+        seen.add(label);
+        break;
+      }
     }
+  }
 }

@@ -1,29 +1,29 @@
 import type { GlobalContributorTypeguard } from '../contributor.js';
 
 export interface ConfigContributionDescribed {
-    contributor: GlobalContributorTypeguard;
-    description: string;
+  contributor: GlobalContributorTypeguard;
+  description: string;
 }
 
 export type ConfigContribution =
-    | GlobalContributorTypeguard
-    | ConfigContributionDescribed;
+  | GlobalContributorTypeguard
+  | ConfigContributionDescribed;
 
 export type IContributable = {
-    /**
-     * List of contributions to this content item.
-     * You can access contributors via `$CONTRIBUTOR` global variable:
-     * ```ts
-     * contributions: [
-     *   $CONTRIBUTOR.john,
-     *   {
-     *     contributor: $CONTRIBUTOR.alice,
-     *     description: 'Proposed problem "A game of circles".'
-     *   }
-     * ],
-     * ```
-     */
-    contributions?: ConfigContribution[];
+  /**
+   * List of contributions to this content item.
+   * You can access contributors via `$CONTRIBUTOR` global variable:
+   * ```ts
+   * contributions: [
+   *   $CONTRIBUTOR.john,
+   *   {
+   *     contributor: $CONTRIBUTOR.alice,
+   *     description: 'Proposed problem "A game of circles".'
+   *   }
+   * ],
+   * ```
+   */
+  contributions?: ConfigContribution[];
 };
 
 //
@@ -31,10 +31,10 @@ export type IContributable = {
 //
 
 export interface ContentContribution {
-    contributorId: string;
-    name?: string;
-    avatarUrl?: string;
-    description?: string;
+  contributorId: string;
+  name?: string;
+  avatarUrl?: string;
+  description?: string;
 }
 
 //
@@ -42,17 +42,17 @@ export interface ContentContribution {
 //
 
 export interface ContributorContributionItem {
-    type: 'topic' | 'page';
-    title: string;
-    link: string;
+  type: 'topic' | 'page';
+  title: string;
+  link: string;
 }
 
 export interface ContributorContributionBook {
-    type: 'book';
-    title: string;
-    items: ContributorContributionItem[];
+  type: 'book';
+  title: string;
+  items: ContributorContributionItem[];
 }
 
 export type ContributorContribution =
-    | ContributorContributionItem
-    | ContributorContributionBook;
+  | ContributorContributionItem
+  | ContributorContributionBook;

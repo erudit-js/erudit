@@ -4,62 +4,62 @@ import type { ProseElement } from '@jsprose/core';
 
 import Inliner from '../../../app/shared/inliner/Inliner.vue';
 import {
-    createInlinerMathStorage,
-    type inlinerMathSchema,
+  createInlinerMathStorage,
+  type inlinerMathSchema,
 } from '../inliner.js';
 import { useElementStorage } from '../../../app/composables/storage.js';
 import Katex from './Katex.vue';
 
 const { element } = defineProps<{
-    element: ProseElement<typeof inlinerMathSchema>;
+  element: ProseElement<typeof inlinerMathSchema>;
 }>();
 
 const inlinerMathStorage =
-    (await useElementStorage<typeof inlinerMathSchema>(element)) ??
-    (await createInlinerMathStorage(element.data));
+  (await useElementStorage<typeof inlinerMathSchema>(element)) ??
+  (await createInlinerMathStorage(element.data));
 </script>
 
 <template>
-    <Inliner :element>
-        <template v-if="inlinerMathStorage.type === 'text'">
-            <span :class="[$style.inlinerMath, $style.textMath]">
-                <template v-for="token of inlinerMathStorage.tokens">
-                    <span :class="{ [$style.word]: token.type === 'word' }">
-                        {{ token.value }}
-                    </span>
-                </template>
-            </span>
+  <Inliner :element>
+    <template v-if="inlinerMathStorage.type === 'text'">
+      <span :class="[$style.inlinerMath, $style.textMath]">
+        <template v-for="token of inlinerMathStorage.tokens">
+          <span :class="{ [$style.word]: token.type === 'word' }">
+            {{ token.value }}
+          </span>
         </template>
-        <Katex
-            v-else
-            :class="$style.inlinerMath"
-            :math="inlinerMathStorage.mathHtml"
-            mode="inline"
-            :freeze="false"
-        />
-    </Inliner>
+      </span>
+    </template>
+    <Katex
+      v-else
+      :class="$style.inlinerMath"
+      :math="inlinerMathStorage.mathHtml"
+      mode="inline"
+      :freeze="false"
+    />
+  </Inliner>
 </template>
 
 <style module>
 .inlinerMath {
-    --katex-color_default: light-dark(
-        color-mix(in hsl, var(--color-text-muted), var(--color-brand) 35%),
-        color-mix(in hsl, var(--color-text), var(--color-brand) 30%)
-    );
+  --katex-color_default: light-dark(
+    color-mix(in hsl, var(--color-text-muted), var(--color-brand) 35%),
+    color-mix(in hsl, var(--color-text), var(--color-brand) 30%)
+  );
 }
 
 .textMath {
-    font:
-        normal 1.15em KaTeX_Main,
-        Times New Roman,
-        serif;
-    line-height: 1.2;
-    text-indent: 0;
-    color: var(--katex-color_default);
+  font:
+    normal 1.15em KaTeX_Main,
+    Times New Roman,
+    serif;
+  line-height: 1.2;
+  text-indent: 0;
+  color: var(--katex-color_default);
 
-    .word {
-        font-family: KaTeX_Math;
-        font-style: italic;
-    }
+  .word {
+    font-family: KaTeX_Math;
+    font-style: italic;
+  }
 }
 </style>

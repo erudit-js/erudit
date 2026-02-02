@@ -8,7 +8,7 @@ import shareIcon from '../assets/share.svg?raw';
 import checkIcon from '../assets/check.svg?raw';
 
 const { elementId } = defineProps<{
-    elementId: string;
+  elementId: string;
 }>();
 
 const { pathUrl, baseUrl } = useProseContext();
@@ -18,23 +18,23 @@ const copied = ref(false);
 let resetTimer: number | undefined;
 
 async function copyLink() {
-    await navigator.clipboard.writeText(
-        location.origin + baseUrl + pathUrl.substring(1) + '#' + elementId,
-    );
-    copied.value = true;
-    if (resetTimer) clearTimeout(resetTimer);
-    resetTimer = window.setTimeout(() => {
-        copied.value = false;
-        resetTimer = undefined;
-    }, 2500);
+  await navigator.clipboard.writeText(
+    location.origin + baseUrl + pathUrl.substring(1) + '#' + elementId,
+  );
+  copied.value = true;
+  if (resetTimer) clearTimeout(resetTimer);
+  resetTimer = window.setTimeout(() => {
+    copied.value = false;
+    resetTimer = undefined;
+  }, 2500);
 }
 </script>
 
 <template>
-    <AsideMenuButton
-        :brand="copied"
-        :icon="copied ? checkIcon : shareIcon"
-        :title="copied ? prosePhrase.copied : prosePhrase.copy_link"
-        @click="copyLink"
-    />
+  <AsideMenuButton
+    :brand="copied"
+    :icon="copied ? checkIcon : shareIcon"
+    :title="copied ? prosePhrase.copied : prosePhrase.copy_link"
+    @click="copyLink"
+  />
 </template>

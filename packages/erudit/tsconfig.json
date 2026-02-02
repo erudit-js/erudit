@@ -1,17 +1,17 @@
 {
-    "files": [],
-    "references": [
-        {
-            "path": "../../playground/.erudit/nuxt/.nuxt/tsconfig.app.json"
-        },
-        {
-            "path": "../../playground/.erudit/nuxt/.nuxt/tsconfig.server.json"
-        },
-        {
-            "path": "../../playground/.erudit/nuxt/.nuxt/tsconfig.shared.json"
-        },
-        {
-            "path": "../../playground/.erudit/nuxt/.nuxt/tsconfig.node.json"
-        }
-    ]
+  "files": [],
+  "references": [
+    {
+      "path": "../../playground/.erudit/nuxt/.nuxt/tsconfig.app.json"
+    },
+    {
+      "path": "../../playground/.erudit/nuxt/.nuxt/tsconfig.server.json"
+    },
+    {
+      "path": "../../playground/.erudit/nuxt/.nuxt/tsconfig.shared.json"
+    },
+    {
+      "path": "../../playground/.erudit/nuxt/.nuxt/tsconfig.node.json"
+    }
+  ]
 }

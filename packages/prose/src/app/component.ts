@@ -4,10 +4,10 @@ export type ElementComponentRaw = () => Promise<{ default: Component }>;
 export type ElementComponent = () => Promise<Component>;
 
 export function resolveElementComponent(
-    componentRaw: ElementComponentRaw,
+  componentRaw: ElementComponentRaw,
 ): ElementComponent {
-    return async () => {
-        const componentModule = await componentRaw();
-        return componentModule.default;
-    };
+  return async () => {
+    const componentModule = await componentRaw();
+    return componentModule.default;
+  };
 }

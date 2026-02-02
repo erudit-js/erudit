@@ -1,26 +1,26 @@
 {
-    "name": "@erudit-js/core",
-    "version": "4.0.0-dev.5",
-    "type": "module",
-    "description": "Erudit core essentials",
-    "exports": {
-        ".": {},
-        "./*": {
-            "import": "./dist/*.js",
-            "types": "./dist/*.d.ts"
-        }
-    },
-    "files": [
-        "dist"
-    ],
-    "license": "MIT",
-    "scripts": {
-        "build": "rm -rf dist && bun tsc --project ./tsconfig.src.json",
-        "test": "bun vitest run",
-        "prepack": "bun run build"
-    },
-    "dependencies": {
-        "@jsprose/core": "^1.0.0",
-        "gradient-string": "^3.0.0"
+  "name": "@erudit-js/core",
+  "version": "4.0.0-dev.5",
+  "type": "module",
+  "description": "Erudit core essentials",
+  "exports": {
+    ".": {},
+    "./*": {
+      "import": "./dist/*.js",
+      "types": "./dist/*.d.ts"
     }
+  },
+  "files": [
+    "dist"
+  ],
+  "license": "MIT",
+  "scripts": {
+    "build": "rm -rf dist && bun tsc --project ./tsconfig.src.json",
+    "test": "bun vitest run",
+    "prepack": "bun run build"
+  },
+  "dependencies": {
+    "@jsprose/core": "^1.0.0",
+    "gradient-string": "^3.0.0"
+  }
 }

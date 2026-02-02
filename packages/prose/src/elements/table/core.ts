@@ -1,10 +1,10 @@
 import {
-    defineRegistryItem,
-    defineSchema,
-    ensureTagChildren,
-    ensureTagInlinerChildren,
-    type InlinerSchema,
-    type TagChildren,
+  defineRegistryItem,
+  defineSchema,
+  ensureTagChildren,
+  ensureTagInlinerChildren,
+  type InlinerSchema,
+  type TagChildren,
 } from '@jsprose/core';
 
 import { defineEruditTag } from '../../tag.js';
@@ -16,26 +16,26 @@ import { defineEruditProseCoreElements } from '../../coreElement.js';
 //
 
 export const tableDataSchema = defineSchema({
-    name: 'tableData',
-    type: 'inliner',
-    linkable: false,
+  name: 'tableData',
+  type: 'inliner',
+  linkable: false,
 })<{
-    Data: undefined;
-    Storage: undefined;
-    Children: InlinerSchema[];
+  Data: undefined;
+  Storage: undefined;
+  Children: InlinerSchema[];
 }>();
 
 export const Td = defineEruditTag({
-    tagName: 'Td',
-    schema: tableDataSchema,
+  tagName: 'Td',
+  schema: tableDataSchema,
 })<TagChildren>(({ element, children, tagName, registry }) => {
-    ensureTagInlinerChildren(tagName, children, registry);
-    element.children = children;
+  ensureTagInlinerChildren(tagName, children, registry);
+  element.children = children;
 });
 
 export const tableDataRegistryItem = defineRegistryItem({
-    schema: tableDataSchema,
-    tags: [Td],
+  schema: tableDataSchema,
+  tags: [Td],
 });
 
 //
@@ -43,26 +43,26 @@ export const tableDataRegistryItem = defineRegistryItem({
 //
 
 export const tableRowSchema = defineSchema({
-    name: 'tableRow',
-    type: 'inliner',
-    linkable: false,
+  name: 'tableRow',
+  type: 'inliner',
+  linkable: false,
 })<{
-    Data: undefined;
-    Storage: undefined;
-    Children: (typeof tableDataSchema)[];
+  Data: undefined;
+  Storage: undefined;
+  Children: (typeof tableDataSchema)[];
 }>();
 
 export const Tr = defineEruditTag({
-    tagName: 'Tr',
-    schema: tableRowSchema,
+  tagName: 'Tr',
+  schema: tableRowSchema,
 })<TagChildren>(({ element, children, tagName }) => {
-    ensureTagChildren(tagName, children, tableDataSchema);
-    element.children = children;
+  ensureTagChildren(tagName, children, tableDataSchema);
+  element.children = children;
 });
 
 export const tableRowRegistryItem = defineRegistryItem({
-    schema: tableRowSchema,
-    tags: [Tr],
+  schema: tableRowSchema,
+  tags: [Tr],
 });
 
 //
@@ -70,26 +70,26 @@ export const tableRowRegistryItem = defineRegistryItem({
 //
 
 export const tableSchema = defineSchema({
-    name: 'table',
-    type: 'block',
-    linkable: true,
+  name: 'table',
+  type: 'block',
+  linkable: true,
 })<{
-    Data: undefined;
-    Storage: undefined;
-    Children: (typeof tableRowSchema | typeof captionSchema)[];
+  Data: undefined;
+  Storage: undefined;
+  Children: (typeof tableRowSchema | typeof captionSchema)[];
 }>();
 
 export const Table = defineEruditTag({
-    tagName: 'Table',
-    schema: tableSchema,
+  tagName: 'Table',
+  schema: tableSchema,
 })<TagChildren>(({ element, children, tagName }) => {
-    ensureTagChildren(tagName, children, [tableRowSchema, captionSchema]);
-    element.children = children;
+  ensureTagChildren(tagName, children, [tableRowSchema, captionSchema]);
+  element.children = children;
 });
 
 export const tableRegistryItem = defineRegistryItem({
-    schema: tableSchema,
-    tags: [Table],
+  schema: tableSchema,
+  tags: [Table],
 });
 
 //
@@ -97,7 +97,7 @@ export const tableRegistryItem = defineRegistryItem({
 //
 
 export default defineEruditProseCoreElements(
-    { registryItem: tableDataRegistryItem },
-    { registryItem: tableRowRegistryItem },
-    { registryItem: tableRegistryItem },
+  { registryItem: tableDataRegistryItem },
+  { registryItem: tableRowRegistryItem },
+  { registryItem: tableRegistryItem },
 );

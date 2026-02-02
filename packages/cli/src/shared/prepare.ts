@@ -4,153 +4,153 @@ import chalk from 'chalk';
 import { CONFIG } from '../config.js';
 
 export async function prepareProject({
-    absProjectPath,
+  absProjectPath,
 }: {
-    absProjectPath: string;
+  absProjectPath: string;
 }) {
-    process.stdout.write('Preparing Erudit project...');
+  process.stdout.write('Preparing Erudit project...');
 
-    const eruditBuildPath = `${absProjectPath}/.erudit`;
-    const nuxtLayerPath = `${eruditBuildPath}/nuxt`;
-    const distPath = `${absProjectPath}/.output`;
+  const eruditBuildPath = `${absProjectPath}/.erudit`;
+  const nuxtLayerPath = `${eruditBuildPath}/nuxt`;
+  const distPath = `${absProjectPath}/.output`;
 
-    if (existsSync(eruditBuildPath)) {
-        rmSync(eruditBuildPath, { force: true, recursive: true });
-    }
+  if (existsSync(eruditBuildPath)) {
+    rmSync(eruditBuildPath, { force: true, recursive: true });
+  }
 
-    if (existsSync(distPath)) {
-        rmSync(distPath, { force: true, recursive: true });
-    }
+  if (existsSync(distPath)) {
+    rmSync(distPath, { force: true, recursive: true });
+  }
 
-    mkdirSync(nuxtLayerPath, { recursive: true });
+  mkdirSync(nuxtLayerPath, { recursive: true });
 
-    if (!existsSync(`${absProjectPath}/erudit.config.ts`)) {
-        writeFileSync(
-            `${absProjectPath}/erudit.config.ts`,
-            `export default defineEruditConfig({\n  /* Adjust Erudit to your needs here... */\n});`,
-        );
-    }
-
-    if (!existsSync(`${absProjectPath}/tsconfig.json`)) {
-        writeFileSync(
-            `${absProjectPath}/tsconfig.json`,
-            JSON.stringify(
-                {
-                    files: [],
-                    references: [
-                        {
-                            path: './.erudit/tsconfig.erudit.json',
-                        },
-                        {
-                            path: './.erudit/tsconfig.nuxt.app.json',
-                        },
-                        {
-                            path: './.erudit/tsconfig.nuxt.server.json',
-                        },
-                        {
-                            path: './.erudit/tsconfig.nuxt.shared.json',
-                        },
-                        {
-                            path: './.erudit/tsconfig.nuxt.node.json',
-                        },
-                    ],
-                },
-                null,
-                2,
-            ),
-        );
-    }
-
+  if (!existsSync(`${absProjectPath}/erudit.config.ts`)) {
     writeFileSync(
-        `${nuxtLayerPath}/nuxt.config.ts`,
-        `
+      `${absProjectPath}/erudit.config.ts`,
+      `export default defineEruditConfig({\n  /* Adjust Erudit to your needs here... */\n});`,
+    );
+  }
+
+  if (!existsSync(`${absProjectPath}/tsconfig.json`)) {
+    writeFileSync(
+      `${absProjectPath}/tsconfig.json`,
+      JSON.stringify(
+        {
+          files: [],
+          references: [
+            {
+              path: './.erudit/tsconfig.erudit.json',
+            },
+            {
+              path: './.erudit/tsconfig.nuxt.app.json',
+            },
+            {
+              path: './.erudit/tsconfig.nuxt.server.json',
+            },
+            {
+              path: './.erudit/tsconfig.nuxt.shared.json',
+            },
+            {
+              path: './.erudit/tsconfig.nuxt.node.json',
+            },
+          ],
+        },
+        null,
+        2,
+      ),
+    );
+  }
+
+  writeFileSync(
+    `${nuxtLayerPath}/nuxt.config.ts`,
+    `
         export default {
             compatibilityDate: '2026-01-01',
             extends: ['${CONFIG.ERUDIT_PATH}'],
         }
         `,
-    );
+  );
 
-    ['app', 'server', 'shared', 'node'].forEach((name) => {
-        writeFileSync(
-            `${eruditBuildPath}/tsconfig.nuxt.${name}.json`,
-            JSON.stringify(
-                { extends: [`./nuxt/.nuxt/tsconfig.${name}.json`] },
-                null,
-                4,
-            ),
-        );
-    });
-
-    mkdirSync(`${eruditBuildPath}/types`, { recursive: true });
-
+  ['app', 'server', 'shared', 'node'].forEach((name) => {
     writeFileSync(
-        `${eruditBuildPath}/tsconfig.erudit.json`,
-        JSON.stringify(
+      `${eruditBuildPath}/tsconfig.nuxt.${name}.json`,
+      JSON.stringify(
+        { extends: [`./nuxt/.nuxt/tsconfig.${name}.json`] },
+        null,
+        4,
+      ),
+    );
+  });
+
+  mkdirSync(`${eruditBuildPath}/types`, { recursive: true });
+
+  writeFileSync(
+    `${eruditBuildPath}/tsconfig.erudit.json`,
+    JSON.stringify(
+      {
+        compilerOptions: {
+          paths: {
+            '#project/*': [`${absProjectPath}/*`],
+            '#content/*': [`${absProjectPath}/content/*`],
+          },
+          verbatimModuleSyntax: true,
+          forceConsistentCasingInFileNames: true,
+          strict: true,
+          noEmit: true,
+          skipLibCheck: true,
+          target: 'ESNext',
+          module: 'ESNext',
+          moduleResolution: 'Bundler',
+          allowJs: true,
+          resolveJsonModule: true,
+          allowSyntheticDefaultImports: true,
+          jsx: 'react-jsx',
+          jsxImportSource: '@jsprose/core',
+          types: ['@jsprose/core/types', '@erudit-js/prose/types'],
+          lib: ['ESNext'],
+        },
+        include: [`${absProjectPath}/**/*`, `${eruditBuildPath}/**/*`],
+        exclude: [`${nuxtLayerPath}/**/*`],
+      },
+      null,
+      4,
+    ),
+  );
+
+  if (!existsSync(`${absProjectPath}/tsconfig.json`)) {
+    writeFileSync(
+      `${absProjectPath}/tsconfig.json`,
+      JSON.stringify(
+        {
+          files: [],
+          references: [
             {
-                compilerOptions: {
-                    paths: {
-                        '#project/*': [`${absProjectPath}/*`],
-                        '#content/*': [`${absProjectPath}/content/*`],
-                    },
-                    verbatimModuleSyntax: true,
-                    forceConsistentCasingInFileNames: true,
-                    strict: true,
-                    noEmit: true,
-                    skipLibCheck: true,
-                    target: 'ESNext',
-                    module: 'ESNext',
-                    moduleResolution: 'Bundler',
-                    allowJs: true,
-                    resolveJsonModule: true,
-                    allowSyntheticDefaultImports: true,
-                    jsx: 'react-jsx',
-                    jsxImportSource: '@jsprose/core',
-                    types: ['@jsprose/core/types', '@erudit-js/prose/types'],
-                    lib: ['ESNext'],
-                },
-                include: [`${absProjectPath}/**/*`, `${eruditBuildPath}/**/*`],
-                exclude: [`${nuxtLayerPath}/**/*`],
+              path: `./.erudit/tsconfig.erudit.json`,
             },
-            null,
-            4,
-        ),
+            {
+              path: `./.erudit/tsconfig.nuxt.app.json`,
+            },
+            {
+              path: `./.erudit/tsconfig.nuxt.server.json`,
+            },
+            {
+              path: `./.erudit/tsconfig.nuxt.shared.json`,
+            },
+            {
+              path: `./.erudit/tsconfig.nuxt.node.json`,
+            },
+          ],
+        },
+        null,
+        4,
+      ),
     );
+  }
 
-    if (!existsSync(`${absProjectPath}/tsconfig.json`)) {
-        writeFileSync(
-            `${absProjectPath}/tsconfig.json`,
-            JSON.stringify(
-                {
-                    files: [],
-                    references: [
-                        {
-                            path: `./.erudit/tsconfig.erudit.json`,
-                        },
-                        {
-                            path: `./.erudit/tsconfig.nuxt.app.json`,
-                        },
-                        {
-                            path: `./.erudit/tsconfig.nuxt.server.json`,
-                        },
-                        {
-                            path: `./.erudit/tsconfig.nuxt.shared.json`,
-                        },
-                        {
-                            path: `./.erudit/tsconfig.nuxt.node.json`,
-                        },
-                    ],
-                },
-                null,
-                4,
-            ),
-        );
-    }
+  writeFileSync(
+    `${eruditBuildPath}/__AUTOGENERATED__`,
+    `This directory is autogenerated by Erudit CLI.\nAll changes will be lost on next build!`,
+  );
 
-    writeFileSync(
-        `${eruditBuildPath}/__AUTOGENERATED__`,
-        `This directory is autogenerated by Erudit CLI.\nAll changes will be lost on next build!`,
-    );
-
-    process.stdout.write(` ${chalk.bold.green('Done!')}\n`);
+  process.stdout.write(` ${chalk.bold.green('Done!')}\n`);
 }

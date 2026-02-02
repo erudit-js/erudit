@@ -6,8 +6,8 @@ import { version } from '../inject.js';
 import type { UrlProps } from './urlProps.js';
 
 export function loadEnvFiles(files: string[]): void {
-    dotenv.config({
-        quiet: true,
-        path: files,
-    });
+  dotenv.config({
+    quiet: true,
+    path: files,
+  });
 }

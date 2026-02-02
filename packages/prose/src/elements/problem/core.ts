@@ -1,26 +1,26 @@
 import { defineEruditProseCoreElements } from '../../coreElement.js';
 import { problemCoreElement } from './problem.js';
 import {
-    problemAnswer,
-    problemCheckCoreElement,
-    problemDescriptionCoreElement,
-    problemHintCoreElement,
-    problemNote,
-    problemSectionCoreElement,
-    problemSolution,
+  problemAnswer,
+  problemCheckCoreElement,
+  problemDescriptionCoreElement,
+  problemHintCoreElement,
+  problemNote,
+  problemSectionCoreElement,
+  problemSolution,
 } from './problemContent.js';
 import { problemsCoreElement, subProblemCoreElement } from './problems.js';
 
 export default defineEruditProseCoreElements(
-    problemDescriptionCoreElement,
-    problemHintCoreElement,
-    problemAnswer.coreElement,
-    problemSolution.coreElement,
-    problemNote.coreElement,
-    problemCheckCoreElement,
-    problemSectionCoreElement,
-    //
-    problemCoreElement,
-    subProblemCoreElement,
-    problemsCoreElement,
+  problemDescriptionCoreElement,
+  problemHintCoreElement,
+  problemAnswer.coreElement,
+  problemSolution.coreElement,
+  problemNote.coreElement,
+  problemCheckCoreElement,
+  problemSectionCoreElement,
+  //
+  problemCoreElement,
+  subProblemCoreElement,
+  problemsCoreElement,
 );

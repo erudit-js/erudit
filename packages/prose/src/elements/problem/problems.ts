@@ -1,29 +1,29 @@
 import {
-    defineRegistryItem,
-    defineSchema,
-    ensureTagBlockChildren,
-    isRawElement,
-    ProseError,
-    type AnyUnique,
-    type BlockSchema,
-    type RawElement,
-    type TagChildren,
+  defineRegistryItem,
+  defineSchema,
+  ensureTagBlockChildren,
+  isRawElement,
+  ProseError,
+  type AnyUnique,
+  type BlockSchema,
+  type RawElement,
+  type TagChildren,
 } from '@jsprose/core';
 
 import {
-    validateProblemContent,
-    type ProblemContentChild,
+  validateProblemContent,
+  type ProblemContentChild,
 } from './problemContent.js';
 import { defineEruditTag } from '../../tag.js';
 import {
-    problemProps2Info,
-    type ProblemInfo,
-    type ProblemInfoProps,
+  problemProps2Info,
+  type ProblemInfo,
+  type ProblemInfoProps,
 } from './shared.js';
 import { defineEruditProseCoreElement } from '../../coreElement.js';
 import {
-    problemScriptStorageKey,
-    type ProblemScriptStorage,
+  problemScriptStorageKey,
+  type ProblemScriptStorage,
 } from './storage.js';
 import { type ProblemScriptInstance } from './problemScript.js';
 
@@ -32,61 +32,59 @@ import { type ProblemScriptInstance } from './problemScript.js';
 //
 
 export interface SubProblemData {
-    label?: string;
-    scriptUniques?: Record<string, AnyUnique>;
+  label?: string;
+  scriptUniques?: Record<string, AnyUnique>;
 }
 
 export const subProblemSchema = defineSchema({
-    name: 'subProblem',
-    type: 'block',
-    linkable: false,
+  name: 'subProblem',
+  type: 'block',
+  linkable: false,
 })<{
-    Data: SubProblemData;
-    Storage: ProblemScriptStorage;
-    Children: ProblemContentChild[];
+  Data: SubProblemData;
+  Storage: ProblemScriptStorage;
+  Children: ProblemContentChild[];
 }>();
 
 export const SubProblem = defineEruditTag({
-    tagName: 'SubProblem',
-    schema: subProblemSchema,
+  tagName: 'SubProblem',
+  schema: subProblemSchema,
 })<
-    { label?: string } & (
-        | { children: {}; script?: undefined }
-        | { script: ProblemScriptInstance; children?: undefined }
-    )
+  { label?: string } & (
+    | { children: {}; script?: undefined }
+    | { script: ProblemScriptInstance; children?: undefined }
+  )
 >(({ element, tagName, props, children }) => {
-    element.data = {};
+  element.data = {};
 
-    const label = props.label?.trim();
-    if (label) {
-        element.data.label = label;
-    }
+  const label = props.label?.trim();
+  if (label) {
+    element.data.label = label;
+  }
 
-    if (props.script && children) {
-        throw new ProseError(
-            `<${tagName}> cannot have both script and children!`,
-        );
-    }
+  if (props.script && children) {
+    throw new ProseError(`<${tagName}> cannot have both script and children!`);
+  }
 
-    if (props.script) {
-        element.data.scriptUniques = props.script.uniques;
+  if (props.script) {
+    element.data.scriptUniques = props.script.uniques;
 
-        element.storageKey = problemScriptStorageKey(props.script.scriptSrc);
+    element.storageKey = problemScriptStorageKey(props.script.scriptSrc);
 
-        element.children = props.script.generate().problemContent;
-    } else {
-        validateProblemContent(tagName, children);
-        element.children = children as any;
-    }
+    element.children = props.script.generate().problemContent;
+  } else {
+    validateProblemContent(tagName, children);
+    element.children = children as any;
+  }
 });
 
 export const subProblemRegistryItem = defineRegistryItem({
-    schema: subProblemSchema,
-    tags: [SubProblem],
+  schema: subProblemSchema,
+  tags: [SubProblem],
 });
 
 export const subProblemCoreElement = defineEruditProseCoreElement({
-    registryItem: subProblemRegistryItem,
+  registryItem: subProblemRegistryItem,
 });
 
 //
@@ -94,55 +92,55 @@ export const subProblemCoreElement = defineEruditProseCoreElement({
 //
 
 export const problemsSchema = defineSchema({
-    name: 'problems',
-    type: 'block',
-    linkable: true,
+  name: 'problems',
+  type: 'block',
+  linkable: true,
 })<{
-    Data: ProblemInfo;
-    Storage: undefined;
-    Children: (typeof subProblemSchema | BlockSchema)[];
+  Data: ProblemInfo;
+  Storage: undefined;
+  Children: (typeof subProblemSchema | BlockSchema)[];
 }>();
 
 export const Problems = defineEruditTag({
-    tagName: 'Problems',
-    schema: problemsSchema,
+  tagName: 'Problems',
+  schema: problemsSchema,
 })<ProblemInfoProps & TagChildren>(({
-    element,
-    tagName,
-    props,
-    children,
-    registry,
+  element,
+  tagName,
+  props,
+  children,
+  registry,
 }) => {
-    ensureTagBlockChildren(tagName, children, registry);
+  ensureTagBlockChildren(tagName, children, registry);
 
-    const subProblemChildren: RawElement<typeof subProblemSchema>[] = [];
-    const otherChildren: RawElement<BlockSchema>[] = [];
+  const subProblemChildren: RawElement<typeof subProblemSchema>[] = [];
+  const otherChildren: RawElement<BlockSchema>[] = [];
 
-    for (const child of children) {
-        if (isRawElement(child, subProblemSchema)) {
-            subProblemChildren.push(child);
-        } else {
-            otherChildren.push(child);
-        }
+  for (const child of children) {
+    if (isRawElement(child, subProblemSchema)) {
+      subProblemChildren.push(child);
+    } else {
+      otherChildren.push(child);
     }
+  }
 
-    if (subProblemChildren.length === 0) {
-        throw new ProseError(
-            `<${tagName}> must have at least one <SubProblem> child!`,
-        );
-    }
+  if (subProblemChildren.length === 0) {
+    throw new ProseError(
+      `<${tagName}> must have at least one <SubProblem> child!`,
+    );
+  }
 
-    element.children = [...otherChildren, ...subProblemChildren];
-    const problemInfo = problemProps2Info(props);
-    element.data = problemInfo;
-    element.title = problemInfo.title;
+  element.children = [...otherChildren, ...subProblemChildren];
+  const problemInfo = problemProps2Info(props);
+  element.data = problemInfo;
+  element.title = problemInfo.title;
 });
 
 export const problemsRegistryItem = defineRegistryItem({
-    schema: problemsSchema,
-    tags: [Problems],
+  schema: problemsSchema,
+  tags: [Problems],
 });
 
 export const problemsCoreElement = defineEruditProseCoreElement({
-    registryItem: problemsRegistryItem,
+  registryItem: problemsRegistryItem,
 });

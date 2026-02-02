@@ -14,5 +14,5 @@ const TextComponent = h(Text, textWithSpaces);
 </script>
 
 <template>
-    <component :is="TextComponent" />
+  <component :is="TextComponent" />
 </template>

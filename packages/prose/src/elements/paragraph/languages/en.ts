@@ -1,5 +1,5 @@
 import { defineElementLanguage } from '../../../app/language/element.js';
 
 export default defineElementLanguage({
-    element_name: 'Paragraph',
+  element_name: 'Paragraph',
 });
