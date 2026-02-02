@@ -21,12 +21,12 @@ const { element } = defineProps<{
     element: ProseElement<typeof diagramSchema>;
 }>();
 
+let isWebkit = ref<boolean>();
+
 const style = useCssModule();
 const { EruditIcon, loadingSvg } = useProseContext();
 const loading = ref(true);
 const diagramRendering = ref(false);
-const dummyMathHtml = ref('');
-const dummyElement = useTemplateRef('dummy');
 const diagramContent = ref(element.children[0].data);
 const diagramSvgContent = ref('');
 const diagramElement = useTemplateRef('diagram');
@@ -42,6 +42,12 @@ const latexRegex = {
 let observer: IntersectionObserver;
 
 onMounted(async () => {
+    const ua = navigator.userAgent;
+
+    isWebkit.value =
+        (/AppleWebKit/.test(ua) && !/Chrome/.test(ua)) ||
+        /\b(iPad|iPhone|iPod)\b/.test(ua);
+
     if (hasLatex(diagramContent.value)) {
         await prepareMathDiagram();
     }
@@ -126,27 +132,22 @@ async function prepareMathDiagram() {
     await import('katex/dist/katex.min.css');
     const katex = await import('katex');
 
-    const globalCode = '__ERUDIT_DIAGRAM_MATH_DUMMY__';
-
-    if (!(window as any)[globalCode]) {
-        dummyMathHtml.value = katex.renderToString(
-            '\\sum_{i=1}^n i^2 = \\frac{n(n+1)(2n+1)}{6}',
-            {
-                displayMode: true,
-            },
-        );
-        (window as any)[globalCode] = true;
-    }
-
     const renderMathWithKatex = (
         text: string,
         regex: RegExp,
         displayMode: boolean,
     ): string => {
         return text.replace(regex, (_, latexContent) => {
-            return katex.renderToString(latexContent, {
-                displayMode,
-            });
+            return katex
+                .renderToString(latexContent, {
+                    displayMode,
+                    output: 'mathml',
+                })
+                .replace(/<mtd>/g, '<mtd style="padding: 0.2em 0;">')
+                .replace(
+                    /<annotation encoding="application\/x-tex">[\s\S]*?<\/annotation>/g,
+                    '',
+                );
         });
     };
 
@@ -201,11 +202,7 @@ async function renderDiagram() {
         theme: 'base',
     });
 
-    const { svg } = await mermaid.render(
-        diagramUid,
-        diagramContent.value,
-        dummyElement.value!,
-    );
+    const { svg } = await mermaid.render(diagramUid, diagramContent.value);
 
     diagramSvgContent.value = svg;
 }
@@ -213,11 +210,6 @@ async function renderDiagram() {
 
 <template>
     <Block :element>
-        <div
-            ref="dummy"
-            :class="[$style.diagram, 'fixed -top-[9999px] -left-[9999px]']"
-            v-html="dummyMathHtml"
-        ></div>
         <div ref="diagram">
             <div v-if="loading" class="p-normal text-center">
                 <EruditIcon
@@ -229,7 +221,7 @@ async function renderDiagram() {
                 v-else
                 ref="diagramSvg"
                 v-html="diagramSvgContent"
-                :class="$style.diagram"
+                :class="[isWebkit ? '' : $style.notWebkit, $style.diagram]"
             ></div>
         </div>
         <Caption
@@ -241,14 +233,18 @@ async function renderDiagram() {
 </template>
 
 <style module>
+/* Fix for stupid fucking braindead WebKit screwing everything and shifting to (0,0) everything that is realtive positioned or tranfrom translated! */
+.notWebkit.diagram {
+    :global(mover:not(:has(+ msup)) > mo) {
+        position: relative;
+        top: -0.2em;
+    }
+}
+
 .diagram {
     > svg {
         margin: auto;
         cursor: pointer;
-    }
-
-    :global(.katex-display) {
-        margin: 0 !important;
     }
 
     /* Text color */
