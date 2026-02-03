@@ -27,7 +27,7 @@
     "format": "prettier --write .",
     "version": "bun run scripts/version.ts",
     "build": "bun --workspaces run build",
-    "publish": "bun run scripts/publish",
+    "publish": "bun update && bun run scripts/publish",
     "play": "bun erudit dev playground",
     "play:prepare": "bun erudit prepare playground",
     "play:build": "bun erudit build playground",

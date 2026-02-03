@@ -31,6 +31,38 @@ async function updatePackageVersion(packagePath: string, newVersion: string) {
   }
 }
 
+async function updateBunLock(newVersion: string) {
+  const bunLockPath = join(process.cwd(), 'bun.lock');
+  try {
+    let content = await readFile(bunLockPath, 'utf8');
+    let updatedCount = 0;
+
+    // Update version fields in packages/ workspaces using regex
+    // Matches: "packages/xxx": { ... "version": "x.y.z", ... }
+    content = content.replace(
+      /(["']packages\/[^"']+["']:\s*\{[^}]*["']version["']:\s*["'])([^"']+)(["'])/g,
+      (match, before, oldVersion, after) => {
+        updatedCount++;
+        return before + newVersion + after;
+      },
+    );
+
+    await writeFile(bunLockPath, content, 'utf8');
+
+    console.log(
+      `${chalk.green('✔')} ${chalk.bold('bun.lock')}: Updated ${updatedCount} workspace versions`,
+    );
+  } catch (err: any) {
+    if (err.code === 'ENOENT') {
+      console.log(chalk.yellow('⚠ bun.lock not found, skipping...'));
+      return;
+    }
+    console.error(
+      `${chalk.red('✘')} Failed to update bun.lock: ${err.message}`,
+    );
+  }
+}
+
 async function main() {
   const newVersion = process.argv[2];
 
@@ -67,6 +99,9 @@ async function main() {
     for (const pkgPath of packageFolders) {
       await updatePackageVersion(pkgPath, newVersion);
     }
+
+    // Update bun.lock
+    await updateBunLock(newVersion);
 
     console.log(chalk.green(chalk.bold('\n✨ All package versions updated!')));
   } catch (err: any) {
