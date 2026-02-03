@@ -1,8 +1,9 @@
-import { globSync } from 'glob';
 import { rmSync, existsSync, mkdirSync, copyFileSync } from 'node:fs';
-import { dirname, join } from 'node:path';
-import { transpileFile } from './transpileFile';
+import { dirname } from 'node:path';
 import { execSync } from 'node:child_process';
+import { globSync } from 'glob';
+
+import { transpileFile } from './transpileFile';
 
 /**
  * Determines if a file should be copied as-is (not transpiled)
@@ -52,7 +53,7 @@ let copyCount = 0;
 // Transpile regular files
 for (const file of filesToTranspile) {
   try {
-    transpileFile(file);
+    await transpileFile(file);
     transpileCount++;
   } catch (error) {
     console.error(`❌ Failed to transpile ${file}:`, error);

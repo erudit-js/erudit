@@ -81,11 +81,11 @@ const OUT_DIR = 'dist';
  * Build (transform or copy) a single file, mapping its path from srcRoot to outRoot.
  * Returns object with produced output paths.
  */
-export function transpileFile(
+export async function transpileFile(
   file: string,
   srcRoot: string = SRC_DIR,
   outRoot: string = OUT_DIR,
-): { jsOutPath?: string; assetOutPath?: string } {
+): Promise<{ jsOutPath?: string; assetOutPath?: string }> {
   const ext = extname(file).toLowerCase();
 
   let relPath: string;
@@ -102,7 +102,7 @@ export function transpileFile(
 
   if (ext === '.ts' || ext === '.tsx') {
     const fileContents = readFileSync(file, 'utf-8');
-    const result = transform('file', fileContents, {
+    const result = await transform('file', fileContents, {
       lang: 'ts',
       target: 'esnext',
       typescript: {

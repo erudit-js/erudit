@@ -7,8 +7,9 @@ import {
 } from 'node:fs';
 import { join, relative } from 'node:path';
 import { createHash } from 'node:crypto';
-import { transpileFile } from './transpileFile';
 import { execSync } from 'node:child_process';
+
+import { transpileFile } from './transpileFile';
 
 /**
  * Incremental dev builder:
@@ -128,10 +129,10 @@ const removeOutputs = (rel: string) => {
   }
 };
 
-const buildOne = (rel: string) => {
+const buildOne = async (rel: string) => {
   const full = join(SRC_DIR, rel);
   try {
-    transpileFile(full, SRC_DIR, OUT_DIR);
+    await transpileFile(full, SRC_DIR, OUT_DIR);
   } catch (e) {
     console.error('❌ Build error for', rel, e);
   }
@@ -142,7 +143,7 @@ console.log('🔍 Initial scan...');
 scan(SRC_DIR);
 console.log(`📝 Tracking ${fileHashes.size} files`);
 console.log('⚙️  Performing initial incremental build...');
-for (const rel of fileHashes.keys()) buildOne(rel);
+for (const rel of fileHashes.keys()) await buildOne(rel);
 console.log('👀 Ready. Watching for changes...');
 
 // Start watcher
