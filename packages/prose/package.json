@@ -41,7 +41,7 @@
     "vue": "^3.5.27"
   },
   "devDependencies": {
-    "glob": "11.1.0",
+    "glob": "13.0.0",
     "oxc-transform": "0.112.0"
   }
 }
