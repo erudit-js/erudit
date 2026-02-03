@@ -4,7 +4,6 @@ import type { ResolvedTocItem } from '@erudit-js/prose';
 import TocItem from './TocItem.vue';
 
 const props = defineProps<{ toc?: ResolvedTocItem[] }>();
-
 const phrase = await usePhrases('no_toc');
 
 /**
@@ -158,6 +157,5 @@ onMounted(() => {
       />
     </TreeContainer>
   </div>
-
   <AsidePlainMessage v-else :text="phrase.no_toc" />
 </template>
