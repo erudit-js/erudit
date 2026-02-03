@@ -1,14 +1,68 @@
-import { getContributorPageData } from '@server/repository/contributor';
+import { eq } from 'drizzle-orm';
+import type { PageContributor } from '@erudit-js/core/contributor';
 
-export default defineEventHandler(async (event) => {
-    const contributorId = event.context.params?.contributorId;
+export default defineEventHandler<Promise<PageContributor>>(async (event) => {
+  const contributorId = event.context.params?.contributorId;
 
-    if (!contributorId) {
-        throw createError({
-            statusCode: 400,
-            message: 'Missing contributor ID!',
-        });
-    }
+  if (!contributorId) {
+    throw createError({
+      statusCode: 400,
+      message: 'Contributor ID is required!',
+    });
+  }
 
-    return await getContributorPageData(contributorId);
+  const dbContributor = await ERUDIT.db.query.contributors.findFirst({
+    where: eq(ERUDIT.db.schema.contributors.contributorId, contributorId),
+  });
+
+  if (!dbContributor) {
+    throw createError({
+      statusCode: 404,
+      message: `Failed to find contributor with ID "${contributorId}"!`,
+    });
+  }
+
+  const pageContributor: PageContributor = {
+    id: dbContributor.contributorId,
+  };
+
+  if (dbContributor.displayName) {
+    pageContributor.displayName = dbContributor.displayName;
+  }
+
+  if (dbContributor.short) {
+    pageContributor.short = dbContributor.short;
+  }
+
+  if (dbContributor.links) {
+    pageContributor.links = dbContributor.links;
+  }
+
+  if (dbContributor.avatarExtension) {
+    pageContributor.avatarUrl = ERUDIT.repository.contributors.avatarUrl(
+      dbContributor.contributorId,
+      dbContributor.avatarExtension,
+    );
+  }
+
+  if (dbContributor.editor) {
+    pageContributor.editor = dbContributor.editor;
+  }
+
+  if (dbContributor.description) {
+    pageContributor.description = await ERUDIT.repository.prose.finalize(
+      dbContributor.description,
+    );
+  }
+
+  const contributions =
+    await ERUDIT.repository.contributors.contributorContributions(
+      contributorId,
+    );
+
+  if (contributions) {
+    pageContributor.contributions = contributions;
+  }
+
+  return pageContributor;
 });

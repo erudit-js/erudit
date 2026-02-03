@@ -1,95 +1,88 @@
 <script lang="ts" setup>
-import eruditConfig from '#erudit/config';
+import type { PageSponsor } from '@erudit-js/core/sponsor';
 
-const { data: sponsors } = await useAsyncData(
-    'sponsors',
-    () => $fetch('/api/sponsor/list'),
-    { deep: false },
-);
+const { showNewsAside } = useAsideMinor();
+showNewsAside();
+
+const withBaseUrl = useBaseUrl();
+
+const nuxtApp = useNuxtApp();
+const payloadKey = 'page-sponsors';
+const pageSponsors: PageSponsor[] =
+  (nuxtApp.static.data[payloadKey] ||=
+  nuxtApp.payload.data[payloadKey] ||=
+    await $fetch('/api/pageSponsors', { responseType: 'json' }));
 
 const phrase = await usePhrases(
-    'sponsors',
-    'sponsors_description',
-    'become_sponsor',
+  'sponsors',
+  'sponsors_description',
+  'become_sponsor',
+  'no_sponsors',
 );
 
-useEruditHead({
-    title: phrase.sponsors,
-    description: phrase.sponsors_description,
+useStandartSeo({
+  title: phrase.sponsors,
+  description: phrase.sponsors_description,
+  urlPath: PAGES.sponsors,
 });
 </script>
 
 <template>
+  <MainGlow />
+  <MainSectionPreamble>
     <MainTitle icon="diamond" :title="phrase.sponsors" />
     <MainDescription :description="phrase.sponsors_description" />
-    <MainActionButton
-        v-if="eruditConfig.sponsors?.addLink"
-        icon="diamond"
-        :label="phrase.become_sponsor"
-        :link="eruditConfig.sponsors?.addLink"
+    <div class="h-main-half"></div>
+    <MainAction
+      icon="diamond"
+      :newTab="true"
+      :label="phrase.become_sponsor"
+      :link="ERUDIT.config.sponsors!.becomeSponsorLink"
     />
-    <MainSection :class="$style.sponsorSection" v-if="sponsors?.tier2?.length">
-        <template v-slot:header>
-            <h2 :class="$style.tierHeading">
-                {{ eruditConfig.sponsors!.tier2Label }}
-            </h2>
+    <div class="h-main-half"></div>
+  </MainSectionPreamble>
+  <MainSection>
+    <div
+      v-if="pageSponsors.length > 0"
+      class="gap-small micro:gap-normal px-main py-main columns-[300px]"
+    >
+      <FancyCard
+        v-for="pageSponsor of pageSponsors"
+        :key="pageSponsor.name"
+        :title="pageSponsor.name"
+        :mediaUrl="
+          pageSponsor.avatarUrl ? withBaseUrl(pageSponsor.avatarUrl) : undefined
+        "
+        :description="pageSponsor.info"
+        :link="
+          pageSponsor.link
+            ? { href: pageSponsor.link, external: true }
+            : undefined
+        "
+        :color="pageSponsor.color"
+      >
+        <template
+          v-if="pageSponsor.group || pageSponsor.icon || pageSponsor.link"
+          #tags
+        >
+          <FancyCardTag v-if="pageSponsor.group || pageSponsor.icon">
+            <MaybeMyIcon
+              v-if="pageSponsor.icon"
+              :name="pageSponsor.icon"
+              class="text-[1.2em]"
+            />
+            <span v-if="pageSponsor.group">
+              {{ formatText(pageSponsor.group) }}
+            </span>
+          </FancyCardTag>
+          <FancyCardTag v-if="pageSponsor.link">
+            <MyIcon name="arrow/outward" class="text-[1.2em]" />
+          </FancyCardTag>
         </template>
-        <div :class="$style.tier2Grid">
-            <SponsorTier2 v-for="sponsor of sponsors.tier2" :sponsor />
-        </div>
-    </MainSection>
-    <MainSection :class="$style.sponsorSection" v-if="sponsors?.tier1?.length">
-        <template v-slot:header>
-            <h2 :class="$style.tierHeading">
-                {{ eruditConfig.sponsors!.tier1Label }}
-            </h2>
-        </template>
-        <div :class="$style.tier1Grid">
-            <SponsorTier1 v-for="sponsor of sponsors.tier1" :sponsor />
-        </div>
-    </MainSection>
+      </FancyCard>
+    </div>
+    <div v-else class="text-text-muted px-main py-main text-center">
+      {{ phrase.no_sponsors }}
+    </div>
+  </MainSection>
 </template>
-
-<style lang="scss" module>
-@use '$/def/bp';
-
-.tierHeading {
-    padding: var(--gap) var(--_pMainX);
-    font-size: 1.4em;
-
-    @include bp.below('mobile') {
-        text-align: center;
-    }
-}
-
-.sponsorSection:nth-child(even of .sponsorSection) {
-    .tierHeading {
-        padding-bottom: 0;
-        padding-top: calc(1.5 * var(--gap));
-    }
-}
-
-.tier2Grid {
-    padding: 0 var(--_pMainX);
-    display: grid;
-    justify-content: center;
-    grid-template-columns: repeat(auto-fit, 310px);
-    gap: var(--gap);
-
-    @include bp.below('mobile') {
-        padding: var(--_pMainY) 0;
-    }
-}
-
-.tier1Grid {
-    padding: 0 var(--_pMainX);
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
-    gap: var(--gap);
-
-    @include bp.below('mobile') {
-        padding: var(--_pMainY) 0;
-        gap: 0;
-    }
-}
-</style>

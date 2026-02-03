@@ -1,8 +1,8 @@
 {
-    "private": true,
-    "name": "erudit-playground",
-    "type": "module",
-    "dependencies": {
-        "erudit": "workspace:*"
-    }
+  "private": true,
+  "name": "erudit-playground",
+  "type": "module",
+  "dependencies": {
+    "erudit": "workspace:*"
+  }
 }

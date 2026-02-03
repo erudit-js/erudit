@@ -1,36 +1,46 @@
-import { consola } from 'consola';
 import { defineCommand } from 'citty';
+import type { EruditMode } from '@erudit-js/core/mode';
 
-import { logCommand } from '../shared/log';
-import { prepare as _prepare } from '../shared/prepare';
-import { spawnNuxt } from '../shared/nuxt';
-import { eruditPathArg, projectPathArg, resolveArgPaths } from '../shared/args';
+import { projectPathArg } from '../shared/args.js';
+import {
+  logProjectPath,
+  normalizeProjectPath,
+  retrieveProjectPath,
+} from '../shared/projectPath.js';
+import { prepareProject } from '../shared/prepare.js';
+import { spawnNuxt } from '../shared/nuxt.js';
+import { CONFIG } from '../config.js';
+import { version } from '../inject.js';
 
 export const prepare = defineCommand({
-    meta: {
-        name: 'Prepare',
-        description:
-            'Creates a .erudit directory in your project and generates build files',
-    },
-    args: {
-        ...projectPathArg,
-        ...eruditPathArg,
-    },
-    async run({ args }) {
-        logCommand('prepare');
+  meta: {
+    name: 'prepare',
+    description: 'Creates necessary files for Erudit project',
+  },
+  args: {
+    ...projectPathArg,
+  },
+  async run({ args }) {
+    const absProjectPath = normalizeProjectPath(
+      retrieveProjectPath(args.projectPath),
+    );
+    logProjectPath(absProjectPath);
 
-        const { projectPath, eruditPath } = resolveArgPaths(
-            args.projectPath,
-            args.eruditPath,
-        );
+    await prepareProject({
+      absProjectPath,
+    });
 
-        await _prepare({
-            projectPath,
-            eruditPath,
-        });
-
-        consola.start('Generating Nuxt build files...');
-        await spawnNuxt('prepare', projectPath);
-        consola.success('Nuxt is prepared!');
-    },
+    console.log('Preparing Erudit Nuxt Layer...');
+    await spawnNuxt({
+      command: 'prepare',
+      absProjectPath,
+      env: {
+        ERUDIT_COMMAND: 'prepare',
+        NUXT_ERUDIT_PATH: CONFIG.ERUDIT_PATH,
+        NUXT_PROJECT_PATH: absProjectPath,
+        NUXT_PUBLIC_ERUDIT_MODE: <EruditMode>'write',
+        NUXT_PUBLIC_ERUDIT_VERSION: version,
+      },
+    });
+  },
 });

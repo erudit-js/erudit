@@ -1,126 +1,102 @@
-import {
-    PUBLIC_CONTENT_ASSET,
-    PUBLIC_ERUDIT_ASSET,
-    PUBLIC_USER_ASSET,
-} from './const';
-import { eruditPath, projectPath } from './globalPath';
+import tailwindcss from '@tailwindcss/vite';
+import { sn } from 'unslash';
 
+import { BASE_URL, ERUDIT_COMMAND, PROJECT_PATH } from './modules/erudit/env';
+
+/**
+ * This is context-unaware or "static" Nuxt configuration.
+ * The only thing that works here are aliases.
+ * If you need to use context (e.g. paths to package/project or Erudit project config), use `./modules/erudit/setup/nuxtConfig.ts` file.
+ */
 export default defineNuxtConfig({
-    compatibilityDate: '2025-01-01',
-    devtools: { enabled: true },
-    future: { compatibilityVersion: 4 },
-    ssr: true,
-    alias: {
-        '@erudit': eruditPath(),
-        '@module': eruditPath('module'),
-        '@server': eruditPath('server/plugin'),
-        '@shared': eruditPath('shared'),
-        '@app': eruditPath('app'),
-        $: eruditPath('app/styles'),
+  compatibilityDate: '2026-01-01',
+  devtools: { enabled: true },
+  $meta: { name: 'erudit' },
+  modules: ['#layers/erudit/modules/erudit', 'nuxt-my-icons'],
+  css: ['#layers/erudit/app/styles/main.css'],
+  myicons: {
+    iconsDir: '#layers/erudit/app/assets/icons',
+  },
+  plugins: ['#layers/erudit/app/plugins/appSetup'],
+  runtimeConfig: {
+    eruditPath: '',
+    projectPath: '',
+    contentTargets: '',
+    public: {
+      eruditVersion: '',
+      eruditMode: '',
+      siteUrl: '',
     },
-    modules: [eruditPath('module'), 'nuxt-my-icons'],
-    myicons: {
-        iconsDir: eruditPath('app/assets/icons'),
-    },
-    features: {
-        inlineStyles: false,
+  },
+  nitro: {
+    plugins: ['#layers/erudit/server/erudit'],
+    prerender:
+      ERUDIT_COMMAND === 'build'
+        ? undefined
+        : {
+            crawlLinks: false,
+            routes: ['/'],
+          },
+    esbuild: {
+      options: {
+        charset: 'utf8',
+      },
     },
     typescript: {
-        tsConfig: {
-            include: [eruditPath('**/*'), projectPath('**/*')],
+      tsConfig: {
+        compilerOptions: {
+          verbatimModuleSyntax: true,
         },
+      },
     },
-    build: {
-        transpile: [
-            'yaml',
-            'photoswipe',
-            '@bitran-js/renderer-vue',
-            '@erudit-js/bitran-elements',
-        ],
+    rollupConfig: {
+      // Prevent inlining some packages to avoid singleton and Symbol duplication issues
+      external(source) {
+        const ignore = ['jiti', '@jsprose'];
+
+        for (const ignoreItem of ignore) {
+          if (source.includes(ignoreItem)) {
+            return true;
+          }
+        }
+      },
     },
-    ignore: [
-        // Content assets
-        ...[
-            '**/{book,group,topic}.{js,ts}',
-            '**/{article,summary,practice,content}.bi',
-        ].map((pattern) => projectPath(`content/${pattern}`)),
-        // Contributors assets
-        ...['*/contributor.{js,ts}', '*/description.bi'].map((pattern) =>
-            projectPath(`contributors/${pattern}`),
-        ),
+    output: {
+      dir: sn(PROJECT_PATH, '.output'),
+      publicDir: sn(PROJECT_PATH, '.output/public', BASE_URL || ''),
+    },
+  },
+  vite: {
+    plugins: [
+      tailwindcss(),
+      {
+        // Remove when this is fixed: https://github.com/tailwindlabs/tailwindcss/discussions/16119
+        apply: 'build',
+        name: 'vite-plugin-ignore-sourcemap-warnings',
+        configResolved(config) {
+          const originalOnWarn = config.build.rollupOptions.onwarn;
+          config.build.rollupOptions.onwarn = (warning, warn) => {
+            if (
+              warning.code === 'SOURCEMAP_BROKEN' &&
+              warning.plugin === '@tailwindcss/vite:generate:build'
+            ) {
+              return;
+            }
+
+            if (originalOnWarn) {
+              originalOnWarn(warning, warn);
+            } else {
+              warn(warning);
+            }
+          };
+        },
+      },
     ],
-    nitro: {
-        preset: 'github-pages',
-        plugins: [eruditPath('server/plugin')],
-        prerender: {
-            crawlLinks: true,
-            failOnError: false,
-            concurrency: 10,
-            routes: ['/robots.txt', '/sitemap.xml'],
-            ignore: [
-                (path: string) => {
-                    const regexps = [/#/gm, /\.json\?/gm];
-                    const shouldIgnore = regexps.some((re) => re.test(path));
-                    return shouldIgnore;
-                },
-            ],
-        },
-        output: {
-            publicDir: projectPath('dist'),
-        },
-        externals: {
-            inline: [/bitran-elements/],
-        },
-        publicAssets: [
-            {
-                baseURL: PUBLIC_ERUDIT_ASSET,
-                dir: eruditPath('app/public'),
-                maxAge: 60 * 60 * 24 * 30,
-            },
-            {
-                baseURL: PUBLIC_USER_ASSET,
-                dir: projectPath('public'),
-                maxAge: 60 * 60 * 24 * 30,
-            },
-            {
-                baseURL: PUBLIC_CONTENT_ASSET,
-                dir: projectPath('content'),
-                maxAge: 60 * 60 * 24 * 30,
-            },
-        ],
-        esbuild: {
-            options: {
-                charset: 'utf8',
-                tsconfigRaw: {
-                    compilerOptions: {
-                        experimentalDecorators: true, // Make TypeORM work with Nuxt,
-                    },
-                },
-            },
-        },
+    optimizeDeps: {
+      noDiscovery: true,
     },
-    vite: {
-        optimizeDeps: {
-            include: [
-                'yaml',
-                'photoswipe',
-                '@floating-ui/vue',
-                '@bitran-js/core',
-                '@bitran-js/transpiler',
-                '@bitran-js/renderer-vue',
-                '@erudit-js/bitran-elements',
-            ],
-        },
-        server: {
-            fs: { strict: false },
-        },
-        css: {
-            preprocessorOptions: {
-                scss: {
-                    api: 'modern-compiler',
-                    additionalData: `@use '$/utils' as *;`,
-                },
-            },
-        },
+    server: {
+      fs: { strict: false },
     },
+  },
 });

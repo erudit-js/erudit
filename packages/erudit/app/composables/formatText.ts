@@ -1,99 +1,100 @@
-import eruditConfig from '#erudit/config';
+import type { FormatTextState, FormatText } from '@erudit-js/core/formatText';
 
-export interface FormatState {
-    quoteOpen: boolean;
-}
+type LanguageFormatText = (text: string) => string;
 
-const defaultFormatState: FormatState = {
-    quoteOpen: false,
+const formatTextLoaders: Partial<
+  Record<LanguageCode, () => Promise<{ default: LanguageFormatText }>>
+> = {
+  ru: () => import('../formatters/ru'),
 };
 
-export type FormatFunction = (text: string, state?: FormatState) => string;
-export type FormatterFunction = (text: string, state: FormatState) => string;
+export let formatText: FormatText;
 
-let formatFunction: FormatFunction;
+export async function initFormatText() {
+  const languageCode = ERUDIT.config.language.current;
 
-export function useFormatText() {
-    if (!formatFunction) {
-        const language = eruditConfig?.language;
-        formatFunction = createFormatFunction(language);
+  const formatTextLoader =
+    languageCode in formatTextLoaders
+      ? formatTextLoaders[languageCode]
+      : undefined;
+
+  let languageFormatText: LanguageFormatText = (text) => text;
+  if (formatTextLoader) {
+    languageFormatText = (await formatTextLoader()).default;
+  }
+
+  function _formatText(text: string, state?: FormatTextState): string;
+  function _formatText(text: undefined, state?: FormatTextState): undefined;
+  function _formatText(
+    text?: string,
+    state?: FormatTextState,
+  ): string | undefined;
+  function _formatText(
+    text?: string,
+    state?: FormatTextState,
+  ): string | undefined {
+    if (text === undefined) {
+      return text;
     }
 
-    return formatFunction;
-}
-
-function createFormatFunction(language?: string): FormatFunction {
-    const formatters: FormatterFunction[] = [];
-
     //
-    // Em Dashes
-    //
-
-    formatters.push((text) => text.replace(/(^| )--($| )/gm, '$1—$2'));
-
-    //
-    // Quotes
+    // Normalize spacing (new lines, spaces)
     //
 
     {
-        const quoteSymbols: [string, string] = (() => {
-            switch (language) {
-                case 'ru':
-                    return ['«', '»'];
-                default:
-                    return ['“', '”'];
-            }
-        })();
-
-        formatters.push((text, state) => {
-            return text.replaceAll(/"/gm, () => {
-                return (state.quoteOpen = !state.quoteOpen)
-                    ? quoteSymbols[0]
-                    : quoteSymbols[1];
-            });
-        });
+      text = text
+        .trim()
+        .replace(/\r\n/gm, '\n')
+        .replace(/\n{3,}/gm, '\n\n')
+        .replace(/[ \t]+/gm, ' ');
     }
 
     //
-    // Ellipsis
+    // Normalize dashes
     //
 
-    formatters.push((text) => text.replace(/\.\.\./gm, '…'));
-
-    //
-    // Language specific formatters
-    //
-
-    if (language === 'ru') formatters.push(ruStickyPrepositions);
-
-    //
-    //
-    //
-
-    function formatText(
-        text: string,
-        state: FormatState = defaultFormatState,
-    ): string {
-        if (!text) return text;
-
-        for (const formatter of formatters) text = formatter(text, state);
-
-        return text;
+    {
+      text = text.replace(/(^| )--($| )/gm, '$1—$2');
     }
 
-    return formatText;
-}
+    //
+    // Normalize quotes
+    //
 
-//
-//
-//
+    {
+      const quoteSymbols: [string, string] = (() => {
+        switch (languageCode) {
+          case 'ru':
+            return ['«', '»'];
+          default:
+            return ['“', '”'];
+        }
+      })();
 
-/**
- * Formats prepositions in Russian text so that they are always adjacent to the next word and are not left hanging “in the air” when the line breaks.
- */
-function ruStickyPrepositions(text: string): string {
-    return text.replace(
-        / (в|не|без|для|до|за|из|к|на|над|о|об|от|по|под|при|про|с|у|через|вокруг|около|после|перед|между|внутри|вне|из-за|из-под|ради|сквозь|среди|насчёт|вследствие|благодаря|несмотря|наперекор|вопреки|подле|возле|рядом|навстречу) /gimu,
-        ' $1\xa0',
-    );
+      let quoteOpen = state?.quote === 'opened';
+      text = text.replaceAll(/"/gm, () => {
+        quoteOpen = !quoteOpen;
+        if (state) {
+          state.quote = quoteOpen ? 'opened' : 'closed';
+        }
+        return quoteOpen ? quoteSymbols[0] : quoteSymbols[1];
+      });
+    }
+
+    //
+    // Normalize ellipsis
+    //
+
+    {
+      text = text.replace(/\.{3}/gm, '…');
+    }
+
+    //
+    // Language-specific formatting
+    //
+
+    return languageFormatText(text);
+  }
+
+  formatText = _formatText;
 }

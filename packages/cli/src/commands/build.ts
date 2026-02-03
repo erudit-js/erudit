@@ -1,42 +1,54 @@
-import consola from 'consola';
+import { rmSync } from 'node:fs';
 import { defineCommand } from 'citty';
+import type { EruditMode } from '@erudit-js/core/mode';
 
+import { projectPathArg } from '../shared/args.js';
 import {
-    contentTargetsArg,
-    eruditPathArg,
-    projectPathArg,
-    resolveArgPaths,
-} from '../shared/args';
-import { logCommand } from '../shared/log';
-import { spawnNuxt } from '../shared/nuxt';
-import { prepare } from '../shared/prepare';
+  logProjectPath,
+  normalizeProjectPath,
+  retrieveProjectPath,
+} from '../shared/projectPath.js';
+import { prepareProject } from '../shared/prepare.js';
+import { spawnNuxt } from '../shared/nuxt.js';
+import { CONFIG } from '../config.js';
+import { version } from '../inject.js';
 
 export const build = defineCommand({
-    meta: {
-        name: 'Build',
-        description:
-            'Builds Erudit project for fast and convenient content writing',
-    },
-    args: {
-        ...projectPathArg,
-        ...eruditPathArg,
-        ...contentTargetsArg,
-    },
-    async run({ args }) {
-        logCommand('build');
+  meta: {
+    name: 'build',
+    description:
+      'Builds Erudit project that can be launched for fast content writing',
+  },
+  args: {
+    ...projectPathArg,
+  },
+  async run({ args }) {
+    const absProjectPath = normalizeProjectPath(
+      retrieveProjectPath(args.projectPath),
+    );
+    logProjectPath(absProjectPath);
 
-        const { projectPath, eruditPath } = resolveArgPaths(
-            args.projectPath,
-            args.eruditPath,
-        );
+    await prepareProject({
+      absProjectPath,
+    });
 
-        await prepare({
-            projectPath,
-            eruditPath,
-            contentTargets: args.target,
-        });
+    console.log('Building Erudit Nuxt Layer...');
+    await spawnNuxt({
+      command: 'build',
+      absProjectPath,
+      env: {
+        ERUDIT_COMMAND: 'build',
+        NUXT_ERUDIT_PATH: CONFIG.ERUDIT_PATH,
+        NUXT_PROJECT_PATH: absProjectPath,
+        NUXT_PUBLIC_ERUDIT_MODE: <EruditMode>'write',
+        NUXT_PUBLIC_ERUDIT_VERSION: version,
+      },
+    });
 
-        consola.start('Starting Nuxt build...');
-        await spawnNuxt('build', projectPath);
-    },
+    // Just fucking remove @jsprose because not a single fucking option inside Nuxt/Nitro allows NOT TO bundle it!
+    rmSync(`${absProjectPath}/.output/server/node_modules/@jsprose`, {
+      recursive: true,
+      force: true,
+    });
+  },
 });

@@ -1,30 +1,13 @@
 <script lang="ts" setup>
-defineProps<{ description: string; html?: boolean }>();
-const pretty = useFormatText();
+defineProps<{ description: string | undefined }>();
 </script>
 
 <template>
-    <section
-        v-if="html"
-        :class="$style.contentDescription"
-        v-html="description"
-    ></section>
-    <section v-else :class="$style.contentDescription">
-        {{ pretty(description) }}
-    </section>
+  <section
+    v-if="description"
+    class="text-main-lg max-micro:text-center px-main py-main-half
+      font-semibold"
+  >
+    {{ formatText(description) }}
+  </section>
 </template>
-
-<style lang="scss" module>
-@use '$/def/bp';
-
-.contentDescription {
-    padding: var(--_pMainY) var(--_pMainX);
-    font-weight: 500;
-    font-size: 1.1em;
-    color: var(--text);
-
-    @include bp.below('mobile') {
-        text-align: center;
-    }
-}
-</style>

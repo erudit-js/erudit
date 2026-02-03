@@ -1,41 +1,70 @@
-import { consola } from 'consola';
 import { defineCommand } from 'citty';
+import type { EruditMode } from '@erudit-js/core/mode';
 
-import { logCommand } from '../shared/log';
-import { prepare } from '../shared/prepare';
-import { spawnNuxt } from '../shared/nuxt';
+import { prepareProject } from '../shared/prepare.js';
 import {
-    contentTargetsArg,
-    eruditPathArg,
-    projectPathArg,
-    resolveArgPaths,
-} from '../shared/args';
+  projectPathArg,
+  siteUrlArg,
+  basePathArg,
+  contentTargetsArg,
+} from '../shared/args.js';
+import {
+  logProjectPath,
+  normalizeProjectPath,
+  retrieveProjectPath,
+} from '../shared/projectPath.js';
+import {
+  logUrlProps,
+  normalizeUrlProps,
+  retrieveUrlProps,
+} from '../shared/urlProps.js';
+import { loadEnvFiles } from '../shared/env.js';
+import { spawnNuxt } from '../shared/nuxt.js';
+import { CONFIG } from '../config.js';
+import { version } from '../inject.js';
 
 export const dev = defineCommand({
-    meta: {
-        name: 'Dev',
-        description: 'Runs Erudit project in development mode',
-    },
-    args: {
-        ...projectPathArg,
-        ...eruditPathArg,
-        ...contentTargetsArg,
-    },
-    async run({ args }) {
-        logCommand('dev');
+  meta: {
+    name: 'dev',
+    description: 'Runs Erudit project in development mode',
+  },
+  args: {
+    ...projectPathArg,
+    ...siteUrlArg,
+    ...basePathArg,
+    ...contentTargetsArg,
+  },
+  async run({ args }) {
+    const absProjectPath = normalizeProjectPath(
+      retrieveProjectPath(args.projectPath),
+    );
+    logProjectPath(absProjectPath);
 
-        const { projectPath, eruditPath } = resolveArgPaths(
-            args.projectPath,
-            args.eruditPath,
-        );
+    loadEnvFiles([`${absProjectPath}/.env.dev`, `${absProjectPath}/.env`]);
 
-        await prepare({
-            projectPath,
-            eruditPath,
-            contentTargets: args.target,
-        });
+    const urlProps = normalizeUrlProps(
+      retrieveUrlProps(args.siteUrl, args.basePath),
+    );
+    logUrlProps(urlProps);
 
-        consola.start('Starting Nuxt dev...');
-        await spawnNuxt('dev', projectPath);
-    },
+    await prepareProject({
+      absProjectPath,
+    });
+
+    console.log('Launching Erudit Nuxt Layer in development mode...');
+    await spawnNuxt({
+      command: 'dev',
+      absProjectPath,
+      env: {
+        ERUDIT_COMMAND: 'dev',
+        NUXT_ERUDIT_PATH: CONFIG.ERUDIT_PATH,
+        NUXT_PROJECT_PATH: absProjectPath,
+        NUXT_CONTENT_TARGETS: args.target ?? '',
+        NUXT_PUBLIC_ERUDIT_MODE: <EruditMode>'dev',
+        NUXT_PUBLIC_ERUDIT_VERSION: version,
+        NUXT_APP_BASE_URL: urlProps.basePath,
+        NUXT_PUBLIC_SITE_URL: urlProps.siteUrl,
+      },
+    });
+  },
 });

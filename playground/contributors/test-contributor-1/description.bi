@@ -1,1 +1,0 @@
-The creator of Erudit.

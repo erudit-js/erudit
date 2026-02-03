@@ -1,29 +1,47 @@
 {
-    "private": true,
-    "name": "erudit-monorepo",
-    "type": "module",
-    "license": "MIT",
-    "repository": {
-        "type": "git",
-        "url": "git+https://github.com/erudit-js/erudit.git"
-    },
-    "workspaces": [
-        "packages/*"
+  "private": true,
+  "name": "erudit-monorepo",
+  "type": "module",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/erudit-js/erudit.git"
+  },
+  "workspaces": {
+    "packages": [
+      "packages/*",
+      "playground"
     ],
-    "scripts": {
-        "pretty": "prettier --write .",
-        "build": "bun run scripts/build",
-        "publish": "bun run scripts/publish",
-        "play": "bun erudit dev playground --eruditPath=./packages/erudit",
-        "play:prepare": "bun erudit prepare playground",
-        "play:build": "bun erudit build playground",
-        "play:generate": "bun erudit generate playground",
-        "play:preview": "bun erudit preview playground"
-    },
-    "devDependencies": {
-        "@types/jest": "^29.5.14",
-        "@types/node": "^22.16.2",
-        "prettier": "^3.6.2",
-        "typescript": "^5.8.3"
+    "catalog": {
+      "@jsprose/core": "^1.0.0",
+      "vue": "latest",
+      "vue-router": "latest",
+      "@floating-ui/vue": "^1.1.9",
+      "image-size": "^2.0.2",
+      "chalk": "^5.6.2",
+      "consola": "^3.4.2",
+      "unslash": "^2.0.0"
     }
+  },
+  "scripts": {
+    "format": "prettier --write .",
+    "version": "bun run scripts/version.ts",
+    "build": "bun --workspaces run build",
+    "publish": "bun run scripts/publish",
+    "play": "bun erudit dev playground",
+    "play:prepare": "bun erudit prepare playground",
+    "play:build": "bun erudit build playground",
+    "play:generate": "bun erudit generate playground",
+    "play:launch": "bun erudit launch playground",
+    "play:preview": "bun erudit preview playground"
+  },
+  "devDependencies": {
+    "chalk": "^5.6.2",
+    "prettier": "^3.8.1",
+    "prettier-plugin-classnames": "^0.9.0",
+    "prettier-plugin-merge": "^0.9.0",
+    "prettier-plugin-tailwindcss": "^0.7.2",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.18"
+  }
 }

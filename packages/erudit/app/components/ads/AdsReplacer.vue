@@ -3,71 +3,24 @@ const phrase = await usePhrases('ads_replacer');
 </script>
 
 <template>
-    <div style="max-height: inherit; overflow: hidden">
-        <div style="width: 100vw; height: 100vh"></div>
-        <div :class="$style.darkMagicReplacer">
-            <div :class="$style.replacer">
-                <MyIcon name="pirate" />
-                <div v-html="phrase.ads_replacer"></div>
-            </div>
-        </div>
+  <div class="max-h-[inherit] overflow-hidden">
+    <div class="h-dvh w-dvw"></div>
+    <div class="[container-type:size] absolute top-0 left-0 h-full w-full">
+      <div
+        class="text-text-muted gap-normal @max-[550px]:gap-small flex h-full
+          w-full flex-row items-center justify-center bg-neutral-200
+          shadow-[inset_0px_0px_5px_0px_light-dark(rgba(0,0,0,0.12),rgba(255,255,255,0.08))]
+          @max-[550px]:flex-col @max-[550px]:text-center dark:bg-neutral-800"
+      >
+        <MyIcon
+          name="handshake"
+          class="text-[70px] [@container(max-height:150px)]:hidden"
+        />
+        <div
+          v-html="phrase.ads_replacer"
+          class="p-small text-lg @max-[550px]:text-sm"
+        ></div>
+      </div>
     </div>
+  </div>
 </template>
-
-<style lang="scss" module>
-.darkMagicReplacer {
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    container: darkMagic / size;
-
-    .replacer {
-        width: 100%;
-        height: 100%;
-
-        font-size: 1.5rem;
-        color: var(--textMuted);
-        background: var(--bgAccent);
-
-        box-shadow: inset 0px 0px 5px 0px
-            light-dark(rgba(0, 0, 0, 0.1), rgba(255, 255, 255, 0.05));
-
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        gap: var(--gapBig);
-
-        [my-icon] {
-            font-size: 65px;
-        }
-
-        strong {
-            color: inherit;
-        }
-
-        @container (max-width: 500px) {
-            flex-direction: column;
-            gap: var(--gap);
-
-            font-size: 1.2rem;
-            text-align: center;
-
-            [my-icon] {
-                font-size: 55px;
-            }
-        }
-
-        @container (max-width: 300px) {
-            font-size: 1rem;
-        }
-
-        @container (max-height: 200px) {
-            [my-icon] {
-                display: none;
-            }
-        }
-    }
-}
-</style>

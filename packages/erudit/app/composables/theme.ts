@@ -1,50 +1,67 @@
-const themes = ['auto', 'light', 'dark'] as const;
+const binaryThemes = ['light', 'dark'] as const;
+const themePreferences = [...binaryThemes, 'system'] as const;
+const localStorageKey = 'theme';
 
-export type Theme = (typeof themes)[number];
-export type BinaryTheme = 'light' | 'dark';
+export type BinaryTheme = (typeof binaryThemes)[number];
+export type ThemePreference = (typeof themePreferences)[number];
 
-const _theme = ref<Theme>();
+export const useTheme = () => {
+  if (import.meta.server) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: 'Theme composable is not available on server side!',
+    });
+  }
 
-export function useTheme() {
-    if (import.meta.server) {
-        throw new Error(`Calling 'useTheme' on server side is prohibited!`);
-    }
+  const preference = useState(
+    'theme-preference',
+    () => localStorage.getItem(localStorageKey) as ThemePreference,
+  );
 
-    function setTheme(newTheme: Theme) {
-        localStorage.setItem('theme', newTheme);
-        _theme.value = newTheme;
-    }
+  return {
+    themePref: preference,
+    binaryTheme: computed(() => pref2binary(preference.value)),
+    setTheme: (newPref: ThemePreference) => {
+      localStorage.setItem(localStorageKey, newPref);
+      preference.value = newPref;
+    },
+    cycleTheme: () => {
+      const current = preference.value;
+      const next =
+        themePreferences[
+          (themePreferences.indexOf(current) + 1) % themePreferences.length
+        ]!;
+      localStorage.setItem(localStorageKey, next);
+      preference.value = next;
+    },
+  };
+};
 
-    const localStorageTheme = localStorage.getItem('theme');
+export const initThemeWatcher = () => {
+  onMounted(() => {
+    const { themePref, binaryTheme } = useTheme();
 
-    if (themes.includes(localStorageTheme as any)) {
-        setTheme(localStorageTheme as Theme);
-    } else {
-        console.warn(
-            `Failed to get correct theme value from Local Storage!\nRetrieved "${localStorageTheme}"!`,
-        );
-        setTheme('auto');
-    }
-
-    const theme = computed<Theme>(() => _theme.value!);
-
-    const binaryTheme = computed<BinaryTheme>(() => {
-        return theme.value === 'auto'
-            ? window.matchMedia('(prefers-color-scheme: dark)').matches
-                ? 'dark'
-                : 'light'
-            : theme.value;
+    watch(binaryTheme, (newValue) => {
+      document.documentElement.setAttribute('data-theme', newValue);
     });
 
-    const cycle = () => {
-        const newTheme =
-            themes[(themes.indexOf(theme.value) + 1) % themes.length]!;
-        setTheme(newTheme);
-    };
+    window
+      .matchMedia('(prefers-color-scheme: dark)')
+      .addEventListener('change', (event) => {
+        const newValue = event.matches ? 'dark' : 'light';
+        if (themePref.value === 'system') {
+          document.documentElement.setAttribute('data-theme', newValue);
+        }
+      });
+  });
+};
 
-    return {
-        theme,
-        binaryTheme,
-        cycle,
-    };
+function pref2binary(pref: ThemePreference): BinaryTheme {
+  if (binaryThemes.includes(pref as BinaryTheme)) {
+    return pref as BinaryTheme;
+  }
+
+  return window.matchMedia('(prefers-color-scheme: dark)').matches
+    ? 'dark'
+    : 'light';
 }

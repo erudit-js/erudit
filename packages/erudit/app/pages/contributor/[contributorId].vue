@@ -1,227 +1,144 @@
 <script lang="ts" setup>
-import eruditConfig from '#erudit/config';
-import { type PageContributor } from '@shared/contributor';
+import type { PageContributor } from '@erudit-js/core/contributor';
 
-const route = useRoute();
+const withBaseUrl = useBaseUrl();
+
 const nuxtApp = useNuxtApp();
-const contributor = shallowRef<PageContributor>(null as any);
-const contributorColor = ref<string>('');
-const resolved = computed(() => {
-    const title = (() => {
-        return contributor.value.displayName || contributor.value.contributorId;
-    })();
+const route = useRoute();
+const contributorId = computed(() => String(route.params.contributorId));
 
-    return {
-        title,
-    };
-});
+const pageContributor = await (async () => {
+  const payloadKey = 'page-contributor';
 
-let requestCounter = 0;
+  const cachedContributor: PageContributor | undefined =
+    nuxtApp.static.data[payloadKey] || nuxtApp.payload.data[payloadKey];
 
-function getPayloadCache() {
-    const payloadKey = 'contributor';
-    return (nuxtApp.static.data[payloadKey] ||= nuxtApp.payload.data[
-        payloadKey
-    ] ||=
-        {});
-}
+  if (cachedContributor?.id === contributorId.value) {
+    return cachedContributor;
+  }
 
-async function fetchContributorData(contributorId: string, requestId: number) {
-    const payloadCache = getPayloadCache();
+  let fetchedContributor: PageContributor = await $fetch(
+    '/api/contributor/page/' + contributorId.value,
+    {
+      responseType: 'json',
+    },
+  );
 
-    if (!payloadCache[contributorId]) {
-        try {
-            const data = await $fetch(`/api/contributor/page/${contributorId}`);
+  fetchedContributor =
+    nuxtApp.static.data[payloadKey] =
+    nuxtApp.payload.data[payloadKey] =
+      fetchedContributor;
 
-            if (requestId === requestCounter) {
-                payloadCache[contributorId] = data;
-            }
-        } catch (error) {
-            console.error(
-                `Error fetching contributor ${contributorId}:`,
-                error,
-            );
-        }
-    }
+  return fetchedContributor;
+})();
 
-    contributor.value = payloadCache[contributorId];
-    contributorColor.value = stringColor(contributor.value.contributorId);
-}
+const { showContributorAside } = useAsideMinor();
+showContributorAside(pageContributor.contributions);
 
-await fetchContributorData(
-    route.params.contributorId as string,
-    ++requestCounter,
-);
-
+const color = stringColor(contributorId.value);
 const phrase = await usePhrases(
-    'contributors',
-    'contributor',
-    'contributor_description',
-    'editor',
+  'contributors',
+  'editor',
+  'contributor_page_description',
 );
 
-useHead({
-    title:
-        resolved.value.title +
-        ' | ' +
-        (contributor.value.isEditor ? phrase.editor : phrase.contributor) +
-        ' - ' +
-        (eruditConfig.seo?.title || eruditConfig.site?.title),
-});
-
-useSeoMeta({
-    ogTitle:
-        resolved.value.title +
-        ' | ' +
-        (contributor.value.isEditor ? phrase.editor : phrase.contributor) +
-        ' - ' +
-        (eruditConfig.seo?.title || eruditConfig.site?.title),
-    description: phrase.contributor_description(resolved.value.title),
+useStandartSeo({
+  title: pageContributor.displayName || pageContributor.id,
+  description: phrase.contributor_page_description(
+    pageContributor.displayName || pageContributor.id,
+  ),
+  urlPath: PAGES.contributor(contributorId.value),
 });
 </script>
 
 <template>
-    <MainBreadcrumb
-        :items="[
-            {
-                title: phrase.contributors,
-                icon: 'users',
-                link: '/contributors',
-            },
-        ]"
+  <MainGlow :color />
+  <MainSectionPreamble>
+    <MainBreadcrumbs
+      :breadcrumbs="[
+        {
+          icon: 'users',
+          link: PAGES.contributors,
+          title: phrase.contributors,
+        },
+      ]"
     />
-    <header
-        :class="$style.header"
-        :style="{ ['--contributorColor']: contributorColor }"
+    <div
+      :style="{
+        '--color': color,
+        '--colorBorder':
+          'color-mix(in srgb, var(--color), var(--color-border) 70%)',
+        '--colorBg':
+          'color-mix(in srgb, var(--color), var(--color-bg-main) 85%)',
+        '--colorText':
+          'color-mix(in srgb, var(--color), var(--color-text) 85%)',
+        '--colorIcon':
+          'color-mix(in srgb, var(--color), var(--color-text) 30%)',
+      }"
+      class="px-main py-main-half gap-main flex flex-col items-center"
     >
-        <div style="position: relative">
-            <Avatar
-                icon="user"
-                :src="
-                    contributor.avatar
-                        ? `/contributors/${contributor.avatar}`
-                        : undefined
-                "
-                :class="$style.avatar"
-                :color="stringColor(contributor.contributorId)"
-                :styling="{ glow: true, border: true }"
-            />
-            <MyIcon
-                v-if="contributor.isEditor"
-                name="graduation"
-                :class="$style.editorIcon"
-                :title="phrase.editor"
-            />
+      <div class="relative">
+        <div class="rounded-full ring-2 ring-(--colorBorder)">
+          <SmartMedia
+            :url="
+              pageContributor.avatarUrl
+                ? withBaseUrl(pageContributor.avatarUrl)
+                : 'user'
+            "
+            :style="{ '--mediaColor': color }"
+            class="border-bg-main micro:size-[110px] size-[80px] rounded-full
+              border-2 [box-shadow:0_0_16px_0_var(--color)]"
+          />
         </div>
-        <h1 :class="$style.name">
-            {{ resolved.title }}
+        <div
+          v-if="pageContributor.editor"
+          :title="phrase.editor"
+          class="bg-bg-main micro:size-[28px] absolute bottom-0 left-1/2 z-10
+            grid size-[24px] -translate-x-1/2 translate-y-1/2 cursor-help
+            place-items-center rounded-full border-2 border-(--colorBorder)"
+        >
+          <MyIcon name="graduation" class="size-[82%] text-(--colorIcon)" />
+        </div>
+      </div>
+      <div class="gap-normal flex flex-col text-center">
+        <h1>
+          <FancyBold
+            :text="pageContributor.displayName ?? pageContributor.id"
+            :color="color"
+            class="text-size-h1"
+          />
         </h1>
-        <div v-if="contributor.slogan" :class="$style.slogan">
-            {{ contributor.slogan }}
+        <div
+          v-if="pageContributor.short"
+          class="micro:text-[1.3em] text-text-muted relative -top-1 text-[1.1em]
+            font-semibold"
+        >
+          {{ formatText(pageContributor!.short) }}
         </div>
-        <div v-if="contributor.links" :class="$style.links">
-            <div v-for="(link, label) of contributor.links">
-                <a
-                    :href="link"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    :class="$style.link"
-                >
-                    {{ label }}
-                </a>
-            </div>
+        <div
+          v-if="pageContributor.links"
+          class="gap-normal flex flex-wrap justify-center"
+        >
+          <a
+            v-for="(link, label) of pageContributor.links"
+            :href="link"
+            target="_blank"
+            class="text-main-sm hocus:bg-(--colorBg) rounded border-2
+              border-(--colorBorder) bg-transparent px-2 py-1 font-semibold
+              text-(--colorText) transition-[background]"
+          >
+            {{ formatText(label) }}
+          </a>
         </div>
-    </header>
-    <MainBitranContent
-        v-if="contributor.hasDescription"
-        :location="{ type: 'contributor', path: contributor.contributorId }"
+      </div>
+    </div>
+    <div class="h-main-half"></div>
+  </MainSectionPreamble>
+  <MainSection v-if="pageContributor.description">
+    <Prose
+      :element="pageContributor.description.proseElement"
+      :storage="pageContributor.description.storage"
+      :useHashUrl="false"
     />
+  </MainSection>
 </template>
-
-<style lang="scss" module>
-@use '$/def/bp';
-
-.header {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: var(--gap);
-    padding-top: 20px;
-    padding-left: var(--gapBig);
-    padding-right: var(--gapBig);
-
-    .avatar {
-        --_avatarSize: 110px;
-        box-shadow: 0 0 100px 100px
-            color-mix(in srgb, var(--contributorColor), transparent 90%);
-    }
-
-    .editorIcon {
-        position: absolute;
-        right: 50%;
-        transform: translate(50%, -50%);
-        color: color-mix(in srgb, var(--text), var(--contributorColor) 50%);
-        font-size: 16px;
-        background: var(--bgMain);
-        padding: 4px;
-        border-radius: 50%;
-        outline: 2px solid var(--contributorColor);
-        cursor: help;
-    }
-
-    .name,
-    .slogan,
-    .links {
-        text-align: center;
-    }
-
-    .name {
-        padding-top: 6px;
-        line-height: 1.2;
-        font-size: 2em;
-        color: color-mix(in srgb, var(--textDeep), var(--contributorColor) 15%);
-        text-shadow: 2px 2px
-            color-mix(in srgb, var(--contributorColor), transparent 80%);
-
-        @include bp.below('mobile') {
-            font-size: 1.8em;
-        }
-    }
-
-    .slogan {
-        font-size: 1.2em;
-        font-weight: 600;
-        padding-bottom: 8px;
-        color: var(--textMuted);
-    }
-
-    .links {
-        display: flex;
-        gap: var(--gap);
-        justify-content: center;
-        flex-wrap: wrap;
-
-        .link {
-            line-height: 2;
-            font-size: 1em;
-            font-weight: 600;
-            color: color-mix(in srgb, var(--text), var(--contributorColor) 20%);
-            border: 1.5px solid
-                color-mix(in srgb, var(--contributorColor), transparent 50%);
-            border-radius: 3px;
-            padding: 4px 10px;
-            text-decoration: none;
-
-            @include transition(background);
-
-            &:hover {
-                background: color-mix(
-                    in srgb,
-                    var(--contributorColor),
-                    transparent 90%
-                );
-            }
-        }
-    }
-}
-</style>

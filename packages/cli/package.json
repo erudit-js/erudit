@@ -1,39 +1,39 @@
 {
-    "name": "@erudit-js/cli",
-    "version": "3.0.0-dev.23",
-    "type": "module",
-    "description": "📟 Command Line Interface for Erudit",
-    "license": "MIT",
-    "repository": {
-        "type": "git",
-        "url": "git+https://github.com/erudit-js/erudit.git",
-        "directory": "packages/cli"
+  "name": "@erudit-js/cli",
+  "version": "4.0.0",
+  "type": "module",
+  "description": "📟 Command Line Interface for Erudit",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/erudit-js/erudit.git",
+    "directory": "packages/cli"
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
     },
-    "types": "./dist/index.d.ts",
-    "exports": {
-        ".": "./dist/index.mjs",
-        "./cli": "./bin/erudit-cli.mjs"
-    },
-    "bin": {
-        "erudit-cli": "bin/erudit-cli.mjs",
-        "erudit": "bin/erudit-cli.mjs"
-    },
-    "scripts": {
-        "dev": "bun unbuild --stub",
-        "build": "bun run prepack",
-        "prepack": "bun unbuild"
-    },
-    "files": [
-        "bin",
-        "dist"
-    ],
-    "dependencies": {
-        "@erudit-js/cog": "workspace:3.0.0-dev.23",
-        "chalk": "^5.4.1",
-        "citty": "^0.1.6",
-        "consola": "^3.4.0"
-    },
-    "devDependencies": {
-        "unbuild": "^3.3.1"
+    "./cli": {
+      "import": "./dist/cli.js",
+      "types": "./dist/cli.d.ts"
     }
+  },
+  "scripts": {
+    "build": "rm -rf dist && bun tsc --project ./tsconfig.src.json && bun run postBuild.ts",
+    "test": "bun vitest run",
+    "prepack": "bun run build"
+  },
+  "files": [
+    "dist"
+  ],
+  "dependencies": {
+    "@erudit-js/core": "workspace:*",
+    "http-server": "^14.1.1",
+    "chalk": "^5.6.2",
+    "citty": "^0.2.0",
+    "dotenv": "^17.2.3"
+  }
 }

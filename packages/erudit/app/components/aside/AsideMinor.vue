@@ -1,97 +1,68 @@
 <script lang="ts" setup>
-import { isTopicPart } from '@erudit-js/cog/schema';
+const { asideMinorState } = useAsideMinor();
+const mouted = ref(false);
+const showLoadingIcon = ref(false);
+const loadingIconDelay = 500;
+let loadingTimer: ReturnType<typeof setTimeout> | null = null;
 
-import { type AsideMinorNews, type AsideMinorData } from '@shared/aside/minor';
-import { trailingSlash } from '@erudit/utils/url';
-import { asideMinorKey } from '@app/scripts/aside/minor/state';
+onMounted(() => {
+  mouted.value = true;
+});
 
-import {
-    LazyAsideMinorNews,
-    LazyAsideMinorTopic,
-    LazyAsideMinorContent,
-    LazyAsideMinorContributor,
-} from '#components';
-
-let setupI = 0;
-
-const route = useRoute();
-const nuxtApp = useNuxtApp();
-
-const asideData = shallowRef<AsideMinorData>();
-const AsideMinorPane = shallowRef<Component>();
-
-async function setupAsideMinorData() {
-    const currentSetupI = ++setupI;
-    const path = trailingSlash(route.path, false).substring(1);
-    const pathParts = path.split('/');
-
-    const payloadKey = 'aside-minor';
-    const asideMinorPayload =
-        (nuxtApp.static.data[payloadKey] ||=
-        nuxtApp.payload.data[payloadKey] ||=
-            {});
-
-    const data: AsideMinorData = await (async () => {
-        const firstPathPart = pathParts[0];
-
-        if (isTopicPart(firstPathPart)) {
-            return (asideMinorPayload[path] ||= await $fetch(
-                `/api/aside/minor/topic`,
-                {
-                    query: {
-                        topicPart: firstPathPart,
-                        topicId: pathParts.slice(1).join('/'),
-                    },
-                },
-            ));
-        }
-
-        switch (firstPathPart) {
-            case 'book':
-            case 'group':
-                return (asideMinorPayload[path] ||= await $fetch(
-                    `/api/aside/minor/${pathParts.join('/')}`,
-                ));
-            case 'contributor':
-                return (asideMinorPayload[path] ||= await $fetch(
-                    `/api/aside/minor/contributor/${pathParts[1]}`,
-                ));
-            default:
-                prerenderRoutes(['/api/aside/minor/news']);
-                return await $fetch<AsideMinorNews>(`/api/aside/minor/news`);
-        }
-    })();
-
-    if (currentSetupI !== setupI) {
-        // This data is outdated because new `setupAsideMinorData` was called
-        return;
+watch(
+  asideMinorState,
+  () => {
+    if (loadingTimer) {
+      clearTimeout(loadingTimer);
+      loadingTimer = null;
     }
 
-    asideData.value = data;
+    showLoadingIcon.value = false;
 
-    AsideMinorPane.value = (() => {
-        switch (asideData.value.type) {
-            case 'topic':
-                return LazyAsideMinorTopic;
-            case 'book':
-            case 'group':
-                return LazyAsideMinorContent;
-            case 'contributor':
-                return LazyAsideMinorContributor;
-        }
+    loadingTimer = setTimeout(() => {
+      showLoadingIcon.value = true;
+    }, loadingIconDelay);
+  },
+  { immediate: true },
+);
 
-        return LazyAsideMinorNews;
-    })();
-}
-
-watch(route, setupAsideMinorData);
-await setupAsideMinorData();
-
-provide(asideMinorKey, asideData);
+onUnmounted(() => {
+  if (loadingTimer) {
+    clearTimeout(loadingTimer);
+  }
+});
 </script>
 
 <template>
+  <div class="absolute top-0 left-0 h-full w-full">
     <TransitionFade>
-        <component :is="AsideMinorPane" />
+      <Suspense v-if="mouted" :key="asideMinorState?.type">
+        <template #default :timeout="10">
+          <LazyAsideMinorNews v-if="asideMinorState?.type === 'news'" />
+          <LazyAsideMinorContributor
+            v-else-if="asideMinorState?.type === 'contributor'"
+          />
+          <LazyAsideMinorContentContributions
+            v-else-if="asideMinorState?.type === 'content-contributions'"
+          />
+          <LazyAsideMinorContentPage
+            v-else-if="asideMinorState?.type === 'content-page'"
+          />
+          <LazyAsideMinorContentTopic
+            v-else-if="asideMinorState?.type === 'content-topic'"
+          />
+          <div v-else></div>
+        </template>
+        <template #fallback>
+          <div
+            v-if="showLoadingIcon"
+            class="absolute top-0 left-0 grid h-full w-full place-items-center"
+          >
+            <Loading class="text-text-disabled text-[65px]" />
+          </div>
+          <div v-else></div>
+        </template>
+      </Suspense>
     </TransitionFade>
+  </div>
 </template>

@@ -1,0 +1,48 @@
+import type { Nuxt } from '@nuxt/schema';
+import type { NitroConfig } from 'nitropack';
+
+import type { EruditIndexPage } from './indexPage.js';
+import type { EruditSponsors } from '../sponsor.js';
+import type { EruditAdsBanners } from './ads.js';
+import type { EruditAnalytics } from './analytics.js';
+import type { EruditDebug } from './debug.js';
+import type { EruditCustomLinks } from './links.js';
+import type { EruditRepository } from './repository.js';
+import type { EruditSeo } from './seo.js';
+import type { EruditSite } from './site.js';
+import type { EruditLanguage } from './language.js';
+import type { EruditElements } from './elements.js';
+import type { EruditContributors } from '../contributor.js';
+
+export interface EruditConfig {
+  language?: EruditLanguage;
+  debug?: EruditDebug;
+  analytics?: EruditAnalytics;
+  ads?: EruditAdsBanners;
+  site?: EruditSite;
+  indexPage?: EruditIndexPage;
+  contributors?: EruditContributors;
+  sponsors?: EruditSponsors;
+  seo?: EruditSeo;
+  repository?: EruditRepository;
+  customLinks?: EruditCustomLinks;
+  elements?: EruditElements;
+  countElements?: (string | string[])[];
+  /**
+   * Erudit uses Nuxt under the hood.
+   * Use this to alter Nuxt configuration.
+   */
+  nuxtAugmentations?: [
+    ({
+      nuxt,
+      nitro,
+      projectPath,
+      eruditPath,
+    }: {
+      nuxt: Nuxt;
+      nitro: NitroConfig;
+      projectPath: string;
+      eruditPath: string;
+    }) => Promise<void> | void,
+  ];
+}

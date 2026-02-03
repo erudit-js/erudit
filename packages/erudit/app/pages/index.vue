@@ -1,205 +1,113 @@
 <script lang="ts" setup>
-import eruditConfig from '#erudit/config';
-import { type IndexData } from '@shared/indexData';
-import { normalizeText } from '@erudit/utils/normalize';
+const { showNewsAside } = useAsideMinor();
+showNewsAside();
 
-const pretty = useFormatText();
+const withBaseUrl = useBaseUrl();
 
-const phrase = await usePhrases(
-    'seo_index_title',
-    'seo_index_description',
-    'topics',
-    'x_contributors',
-    'x_sponsors',
-);
+const nuxtApp = useNuxtApp();
+const payloadKey = 'index-page';
+const indexPage: IndexPage =
+  (nuxtApp.static.data[payloadKey] ||=
+  nuxtApp.payload.data[payloadKey] ||=
+    await $fetch<IndexPage>('/api/indexPage', { responseType: 'json' }));
 
-const seoTitle = pretty(
-    eruditConfig.seo?.indexTitle ||
-        eruditConfig.seo?.title ||
-        phrase.seo_index_title,
-);
+useIndexSeo(indexPage);
 
-const seoDescription = pretty(
-    normalizeText(
-        eruditConfig.seo?.indexDescription || phrase.seo_index_description,
-    ),
-);
+const logotypeInvertClass = computed(() => {
+  if (!indexPage.topImage?.invert) return '';
 
-useSeoMeta({
-    title: seoTitle,
-    ogTitle: seoTitle,
-    description: seoDescription,
-    ogDescription: seoDescription,
+  if (indexPage.topImage.invert === 'dark') {
+    return 'dark:hue-rotate-180 dark:invert-100';
+  }
+
+  if (indexPage.topImage.invert === 'light') {
+    return 'hue-rotate-180 invert-100 dark:hue-rotate-0 dark:invert-0';
+  }
+
+  return '';
 });
 
-const { data: indexData } = (await useAsyncData('index', () =>
-    $fetch('/api/index/data'),
-)) as { data: Ref<IndexData> };
-
-const logotype = computed(() => {
-    return eruditConfig.index?.logotype
-        ? {
-              src: eruditConfig.index.logotype.src,
-              maxWidth: eruditConfig.index.logotype.maxWidth || '100%',
-              invert: eruditConfig.index.logotype.invert,
-          }
-        : undefined;
-});
-
-const title = computed(() => {
-    return pretty(
-        eruditConfig.index?.title ||
-            eruditConfig.seo?.title ||
-            eruditConfig.site?.title ||
-            phrase.seo_index_title,
-    );
-});
-
-const slogan = computed(() => {
-    return eruditConfig.index?.slogan;
-});
-
-const canShowStats = computed(() => {
-    const hasElementStats =
-        indexData.value.elementStats && indexData.value.elementStats.length > 0;
-
-    const hasTopics =
-        indexData.value.topicCount && indexData.value.topicCount > 0;
-
-    return hasElementStats || hasTopics;
-});
-
-const description = computed(() => {
-    return eruditConfig.index?.description;
-});
-
-const canShowParticipants = computed(() => {
-    return (
-        indexData.value.contributors.length > 0 ||
-        indexData.value.sponsors.length > 0
-    );
-});
+const phrase = await usePhrases('x_contributors', 'x_sponsors');
 </script>
 
 <template>
-    <header :class="$style.indexHeader">
-        <img
-            v-if="logotype"
-            :src="logotype.src"
-            :style="{ maxWidth: logotype.maxWidth }"
-            :class="[
-                $style.logotype,
-                logotype.invert === 'dark' ? $style.invertDark : '',
-                logotype.invert === 'light' ? $style.invertLight : '',
-            ]"
-        />
-        <h1 :class="$style.title">{{ pretty(title) }}</h1>
-        <section v-if="slogan" :class="$style.slogan">
-            {{ pretty(slogan) }}
-        </section>
-        <Stats
-            v-if="canShowStats"
-            :stats="[
-                {
-                    type: 'custom',
-                    icon: 'files',
-                    label: phrase.topics,
-                    count: indexData.topicCount,
-                },
-                ...indexData.elementStats,
-            ]"
-            :class="$style.stats"
-        />
-        <section v-if="description" :class="$style.description">
-            {{ pretty(description) }}
-        </section>
-        <section v-if="canShowParticipants" :class="$style.participants">
-            <IndexAvatars
-                v-if="indexData.contributors.length > 0"
-                :label="phrase.x_contributors(indexData.contributors.length)"
-                link="/contributors/"
-                :max="4"
-                icon="user"
-                :namesAvatars="indexData.contributors"
-            />
+  <MainGlow />
+  <MainSectionPreamble>
+    <!-- Logotype -->
+    <img
+      v-if="indexPage.topImage"
+      :src="withBaseUrl(indexPage.topImage.src)"
+      :style="{
+        'max-width': `min(${indexPage.topImage.maxWidth || '100%'}, 100%)`,
+      }"
+      :class="['pt-main-half px-main mx-auto block', logotypeInvertClass]"
+    />
 
-            <IndexAvatars
-                v-if="indexData.sponsors.length > 0"
-                :label="phrase.x_sponsors(indexData.sponsors.length)"
-                link="/sponsors/"
-                :max="4"
-                icon="diamond"
-                :namesAvatars="indexData.sponsors"
-            />
-        </section>
-    </header>
-    <MainToc v-if="indexData.contentToc" :toc="indexData.contentToc" />
+    <!-- Main Data -->
+    <div
+      class="px-main gap-normal py-main flex flex-col items-center text-center"
+    >
+      <h1>
+        <FancyBold :text="indexPage.title" class="text-size-h1" />
+      </h1>
+      <div
+        class="micro:text-[1.3em] text-text-muted text-[1.1em] font-semibold"
+      >
+        {{ formatText(indexPage.short) }}
+      </div>
+      <div
+        v-if="indexPage.stats"
+        class="gap-small micro:gap-normal micro:text-[1.2em] flex flex-wrap
+          justify-center text-[1.1em]"
+      >
+        <MainContentStatsItemMaterials
+          v-if="indexPage.stats.materials"
+          :count="indexPage.stats.materials"
+          mode="compact"
+        />
+        <MainContentStatsItemElement
+          v-if="indexPage.stats.elements"
+          v-for="(count, schemaName) of indexPage.stats.elements"
+          :schemaName
+          :count
+          mode="compact"
+        />
+      </div>
+    </div>
+
+    <!-- Description -->
+    <div
+      v-if="indexPage.description"
+      class="micro:text-justify px-main pb-main text-center"
+    >
+      {{ formatText(indexPage.description) }}
+    </div>
+
+    <!-- Contributors and Sponsors -->
+    <div
+      v-if="indexPage.contributors || indexPage.sponsors"
+      class="px-main pb-main gap-main flex flex-wrap justify-around"
+    >
+      <IndexPagePersons
+        v-if="indexPage.contributors"
+        personType="contributor"
+        :title="
+          phrase.x_contributors(Object.keys(indexPage.contributors).length)
+        "
+        :link="PAGES.contributors"
+        :persons="indexPage.contributors"
+      />
+      <IndexPagePersons
+        v-if="indexPage.sponsors"
+        personType="sponsor"
+        :title="phrase.x_sponsors(Object.keys(indexPage.sponsors).length)"
+        :link="PAGES.sponsors"
+        :persons="indexPage.sponsors"
+      />
+    </div>
+  </MainSectionPreamble>
+  <MainContentChildren
+    v-if="indexPage.children"
+    :children="indexPage.children"
+  />
 </template>
-
-<style lang="scss" module>
-@use '$/def/bp';
-
-.indexHeader {
-    display: flex;
-    flex-direction: column;
-    gap: calc(1.5 * var(--_pMainY));
-    //padding: var(--_pMainY) 5.5vw;
-    padding: var(--_pMainY) var(--_pMainX);
-
-    @include bp.below('mobile') {
-        padding: var(--_pMainY) var(--_pMainX);
-    }
-
-    .logotype {
-        margin: 0 auto;
-        margin-bottom: var(--_pMainY);
-        width: 100%;
-
-        [data-theme='dark'] &.invertDark,
-        [data-theme='light'] &.invertLight {
-            filter: invert(1) hue-rotate(180deg);
-        }
-    }
-
-    .title {
-        font-size: clamp(2em, 2vw + 1em, 2.6em);
-        text-align: center;
-        text-shadow: 3px 3px color-mix(in srgb, var(--brand), transparent 70%);
-        line-height: 1;
-    }
-
-    .slogan {
-        text-align: center;
-        font-weight: 600;
-        font-size: 1.4em;
-        color: var(--textMuted);
-    }
-
-    .stats {
-        font-size: 1.4em;
-        gap: var(--gapBig);
-        justify-content: center;
-
-        @include bp.below('mobile') {
-            gap: var(--gap);
-        }
-    }
-
-    .description {
-        font-size: 1.1em;
-        //text-align: justify;
-    }
-
-    .participants {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: space-around;
-        align-items: center;
-        gap: var(--gapBig);
-
-        @include bp.below('mobile') {
-            gap: var(--gap);
-        }
-    }
-}
-</style>

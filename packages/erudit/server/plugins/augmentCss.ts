@@ -1,0 +1,17 @@
+export default defineNitroPlugin((nitro) => {
+  nitro.hooks.hook('render:html', (html) => {
+    const style = ERUDIT.config.public.style;
+    const brandColor = style?.brandColor;
+
+    const debug = ERUDIT.config.public.debug;
+    const slowTransition = debug.slowTransition;
+    html.head.push(`
+            <style>
+:root {
+    ${brandColor ? `--color-brand: ${brandColor};` : ''}
+    --duration-multiplier: ${slowTransition ? `2.5` : `1`};
+}
+            </style>
+        `);
+  });
+});

@@ -1,44 +1,60 @@
-import { DbContribution } from '@server/db/entities/Contribution';
-import { DbContributor } from '@server/db/entities/Contributor';
-import { ERUDIT_SERVER } from '@server/global';
+import type { ListContributor } from '@erudit-js/core/contributor';
 
-import { type ContributorListItem } from '@shared/contributor';
+export default defineEventHandler<Promise<ListContributor[]>>(async () => {
+  const listContributors: ListContributor[] = [];
+  const dbContributors = await ERUDIT.db.query.contributors.findMany();
 
-export default defineEventHandler<Promise<ContributorListItem[]>>(async () => {
-    const dbContributors = await ERUDIT_SERVER.DB.manager.find(DbContributor, {
-        select: ['contributorId', 'displayName', 'isEditor', 'avatar'],
-    });
+  for (const dbContributor of dbContributors) {
+    const contributions =
+      await ERUDIT.repository.contributors.countContributions(
+        dbContributor.contributorId,
+      );
 
-    if (dbContributors.length === 0) {
-        return [];
+    const listContributor: ListContributor = {
+      id: dbContributor.contributorId,
+    };
+
+    if (dbContributor.displayName) {
+      listContributor.displayName = dbContributor.displayName;
     }
 
-    const contributors: ContributorListItem[] = await Promise.all(
-        dbContributors.map(async (dbContributor) => {
-            const contributions = await ERUDIT_SERVER.DB.manager.count(
-                DbContribution,
-                {
-                    where: { contributorId: dbContributor.contributorId },
-                },
-            );
+    if (dbContributor.short) {
+      listContributor.short = dbContributor.short;
+    }
 
-            return {
-                contributorId: dbContributor.contributorId,
-                displayName: dbContributor.displayName,
-                isEditor: dbContributor.isEditor,
-                avatar: dbContributor.avatar,
-                contributions,
-            };
-        }),
-    );
+    if (dbContributor.avatarExtension) {
+      listContributor.avatarUrl = ERUDIT.repository.contributors.avatarUrl(
+        dbContributor.contributorId,
+        dbContributor.avatarExtension,
+      );
+    }
 
-    contributors.sort((a, b) => {
-        if (a.isEditor !== b.isEditor) {
-            return a.isEditor ? -1 : 1;
-        }
+    if (contributions > 0) {
+      listContributor.contributions = contributions;
+    }
 
-        return b.contributions - a.contributions;
-    });
+    if (dbContributor.editor) {
+      listContributor.editor = dbContributor.editor;
+    }
 
-    return contributors;
+    listContributors.push(listContributor);
+  }
+
+  listContributors.sort((a, b) => {
+    // Sort by contributions first (desc)
+    const aContributions = a.contributions ?? 0;
+    const bContributions = b.contributions ?? 0;
+
+    if (aContributions !== bContributions) {
+      return bContributions - aContributions;
+    }
+
+    // Then sort alphabetically by displayName or id
+    const aName = a.displayName ?? a.id;
+    const bName = b.displayName ?? b.id;
+
+    return aName.localeCompare(bName);
+  });
+
+  return listContributors;
 });

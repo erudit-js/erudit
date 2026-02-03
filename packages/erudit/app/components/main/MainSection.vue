@@ -1,58 +1,44 @@
 <template>
-    <section :class="$style.mainSection">
-        <div :class="$style.hr">
-            <div :class="$style.shade"></div>
-            <div v-if="$slots.header" :class="$style.header">
-                <slot name="header"></slot>
-            </div>
-        </div>
-        <div :class="$style.content">
-            <slot></slot>
-        </div>
-    </section>
+  <section :class="[$style.section, 'bg-bg-main']">
+    <!-- Section Header -->
+    <div :class="[$style.header, 'border-border relative border-b-2']">
+      <!-- Header Shade -->
+      <div
+        class="absolute bottom-0 h-[70px] w-full bg-linear-to-t from-[#f7f7f7]
+          to-transparent dark:from-[#1b1b1b]"
+      ></div>
+
+      <!-- Header Content -->
+      <div :class="[$style.headerContent, 'relative z-1']">
+        <slot name="header"></slot>
+      </div>
+    </div>
+
+    <!-- Section Body -->
+    <div class="relative z-1">
+      <slot></slot>
+    </div>
+  </section>
 </template>
 
-<style lang="scss" module>
-.mainSection {
-    .hr {
-        position: relative;
-        border-bottom: 2px solid var(--border);
-        margin: var(--_pMainY) 0;
-
-        .shade {
-            position: absolute;
-            z-index: 0;
-            bottom: 0;
-            left: 0;
-            height: 50px;
-            width: 100%;
-            background: linear-gradient(to bottom, transparent, var(--bgAside));
-        }
-
-        .header {
-            position: relative;
-            z-index: 1;
-        }
-    }
-
-    &:nth-child(even of .mainSection) {
-        .hr {
-            transform: scaleY(-1);
-
-            .header {
-                transform: scaleY(-1);
-            }
-        }
-    }
-
-    .content {
-        position: relative;
-        z-index: 1;
-    }
+<style module>
+.section:nth-child(1 of .section) {
+  .header {
+    display: none;
+  }
 }
 
-:not(.mainSection):has(+ .mainSection) {
-    position: relative;
-    z-index: 1;
+.section:not(:nth-child(1 of .section)) {
+  position: relative;
+}
+
+.section:nth-child(odd of .section) {
+  .header {
+    transform: scaleY(-1);
+  }
+
+  .headerContent {
+    transform: scaleY(-1);
+  }
 }
 </style>

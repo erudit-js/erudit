@@ -1,184 +1,95 @@
 <script lang="ts" setup>
-import eruditConfig from '#erudit/config';
-import { createContributorLink } from '@shared/link';
+import type { ListContributor } from '@erudit-js/core/contributor';
 
-const { data: contributorList } = await useFetch(`/api/contributor/list`, {
-    key: 'contributor-list',
-});
+const { showNewsAside } = useAsideMinor();
+showNewsAside();
 
-const editorsNumber = computed(() => {
-    return contributorList.value?.filter((i) => i.isEditor)?.length ?? 0;
-});
+const withBaseUrl = useBaseUrl();
+
+const nuxtApp = useNuxtApp();
+const payloadKey = 'list-contributors';
+const listContributors: ListContributor[] =
+  (nuxtApp.static.data[payloadKey] ||=
+  nuxtApp.payload.data[payloadKey] ||=
+    await $fetch('/api/contributor/list', { responseType: 'json' }));
 
 const phrase = await usePhrases(
-    'contributors',
-    'contributors_page_description',
-    'contributors_page_invite',
-    'become_contributor',
-    'contributions_explain',
-    'editor',
+  'contributors',
+  'contributors_description',
+  'contributors_invite',
+  'become_contributor',
+  'no_contributors',
+  'contribution',
+  'editor',
 );
 
-useEruditHead({
-    title: phrase.contributors,
-    description: phrase.contributors_page_description,
+const description =
+  phrase.contributors_description +
+  (ERUDIT.config.contributors?.becomeContributorLink
+    ? ' ' + phrase.contributors_invite
+    : '');
+
+useStandartSeo({
+  title: phrase.contributors,
+  description: phrase.contributors_description,
+  urlPath: PAGES.contributors,
 });
-
-const fullDescription = (() => {
-    let _description = phrase.contributors_page_description;
-
-    if (eruditConfig.content?.howToImproveLink) {
-        _description += ' ' + phrase.contributors_page_invite;
-    }
-
-    return _description;
-})();
 </script>
 
 <template>
+  <MainGlow />
+  <MainSectionPreamble>
     <MainTitle icon="users" :title="phrase.contributors" />
-    <MainDescription
-        :class="$style.pageDescription"
-        :html="true"
-        :description="fullDescription"
-    />
-    <MainActionButton
-        v-if="eruditConfig.content?.howToImproveLink"
+    <MainDescription :description />
+    <template v-if="ERUDIT.config.contributors?.becomeContributorLink">
+      <div class="h-main-half"></div>
+      <MainAction
         icon="users"
+        :newTab="true"
         :label="phrase.become_contributor"
-        :link="eruditConfig.content.howToImproveLink"
-    />
-    <MainSection>
-        <section :class="$style.contributors">
-            <EruditLink
-                :to="createContributorLink(contributor.contributorId)"
-                :prefetch="false"
-                v-for="(contributor, i) of contributorList"
-                :class="$style.contributor"
-                :style="{
-                    '--contributorColor': stringColor(
-                        contributor.contributorId,
-                    ),
-                }"
-            >
-                <Avatar
-                    icon="user"
-                    :src="
-                        contributor.avatar
-                            ? `/contributors/${contributor.avatar}`
-                            : undefined
-                    "
-                    :class="$style.avatar"
-                    :color="stringColor(contributor.contributorId)"
-                    :styling="{ glow: true, border: false }"
-                />
-                <div :class="$style.info">
-                    <div :class="$style.main">
-                        <div :class="$style.position">
-                            <template v-if="contributor.isEditor">
-                                <MyIcon
-                                    :title="phrase.editor"
-                                    :class="$style.editor"
-                                    name="graduation"
-                                />
-                            </template>
-                            <template v-else>
-                                {{ i - editorsNumber + 1 }}.
-                            </template>
-                        </div>
-                        <div :class="$style.name">
-                            {{
-                                contributor.displayName ||
-                                contributor.contributorId
-                            }}
-                        </div>
-                    </div>
-                    <div
-                        v-if="contributor.contributions"
-                        :class="$style.contributions"
-                    >
-                        {{
-                            phrase.contributions_explain(
-                                contributor.contributions,
-                            )
-                        }}
-                    </div>
-                </div>
-            </EruditLink>
-        </section>
-    </MainSection>
+        :link="ERUDIT.config.contributors!.becomeContributorLink"
+      />
+      <div class="h-main-half"></div>
+    </template>
+  </MainSectionPreamble>
+  <MainSection>
+    <div
+      v-if="listContributors.length > 0"
+      class="gap-small micro:gap-normal px-main py-main columns-[300px]"
+    >
+      <FancyCard
+        v-for="contributor of listContributors"
+        :key="contributor.id"
+        :title="contributor.displayName || contributor.id"
+        :mediaUrl="
+          contributor.avatarUrl ? withBaseUrl(contributor.avatarUrl) : undefined
+        "
+        :description="contributor.short"
+        :link="{
+          href: PAGES.contributor(contributor.id),
+          external: false,
+        }"
+        :color="stringColor(contributor.id)"
+      >
+        <template #tags v-if="contributor.editor || contributor.contributions">
+          <FancyCardTag v-if="contributor.editor">
+            <MyIcon name="graduation" class="text-[1.2em]" />
+            <span>
+              {{ formatText(phrase.editor) }}
+            </span>
+          </FancyCardTag>
+          <FancyCardTag v-if="contributor.contributions">
+            <MyIcon name="draw" class="text-[1.2em]" />
+            <span>{{ formatText(phrase.contribution) }}</span>
+            <span class="font-bold">
+              {{ contributor.contributions }}
+            </span>
+          </FancyCardTag>
+        </template>
+      </FancyCard>
+    </div>
+    <div v-else class="text-text-muted px-main py-main text-center">
+      {{ phrase.no_contributors }}
+    </div>
+  </MainSection>
 </template>
-
-<style lang="scss" module>
-@use '$/def/bp';
-
-.contributors {
-    padding: 0 var(--_pMainX);
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
-    gap: var(--gap);
-
-    @include bp.below('mobile') {
-        padding: var(--_pMainY) 0;
-        gap: 0;
-    }
-
-    .contributor {
-        display: flex;
-        align-items: center;
-        gap: var(--gap);
-        padding: var(--gap);
-        border-radius: 5px;
-        text-decoration: none;
-        color: inherit;
-        @include transition(background);
-
-        &:hover {
-            background: color-mix(
-                in srgb,
-                var(--bgMain),
-                var(--contributorColor) 12%
-            );
-        }
-
-        @include bp.below('mobile') {
-            border-radius: 0;
-        }
-
-        .avatar {
-            --avatarSize: 50px;
-            flex-shrink: 0;
-        }
-
-        .info {
-            display: flex;
-            flex-direction: column;
-
-            .main {
-                display: flex;
-                align-items: center;
-                gap: 5px;
-
-                .position {
-                    font-size: 0.9em;
-                    font-weight: 600;
-                    color: var(--textMuted);
-
-                    .editor {
-                        cursor: help;
-                    }
-                }
-
-                .name {
-                    font-weight: 600;
-                }
-            }
-
-            .contributions {
-                color: var(--textMuted);
-                font-size: 0.85em;
-            }
-        }
-    }
-}
-</style>

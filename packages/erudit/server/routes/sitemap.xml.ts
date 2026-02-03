@@ -1,103 +1,83 @@
-import { Not } from 'typeorm';
-import type { ContentType } from '@erudit-js/cog/schema';
-
-import { ERUDIT_SERVER } from '@server/global';
-import { DbTopic } from '@server/db/entities/Topic';
-import { getShortContentId } from '@server/repository/contentId';
-import { DbContent } from '@server/db/entities/Content';
-import { DbContributor } from '@server/db/entities/Contributor';
-
-import {
-    createContentLink,
-    createContributorLink,
-    createTopicPartLink,
-} from '@shared/link';
-import { trailingSlash } from '@erudit/utils/url';
+import { sn } from 'unslash';
 
 export default defineEventHandler(async (event) => {
-    setHeader(event, 'Content-Type', 'application/xml');
+  const urls = new Set<string>();
+  urls.add(PAGES.index);
 
-    const routes = [
-        ...staticRoutes(),
-        ...(await topicRoutes()),
-        ...(await contentRoutes()),
-        ...(await contributorsRoutes()),
-    ];
+  //
+  // Contributors
+  //
 
-    const buildUrl = ERUDIT_SERVER.CONFIG.site?.buildUrl || '';
-    const baseUrl = ERUDIT_SERVER.CONFIG.site?.baseUrl || '/';
+  if (ERUDIT.config.public.contributors?.enabled) {
+    urls.add(PAGES.contributors);
 
-    return `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${routes
-    .map(
-        (route) =>
-            `    <url>
-        <loc>${trailingSlash(buildUrl + baseUrl, false) + route}</loc>
-        <lastmod>${new Date().toISOString().slice(0, 10)}</lastmod>
-    </url>`,
-    )
-    .join('\n')}
-</urlset>`;
-});
-
-function staticRoutes() {
-    const routes = ['/', '/contributors/'];
-
-    if (ERUDIT_SERVER.CONFIG.sponsors) {
-        routes.push('/sponsors/');
-    }
-
-    return routes;
-}
-
-async function topicRoutes() {
-    const dbTopics = await ERUDIT_SERVER.DB.manager.find(DbTopic, {
-        select: ['contentId', 'parts'],
+    const dbContributors = await ERUDIT.db.query.contributors.findMany({
+      columns: { contributorId: true },
     });
-
-    const topicRoutes: string[] = [];
-
-    for (const dbTopic of dbTopics) {
-        const shortId = getShortContentId(dbTopic.contentId);
-        for (const part of dbTopic.parts) {
-            topicRoutes.push(createTopicPartLink(part, shortId));
-        }
-    }
-
-    return topicRoutes;
-}
-
-async function contentRoutes() {
-    const dbContentItems = await ERUDIT_SERVER.DB.manager.find(DbContent, {
-        select: ['contentId', 'type'],
-        where: {
-            type: Not('topic' as ContentType),
-        },
-    });
-
-    const contentRoutes: string[] = [];
-
-    for (const dbContent of dbContentItems) {
-        const shortId = getShortContentId(dbContent.contentId);
-        contentRoutes.push(createContentLink(dbContent.type, shortId));
-    }
-
-    return contentRoutes;
-}
-
-async function contributorsRoutes() {
-    const dbContributors = await ERUDIT_SERVER.DB.manager.find(DbContributor, {
-        select: ['contributorId'],
-    });
-
-    const contributorRoutes: string[] = [];
 
     for (const dbContributor of dbContributors) {
-        contributorRoutes.push(
-            createContributorLink(dbContributor.contributorId),
-        );
+      urls.add(PAGES.contributor(dbContributor.contributorId));
     }
+  }
 
-    return contributorRoutes;
-}
+  //
+  // Sponsors
+  //
+
+  if (ERUDIT.config.public.sponsors?.enabled) {
+    urls.add(PAGES.sponsors);
+  }
+
+  //
+  // Content
+  //
+
+  {
+    const dbContentItems = await ERUDIT.db.query.content.findMany({
+      columns: { fullId: true },
+    });
+
+    for (const dbContentItem of dbContentItems) {
+      const fullId = dbContentItem.fullId;
+      const contentNode = ERUDIT.contentNav.getNodeOrThrow(fullId);
+
+      if (contentNode.type === 'topic') {
+        const parts = await ERUDIT.repository.content.topicParts(fullId);
+        for (const part of parts) {
+          urls.add(PAGES.topic(part, contentNode.shortId));
+        }
+      } else {
+        urls.add(PAGES[contentNode.type](fullId));
+      }
+
+      const elementSnippets =
+        await ERUDIT.repository.content.elementSnippets(fullId);
+
+      for (const snippet of elementSnippets || []) {
+        if (snippet.seo) {
+          urls.add(snippet.link);
+        }
+      }
+    }
+  }
+
+  //
+  // Build XML
+  //
+
+  const runtimeConfig = useRuntimeConfig();
+
+  const xml = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${Array.from(urls)
+  .map(
+    (url) => `    <url>
+        <loc>${sn(runtimeConfig.public.siteUrl, url)}</loc>
+    </url>`,
+  )
+  .join('\n')}
+</urlset>`.trim();
+
+  setHeader(event, 'Content-Type', 'application/xml');
+  return xml;
+});

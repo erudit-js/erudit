@@ -1,43 +1,30 @@
-import eruditConfig from '#erudit/config';
-import { trailingSlash, normalizeUrl } from '@erudit/utils/url';
+import { sn } from 'unslash';
 
-export function useBaseUrlPath() {
-    const runtimeConfig = useRuntimeConfig();
-    const baseURL = runtimeConfig.app.baseURL;
+export function useBaseUrl() {
+  const runtimeConfig = useRuntimeConfig();
+  const baseUrl = runtimeConfig.app.baseURL;
 
-    return (path: string) => {
-        const normalizedPath = normalizeUrl(path);
+  return (path: string): string => {
+    if (path.startsWith('/')) {
+      return `${baseUrl}${path.slice(1)}`;
+    }
 
-        if (normalizedPath.startsWith(baseURL)) {
-            return normalizedPath;
-        }
-
-        if (normalizedPath.startsWith('/')) {
-            return normalizeUrl(baseURL + normalizedPath.substring(1));
-        }
-
-        return normalizedPath;
-    };
+    return path;
+  };
 }
 
 export function useSiteUrl() {
-    const runtimeConfig = useRuntimeConfig();
-    const baseUrl = runtimeConfig.app.baseURL;
-    const url = useRequestURL();
+  const runtimeConfig = useRuntimeConfig();
+  const siteUrl = runtimeConfig.public.siteUrl;
 
-    if (!import.meta.dev && eruditConfig.site?.buildUrl)
-        return eruditConfig.site.buildUrl + baseUrl.slice(0, -1);
+  return (path?: string): string => {
+    // Return external URLs as is
+    if (path) {
+      if (!path.startsWith('/')) {
+        return path;
+      }
+    }
 
-    return normalizeUrl(trailingSlash(url.origin, true));
-}
-
-export function usePageUrl() {
-    const siteUrl = useSiteUrl();
-    const route = useRoute();
-
-    return computed(() => {
-        if (route.path === '/') return siteUrl;
-        const fullUrl = siteUrl + route.path;
-        return normalizeUrl(trailingSlash(fullUrl, true));
-    });
+    return sn(siteUrl, path || '');
+  };
 }

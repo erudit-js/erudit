@@ -1,93 +1,36 @@
 <script lang="ts" setup>
-import type { MyIconName } from '#my-icons';
+import type { MaybeMyIconName } from '#my-icons';
 
 defineProps<{
-    label: string;
-    icon?: MyIconName;
-    svg?: string;
-    level?: number;
-    link?: string;
-    active?: boolean;
-    accent?: boolean;
+  level?: number;
+  to?: string;
+  icon?: MaybeMyIconName;
+  main?: string;
+  state?: undefined | 'active' | 'accent';
 }>();
 </script>
 
 <template>
-    <EruditLink
-        :to="link"
-        :class="[
-            $style.treeItem,
-            active && $style.active,
-            accent && $style.accent,
-        ]"
-        :style="{ ['--_level']: level ?? 0 }"
+  <EruditLink :to>
+    <div
+      :style="{ '--level': level ? +level : 0 }"
+      :class="[
+        `px-normal py-small hocus:bg-bg-accent flex cursor-pointer items-center
+        gap-[calc(var(--spacing-normal)/2)] text-[.85em]
+        transition-[background,color]`,
+        'pl-[calc(var(--spacing-normal)*(var(--level)+1)-2px)]',
+        {
+          'text-text-muted hocus:text-text': !state,
+          'text-brand': state === 'active',
+          'text-text': state === 'accent',
+        },
+      ]"
     >
-        <MyIcon v-if="icon" :class="$style.icon" :name="icon" />
-        <MyRuntimeIcon
-            v-else
-            :class="$style.icon"
-            name="tree-item-icon"
-            :svg="svg!"
-        />
-        <div :class="$style.main">{{ label }}</div>
-        <div v-if="$slots.default" :class="$style.after">
-            <slot></slot>
-        </div>
-    </EruditLink>
+      <MaybeMyIcon v-if="icon" :name="icon" class="shrink-0 text-[1.2em]" />
+      <div class="flex-1">{{ main }}</div>
+      <div class="shrink-0" v-if="$slots.secondary">
+        <slot name="secondary"></slot>
+      </div>
+    </div>
+  </EruditLink>
 </template>
-
-<style lang="scss" module>
-.treeItem {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: calc(var(--gap) / 1.6);
-    padding: calc(var(--gap) / 2) var(--gap);
-    padding-left: calc((var(--_level) + 1) * var(--gap));
-    font-size: 0.95em;
-    color: var(--textMuted);
-    text-decoration: none;
-    cursor: pointer;
-
-    @include transition(background);
-
-    &:hover {
-        background: var(--bgAccent);
-        .icon,
-        .main {
-            color: var(--text);
-        }
-    }
-
-    &.active {
-        .icon,
-        .main {
-            color: var(--brand);
-        }
-    }
-    &.accent {
-        .icon,
-        .main {
-            color: var(--text);
-        }
-    }
-
-    .icon,
-    .main {
-        @include transition(color);
-    }
-
-    .main {
-        flex: 1;
-    }
-
-    .icon,
-    .after {
-        flex-shrink: 0;
-    }
-
-    .icon {
-        font-size: 16px;
-    }
-}
-</style>

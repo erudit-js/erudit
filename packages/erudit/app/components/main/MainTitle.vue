@@ -1,76 +1,32 @@
 <script lang="ts" setup>
-import { isMyIcon } from '#my-icons';
+import type { MaybeMyIconName } from '#my-icons';
 
-defineProps<{ icon: string; title: string; hint?: string }>();
+const { color = 'var(--color-brand)' } = defineProps<{
+  icon: MaybeMyIconName;
+  title: string;
+  color?: string;
+}>();
 </script>
 
 <template>
-    <section :class="$style.contentTitle">
-        <MyIcon
-            v-if="isMyIcon(icon)"
-            :name="icon as any"
-            :title="hint"
-            :class="{ [$style.hasHint]: !!hint }"
-        />
-        <MyRuntimeIcon
-            v-else
-            name="content-title-icon"
-            :svg="icon"
-            :title="hint"
-            :class="{ [$style.hasHint]: !!hint }"
-        />
-        <h1>{{ title }}</h1>
-    </section>
+  <section
+    :style="{ '--titleColor': color }"
+    class="gap-small micro:gap-normal micro:flex-row micro:justify-start px-main
+      py-main-half not-first:micro:-my-3 not-first:micro:-top-1.5 relative flex
+      flex-col items-center justify-center"
+  >
+    <div
+      class="max-micro:rounded-full max-micro:p-4
+        max-micro:bg-(--titleColor)/80"
+    >
+      <MaybeMyIcon
+        :name="icon"
+        class="max-micro:text-white micro:text-[38px] text-[30px]
+          text-[color-mix(in_srgb,var(--titleColor),var(--color-text)_70%)]"
+      />
+    </div>
+    <h1 class="text-size-h1 max-micro:text-center">
+      <FancyBold :text="title" :color="color" />
+    </h1>
+  </section>
 </template>
-
-<style lang="scss" module>
-@use '$/def/bp';
-
-.contentTitle {
-    display: flex;
-    align-items: center;
-    gap: var(--gap);
-    padding: 0 var(--_pMainX);
-
-    @include bp.below('mobile') {
-        padding: var(--_pMainY) var(--_pMainX);
-    }
-
-    [my-icon] {
-        flex-shrink: 0;
-        font-size: 1.65em;
-        color: var(--textMuted);
-        position: relative;
-        top: 1px;
-    }
-
-    .hasHint {
-        cursor: help;
-    }
-
-    h1 {
-        font-size: 1.925em;
-    }
-
-    @include bp.below('mobile') {
-        padding-top: var(--gap);
-        flex-direction: column;
-
-        [my-icon] {
-            padding: 16px;
-            background: color-mix(
-                in srgb,
-                var(--textDisabled),
-                transparent 50%
-            );
-            color: var(--text);
-            border-radius: 50%;
-        }
-
-        h1 {
-            text-align: center;
-            font-size: 1.8em;
-        }
-    }
-}
-</style>

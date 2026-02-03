@@ -1,5 +1,0 @@
-@mixin hasTheme {
-    [data-erudit-preview-theme] & {
-        @content;
-    }
-}

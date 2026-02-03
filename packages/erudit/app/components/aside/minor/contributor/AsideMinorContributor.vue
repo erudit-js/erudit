@@ -1,78 +1,36 @@
 <script lang="ts" setup>
-import { type AsideMinorContributor } from '@shared/aside/minor';
-import { CONTENT_TYPE_ICON } from '@shared/icons';
-import { injectAsideData } from '@erudit/app/scripts/aside/minor/state';
+import ItemBook from './ItemBook.vue';
+import ItemContent from './ItemContent.vue';
 
-import BookContribution from './BookContribution.vue';
+const { asideMinorState } = useAsideMinor();
+const contributions = (asideMinorState.value as AsideMinorContributor)
+  .contributions;
 
-const contributorData = injectAsideData<AsideMinorContributor>();
-const phrase = await usePhrases('contribution');
-
-const bookIdContributions = (() => {
-    const grouped: Record<string, typeof contributorData.value.contributions> =
-        {};
-
-    contributorData.value.contributions.forEach((contribution) => {
-        const bookId = contribution.bookId || '';
-        if (!grouped[bookId]) {
-            grouped[bookId] = [];
-        }
-        grouped[bookId].push(contribution);
-    });
-
-    return grouped;
-})();
-
-const topLevelContributions = bookIdContributions[''];
-delete bookIdContributions[''];
+const phrase = await usePhrases('contribution', 'no_contribution');
 </script>
 
 <template>
-    <AsideMinorPane>
-        <section :class="$style.contributionsHeader">
-            {{ phrase.contribution }}:
-            <span>{{ contributorData.contributions.length }}</span>
-        </section>
-        <div :class="$style.contributions">
-            <TreeContainer>
-                <template v-for="contribution of topLevelContributions">
-                    <TreeItem
-                        :icon="CONTENT_TYPE_ICON[contribution.contentType]"
-                        :label="contribution.contentTitle"
-                        :link="contribution.contentLink"
-                    />
-                </template>
-                <BookContribution
-                    v-for="(contributions, bookId) in bookIdContributions"
-                    :bookTitle="contributions[0]!.bookTitle!"
-                    :contributions
-                />
-            </TreeContainer>
-        </div>
-    </AsideMinorPane>
+  <AsideMinorPane>
+    <div class="flex h-full w-full flex-col">
+      <AsideMinorPlainHeader
+        icon="draw"
+        :title="phrase.contribution"
+        :count="contributions?.length"
+      />
+      <ScrollHolder v-if="contributions" class="flex-1">
+        <TreeContainer>
+          <template v-for="item of contributions">
+            <ItemContent
+              v-if="item.type === 'topic' || item.type === 'page'"
+              :content="item"
+            />
+            <ItemBook v-else-if="item.type === 'book'" :book="item" />
+          </template>
+        </TreeContainer>
+      </ScrollHolder>
+      <section v-else>
+        <AsidePlainMessage :text="phrase.no_contribution" />
+      </section>
+    </div>
+  </AsideMinorPane>
 </template>
-
-<style lang="scss" module>
-.contributionsHeader {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    border-bottom: 1px solid var(--border);
-    color: var(--text);
-    font-size: 1.1em;
-    font-weight: 600;
-    height: 62px;
-
-    span {
-        padding-left: var(--gap);
-        color: var(--textMuted);
-    }
-}
-
-.contributions {
-    max-height: calc(100% - 62px);
-    overflow-y: auto;
-    @include scroll;
-}
-</style>

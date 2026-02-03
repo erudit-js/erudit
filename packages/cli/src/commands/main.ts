@@ -1,31 +1,39 @@
 import { defineCommand } from 'citty';
-import { brandColorLogotype } from '@erudit-js/cog/utils/brandNode';
+import chalk from 'chalk';
+import { brandColorLogotype } from '@erudit-js/core/brandTerminal';
 
-import { version } from '../../package.json';
+import { version } from '../inject.js';
+import { logCommand } from '../shared/logCommand.js';
+import { CONFIG } from '../config.js';
 
 // Sub commands
-import { init } from './init';
-import { prepare } from './prepare';
-import { dev } from './dev';
-import { generate } from './generate';
-import { preview } from './preview';
-import { build } from './build';
+import { prepare } from './prepare.js';
+import { dev } from './dev.js';
+import { build } from './build.js';
+import { launch } from './launch.js';
+import { generate } from './generate.js';
+import { preview } from './preview.js';
 
 export const main = defineCommand({
-    meta: {
-        name: 'Erudit CLI',
-        description: 'Command Line Interface for Erudit!',
-        version,
-    },
-    subCommands: {
-        init,
-        prepare,
-        dev,
-        build,
-        generate,
-        preview,
-    },
-    setup() {
-        console.log(brandColorLogotype);
-    },
+  meta: {
+    name: 'erudit',
+    description: 'CLI for Erudit',
+    version,
+  },
+  subCommands: {
+    prepare,
+    dev,
+    build,
+    launch,
+    generate,
+    preview,
+  },
+  setup({ args }) {
+    console.log(brandColorLogotype);
+    console.log(`Version: ${chalk.bold.cyan(version)}`);
+    if (args._[0]) {
+      logCommand(args._[0]);
+    }
+    console.log(`Erudit path: ${chalk.bold.cyan(CONFIG.ERUDIT_PATH)}`);
+  },
 });

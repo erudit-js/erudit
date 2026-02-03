@@ -1,0 +1,176 @@
+/* Noto Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&family=Noto+Serif:ital,wght@0,100..900;1,100..900&display=swap');
+
+/* Tailwind CSS Config */
+@import 'tailwindcss' source(none);
+@source '../..';
+/* /packages/erudit/app/styles/main.css -> /packages/prose/src */
+@source '../../../prose/src';
+/* /node_modules/erudit/app/styles/main.css -> /node_modules/@erudit-js/prose/dist */
+@source '../../../@erudit-js/prose/dist';
+
+@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
+
+@theme {
+  --breakpoint-*: initial;
+  --breakpoint-micro: 500px;
+  --breakpoint-aside1: 1000px;
+  --breakpoint-aside2: 1400px;
+
+  --text-tiny: 0.695rem;
+
+  --text-main: 1em;
+  --text-main-xs: calc(0.75 * var(--text-main));
+  --text-main-sm: calc(0.875 * var(--text-main));
+  --text-main-lg: calc(1.125 * var(--text-main));
+  --text-main-xl: calc(1.25 * var(--text-main));
+  --text-main-2xl: calc(1.5 * var(--text-main));
+
+  --default-transition-timing-function: cubic-bezier(0, 0, 0.5, 1);
+  --default-transition-duration: calc(200ms * var(--duration-multiplier));
+
+  --spacing-normal: calc(4 * var(--spacing));
+  --spacing-big: calc(2 * var(--spacing-normal));
+  --spacing-small: calc(0.5 * var(--spacing-normal));
+
+  --spacing-main: 18px;
+  --spacing-main-half: calc(0.5 * var(--spacing-main));
+
+  --w-aside: 300px;
+  --w-max-main: 1024px;
+  --w-max-content: calc(1024px + 2 * 300px);
+
+  --h-min-aside-item: 60px;
+
+  --color-brand: light-dark(#00b886, #00dcb5);
+  --color-bg-root: light-dark(#ebebeb, #141414);
+  --color-bg-aside: light-dark(#f7f7f7, #1b1b1b);
+  --color-bg-main: light-dark(#ffffff, #212121);
+  --color-bg-accent: light-dark(#e6e6e6, #2e2e2e);
+  --color-text: light-dark(#373737, #b9b9b9);
+  --color-text-deep: light-dark(#181818, #fff);
+  --color-text-muted: light-dark(#696969, #7f7f7f);
+  --color-text-dimmed: light-dark(#969696, #616161);
+  --color-text-disabled: light-dark(#b9b9b9, #4f4f4f);
+  --color-invert: light-dark(white, black);
+  --color-border: light-dark(var(--color-neutral-300), #323232);
+
+  --animate-opacity-blink: opacity-blink 0.5s ease-out;
+  @keyframes opacity-blink {
+    0% {
+      opacity: 0;
+    }
+    50% {
+      opacity: 0.8;
+    }
+    100% {
+      opacity: 0;
+    }
+  }
+
+  --animate-fade-out: fade-out 8s linear;
+  @keyframes fade-out {
+    0% {
+      opacity: 0.5;
+    }
+    100% {
+      opacity: 0;
+    }
+  }
+}
+
+@theme inline {
+  --font-sans: 'Noto Sans';
+  --font-serif: 'Noto Serif';
+}
+
+@layer base {
+  :root {
+    background: var(--color-bg-root);
+    color: var(--color-text);
+    font-size: 18px;
+    interpolate-size: allow-keywords;
+  }
+
+  :root[data-theme='light'] {
+    color-scheme: light;
+  }
+
+  :root[data-theme='dark'] {
+    color-scheme: dark;
+  }
+
+  ::selection {
+    background: color-mix(in srgb, var(--color-brand), transparent 65%);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-brand);
+    border-radius: 3px;
+  }
+
+  /* h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6,
+    strong {
+        color: var(--color-text-deep);
+    } */
+}
+
+@variant micro {
+  :root {
+    --spacing-main: 34px;
+  }
+}
+
+@custom-variant hocus (&:hover, &:focus);
+
+@utility text-hover-underline {
+  @apply transition-[text-decoration-color];
+
+  text-decoration: underline;
+  text-decoration-color: transparent;
+
+  &:hover {
+    text-decoration-color: currentColor;
+  }
+}
+
+@utility nice-scrollbars {
+  -webkit-overflow-scrolling: auto;
+
+  &::-webkit-scrollbar {
+    -webkit-appearance: none;
+    height: 8px;
+    width: 8px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: light-dark(#bfbfbf, #494949);
+    border-radius: 15px;
+    border: 2px solid transparent;
+    background-clip: content-box;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background: light-dark(#a6a6a6, #5a5a5a);
+    border-radius: 15px;
+    border: 2px solid transparent;
+    background-clip: content-box;
+  }
+
+  &::-webkit-scrollbar-corner {
+    background: var(--color-border);
+  }
+}
+
+@utility text-size-h1 {
+  @apply micro:text-[36px] text-[26px];
+}
+
+@utility fixed-main {
+  @apply aside1:w-[calc(100%-var(--w-aside))] aside2:w-[min(var(--w-max-main),calc(100%-2*var(--w-aside)))] fixed w-full;
+}

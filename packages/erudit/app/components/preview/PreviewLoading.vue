@@ -1,14 +1,5 @@
 <template>
-    <div :class="$style.loadingContainer">
-        <Loading />
-    </div>
+  <div class="flex h-[230px] items-center justify-center">
+    <Loading class="text-text-dimmed text-[50px]" />
+  </div>
 </template>
-
-<style lang="scss" module>
-.loadingContainer {
-    height: 225px;
-    display: grid;
-    place-items: center;
-    font-size: 50px;
-}
-</style>
