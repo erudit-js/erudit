@@ -1,7 +1,7 @@
 <script lang="ts" setup>
-import { autoUpdate, shift, useFloating } from '@floating-ui/vue';
-import type { MyIconName } from '#my-icons';
+import { autoUpdate, shift } from '@floating-ui/vue';
 import type { ContentFlag } from '@erudit-js/core/content/flags';
+import type { MyIconName } from '#my-icons';
 
 interface FlagData {
   icon: MyIconName;
@@ -44,54 +44,32 @@ const flagsData: Record<ContentFlag, FlagData> = {
 
 const flagData = flagsData[flag];
 
-const referenceElement = useTemplateRef('reference');
+const containerElement = useTemplateRef('container');
+const toggleElement = useTemplateRef('toggle');
 const popupElement = useTemplateRef('popup');
-const popupVisible = ref(false);
-const showTimeout = ref<ReturnType<typeof setTimeout> | null>(null);
-
-const { floatingStyles } = useFloating(referenceElement, popupElement, {
-  placement: 'bottom',
-  whileElementsMounted: autoUpdate,
-  middleware: [
-    shift({
-      boundary: document?.querySelector('[data-erudit-main]') || undefined,
-    }),
-  ],
-});
-
-const showPopup = () => {
-  showTimeout.value = setTimeout(() => {
-    popupVisible.value = true;
-  }, 400);
-};
-
-const hidePopup = () => {
-  if (showTimeout.value) {
-    clearTimeout(showTimeout.value);
-    showTimeout.value = null;
-  }
-  popupVisible.value = false;
-};
-
-onUnmounted(() => {
-  if (showTimeout.value) {
-    clearTimeout(showTimeout.value);
-  }
-});
+const { popupVisible, popupStyles } = usePopup(
+  containerElement,
+  toggleElement,
+  popupElement,
+  {
+    placement: 'bottom',
+    whileElementsMounted: autoUpdate,
+    middleware: [
+      shift({
+        boundary: document?.querySelector('[data-erudit-main]') || undefined,
+      }),
+    ],
+  },
+);
 </script>
 
 <template>
-  <div
-    ref="reference"
-    :style="{ '--flagColor': flagData.color }"
-    @mouseenter="showPopup"
-    @mouseleave="hidePopup"
-  >
+  <div ref="container" :style="{ '--flagColor': flagData.color }">
     <div
-      @touchstart="popupVisible ? hidePopup() : showPopup()"
+      ref="toggle"
       class="px-small text-main-sm flex cursor-help items-center gap-1 rounded
         border border-(--flagColor)/30 bg-(--flagColor)/15 py-1
-        text-(--flagColor)"
+        text-(--flagColor) select-none"
     >
       <MyIcon :name="flagData.icon" class="text-[1.3em]" />
       <span>{{ formatText(flagData.title) }}</span>
@@ -99,7 +77,7 @@ onUnmounted(() => {
     <TransitionFade>
       <div
         v-if="popupVisible"
-        :style="floatingStyles"
+        :style="popupStyles"
         ref="popup"
         class="z-10 max-w-[320px] p-2"
       >

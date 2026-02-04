@@ -8,7 +8,7 @@ import {
   watchEffect,
   type Component,
 } from 'vue';
-import { autoUpdate, offset, useFloating } from '@floating-ui/vue';
+import { autoUpdate } from '@floating-ui/vue';
 import {
   isProseElement,
   resolveRawElement,
@@ -36,12 +36,12 @@ import { useElementStorage } from '../../../app/composables/storage.js';
 import type { ProblemScriptStorage } from '../storage.js';
 import { createProblemScriptInstance } from '../composables/problemScript.js';
 import { DEFAULT_SEED, type ProblemSeed } from '../rng.js';
-import plusIcon from '../../../app/shared/assets/plus.svg?raw';
 import Render from '../../../app/shared/Render.vue';
 import Hint from './expanders/Hint.vue';
 import DefaultPlusSections from './expanders/DefaultPlusSections.vue';
 import ProblemButton from './ProblemButton.vue';
 import Checks from './expanders/Checks.vue';
+import ProblemButtonGenerate from './ProblemButtonGenerate.vue';
 
 const { element, initialElements } = defineProps<{
   element:
@@ -50,7 +50,7 @@ const { element, initialElements } = defineProps<{
   initialElements: ProseElement<ProblemContentChild>[];
 }>();
 
-const { EruditIcon, EruditTransition } = useProseContext();
+const { EruditIcon, EruditTransition, usePopup } = useProseContext();
 const phrase = await useProblemPhrase();
 
 const actionIcons: Record<ProblemAction, string> = Object.fromEntries(
@@ -194,31 +194,15 @@ onMounted(async () => {
   }
 });
 
-const generateRotation = ref(0);
-const generating = ref(false);
-const seed = ref<ProblemSeed>(DEFAULT_SEED);
-const usingCustomSeed = ref(false);
-
-async function doGenerate() {
+let currentSeed: ProblemSeed = DEFAULT_SEED;
+async function doGenerate(seed: ProblemSeed) {
   if (!scriptInstance.value) {
     return;
   }
 
-  generateRotation.value += 180;
+  currentSeed = seed;
 
-  if (generating.value) {
-    return;
-  }
-
-  generating.value = true;
-
-  if (usingCustomSeed.value) {
-    usingCustomSeed.value = false;
-  } else {
-    seed.value = Math.floor(Math.random() * 1000000000) + 1;
-  }
-
-  const generateResult = scriptInstance.value.generate(seed.value);
+  const generateResult = scriptInstance.value.generate(seed);
 
   if (generateResult.check) {
     scriptCheck.value = generateResult.check;
@@ -234,28 +218,14 @@ async function doGenerate() {
     proseElements.push(resolveResult.proseElement as any);
   }
 
+  if (currentSeed !== seed) {
+    // A new generation has been requested while we were async generating.
+    return;
+  }
+
   elements.value = proseElements;
-
   key.value++;
-  generating.value = false;
 }
-
-//
-// Seed Popup
-//
-
-const seedPopupVisible = ref(false);
-const seedReferenceElement = useTemplateRef('seedReference');
-const seedPopupElement = useTemplateRef('seedPopup');
-
-const { floatingStyles: seedFloatingStyles } = useFloating(
-  seedReferenceElement,
-  seedPopupElement,
-  {
-    whileElementsMounted: autoUpdate,
-    placement: 'top',
-  },
-);
 </script>
 
 <template>
@@ -283,65 +253,7 @@ const { floatingStyles: seedFloatingStyles } = useFloating(
         <EruditIcon :name="actionIcons[actionKey]" class="text-[1.3em]" />
         <span>{{ phrase[`action_${actionKey}`] }}</span>
       </ProblemButton>
-      <div
-        v-if="isGenerator"
-        ref="seedReference"
-        @mouseenter="seedPopupVisible = true"
-        @mouseleave="seedPopupVisible = false"
-      >
-        <ProblemButton
-          @touchstart="seedPopupVisible = seedPopupVisible ? false : true"
-          @click="doGenerate"
-          class="flex items-center gap-[7px]"
-        >
-          <EruditIcon
-            :name="actionIcons.generate"
-            :style="{ transform: `rotate(${generateRotation}deg)` }"
-            class="text-[1.3em] transition-[transform] backface-hidden"
-          />
-          <span>{{ phrase.action_generate }}</span>
-        </ProblemButton>
-        <EruditTransition>
-          <div
-            v-if="seedPopupVisible"
-            ref="seedPopup"
-            :style="seedFloatingStyles"
-            class="pb-2.5"
-          >
-            <form
-              class="shadow-border text-main-xs flex rounded bg-neutral-900
-                text-white shadow-lg dark:bg-neutral-200 dark:text-black"
-              @submit.prevent="doGenerate"
-            >
-              <input
-                type="text"
-                v-model="seed"
-                @input="usingCustomSeed = true"
-                :title="phrase.seed_explain"
-                @focus="($event as any).target.select()"
-                class="max-w-[100px] flex-1 p-[5px] text-center outline-none"
-              />
-              <button
-                v-if="seed !== DEFAULT_SEED"
-                type="button"
-                @click="
-                  seed = DEFAULT_SEED;
-                  usingCustomSeed = true;
-                  doGenerate();
-                "
-                class="cursor-pointer pr-[3px]"
-              >
-                <EruditIcon
-                  :name="plusIcon"
-                  class="hocus:text-white dark:hocus:text-black rotate-45
-                    text-[1.3em] text-neutral-400 transition-[color]
-                    dark:text-neutral-600"
-                />
-              </button>
-            </form>
-          </div>
-        </EruditTransition>
-      </div>
+      <ProblemButtonGenerate v-if="isGenerator" @generate="doGenerate" />
     </div>
 
     <Suspense suspensible>

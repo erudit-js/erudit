@@ -1,42 +1,25 @@
 <script lang="ts" setup>
-import { autoUpdate, shift, useFloating } from '@floating-ui/vue';
+import { autoUpdate, shift } from '@floating-ui/vue';
 
 const { quickLink } = defineProps<{ quickLink: ElementSnippet }>();
 
-const referenceElement = useTemplateRef('reference');
+const containerElement = useTemplateRef('container');
+const toggleElement = useTemplateRef('toggle');
 const popupElement = useTemplateRef('popup');
-const popupVisible = ref(false);
-const showTimeout = ref<ReturnType<typeof setTimeout> | null>(null);
-
-const { floatingStyles } = useFloating(referenceElement, popupElement, {
-  placement: 'bottom',
-  whileElementsMounted: autoUpdate,
-  middleware: [
-    shift({
-      boundary: document?.querySelector('[data-erudit-main]') || undefined,
-    }),
-  ],
-});
-
-const showPopup = () => {
-  showTimeout.value = setTimeout(() => {
-    popupVisible.value = true;
-  }, 400);
-};
-
-const hidePopup = () => {
-  if (showTimeout.value) {
-    clearTimeout(showTimeout.value);
-    showTimeout.value = null;
-  }
-  popupVisible.value = false;
-};
-
-onUnmounted(() => {
-  if (showTimeout.value) {
-    clearTimeout(showTimeout.value);
-  }
-});
+const { popupVisible, popupStyles } = usePopup(
+  containerElement,
+  toggleElement,
+  popupElement,
+  {
+    placement: 'bottom',
+    whileElementsMounted: autoUpdate,
+    middleware: [
+      shift({
+        boundary: document?.querySelector('[data-erudit-main]') || undefined,
+      }),
+    ],
+  },
+);
 
 const elementIcon = await getElementIcon(quickLink.schemaName);
 
@@ -58,22 +41,23 @@ const description = computed(() => {
 </script>
 
 <template>
-  <div ref="reference" @mouseenter="showPopup" @mouseleave="hidePopup">
-    <EruditLink
-      @touchstart="popupVisible ? hidePopup() : showPopup()"
-      :to="quickLink.link"
-      class="gap-small border-border px-small text-text-muted text-main-sm
-        hocus:text-brand hocus:border-brand hocus:ring-brand/25 flex
-        items-center rounded border bg-(--quickBg) py-1 ring-2 ring-transparent
-        transition-[color,border,box-shadow]"
-    >
-      <MaybeMyIcon :name="elementIcon" class="-mr-0.5 text-[1.2em]" />
-      <span>{{ formatText(title) }}</span>
-    </EruditLink>
+  <div ref="container">
+    <div ref="toggle">
+      <EruditLink
+        :to="quickLink.link"
+        class="gap-small border-border px-small text-text-muted text-main-sm
+          hocus:text-brand hocus:border-brand hocus:ring-brand/25 flex
+          items-center rounded border bg-(--quickBg) py-1 ring-2
+          ring-transparent transition-[color,border,box-shadow]"
+      >
+        <MaybeMyIcon :name="elementIcon" class="-mr-0.5 text-[1.2em]" />
+        <span>{{ formatText(title) }}</span>
+      </EruditLink>
+    </div>
     <TransitionFade>
       <div
         v-if="description && popupVisible"
-        :style="floatingStyles"
+        :style="popupStyles"
         ref="popup"
         class="z-10 max-w-[300px] p-2"
       >

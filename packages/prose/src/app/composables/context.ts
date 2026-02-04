@@ -1,4 +1,11 @@
-import { inject, type Component, type InjectionKey, type Ref } from 'vue';
+import {
+  inject,
+  type Component,
+  type InjectionKey,
+  type Ref,
+  type TemplateRef,
+} from 'vue';
+import type { useFloating, UseFloatingOptions } from '@floating-ui/vue';
 import type { EruditLanguageCode } from '@erudit-js/core/eruditConfig/language';
 import type { EruditMode } from '@erudit-js/core/mode';
 import type { FormatText } from '@erudit-js/core/formatText';
@@ -19,6 +26,15 @@ export interface ProseContext {
   EruditLink: Component;
   setPreview: (previewRequest: any) => void;
   closePreview: () => void;
+  usePopup: (
+    containerElement: TemplateRef<HTMLElement>,
+    toggleElement: TemplateRef<HTMLElement>,
+    popupElement: TemplateRef<HTMLElement>,
+    options?: UseFloatingOptions,
+  ) => {
+    popupVisible: Ref<boolean>;
+    popupStyles: ReturnType<typeof useFloating>['floatingStyles'];
+  };
   loadingSvg: string;
 }
 
