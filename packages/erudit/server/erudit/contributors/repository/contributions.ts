@@ -14,7 +14,7 @@ export async function countContributions(
       eq(ERUDIT.db.schema.contentContributions.contributorId, contributorId),
     );
 
-  return result[0].count;
+  return result[0]!.count;
 }
 
 export async function getContributorContributions(
