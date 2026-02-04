@@ -7,8 +7,7 @@
   "main": "./nuxt.config.ts",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/erudit-js/erudit.git",
-    "directory": "packages/erudit"
+    "url": "git+https://github.com/erudit-js/erudit.git"
   },
   "bin": {
     "erudit": "bin/erudit.js"
