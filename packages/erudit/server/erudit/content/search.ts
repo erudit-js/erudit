@@ -104,27 +104,23 @@ export async function searchIndexSnippets(): Promise<SearchEntriesList[]> {
         });
     }
 
+    const snippetSearch = dbSnippet.snippetData.search;
     let searchTitle = dbSnippet.snippetData.title!;
     let searchDescription = dbSnippet.snippetData.description;
-    if (
-      typeof dbSnippet.snippetData.search === 'object' &&
-      !Array.isArray(dbSnippet.snippetData.search)
-    ) {
-      if (dbSnippet.snippetData.search.title) {
-        searchTitle = dbSnippet.snippetData.search.title;
-      }
-
-      if (dbSnippet.snippetData.search.description) {
-        searchDescription = dbSnippet.snippetData.search.description;
-      }
-    }
-
     let searchSynonyms: string[] | undefined = undefined;
-    if (Array.isArray(dbSnippet.snippetData.search)) {
-      searchSynonyms = dbSnippet.snippetData.search;
-    } else {
-      if (typeof dbSnippet.snippetData.search === 'object') {
-        searchSynonyms = dbSnippet.snippetData.search.synonyms;
+    if (snippetSearch) {
+      if (typeof snippetSearch === 'boolean') {
+      } else if (typeof snippetSearch === 'string') {
+        snippetSearch.trim() && (searchTitle = snippetSearch.trim());
+      } else if (Array.isArray(snippetSearch)) {
+        searchSynonyms = snippetSearch.length > 0 ? snippetSearch : undefined;
+      } else {
+        searchTitle = snippetSearch.title || searchTitle;
+        searchDescription = snippetSearch.description || searchDescription;
+        searchSynonyms =
+          snippetSearch.synonyms && snippetSearch.synonyms.length > 0
+            ? snippetSearch.synonyms
+            : undefined;
       }
     }
 
@@ -134,11 +130,7 @@ export async function searchIndexSnippets(): Promise<SearchEntriesList[]> {
       description: searchDescription,
       link,
       location: locationTitle,
-      synonyms: searchSynonyms
-        ? searchSynonyms.length > 0
-          ? searchSynonyms
-          : undefined
-        : undefined,
+      synonyms: searchSynonyms,
     });
   }
 
