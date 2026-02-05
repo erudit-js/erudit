@@ -42,7 +42,7 @@ onMounted(() => {
     baseUrl: withBaseUrl('/'),
     language: ERUDIT.config.language.current,
     cacheId: String(
-      import.meta.dev ? Date.now() : runtimeConfig.public.buildTimestamp,
+      import.meta.dev ? Date.now() : runtimeConfig.public.buildTime,
     ),
   };
 
