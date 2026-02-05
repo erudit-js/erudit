@@ -39,6 +39,11 @@ export default defineEventHandler(async (event) => {
 
     for (const dbContentItem of dbContentItems) {
       const fullId = dbContentItem.fullId;
+      const hidden = await ERUDIT.repository.content.hidden(fullId);
+      if (hidden) {
+        continue;
+      }
+
       const contentNode = ERUDIT.contentNav.getNodeOrThrow(fullId);
 
       if (contentNode.type === 'topic') {

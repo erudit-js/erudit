@@ -17,39 +17,48 @@ export async function searchIndexContentTypes(): Promise<SearchEntriesList[]> {
       where: (fields) => eq(fields.type, contentType),
     });
 
+    const entries: SearchEntry[] = [];
+
+    for (const dbContentItem of dbContentItems) {
+      const hidden = await ERUDIT.repository.content.hidden(
+        dbContentItem.fullId,
+      );
+      if (hidden) {
+        continue;
+      }
+
+      const bookTitle: string | undefined = await (async () => {
+        if (dbContentItem.type === 'book') {
+          return undefined;
+        }
+
+        const itemBook = ERUDIT.contentNav.getBookFor(dbContentItem.fullId);
+
+        if (itemBook) {
+          const bookId = itemBook.fullId;
+          const dbBook = await ERUDIT.db.query.content.findFirst({
+            columns: { title: true },
+            where: eq(ERUDIT.db.schema.content.fullId, bookId),
+          });
+          return dbBook?.title;
+        }
+      })();
+
+      entries.push({
+        category: contentType,
+        title: dbContentItem.title,
+        description: dbContentItem.description || undefined,
+        link: await ERUDIT.repository.content.link(dbContentItem.fullId),
+        location: bookTitle,
+      } satisfies SearchEntry);
+    }
+
     entryLists.push({
       category: {
         id: contentType,
         priority: 200,
       },
-      entries: await Promise.all(
-        dbContentItems.map(async (dbContentItem) => {
-          const bookTitle: string | undefined = await (async () => {
-            if (dbContentItem.type === 'book') {
-              return undefined;
-            }
-
-            const itemBook = ERUDIT.contentNav.getBookFor(dbContentItem.fullId);
-
-            if (itemBook) {
-              const bookId = itemBook.fullId;
-              const dbBook = await ERUDIT.db.query.content.findFirst({
-                columns: { title: true },
-                where: eq(ERUDIT.db.schema.content.fullId, bookId),
-              });
-              return dbBook?.title;
-            }
-          })();
-
-          return {
-            category: contentType,
-            title: dbContentItem.title,
-            description: dbContentItem.description || undefined,
-            link: await ERUDIT.repository.content.link(dbContentItem.fullId),
-            location: bookTitle,
-          } satisfies SearchEntry;
-        }),
-      ),
+      entries,
     });
   }
 
@@ -64,6 +73,12 @@ export async function searchIndexSnippets(): Promise<SearchEntriesList[]> {
   });
 
   for (const dbSnippet of dbSnippets) {
+    const contentFullId = dbSnippet.contentFullId;
+    const hidden = await ERUDIT.repository.content.hidden(contentFullId);
+    if (hidden) {
+      continue;
+    }
+
     if (!entryLists.has(dbSnippet.schemaName)) {
       entryLists.set(dbSnippet.schemaName, {
         category: {

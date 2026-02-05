@@ -42,9 +42,12 @@ export async function getContentStats(
   if (rootNavNode.type !== 'topic' && rootNavNode.type !== 'page') {
     // Container node, so look for materials inside it
     let materialCount = 0;
-    await ERUDIT.contentNav.walk((navNode) => {
+    await ERUDIT.contentNav.walk(async (navNode) => {
       if (navNode.type === 'topic' || navNode.type === 'page') {
-        materialCount++;
+        const hidden = await ERUDIT.repository.content.hidden(navNode.fullId);
+        if (!hidden) {
+          materialCount++;
+        }
       }
     }, rootNavNode as any);
 

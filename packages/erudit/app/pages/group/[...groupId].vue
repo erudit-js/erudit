@@ -45,9 +45,10 @@ await useContentSeo({
     <MainContentStats mode="single" :stats="mainContent.stats" />
     <div class="h-main-half"></div>
     <MainAction
+      v-if="mainContent.children[0]"
       icon="rocket"
       :label="formatText(phrase.begin_learning)"
-      :link="mainContent.children[0]!.link"
+      :link="mainContent.children[0].link"
     />
     <div class="h-main-half"></div>
   </MainSectionPreamble>

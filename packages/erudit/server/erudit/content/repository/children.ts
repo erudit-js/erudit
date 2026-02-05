@@ -9,6 +9,11 @@ export async function getContentChildren(
   const children: MainContentChildrenItem[] = [];
 
   for (const childNode of navNode.children ?? []) {
+    const hidden = await ERUDIT.repository.content.hidden(childNode.fullId);
+    if (hidden) {
+      continue;
+    }
+
     const type = childNode.type;
     const link = await ERUDIT.repository.content.link(childNode.fullId);
     const title = await ERUDIT.repository.content.title(
