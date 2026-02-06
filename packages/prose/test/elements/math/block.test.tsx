@@ -60,6 +60,32 @@ describe('resolveMathGroups', () => {
     });
   });
 
+  it('should handle alignment-only syntax', async () => {
+    const result = await resolveMathGroups('a >>{center} b');
+    expect(result).toEqual({
+      gap: { type: 'normal' },
+      alignItems: 'center',
+      parts: ['a', 'b'],
+    });
+  });
+
+  it('should handle gap + alignment', async () => {
+    const result = await resolveMathGroups('a >>{small}{end} b');
+    expect(result).toEqual({
+      gap: { type: 'small' },
+      alignItems: 'end',
+      parts: ['a', 'b'],
+    });
+  });
+
+  it('should ignore invalid alignment value', async () => {
+    const result = await resolveMathGroups('a >>{small}{invalid} b');
+    expect(result).toEqual({
+      gap: { type: 'small' },
+      parts: ['a', 'b'],
+    });
+  });
+
   it('should handle nested groups', async () => {
     const result = await resolveMathGroups('a >> b >>{small} c');
     expect(result).toEqual({
@@ -91,16 +117,20 @@ describe('resolveMathGroups', () => {
     });
   });
 
-  it('should handle complex nested groups', async () => {
-    const result = await resolveMathGroups('a >>{big} b >> c >>{small} d');
+  it('should handle complex nested groups with alignment', async () => {
+    const result = await resolveMathGroups(
+      'a >>{big}{center} b >> c >>{small}{end} d',
+    );
     expect(result).toEqual({
       gap: { type: 'small' },
+      alignItems: 'end',
       parts: [
         {
           gap: { type: 'normal' },
           parts: [
             {
               gap: { type: 'big' },
+              alignItems: 'center',
               parts: ['a', 'b'],
             },
             'c',
@@ -121,16 +151,16 @@ describe('Block Math', () => {
 
       const blockMath = asEruditRaw(
         <BlockMath freeze>{`
-                    x + y = z >> \\sin
-                `}</BlockMath>,
+          x + y = z >>{center} \\sin
+        `}</BlockMath>,
       );
 
       expect(isRawElement(blockMath, blockMathSchema)).toBe(true);
       expect(blockMath.data).toStrictEqual({
-        katex: 'x + y = z >> \\sin',
+        katex: 'x + y = z >>{center} \\sin',
         freeze: true,
       });
-      expect(blockMath.storageKey).toBe('$$ x + y = z >> \\sin $$');
+      expect(blockMath.storageKey).toBe('$$ x + y = z >>{center} \\sin $$');
     });
   });
 
