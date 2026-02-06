@@ -1,8 +1,8 @@
-import { defineElementLanguage } from '../../../app/language/element.js';
-import type { ProblemPhrases } from '../phrases.js';
+import { defineElementLanguage } from '../../../../app/language/element.js';
+import type { ProblemPhrases } from '../../phrases.js';
 
 export default defineElementLanguage<ProblemPhrases>({
-  element_name: 'Problem',
+  element_name: '',
   'level.example': 'Example',
   'level.easy': 'Elementary',
   'level.medium': 'Intermediate',
@@ -28,4 +28,14 @@ export default defineElementLanguage<ProblemPhrases>({
   action_generate: 'Similar',
   seed_explain:
     'The seed from which all random values in the problem are calculated. Same seeds = completely identical problems.',
+  yes_regexp: /^\s*(yes|y|true|1)\s*$/i,
+  no_regexp: /^\s*(no|n|false|0)\s*$/i,
+  boolean_check_hint: 'Yes/No',
+  array_check_hint: (ordered, separator) => {
+    let hint = `Separator "${separator}".`;
+    if (ordered) {
+      hint += ' Order matters.';
+    }
+    return hint;
+  },
 });

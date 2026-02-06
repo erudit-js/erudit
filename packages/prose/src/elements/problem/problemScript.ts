@@ -13,9 +13,14 @@ import {
 import { DEFAULT_SEED, type ProblemSeed, ProblemRandom } from './rng.js';
 import {
   validateProblemContent,
-  type CheckFunction,
   type ProblemContentChild,
 } from './problemContent.js';
+
+export type CheckFunction = (args: {
+  answer: string | undefined;
+  name: string;
+  answers: Record<string, string | undefined>;
+}) => boolean;
 
 //
 // Problem Script Src

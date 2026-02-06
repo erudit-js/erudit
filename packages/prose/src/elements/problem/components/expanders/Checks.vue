@@ -2,8 +2,8 @@
 import { computed, ref } from 'vue';
 import { isProseElement, type ProseElement } from '@jsprose/core';
 
-import type { CheckFunction } from '../../problemContent.js';
-import { problemCheckSchema } from '../../problemContent.js';
+import type { CheckFunction } from '../../problemScript.js';
+import { problemCheckSchema } from '../../problemCheck.js';
 import ProblemExpander from '../ProblemExpander.vue';
 import Check from './Check.vue';
 
@@ -81,8 +81,8 @@ const scriptAnswers = ref<Record<string, string | undefined>>({});
 const scriptCheckNameMap = computed(() => {
   const map = new Map<CheckProseElement, string>();
   for (const check of allChecks.value) {
-    if (check.data.script) {
-      map.set(check, check.data.script);
+    if (check.data.serializedValidator.type === 'script') {
+      map.set(check, check.data.serializedValidator.name);
     }
   }
   return map;
@@ -132,7 +132,7 @@ function scriptClearFunction(check: CheckProseElement) {
         :check="check"
         v-show="isVisible(check)"
         :script="
-          check.data.script
+          check.data.serializedValidator.type === 'script'
             ? {
                 check: (answer) => scriptCheckFunction(check, answer),
                 clear: () => scriptClearFunction(check),

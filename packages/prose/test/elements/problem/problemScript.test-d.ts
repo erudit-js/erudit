@@ -2,7 +2,6 @@ import { describe, expectTypeOf, it } from 'vitest';
 import type {
   WrapSchemas,
   AnySchema,
-  AnyUnique,
   RawElement,
   Unique,
   AutoUnique,

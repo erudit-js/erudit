@@ -1,8 +1,12 @@
 <script setup lang="ts">
-import { useTemplateRef, ref, watch } from 'vue';
+import { useTemplateRef, ref, watch, computed } from 'vue';
 import type { ProseElement } from '@jsprose/core';
 
-import { checkValue, type problemCheckSchema } from '../../problemContent.js';
+import {
+  checkProblemAnswer,
+  fromSerializableValidator,
+  type problemCheckSchema,
+} from '../../problemCheck.js';
 import checkIcon from '../../assets/actions/check.svg?raw';
 import plusIcon from '../../../../app/shared/assets/plus.svg?raw';
 import successIcon from '../../../../app/shared/assets/check.svg?raw';
@@ -27,6 +31,10 @@ const { check, script } = defineProps<{
     clear: () => void;
   };
 }>();
+
+const validator = computed(() => {
+  return fromSerializableValidator(check.data.serializedValidator);
+});
 
 const emit = defineEmits<{
   (event: 'status-change', status: CheckStatus): void;
@@ -73,20 +81,31 @@ watch(answerInput, () => {
 });
 
 function doCheck() {
-  const newInput = answerInput.value.trim().replace(/\s+/g, ' ') || undefined;
+  console.log(script);
 
-  if (newInput === lastCheckedInput.value) return;
+  const newInput = answerInput.value.replace(/\s+/g, ' ').trim();
+
+  if (newInput === lastCheckedInput.value) {
+    return;
+  }
 
   lastCheckedInput.value = newInput;
 
   if (script) {
-    const ok = script.check(newInput);
+    const ok = script.check(newInput || undefined);
     state.value = ok ? 'correct' : 'wrong';
     emit('status-change', state.value);
     return;
   }
 
-  state.value = checkValue(newInput, check.data) ? 'correct' : 'wrong';
+  state.value = checkProblemAnswer(
+    newInput,
+    phrase.yes_regexp,
+    phrase.no_regexp,
+    validator.value,
+  )
+    ? 'correct'
+    : 'wrong';
 
   emit('status-change', state.value);
 }

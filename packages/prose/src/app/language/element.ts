@@ -2,7 +2,7 @@ export interface ElementDefaultPhrases {
   element_name: string;
 }
 
-export type ElementPhrases<T extends Record<string, string> = {}> = Omit<
+export type ElementPhrases<T extends Record<string, any> = {}> = Omit<
   T,
   keyof ElementDefaultPhrases
 > &

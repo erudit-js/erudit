@@ -4,11 +4,9 @@ import {
   onMounted,
   ref,
   shallowRef,
-  useTemplateRef,
   watchEffect,
   type Component,
 } from 'vue';
-import { autoUpdate } from '@floating-ui/vue';
 import {
   isProseElement,
   resolveRawElement,
@@ -17,14 +15,14 @@ import {
 
 import {
   problemAnswer,
-  problemCheckSchema,
   problemDescriptionSchema,
   problemHintSchema,
   problemNote,
   problemSolution,
-  type CheckFunction,
   type ProblemContentChild,
 } from '../problemContent.js';
+import { problemCheckSchema } from '../problemCheck.js';
+import type { CheckFunction } from '../problemScript.js';
 import { useProseContext } from '../../../app/composables/context.js';
 import { useProblemPhrase } from '../composables/phrase.js';
 import type { ProblemAction } from '../shared.js';
@@ -50,7 +48,7 @@ const { element, initialElements } = defineProps<{
   initialElements: ProseElement<ProblemContentChild>[];
 }>();
 
-const { EruditIcon, EruditTransition, usePopup } = useProseContext();
+const { EruditIcon } = useProseContext();
 const phrase = await useProblemPhrase();
 
 const actionIcons: Record<ProblemAction, string> = Object.fromEntries(

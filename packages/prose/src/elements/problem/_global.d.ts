@@ -1,16 +1,21 @@
 import type { ProblemCustomAttribute as PAC } from './shared.js';
+import type { ProblemRandom as _ProblemRandom } from './rng.js';
 
 /**
  * Problems are used to present exercises and questions to the reader.
- * See the example for a full breakdown of the sub-elements available.
  *
- * All problems are added to TOC and search by default (can be disabled via tag properties).
+ * Allowed children inside `<Problem>`:
+ * - `<ProblemDescription>`
+ * - `<ProblemCheck>` (repeatable)
+ * - `<ProblemHint>` (repeatable)
+ * - `<ProblemAnswer>` (optionally with `<ProblemSection>`)
+ * - `<ProblemSolution>` (optionally with `<ProblemSection>`)
+ * - `<ProblemNote>` (optionally with `<ProblemSection>`)
  *
  * @title Problem
  * @layout block
  * @example
  * ```tsx
- * // Static problem
  * <Problem title="Find the square" level="easy">
  *   <ProblemDescription>
  *     <P>What is the square of 2?</P>
@@ -40,52 +45,162 @@ import type { ProblemCustomAttribute as PAC } from './shared.js';
  *   </ProblemAnswer>
  *
  *   <ProblemCheck label="The square of 2 is" answer={4} />
- *   // More checks...
  *
  *   <ProblemNote>
  *     In fact, you can find the square of any number by multiplying it by itself!
  *   </ProblemNote>
  * </Problem>
- *
- * // Script problem
- * export const fooScript = defineProblemScript({
- *   isGenerator: true,
- * })(({ initial, random }) => {
- *   const a = initial.nextInt(1, 10);
- *   const b = initial.nextInt(1, 10);
- *
- *   return (
- *     <>
- *       <ProblemDescription>
- *         What is <M>{a} + {b}</M>?
- *       </ProblemDescription>
- *       <ProblemAnswer>
- *         <M>{a + b}</M>
- *       </ProblemAnswer>
- *       <ProblemCheck label="The answer is" answer={a + b} />
- *     </>
- *   );
- * });
- *
- * <Problem title="Addition Problem" level="medium" script={fooScript} />
  * ```
  */
 export const Problem = '_tag_';
+
+/**
+ * Problem description.
+ *
+ * Can be used inside `<Problem>` or `<SubProblem>`.
+ *
+ * @title ProblemDescription
+ * @layout block
+ * @example
+ * ```tsx
+ * <ProblemDescription>
+ *   <P>State the problem in your own words.</P>
+ * </ProblemDescription>
+ * ```
+ */
 export const ProblemDescription = '_tag_';
+
+/**
+ * A hint for the problem. Multiple hints can be provided.
+ *
+ * Can be used inside `<Problem>` or `<SubProblem>`.
+ *
+ * @title ProblemHint
+ * @layout block
+ * @example
+ * ```tsx
+ * <ProblemHint>
+ *   <P>Try rewriting the expression in a simpler form.</P>
+ * </ProblemHint>
+ * ```
+ */
 export const ProblemHint = '_tag_';
+
+/**
+ * A titled section used inside `<ProblemSolution>` or `<ProblemAnswer>`.
+ *
+ * @title ProblemSection
+ * @layout block
+ * @example
+ * ```tsx
+ * <ProblemSection title="Method">
+ *   <P>Show the steps.</P>
+ * </ProblemSection>
+ * ```
+ */
 export const ProblemSection = '_tag_';
+
+/**
+ * The problem solution.
+ *
+ * Can contain plain content and `<ProblemSection>` blocks.
+ * Can be used inside `<Problem>` or `<SubProblem>`.
+ *
+ * @title ProblemSolution
+ * @layout block
+ * @example
+ * ```tsx
+ * <ProblemSolution>
+ *   <P>Start with the key idea.</P>
+ *
+ *   <ProblemSection title="Details">
+ *     <P>Then provide the full derivation.</P>
+ *   </ProblemSection>
+ * </ProblemSolution>
+ * ```
+ */
 export const ProblemSolution = '_tag_';
+
+/**
+ * The final answer (usually concise).
+ *
+ * Can contain plain content and `<ProblemSection>` blocks.
+ * Can be used inside `<Problem>` or `<SubProblem>`.
+ *
+ * @title ProblemAnswer
+ * @layout block
+ * @example
+ * ```tsx
+ * <ProblemAnswer>
+ *   <P><M>42</M></P>
+ * </ProblemAnswer>
+ * ```
+ */
 export const ProblemAnswer = '_tag_';
+
+/**
+ * A note shown after the checks/solution.
+ *
+ * Can be used inside `<Problem>` or `<SubProblem>`.
+ *
+ * @title ProblemNote
+ * @layout block
+ * @example
+ * ```tsx
+ * <ProblemNote>
+ *   Remember to double-check units.
+ * </ProblemNote>
+ * ```
+ */
 export const ProblemNote = '_tag_';
+
+/**
+ * Defines an answer check for a problem.
+ *
+ * Can be used inside `<Problem>` or `<SubProblem>`.
+ *
+ * Validator props (exactly one per `<ProblemCheck>`):
+ * - `yes`: boolean-like answer, validated via locale yes/no patterns.
+ * - `no`: boolean-like answer, validated via locale yes/no patterns.
+ * - `answer`: exact expected value.
+ *   - `number` -> numeric equality
+ *   - `string` -> exact string match
+ *   - `RegExp` -> `test()` match
+ *   - `undefined` -> expects an empty answer
+ * - `answers`: multi-part answer (split by `separator`, default `,`).
+ *   - Use `{ ordered, separator, values }` to configure matching.
+ *   - Each position in `values` can be a single expected value or an array of expected values (any-of).
+ * - `script`: named script validator.
+ *
+ * You can nest `<ProblemCheck>` inside another `<ProblemCheck>` to group multiple checks.
+ *
+ * @title ProblemCheck
+ * @layout block
+ * @example
+ * ```tsx
+ * <ProblemCheck label="2 is even" yes />
+ * <ProblemCheck label="Enter nothing" answer={undefined} />
+ * <ProblemCheck label="The square of 2 is" answer={4} />
+ * <ProblemCheck
+ *   label="Enter roots"
+ *   answers={{ ordered: false, separator: ',', values: [2, [-2, /-?2/]] }}
+ * />
+ * <ProblemCheck script="myCustomValidator" />
+ *
+ * <ProblemCheck label="Grouped checks" yes>
+ *   <ProblemCheck label="Also accept 42" answer={42} />
+ * </ProblemCheck>
+ * ```
+ */
 export const ProblemCheck = '_tag_';
 
 /**
  * Problem set is a collection of related problems presented together.
- * `<Problems>` tag contains general problem information and insude can have multiple `<SubProblem>` tags.
  *
- * Each `<SubProblem>` contains the same problem content tags as single `<Problem>` tag.
+ * Allowed children inside `<Problems>`:
+ * - `<SubProblem>` (repeatable)
  *
- * All problems are added to TOC and search by default (can be disabled via tag properties).
+ * Each `<SubProblem>` can contain the same child tags as `<Problem>`.
  *
  * @title Problems
  * @layout block
@@ -104,9 +219,39 @@ export const ProblemCheck = '_tag_';
  * ```
  */
 export const Problems = '_tag_';
+
+/**
+ * A single problem inside a `<Problems>` set.
+ *
+ * Allowed children inside `<SubProblem>`:
+ * - `<ProblemDescription>`
+ * - `<ProblemHint>` (repeatable)
+ * - `<ProblemSolution>` (optionally with `<ProblemSection>`)
+ * - `<ProblemAnswer>` (optionally with `<ProblemSection>`)
+ * - `<ProblemCheck>` (repeatable)
+ * - `<ProblemNote>`
+ *
+ * @title SubProblem
+ * @layout block
+ * @example
+ * ```tsx
+ * <SubProblem label="A">
+ *   <ProblemDescription>
+ *     <P>Solve for <M>x</M>.</P>
+ *   </ProblemDescription>
+ *
+ *   <ProblemCheck answer={42} />
+ * </SubProblem>
+ * ```
+ */
 export const SubProblem = '_tag_';
 
 /**
  * Typeguard for creating custom problem attributes.
  */
 export type ProblemCustomAttribute = PAC;
+
+/**
+ * Typeguard for problem RNG.
+ */
+export type ProblemRandom = _ProblemRandom;
