@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { onMounted } from 'vue';
+import { onMounted, ref } from 'vue';
 import { type ProseElement } from '@jsprose/core';
 
 import Block from '../../app/shared/block/Block.vue';
@@ -12,6 +12,7 @@ import { useFormatText } from '../../app/composables/formatText.js';
 import { useElementPhrase } from '../../app/composables/language.js';
 import { useElementIcon } from '../../app/composables/elementIcon.js';
 import type { ReferencePhrases } from './reference/phrases.js';
+import type { ElementPhrases } from '../../app/language/element.js';
 
 const { element } = defineProps<{
   element:
@@ -20,11 +21,19 @@ const { element } = defineProps<{
 }>();
 
 const { EruditLink, EruditIcon, eruditIcons } = useProseContext();
-const phrase = (await useElementPhrase(
+const referencePhrase = (await useElementPhrase(
   referenceSchema.name,
 )) as ReferencePhrases;
 const linkStorage = (await useElementStorage(element as any)) as LinkStorage;
 const formatText = useFormatText();
+
+const elementPhrase = ref<ElementPhrases>();
+const elementIcon = ref<string>();
+
+if (linkStorage.type === 'unique') {
+  elementPhrase.value = await useElementPhrase(linkStorage.schemaName);
+  elementIcon.value = await useElementIcon(linkStorage.schemaName);
+}
 
 interface UIData {
   header: {
@@ -41,11 +50,10 @@ interface UIData {
 const uiData: UIData = await (async () => {
   switch (linkStorage.type) {
     case 'unique': {
-      const elementPhrase = await useElementPhrase(linkStorage.schemaName);
       return {
         header: {
-          icon: await useElementIcon(linkStorage.schemaName),
-          text: linkStorage.elementTitle || elementPhrase.element_name,
+          icon: elementIcon.value!,
+          text: linkStorage.elementTitle || elementPhrase.value!.element_name,
         },
         main: element.data.label,
         footer: linkStorage.content
@@ -76,14 +84,14 @@ const uiData: UIData = await (async () => {
       return {
         header: {
           icon: 'arrow/outward-box',
-          text: phrase.external_link,
+          text: referencePhrase.external_link,
         },
         main: element.data.label,
       } as UIData;
     case 'error':
       return {
         header: {
-          text: phrase.broken_link,
+          text: referencePhrase.broken_link,
         },
         main: element.data.label,
       } as UIData;
