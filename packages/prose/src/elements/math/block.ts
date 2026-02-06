@@ -13,9 +13,9 @@ import { defineEruditTag } from '../../tag.js';
 export const mathGroupTypes = ['0', 'small', 'normal', 'big'] as const;
 export type MathGroupGapType = (typeof mathGroupTypes)[number] | 'custom';
 
-export type MathGroupAlignItems = 'start' | 'center' | 'end';
+export type MathGroupAlignItems = 'top' | 'center' | 'bottom';
 
-const alignValues = ['start', 'center', 'end'] as const;
+const alignValues = ['top', 'center', 'bottom'] as const;
 
 export interface MathGroupGapTemplate {
   type: MathGroupGapType;

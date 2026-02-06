@@ -21,6 +21,18 @@ const gap = (() => {
       return mathGroup.gap.size;
   }
 })();
+
+const alignItems = (() => {
+  switch (mathGroup.alignItems ?? 'center') {
+    case 'top':
+      return 'flex-start';
+    case 'bottom':
+      return 'flex-end';
+    case 'center':
+    default:
+      return 'center';
+  }
+})();
 </script>
 
 <template>
@@ -29,7 +41,7 @@ const gap = (() => {
       '--mathGroupGap': gap,
       gap: 'var(--mathGroupGap)',
       rowGap: 'calc(var(--mathGroupGap)/2)',
-      alignItems: mathGroup.alignItems ?? 'center',
+      alignItems,
     }"
     class="flex flex-wrap justify-center"
   >

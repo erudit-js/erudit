@@ -70,10 +70,10 @@ describe('resolveMathGroups', () => {
   });
 
   it('should handle gap + alignment', async () => {
-    const result = await resolveMathGroups('a >>{small}{end} b');
+    const result = await resolveMathGroups('a >>{small}{bottom} b');
     expect(result).toEqual({
       gap: { type: 'small' },
-      alignItems: 'end',
+      alignItems: 'bottom',
       parts: ['a', 'b'],
     });
   });
@@ -119,11 +119,11 @@ describe('resolveMathGroups', () => {
 
   it('should handle complex nested groups with alignment', async () => {
     const result = await resolveMathGroups(
-      'a >>{big}{center} b >> c >>{small}{end} d',
+      'a >>{big}{center} b >> c >>{small}{bottom} d',
     );
     expect(result).toEqual({
       gap: { type: 'small' },
-      alignItems: 'end',
+      alignItems: 'bottom',
       parts: [
         {
           gap: { type: 'normal' },
