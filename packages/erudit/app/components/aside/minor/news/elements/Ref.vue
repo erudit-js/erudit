@@ -26,7 +26,7 @@ function linkClick() {
     doubleClick.reset();
     closePreview();
     const openUrl =
-      linkStorage.type === 'direct'
+      linkStorage.type === 'external'
         ? linkStorage.resolvedHref
         : withBaseUrl(linkStorage.resolvedHref.slice(1));
     window.open(openUrl, '_blank');

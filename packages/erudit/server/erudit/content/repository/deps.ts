@@ -28,7 +28,9 @@ export async function getContentDependencies(fullId: string) {
   for (const fromFullId of hardFromFullIds) {
     const reason = fullId2Reason.get(fromFullId)!;
     const hardDep = await createContentDep('hard', fromFullId, reason);
-    hardDependencies.push(hardDep);
+    if (hardDep) {
+      hardDependencies.push(hardDep);
+    }
   }
 
   //
@@ -55,7 +57,9 @@ export async function getContentDependencies(fullId: string) {
 
   for (const fromFullId of autoFromFullIds) {
     const autoDep = await createContentDep('auto', fromFullId);
-    autoDependencies.push(autoDep);
+    if (autoDep) {
+      autoDependencies.push(autoDep);
+    }
   }
 
   return {
@@ -112,26 +116,34 @@ export async function getContentDependents(
   // Order targets according to nav structure
   const targetFullIds = ERUDIT.contentNav.orderIds(externalTargetFullIds);
 
-  return Promise.all(
+  const dependents = await Promise.all(
     targetFullIds.map((targetFullId) => createContentDep('auto', targetFullId)),
   );
+
+  return dependents.filter((dep): dep is ContentAutoDep => dep !== undefined);
 }
 
 async function createContentDep(
   type: 'auto',
   fullId: string,
-): Promise<ContentAutoDep>;
+): Promise<ContentAutoDep | undefined>;
 async function createContentDep(
   type: 'hard',
   fullId: string,
   reason: string,
-): Promise<ContentHardDep>;
+): Promise<ContentHardDep | undefined>;
 async function createContentDep(
   type: 'auto' | 'hard',
   fullId: string,
   reason?: string,
-): Promise<ContentDep> {
+): Promise<ContentDep | undefined> {
   const navNode = ERUDIT.contentNav.getNodeOrThrow(fullId);
+
+  const hidden = await ERUDIT.repository.content.hidden(fullId);
+  if (hidden) {
+    return undefined;
+  }
+
   const contentType = navNode.type;
   const [title, link] = await Promise.all([
     ERUDIT.repository.content.title(fullId),

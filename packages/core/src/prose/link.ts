@@ -20,7 +20,7 @@ interface BaseProseLink {
 }
 
 export interface DirectProseLink extends BaseProseLink {
-  type: 'direct';
+  type: 'external';
   href: string;
 }
 

@@ -1,15 +1,12 @@
 import {
   defineRegistryItem,
   defineSchema,
-  isRawElement,
   type TagChildren,
 } from '@jsprose/core';
 
 import { handleLinkTag, type LinkData, type LinkToProp } from '../core.js';
-import type { DirectLinkStorage, LinkStorage } from '../storage.js';
+import type { ExternalLinkStorage, LinkStorage } from '../storage.js';
 import { defineEruditTag, type NoSnippet, type NoToc } from '../../../tag.js';
-import type { EruditRawElement } from '../../../rawElement.js';
-import { defineResolveStep } from '../../../resolveStep.js';
 import { defineEruditProseCoreElements } from '../../../coreElement.js';
 
 export const depSchema = defineSchema({
@@ -18,7 +15,7 @@ export const depSchema = defineSchema({
   linkable: true,
 })<{
   Data: LinkData;
-  Storage: Exclude<LinkStorage, DirectLinkStorage>;
+  Storage: Exclude<LinkStorage, ExternalLinkStorage>;
   Children: undefined;
 }>();
 
@@ -28,7 +25,7 @@ export const dependencySchema = defineSchema({
   linkable: true,
 })<{
   Data: LinkData;
-  Storage: Exclude<LinkStorage, DirectLinkStorage>;
+  Storage: Exclude<LinkStorage, ExternalLinkStorage>;
   Children: undefined;
 }>();
 
@@ -69,29 +66,4 @@ export const dependencyRegistryItem = defineRegistryItem({
 export default defineEruditProseCoreElements(
   { registryItem: depRegistryItem },
   { registryItem: dependencyRegistryItem },
-);
-
-//
-// Resolve
-//
-
-export const dependencyStep = defineResolveStep(
-  ({ rawElement, proseElement }) => {
-    if (
-      !isRawElement(rawElement, depSchema) &&
-      !isRawElement(rawElement, dependencySchema)
-    ) {
-      return;
-    }
-
-    if (!proseElement.id) {
-      return;
-    }
-
-    if (!rawElement.storageKey) {
-      return;
-    }
-
-    return rawElement.storageKey;
-  },
 );

@@ -39,5 +39,5 @@ export function handleLinkTag(
   }
 
   element.data = { label };
-  element.storageKey = createLinkStorageKey(props.to, tagName);
+  element.storageKey = createLinkStorageKey(props.to);
 }
