@@ -1,5 +1,5 @@
 <template>
-  <section :class="[$style.section, 'bg-bg-main']">
+  <section :class="[$style.section]">
     <!-- Section Header -->
     <div :class="[$style.header, 'border-border relative border-b-2']">
       <!-- Header Shade -->
@@ -15,7 +15,7 @@
     </div>
 
     <!-- Section Body -->
-    <div class="relative z-1">
+    <div :class="[$style.body, 'bg-bg-main relative z-1']">
       <slot></slot>
     </div>
   </section>
@@ -25,6 +25,9 @@
 .section:nth-child(1 of .section) {
   .header {
     display: none;
+  }
+  .body {
+    background: transparent;
   }
 }
 
