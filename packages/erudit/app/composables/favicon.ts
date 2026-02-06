@@ -11,7 +11,7 @@ export function useFavicon() {
   const faviconHref = useFaviconHref();
 
   function showDefaultFavicon() {
-    const defaultFaviconHref = ERUDIT.config.siteInfo?.favicon?.default;
+    const defaultFaviconHref = ERUDIT.config.favicon?.default;
     faviconHref.value = defaultFaviconHref || fallbackFaviconHref;
   }
 
@@ -21,13 +21,13 @@ export function useFavicon() {
       | { type: 'topic'; part: TopicPart },
   ) {
     if (args.type === 'topic') {
-      const topicPartHref = ERUDIT.config.siteInfo?.favicon?.[args.part];
+      const topicPartHref = ERUDIT.config.favicon?.[args.part];
       if (topicPartHref) {
         faviconHref.value = topicPartHref;
         return;
       }
     } else {
-      const typeHref = ERUDIT.config.siteInfo?.favicon?.[args.type];
+      const typeHref = ERUDIT.config.favicon?.[args.type];
       if (typeHref) {
         faviconHref.value = typeHref;
         return;

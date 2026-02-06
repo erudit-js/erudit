@@ -1,5 +1,18 @@
 import type { ContentSeo } from '@erudit-js/core/content/seo';
 
+export function initOgSiteName() {
+  const siteTitle =
+    ERUDIT.config.seo?.siteTitle || ERUDIT.config.asideMajor?.siteInfo?.title;
+
+  if (!siteTitle) {
+    return;
+  }
+
+  useSeoMeta({
+    ogSiteName: siteTitle,
+  });
+}
+
 export function initOgImage() {
   const withSiteUrl = useSiteUrl();
 
@@ -33,7 +46,9 @@ export function useStandartSeo(args: {
   urlPath: string;
 }) {
   const seoSiteTitle =
-    ERUDIT.config.seo?.siteTitle || ERUDIT.config.siteInfo.title || 'Erudit';
+    ERUDIT.config.seo?.siteTitle ||
+    ERUDIT.config.asideMajor?.siteInfo?.title ||
+    'Erudit';
 
   const fullTitle = args.title + ' - ' + seoSiteTitle;
 
@@ -59,7 +74,7 @@ export async function useContentSeo(args: {
     canUseBookTitle && args.bookTitle
       ? args.bookTitle
       : ERUDIT.config.seo?.siteTitle ||
-        ERUDIT.config.siteInfo.title ||
+        ERUDIT.config.asideMajor?.siteInfo?.title ||
         'Erudit';
 
   const fullTitle =

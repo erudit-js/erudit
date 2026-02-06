@@ -1,7 +1,7 @@
 import { existsSync } from 'node:fs';
 import type { Nuxt } from '@nuxt/schema';
-import type { EruditConfig } from '@erudit-js/core/eruditConfig/config';
 import { sn } from 'unslash';
+import type { EruditConfig } from '@erudit-js/core/eruditConfig/config';
 
 import { PROJECT_PATH } from '../env.js';
 import { moduleLogger } from '../logger.js';
@@ -47,20 +47,16 @@ export async function setupEruditRuntimeConfig(nuxt: Nuxt) {
       analytics: eruditConfig.debug?.analytics,
     },
     language: eruditConfig.language || { current: 'en' },
-    siteInfo: {
-      title: eruditConfig.site?.title,
-      short: eruditConfig.site?.short,
-      logotype: eruditConfig.site?.logotype,
-      favicon: eruditConfig.site?.favicon
-        ? typeof eruditConfig.site?.favicon === 'string'
-          ? { default: eruditConfig.site?.favicon }
-          : eruditConfig.site?.favicon
-        : undefined,
-      loadingSvg: eruditConfig.site?.loadingSvg,
-    },
+    asideMajor: eruditConfig.asideMajor,
     seo: eruditConfig.seo,
+    favicon: eruditConfig.favicon
+      ? typeof eruditConfig.favicon === 'string'
+        ? { default: eruditConfig.favicon }
+        : eruditConfig.favicon
+      : undefined,
+    loadingSvg: eruditConfig.loadingSvg,
     style: {
-      brandColor: eruditConfig.site?.style?.brandColor,
+      brandColor: eruditConfig.style?.brandColor,
     },
     repository: (() => {
       const repository = eruditConfig.repository;
@@ -83,7 +79,6 @@ export async function setupEruditRuntimeConfig(nuxt: Nuxt) {
         _link: link,
       };
     })(),
-    customLinks: eruditConfig.customLinks,
     contributors: eruditConfig.contributors,
     sponsors: eruditConfig.sponsors,
     ads: eruditConfig.ads,

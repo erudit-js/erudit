@@ -1,39 +1,39 @@
 <script lang="ts" setup>
 const withBaseUrl = useBaseUrl();
 
-const siteInfo = ERUDIT.config.siteInfo;
+const siteInfo = ERUDIT.config.asideMajor?.siteInfo;
 
 const fetchPhrases: LanguagePhraseKey[] = [];
 
-if (!siteInfo.title) {
+if (!siteInfo?.title) {
   fetchPhrases.push('erudit');
 }
 
-if (!siteInfo.short && siteInfo.short !== false) {
+if (!siteInfo?.short && siteInfo?.short !== false) {
   fetchPhrases.push('default_site_info_short');
 }
 
 const phrase = await usePhrases(...fetchPhrases);
 
-const title = siteInfo.title || phrase.erudit;
+const title = siteInfo?.title || phrase.erudit;
 const short =
-  siteInfo.short === false
+  siteInfo?.short === false
     ? undefined
-    : siteInfo.short || phrase.default_site_info_short;
+    : siteInfo?.short || phrase.default_site_info_short;
 
 const logotype = (() => {
-  if (siteInfo.logotype === false) {
+  if (siteInfo?.logotype === false) {
     return false;
   }
 
-  if (!siteInfo.logotype) {
+  if (!siteInfo?.logotype) {
     return eruditPublic('logotype.svg');
   }
 
   return String(siteInfo.logotype);
 })();
 
-const layout = siteInfo.logotype === false ? 'column' : 'row';
+const layout = siteInfo?.logotype === false ? 'column' : 'row';
 </script>
 
 <template>
@@ -45,7 +45,7 @@ const layout = siteInfo.logotype === false ? 'column' : 'row';
       {
         'gap-normal items-center': layout === 'row',
         'gap-small flex-col': layout === 'column',
-        'text-center': layout === 'column' || siteInfo.logotype === false,
+        'text-center': layout === 'column' || siteInfo?.logotype === false,
       },
     ]"
   >
