@@ -30,7 +30,8 @@ export default defineElementLanguage<ProblemPhrases>({
   no_regexp: /^\s*(нет|0)\s*$/i,
   boolean_check_hint: 'Да/Нет',
   array_check_hint: (ordered, separator) => {
-    let hint = `Разделитель "${separator}".`;
+    let hint =
+      separator === ',' ? 'Через запятую.' : `Разделитель "${separator}".`;
     if (ordered) {
       hint += ' Порядок важен.';
     }

@@ -69,6 +69,23 @@ const formatText = useFormatText();
 const { EruditIcon, EruditTransition } = useProseContext();
 const phrase = await useProblemPhrase();
 
+const hint = computed(() => {
+  if (check.data.hint) {
+    return check.data.hint;
+  }
+
+  if (check.data.serializedValidator.type === 'boolean') {
+    return phrase.boolean_check_hint;
+  }
+
+  if (check.data.serializedValidator.type === 'array') {
+    return phrase.array_check_hint(
+      check.data.serializedValidator.ordered,
+      check.data.serializedValidator.separator,
+    );
+  }
+});
+
 const answerInputElement = useTemplateRef<HTMLInputElement>('answer');
 const answerInput = ref('');
 const lastCheckedInput = ref<string | undefined | null>(null);
@@ -166,7 +183,7 @@ function doCheck() {
     </form>
 
     <div class="text-text-dimmed text-main-xs italic">
-      {{ check.data.hint ? formatText(check.data.hint) : '' }}
+      {{ hint ? formatText(hint) : '' }}
     </div>
   </div>
 </template>
