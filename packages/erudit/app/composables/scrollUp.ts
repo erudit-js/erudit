@@ -5,11 +5,32 @@ export const useScrollUp = () => {
 export function initScrollUpWatcher() {
   const scrollUp = useScrollUp();
 
+  let layoutTimeout: any;
+  let layoutEstablished = false;
+
+  const route = useRoute();
+  watch(
+    () => route.path,
+    () => {
+      if (route.hash) {
+        return;
+      }
+
+      scrollUp.value = true;
+      resetLayoutEstablished();
+    },
+  );
+
+  function resetLayoutEstablished() {
+    layoutEstablished = false;
+    clearTimeout(layoutTimeout);
+    layoutTimeout = setTimeout(() => {
+      layoutEstablished = true;
+    }, 150);
+  }
+
   if (import.meta.client) {
     callOnce(async () => {
-      let layoutEstablished = false;
-      let layoutTimeout: any;
-
       let lastY = window.scrollY;
       let sumDelta = 0;
       let scrollTimeout: any;
@@ -57,14 +78,6 @@ export function initScrollUpWatcher() {
 
       function isScrollable() {
         return maxScrollY() > 0;
-      }
-
-      function resetLayoutEstablished() {
-        layoutEstablished = false;
-        clearTimeout(layoutTimeout);
-        layoutTimeout = setTimeout(() => {
-          layoutEstablished = true;
-        }, 150);
       }
 
       onMounted(resetLayoutEstablished);
