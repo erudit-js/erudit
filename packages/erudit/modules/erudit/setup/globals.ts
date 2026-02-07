@@ -181,10 +181,6 @@ export async function registerGlobalContentTypes() {
 
   addContentTypeAliases([
     {
-      name: 'ProblemRandom',
-      from: '@erudit-js/prose/elements/problem/rng',
-    },
-    {
       name: 'AnyProseElement',
       from: sn(ERUDIT_PATH, 'modules/erudit/globals/prose'),
     },

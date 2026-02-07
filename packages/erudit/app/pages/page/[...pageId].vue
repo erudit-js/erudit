@@ -44,6 +44,7 @@ await useContentSeo({
     <div class="h-main-half"></div>
     <MainQuoteLoader />
     <div class="h-main-half"></div>
+    <MainStickyHeader :mainContent />
   </MainSectionPreamble>
   <MainSection>
     <Prose

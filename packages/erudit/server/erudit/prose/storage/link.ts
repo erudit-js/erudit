@@ -25,146 +25,153 @@ export async function createLinkStorage(
     | ProseElement<typeof dependencySchema>,
   storage: GenericStorage,
 ) {
-  let linkStorage: LinkStorage | undefined;
+  try {
+    let linkStorage: LinkStorage | undefined;
 
-  const storageKeyParts = element.storageKey!.split('/');
-  const linkType = storageKeyParts[0];
-  const strProseLink = storageKeyParts.slice(1).join('/');
+    const storageKeyParts = element.storageKey!.split('/');
+    const linkType = storageKeyParts[0];
+    const strProseLink = storageKeyParts.slice(1).join('/');
 
-  if (linkType === '<link:direct>') {
-    linkStorage = {
-      type: 'direct',
-      resolvedHref: strProseLink,
-      previewRequest: {
-        type: 'direct-link',
-        href: strProseLink,
-      },
-    };
-  } else if (linkType === '<link:global>') {
-    const proseLinkParts = strProseLink.split('/');
-    const uniquePart = proseLinkParts.pop();
+    if (linkType === '<link:external>') {
+      linkStorage = {
+        type: 'external',
+        resolvedHref: strProseLink,
+        previewRequest: {
+          type: 'direct-link',
+          href: strProseLink,
+        },
+      };
+    } else if (linkType === '<link:global>') {
+      const proseLinkParts = strProseLink.split('/');
+      const uniquePart = proseLinkParts.pop();
 
-    if (uniquePart?.startsWith('$')) {
-      //
-      // Unique link
-      //
+      if (uniquePart?.startsWith('$')) {
+        //
+        // Unique link
+        //
 
-      const contentPointer = await getContentPointerFor(
-        proseLinkParts.join('/'),
-      );
+        const contentPointer = await getContentPointerFor(
+          proseLinkParts.join('/'),
+        );
 
-      const shortId = ERUDIT.contentNav.getNodeOrThrow(
-        contentPointer.id,
-      ).shortId;
+        const shortId = ERUDIT.contentNav.getNodeOrThrow(
+          contentPointer.id,
+        ).shortId;
 
-      const contentTitle = await ERUDIT.repository.content.title(
-        contentPointer.id,
-      );
+        const contentTitle = await ERUDIT.repository.content.title(
+          contentPointer.id,
+        );
 
-      const uniqueName = uniquePart.slice(1);
-      const unique = await ERUDIT.repository.content.unique(
-        contentPointer.id,
-        contentPointer.type === 'topic' ? contentPointer.part : 'page',
-        uniqueName,
-      );
+        const uniqueName = uniquePart.slice(1);
+        const unique = await ERUDIT.repository.content.unique(
+          contentPointer.id,
+          contentPointer.type === 'topic' ? contentPointer.part : 'page',
+          uniqueName,
+        );
 
-      if (contentPointer.type === 'topic') {
-        linkStorage = {
-          type: 'unique',
-          schemaName: unique.prose.schemaName,
-          elementTitle: unique.title || undefined,
-          content: {
-            contentType: 'topic',
-            contentTitle,
-            topicPart: contentPointer.part,
-          },
-          resolvedHref: PAGES.topic(
-            contentPointer.part,
-            shortId,
-            uniqueName2Id(uniqueName),
-          ),
-          previewRequest: {
+        if (contentPointer.type === 'topic') {
+          linkStorage = {
             type: 'unique',
-            contentFullId: contentPointer.id,
-            contentType: 'topic',
-            topicPart: contentPointer.part,
-            uniqueName: uniqueName,
-          },
-        };
-      } else {
-        linkStorage = {
-          type: 'unique',
-          schemaName: unique.prose.schemaName,
-          elementTitle: unique.title || undefined,
-          content: {
-            contentType: contentPointer.type,
-            contentTitle,
-          },
-          resolvedHref: PAGES.page(shortId, uniqueName2Id(uniqueName)),
-          previewRequest: {
+            schemaName: unique.prose.schemaName,
+            elementTitle: unique.title || undefined,
+            content: {
+              contentType: 'topic',
+              contentTitle,
+              topicPart: contentPointer.part,
+            },
+            resolvedHref: PAGES.topic(
+              contentPointer.part,
+              shortId,
+              uniqueName2Id(uniqueName),
+            ),
+            previewRequest: {
+              type: 'unique',
+              contentFullId: contentPointer.id,
+              contentType: 'topic',
+              topicPart: contentPointer.part,
+              uniqueName: uniqueName,
+            },
+          };
+        } else {
+          linkStorage = {
             type: 'unique',
-            contentFullId: contentPointer.id,
-            contentType: 'page',
-            uniqueName: uniqueName,
-          },
-        };
-      }
-    } else {
-      //
-      // Content item link
-      //
-
-      const contentPointer = await getContentPointerFor(strProseLink);
-
-      const shortId = ERUDIT.contentNav.getNodeOrThrow(
-        contentPointer.id,
-      ).shortId;
-
-      const contentTitle = await ERUDIT.repository.content.title(
-        contentPointer.id,
-      );
-
-      if (contentPointer.type === 'topic') {
-        linkStorage = {
-          type: 'contentItem',
-          content: {
-            contentType: 'topic',
-            contentTitle,
-            topicPart: contentPointer.part,
-          },
-          resolvedHref: PAGES.topic(contentPointer.part, shortId),
-          previewRequest: {
-            type: 'content-page',
-            contentType: 'topic',
-            topicPart: contentPointer.part,
-            fullId: contentPointer.id,
-          },
-        };
+            schemaName: unique.prose.schemaName,
+            elementTitle: unique.title || undefined,
+            content: {
+              contentType: contentPointer.type,
+              contentTitle,
+            },
+            resolvedHref: PAGES.page(shortId, uniqueName2Id(uniqueName)),
+            previewRequest: {
+              type: 'unique',
+              contentFullId: contentPointer.id,
+              contentType: 'page',
+              uniqueName: uniqueName,
+            },
+          };
+        }
       } else {
-        linkStorage = {
-          type: 'contentItem',
-          content: {
-            contentType: contentPointer.type,
-            contentTitle,
-          },
-          resolvedHref: PAGES[contentPointer.type](shortId),
-          previewRequest: {
-            type: 'content-page',
-            contentType: contentPointer.type,
-            fullId: contentPointer.id,
-          },
-        };
+        //
+        // Content item link
+        //
+
+        const contentPointer = await getContentPointerFor(strProseLink);
+
+        const shortId = ERUDIT.contentNav.getNodeOrThrow(
+          contentPointer.id,
+        ).shortId;
+
+        const contentTitle = await ERUDIT.repository.content.title(
+          contentPointer.id,
+        );
+
+        if (contentPointer.type === 'topic') {
+          linkStorage = {
+            type: 'contentItem',
+            content: {
+              contentType: 'topic',
+              contentTitle,
+              topicPart: contentPointer.part,
+            },
+            resolvedHref: PAGES.topic(contentPointer.part, shortId),
+            previewRequest: {
+              type: 'content-page',
+              contentType: 'topic',
+              topicPart: contentPointer.part,
+              fullId: contentPointer.id,
+            },
+          };
+        } else {
+          linkStorage = {
+            type: 'contentItem',
+            content: {
+              contentType: contentPointer.type,
+              contentTitle,
+            },
+            resolvedHref: PAGES[contentPointer.type](shortId),
+            previewRequest: {
+              type: 'content-page',
+              contentType: contentPointer.type,
+              fullId: contentPointer.id,
+            },
+          };
+        }
       }
     }
-  }
 
-  if (!linkStorage) {
-    throw new ProseError(
-      `Unable to create prose link storage for link: ${element.storageKey}`,
-    );
-  }
+    if (!linkStorage) {
+      throw new ProseError(
+        `Unable to create prose link storage for link: ${element.storageKey}`,
+      );
+    }
 
-  storage[element.storageKey!] = linkStorage;
+    storage[element.storageKey!] = linkStorage;
+  } catch (error) {
+    storage[element.storageKey!] = {
+      type: 'error',
+      error: error instanceof Error ? error.message : String(error),
+    };
+  }
 }
 
 async function getContentPointerFor(
@@ -177,6 +184,13 @@ async function getContentPointerFor(
   const contentNavNode = ERUDIT.contentNav.getNode(contentId);
 
   if (contentNavNode) {
+    const hidden = await ERUDIT.repository.content.hidden(
+      contentNavNode.fullId,
+    );
+    if (hidden) {
+      throw new ProseError(`Target content is hidden!`);
+    }
+
     if (contentNavNode.type === 'topic') {
       const defaultTopicPart = await ERUDIT.repository.content.defaultTopicPart(
         contentNavNode.fullId,

@@ -140,7 +140,7 @@ export async function resolveTopic(topicNode: ContentNavNode) {
               if (item.type === 'heading') {
                 // Pop headings at same or deeper level
                 while (stack.length > 0) {
-                  const last = stack[stack.length - 1];
+                  const last = stack[stack.length - 1]!;
                   if (last.type === 'heading' && last.level >= item.level) {
                     stack.pop();
                   } else {
@@ -156,7 +156,7 @@ export async function resolveTopic(topicNode: ContentNavNode) {
 
                 // Add to parent heading or root
                 if (stack.length > 0) {
-                  const parent = stack[stack.length - 1];
+                  const parent = stack[stack.length - 1]!;
                   if (parent.type === 'heading') {
                     parent.children.push(newItem);
                   }
@@ -168,7 +168,7 @@ export async function resolveTopic(topicNode: ContentNavNode) {
               } else {
                 // Non-heading item (problems, etc.)
                 if (stack.length > 0) {
-                  const parent = stack[stack.length - 1];
+                  const parent = stack[stack.length - 1]!;
                   if (parent.type === 'heading') {
                     parent.children.push(item);
                   } else {
@@ -184,11 +184,13 @@ export async function resolveTopic(topicNode: ContentNavNode) {
           finalTocItems = result;
         }
 
-        await ERUDIT.db.insert(ERUDIT.db.schema.contentToc).values({
-          fullId: topicNode.fullId,
-          topicPart,
-          toc: finalTocItems,
-        });
+        if (finalTocItems?.length) {
+          await ERUDIT.db.insert(ERUDIT.db.schema.contentToc).values({
+            fullId: topicNode.fullId,
+            topicPart,
+            toc: finalTocItems,
+          });
+        }
 
         await ERUDIT.db
           .update(ERUDIT.db.schema.topics)

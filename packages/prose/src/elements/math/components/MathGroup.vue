@@ -7,7 +7,7 @@ const { mathGroup } = defineProps<{
   freeze: boolean;
 }>();
 
-const columnGap = (() => {
+const gap = (() => {
   switch (mathGroup.gap.type) {
     case '0':
       return '0px';
@@ -21,12 +21,29 @@ const columnGap = (() => {
       return mathGroup.gap.size;
   }
 })();
+
+const alignItems = (() => {
+  switch (mathGroup.alignItems ?? 'center') {
+    case 'top':
+      return 'flex-start';
+    case 'bottom':
+      return 'flex-end';
+    case 'center':
+    default:
+      return 'center';
+  }
+})();
 </script>
 
 <template>
   <div
-    :style="{ columnGap }"
-    class="flex flex-wrap items-center justify-center gap-y-(--mathRowGap)"
+    :style="{
+      '--mathGroupGap': gap,
+      gap: 'var(--mathGroupGap)',
+      rowGap: 'calc(var(--mathGroupGap)/2)',
+      alignItems,
+    }"
+    class="flex flex-wrap justify-center"
   >
     <template v-for="part of mathGroup.parts">
       <Katex

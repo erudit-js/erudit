@@ -1,96 +1,97 @@
-import { eq, like, or } from 'drizzle-orm';
+import { and, eq, like, or } from 'drizzle-orm';
 
-type ContentAutoDepCache = Map<string, Promise<ContentAutoDep>>;
-
-async function buildContentAutoDep(fullId: string): Promise<ContentAutoDep> {
-  const navNode = ERUDIT.contentNav.getNodeOrThrow(fullId);
-  const contentType = navNode.type;
-  const [title, link] = await Promise.all([
-    ERUDIT.repository.content.title(fullId),
-    ERUDIT.repository.content.link(fullId),
-  ]);
-
-  return {
-    type: 'auto',
-    contentType,
-    title,
-    link,
-  };
-}
-
-function getContentAutoDepCached(
-  fullId: string,
-  cache: ContentAutoDepCache,
-): Promise<ContentAutoDep> {
-  const existing = cache.get(fullId);
-  if (existing) {
-    return existing;
-  }
-
-  const created = buildContentAutoDep(fullId);
-  cache.set(fullId, created);
-  return created;
-}
-
-export async function getContentDependencies(fullId: string): Promise<{
-  hardDependencies: ContentHardDep[];
-  autoDependencies: ContentAutoDep[];
-}> {
+export async function getContentDependencies(fullId: string) {
   const hardDependencies: ContentHardDep[] = [];
-  const autoDependencies: ContentAutoDep[] = [];
-  const cache: ContentAutoDepCache = new Map();
 
-  const dbContents = await ERUDIT.db.query.contentDeps.findMany({
-    columns: { fromFullId: true, toFullId: true, hard: true, reason: true },
-    where: or(
-      eq(ERUDIT.db.schema.contentDeps.toFullId, fullId),
-      like(ERUDIT.db.schema.contentDeps.toFullId, `${fullId}/%`),
+  const dbHardDependencies = await ERUDIT.db.query.contentDeps.findMany({
+    columns: { fromFullId: true, hard: true, reason: true },
+    where: and(
+      or(
+        eq(ERUDIT.db.schema.contentDeps.toFullId, fullId),
+        like(ERUDIT.db.schema.contentDeps.toFullId, `${fullId}/%`),
+      ),
+      eq(ERUDIT.db.schema.contentDeps.hard, true),
     ),
   });
 
-  const filtered = dbContents.filter((dbContent) => {
-    // Skip child-only self-references
-    const isToChild = dbContent.toFullId.startsWith(`${fullId}/`);
-    const isFromChild = dbContent.fromFullId.startsWith(`${fullId}/`);
-    return !(isToChild && isFromChild);
-  });
+  const fullId2Reason = dbHardDependencies.reduce((map, dbDependency) => {
+    if (dbDependency.reason) {
+      map.set(dbDependency.fromFullId, dbDependency.reason);
+    }
+    return map;
+  }, new Map<string, string>());
 
-  // Precompute to ensure hard deps always take precedence, regardless of DB row ordering.
-  const hardDepFromIds = new Set(
-    filtered
-      .filter((dbContent) => dbContent.hard && fullId === dbContent.toFullId)
-      .map((dbContent) => dbContent.fromFullId),
+  const hardFromFullIds = ERUDIT.contentNav.orderIds(
+    externalFromFullIds(dbHardDependencies),
   );
 
-  const deps = await Promise.all(
-    filtered.map((dbContent) =>
-      getContentAutoDepCached(dbContent.fromFullId, cache),
-    ),
-  );
-
-  for (const [i, dbContent] of filtered.entries()) {
-    const dep = deps[i]!;
-
-    if (dbContent.hard && fullId === dbContent.toFullId) {
-      hardDependencies.push({
-        ...dep,
-        type: 'hard',
-        reason: dbContent.reason!,
-      });
-    } else if (!hardDepFromIds.has(dbContent.fromFullId)) {
-      autoDependencies.push(dep);
+  for (const fromFullId of hardFromFullIds) {
+    const reason = fullId2Reason.get(fromFullId)!;
+    const hardDep = await createContentDep('hard', fromFullId, reason);
+    if (hardDep) {
+      hardDependencies.push(hardDep);
     }
   }
 
-  return { hardDependencies, autoDependencies };
+  //
+  //
+  //
+
+  const autoDependencies: ContentAutoDep[] = [];
+
+  const dbAutoDependencies = await ERUDIT.db.query.contentDeps.findMany({
+    columns: { fromFullId: true, hard: true },
+    where: and(
+      or(
+        eq(ERUDIT.db.schema.contentDeps.toFullId, fullId),
+        like(ERUDIT.db.schema.contentDeps.toFullId, `${fullId}/%`),
+      ),
+      eq(ERUDIT.db.schema.contentDeps.hard, false),
+    ),
+  });
+
+  // Skip auto-dependency if a hard dependency from the same source exists
+  const autoFromFullIds = ERUDIT.contentNav
+    .orderIds(externalFromFullIds(dbAutoDependencies))
+    .filter((fromFullId) => !fullId2Reason.has(fromFullId));
+
+  for (const fromFullId of autoFromFullIds) {
+    const autoDep = await createContentDep('auto', fromFullId);
+    if (autoDep) {
+      autoDependencies.push(autoDep);
+    }
+  }
+
+  return {
+    hardDependencies,
+    autoDependencies,
+  };
+
+  //
+  //
+  //
+
+  // Skip dependency if it originates from current content item or its child
+  function externalFromFullIds(dbDeps: { fromFullId: string }[]) {
+    return dbDeps.reduce((ids, dbDep) => {
+      const fromFullId = dbDep.fromFullId;
+      const isFromSelf = fromFullId === fullId;
+      const isFromChild = fromFullId.startsWith(`${fullId}/`);
+
+      if (isFromSelf || isFromChild) {
+        return ids;
+      }
+
+      ids.push(fromFullId);
+      return ids;
+    }, [] as string[]);
+  }
 }
 
 export async function getContentDependents(
   fullId: string,
 ): Promise<ContentAutoDep[]> {
-  const cache: ContentAutoDepCache = new Map();
-
-  const dbContents = await ERUDIT.db.query.contentDeps.findMany({
+  const dbDependents = await ERUDIT.db.query.contentDeps.findMany({
     columns: { fromFullId: true, toFullId: true },
     where: or(
       eq(ERUDIT.db.schema.contentDeps.fromFullId, fullId),
@@ -98,24 +99,71 @@ export async function getContentDependents(
     ),
   });
 
-  const filtered = dbContents.filter((dbContent) => {
-    // Skip child-only self-references
-    const isFromChild = dbContent.fromFullId.startsWith(`${fullId}/`);
-    const isToChild = dbContent.toFullId.startsWith(`${fullId}/`);
-    return !(isFromChild && isToChild);
-  });
+  // Skip dependent if it targets current content item or its child
+  const externalTargetFullIds = dbDependents.reduce((ids, dbDependent) => {
+    const toFullId = dbDependent.toFullId;
+    const targetsSelf = toFullId === fullId;
+    const targetsChild = toFullId.startsWith(`${fullId}/`);
 
-  const deps = await Promise.all(
-    filtered.map((dbContent) =>
-      getContentAutoDepCached(dbContent.toFullId, cache),
-    ),
+    if (targetsSelf || targetsChild) {
+      return ids;
+    }
+
+    ids.push(toFullId);
+    return ids;
+  }, [] as string[]);
+
+  // Order targets according to nav structure
+  const targetFullIds = ERUDIT.contentNav.orderIds(externalTargetFullIds);
+
+  const dependents = await Promise.all(
+    targetFullIds.map((targetFullId) => createContentDep('auto', targetFullId)),
   );
 
-  return deps;
+  return dependents.filter((dep): dep is ContentAutoDep => dep !== undefined);
 }
 
-export async function getContentAutoDep(
+async function createContentDep(
+  type: 'auto',
   fullId: string,
-): Promise<ContentAutoDep> {
-  return buildContentAutoDep(fullId);
+): Promise<ContentAutoDep | undefined>;
+async function createContentDep(
+  type: 'hard',
+  fullId: string,
+  reason: string,
+): Promise<ContentHardDep | undefined>;
+async function createContentDep(
+  type: 'auto' | 'hard',
+  fullId: string,
+  reason?: string,
+): Promise<ContentDep | undefined> {
+  const navNode = ERUDIT.contentNav.getNodeOrThrow(fullId);
+
+  const hidden = await ERUDIT.repository.content.hidden(fullId);
+  if (hidden) {
+    return undefined;
+  }
+
+  const contentType = navNode.type;
+  const [title, link] = await Promise.all([
+    ERUDIT.repository.content.title(fullId),
+    ERUDIT.repository.content.link(fullId),
+  ]);
+
+  if (type === 'hard') {
+    return {
+      type: 'hard',
+      reason: reason!,
+      contentType,
+      title,
+      link,
+    };
+  }
+
+  return {
+    type: 'auto',
+    contentType,
+    title,
+    link,
+  };
 }

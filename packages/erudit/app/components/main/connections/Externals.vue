@@ -8,7 +8,7 @@ const phrase = await usePhrases('externals_own', 'externals_from');
 </script>
 
 <template>
-  <ScrollPane class="max-h-[800px]">
+  <ScrollPane class="max-h-[min(500px,30dvh)]">
     <div v-for="group of externals">
       <div
         :class="[

@@ -13,6 +13,10 @@ import { defineEruditTag } from '../../tag.js';
 export const mathGroupTypes = ['0', 'small', 'normal', 'big'] as const;
 export type MathGroupGapType = (typeof mathGroupTypes)[number] | 'custom';
 
+export type MathGroupAlignItems = 'top' | 'center' | 'bottom';
+
+const alignValues = ['top', 'center', 'bottom'] as const;
+
 export interface MathGroupGapTemplate {
   type: MathGroupGapType;
 }
@@ -20,19 +24,15 @@ export interface MathGroupGapTemplate {
 export interface MathGroupGapZero extends MathGroupGapTemplate {
   type: '0';
 }
-
 export interface MathGroupGapSmall extends MathGroupGapTemplate {
   type: 'small';
 }
-
 export interface MathGroupGapNormal extends MathGroupGapTemplate {
   type: 'normal';
 }
-
 export interface MathGroupGapBig extends MathGroupGapTemplate {
   type: 'big';
 }
-
 export interface MathGroupGapCustom extends MathGroupGapTemplate {
   type: 'custom';
   size: string;
@@ -49,26 +49,27 @@ export type MathGroupPart = string | MathGroup;
 
 export interface MathGroup {
   gap: MathGroupGap;
+  alignItems?: MathGroupAlignItems;
   parts: MathGroupPart[];
 }
 
-function gapFromString(strGap: string): MathGroupGap {
-  if (mathGroupTypes.includes(strGap as (typeof mathGroupTypes)[number])) {
-    return { type: strGap as (typeof mathGroupTypes)[number] };
+function isAlignValue(value: string): value is MathGroupAlignItems {
+  return (alignValues as readonly string[]).includes(value);
+}
+
+function gapFromString(str: string): MathGroupGap {
+  if (mathGroupTypes.includes(str as any)) {
+    return { type: str as (typeof mathGroupTypes)[number] };
   }
 
-  return { type: 'custom', size: strGap };
+  return { type: 'custom', size: str };
 }
 
 function gapsEqual(gap1: MathGroupGap, gap2: MathGroupGap): boolean {
-  if (gap1.type !== gap2.type) {
-    return false;
-  }
-
+  if (gap1.type !== gap2.type) return false;
   if (gap1.type === 'custom' && gap2.type === 'custom') {
     return gap1.size === gap2.size;
   }
-
   return true;
 }
 
@@ -76,69 +77,75 @@ export async function resolveMathGroups(
   katex: string,
   isTopLevel = true,
 ): Promise<MathGroup | string> {
-  // If whole string does not contain any groups, return default group with rendered math
   if (!katex.includes('>>')) {
     const rendered = await latexToHtml(katex, 'block');
 
     if (isTopLevel) {
-      // Only top-level should return a group
       return {
         gap: { type: 'normal' },
         parts: [rendered],
       };
     }
 
-    // Recursive left side should return a plain string
     return rendered;
   }
-  // Find the rightmost delimiter and its gap specification
-  const delimiterRegex = />>(?:\{([^}]+)\})?/g;
+
+  const delimiterRegex = />>(?:\{([^}]+)\})?(?:\{([^}]+)\})?/g;
   let match: RegExpExecArray | null;
-  let lastDelimiterMatch!: RegExpExecArray;
+  let last!: RegExpExecArray;
 
   while ((match = delimiterRegex.exec(katex)) !== null) {
-    lastDelimiterMatch = match;
+    last = match;
   }
 
-  // Extract gap
-  const gap = gapFromString(lastDelimiterMatch[1] || 'normal');
+  const raw1 = last[1];
+  const raw2 = last[2];
 
-  // Calculate positions
-  const lastDelimiterPos = lastDelimiterMatch.index;
-  const lastDelimiterLen = lastDelimiterMatch[0].length;
+  let gap: MathGroupGap = { type: 'normal' };
+  let alignItems: MathGroupAlignItems | undefined;
 
-  // Split the katex string
-  const leftPart = katex.slice(0, lastDelimiterPos);
-  const rightPart = katex.slice(lastDelimiterPos + lastDelimiterLen);
+  // ---- Resolution rules ----
+  if (raw1 && raw2) {
+    // >>{gap}{align}
+    gap = gapFromString(raw1);
+    if (isAlignValue(raw2)) alignItems = raw2;
+  } else if (raw1) {
+    // >>{something}
+    if (isAlignValue(raw1)) {
+      // >>{center}
+      alignItems = raw1;
+    } else {
+      // >>{small} or custom gap
+      gap = gapFromString(raw1);
+    }
+  }
 
-  // Pushing rendered right part
-  const parts: MathGroupPart[] = [await latexToHtml(rightPart, 'block')];
+  const delimiterPos = last.index;
+  const delimiterLen = last[0].length;
 
-  // Resolving left part
-  const leftGroup = await resolveMathGroups(leftPart, false);
+  const left = katex.slice(0, delimiterPos);
+  const right = katex.slice(delimiterPos + delimiterLen);
+
+  const parts: MathGroupPart[] = [await latexToHtml(right, 'block')];
+
+  const leftGroup = await resolveMathGroups(left, false);
 
   if (typeof leftGroup === 'string') {
     parts.unshift(leftGroup);
   } else {
-    // Left part is a group, meaning it contains gaps
     if (gapsEqual(leftGroup.gap, gap)) {
-      // If gaps are equal, we can merge the two groups into (current) one
       parts.unshift(...leftGroup.parts);
     } else {
-      // Gaps are different, we need to keep the left group as is
       parts.unshift(leftGroup);
     }
   }
 
   return {
     gap,
+    ...(alignItems ? { alignItems } : {}),
     parts,
   };
 }
-
-//
-//
-//
 
 export interface BlockMathData {
   katex: string;
@@ -165,6 +172,7 @@ export const BlockMath = defineEruditTag({
   children,
 }) => {
   ensureTagChild(tagName, children, textSchema);
+
   const katex = normalizeKatex(children[0].data);
 
   if (!katex) {

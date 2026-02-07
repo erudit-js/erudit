@@ -1,8 +1,12 @@
 <script setup lang="ts">
-import { useTemplateRef, ref, watch } from 'vue';
+import { useTemplateRef, ref, watch, computed } from 'vue';
 import type { ProseElement } from '@jsprose/core';
 
-import { checkValue, type problemCheckSchema } from '../../problemContent.js';
+import {
+  checkProblemAnswer,
+  fromSerializableValidator,
+  type problemCheckSchema,
+} from '../../problemCheck.js';
 import checkIcon from '../../assets/actions/check.svg?raw';
 import plusIcon from '../../../../app/shared/assets/plus.svg?raw';
 import successIcon from '../../../../app/shared/assets/check.svg?raw';
@@ -27,6 +31,10 @@ const { check, script } = defineProps<{
     clear: () => void;
   };
 }>();
+
+const validator = computed(() => {
+  return fromSerializableValidator(check.data.serializedValidator);
+});
 
 const emit = defineEmits<{
   (event: 'status-change', status: CheckStatus): void;
@@ -61,6 +69,35 @@ const formatText = useFormatText();
 const { EruditIcon, EruditTransition } = useProseContext();
 const phrase = await useProblemPhrase();
 
+const hint = computed(() => {
+  if (check.data.hint) {
+    return check.data.hint;
+  }
+
+  if (check.data.serializedValidator.type === 'boolean') {
+    return phrase.boolean_check_hint;
+  }
+
+  if (check.data.serializedValidator.type === 'array') {
+    return phrase.array_check_hint(
+      check.data.serializedValidator.ordered,
+      check.data.serializedValidator.separator,
+    );
+  }
+});
+
+const labelText = computed(() => {
+  const rawLabel = formatText(check.data.label ?? phrase.action_answer);
+  const trimmed = rawLabel.trimEnd();
+
+  if (!trimmed) {
+    return '';
+  }
+
+  const endsWithAlphaNum = /[\p{L}\p{N}]$/u.test(trimmed);
+  return endsWithAlphaNum ? `${trimmed}:` : trimmed;
+});
+
 const answerInputElement = useTemplateRef<HTMLInputElement>('answer');
 const answerInput = ref('');
 const lastCheckedInput = ref<string | undefined | null>(null);
@@ -73,20 +110,29 @@ watch(answerInput, () => {
 });
 
 function doCheck() {
-  const newInput = answerInput.value.trim().replace(/\s+/g, ' ') || undefined;
+  const newInput = answerInput.value.replace(/\s+/g, ' ').trim();
 
-  if (newInput === lastCheckedInput.value) return;
+  if (newInput === lastCheckedInput.value) {
+    return;
+  }
 
   lastCheckedInput.value = newInput;
 
   if (script) {
-    const ok = script.check(newInput);
+    const ok = script.check(newInput || undefined);
     state.value = ok ? 'correct' : 'wrong';
     emit('status-change', state.value);
     return;
   }
 
-  state.value = checkValue(newInput, check.data) ? 'correct' : 'wrong';
+  state.value = checkProblemAnswer(
+    newInput,
+    phrase.yes_regexp,
+    phrase.no_regexp,
+    validator.value,
+  )
+    ? 'correct'
+    : 'wrong';
 
   emit('status-change', state.value);
 }
@@ -101,7 +147,7 @@ function doCheck() {
       ]"
     >
       <span @click="answerInputElement?.focus()">
-        {{ formatText(check.data.label ?? phrase.action_answer) + ':' }}
+        {{ labelText }}
       </span>
     </div>
 
@@ -113,9 +159,10 @@ function doCheck() {
         autocomplete="off"
         :placeholder="check.data.placeholder"
         :class="[
-          `bg-bg-main text-main-sm relative z-10 min-w-0 flex-1 rounded
-          rounded-tr-none rounded-br-none border border-r-0 px-2.5 py-1
-          transition-[border,color,background]`,
+          `bg-bg-main text-main-sm focus:ring-brand relative z-10 min-w-0 flex-1
+          rounded rounded-tr-none rounded-br-none border border-r-0 px-2.5 py-1
+          ring-2 ring-transparent outline-0
+          transition-[border,color,background,box-shadow]`,
           states[state].inputClass,
         ]"
       />
@@ -147,7 +194,7 @@ function doCheck() {
     </form>
 
     <div class="text-text-dimmed text-main-xs italic">
-      {{ check.data.hint ? formatText(check.data.hint) : '' }}
+      {{ hint ? formatText(hint) : '' }}
     </div>
   </div>
 </template>

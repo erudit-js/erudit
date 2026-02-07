@@ -1,8 +1,8 @@
 import { defineEruditProseCoreElements } from '../../coreElement.js';
 import { problemCoreElement } from './problem.js';
+import { problemCheckCoreElement } from './problemCheck.js';
 import {
   problemAnswer,
-  problemCheckCoreElement,
   problemDescriptionCoreElement,
   problemHintCoreElement,
   problemNote,

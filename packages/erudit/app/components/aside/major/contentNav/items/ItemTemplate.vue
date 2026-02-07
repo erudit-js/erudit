@@ -19,7 +19,7 @@ const resolvedTo = computed(() => {
 </script>
 
 <template>
-  <TreeItem :icon :main="navItem.title" :state :to="resolvedTo">
+  <TreeItem :icon :main="formatText(navItem.title)" :state :to="resolvedTo">
     <template v-slot:secondary v-if="navItem.flags">
       <Flags :flags="navItem.flags" />
     </template>

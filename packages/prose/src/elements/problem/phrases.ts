@@ -17,5 +17,9 @@ export type ProblemPhrases = ElementPhrases<
     action_check: string;
     action_generate: string;
     seed_explain: string;
+    yes_regexp: RegExp;
+    no_regexp: RegExp;
+    boolean_check_hint: string;
+    array_check_hint: (ordered: boolean, separator: string) => string;
   }
 >;

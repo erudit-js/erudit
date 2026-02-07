@@ -2,27 +2,29 @@ import { defineEruditProseAppElement } from '../../app/appElement.js';
 import { problemSchema } from './problem.js';
 import { problemsSchema, subProblemSchema } from './problems.js';
 
+const icon = () => import('./assets/icon.svg?raw');
+
 export default [
   defineEruditProseAppElement({
     schema: problemSchema,
     component: () => import('./components/Problem.vue'),
+    icon,
     languages: {
-      en: () => import('./languages/en.js'),
-      ru: () => import('./languages/ru.js'),
+      en: () => import('./languages/problem/en.js'),
+      ru: () => import('./languages/problem/ru.js'),
     },
-    icon: () => import('./assets/icon.svg?raw'),
-  }),
-  defineEruditProseAppElement({
-    schema: subProblemSchema,
-    component: () => import('./components/SubProblem.vue'),
   }),
   defineEruditProseAppElement({
     schema: problemsSchema,
     component: () => import('./components/Problems.vue'),
+    icon,
     languages: {
-      en: () => import('./languages/en.js'),
-      ru: () => import('./languages/ru.js'),
+      en: () => import('./languages/problems/en.js'),
+      ru: () => import('./languages/problems/ru.js'),
     },
-    icon: () => import('./assets/icon.svg?raw'),
+  }),
+  defineEruditProseAppElement({
+    schema: subProblemSchema,
+    component: () => import('./components/SubProblem.vue'),
   }),
 ];

@@ -1,7 +1,7 @@
 import type { ContentPointer } from '../content/pointer.js';
 
 export const proseLinkTypes = [
-  'direct',
+  'external',
   'contentItem',
   'unique',
   // 'anonymousUnique' TODO! Passing anonymous uniques directly to the <A> tag
@@ -19,8 +19,8 @@ interface BaseProseLink {
   type: ProseLinkType;
 }
 
-export interface DirectProseLink extends BaseProseLink {
-  type: 'direct';
+export interface ExternalProseLink extends BaseProseLink {
+  type: 'external';
   href: string;
 }
 
@@ -36,6 +36,6 @@ export interface UniqueProseLink extends BaseProseLink {
 }
 
 export type ProseLink =
-  | DirectProseLink
+  | ExternalProseLink
   | ContentItemProseLink
   | UniqueProseLink;

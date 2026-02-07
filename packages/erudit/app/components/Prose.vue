@@ -40,6 +40,7 @@ const context: ProseContext = {
   EruditLink,
   setPreview,
   closePreview,
+  usePopup,
   loadingSvg,
 };
 </script>

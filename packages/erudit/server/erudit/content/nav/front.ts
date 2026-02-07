@@ -46,12 +46,12 @@ async function createFrontContentNavItem(
       title: true,
       navTitle: true,
       flags: true,
-      hidden: true,
     },
     where: eq(ERUDIT.db.schema.content.fullId, navNode.fullId),
   }))!;
 
-  if (ERUDIT.config.public.mode === 'static' && dbContentItem.hidden) {
+  const hidden = await ERUDIT.repository.content.hidden(navNode.fullId);
+  if (hidden) {
     if (navNode.type === 'book') {
       if (isGlobal) {
         // We can hide book in global nav.

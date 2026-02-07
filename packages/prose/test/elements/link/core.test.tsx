@@ -28,12 +28,11 @@ import {
 } from '@erudit-js/core/prose/documentId';
 
 describe('Reference Links', () => {
-  it('should throw when unable to resolve "to" prop', () => {
+  it('should return unknown storage key when unable to resolve "to" prop', () => {
     isolateProse(() => {
       PROSE_REGISTRY.setItems(refRegistryItem);
-      expect(() =>
-        asEruditRaw(<Ref to={123 as any}>Invalid Link</Ref>),
-      ).toThrow();
+      const link = asEruditRaw(<Ref to={123 as any}>Invalid Link</Ref>);
+      expect(link.storageKey).toMatch(/^<link:unknown>\//);
     });
   });
 
@@ -48,7 +47,7 @@ describe('Reference Links', () => {
     isolateProse(() => {
       PROSE_REGISTRY.setItems(refRegistryItem);
       const link = asEruditRaw(<Ref to="https://example.com">Example</Ref>);
-      expect(link.storageKey).toBe('<link:direct>/https://example.com');
+      expect(link.storageKey).toBe('<link:external>/https://example.com');
     });
   });
 });
@@ -109,18 +108,24 @@ describe('Dependency Links', () => {
         </>
       ));
 
-      const { dependencies: links, proseElement } =
-        await resolveEruditRawElement({
-          context: {
-            language: 'en',
-            linkable: true,
-          },
-          rawElement: thisDocument.content,
-        });
+      const { contentLinks } = await resolveEruditRawElement({
+        context: {
+          language: 'en',
+          linkable: true,
+        },
+        rawElement: thisDocument.content,
+      });
 
-      expect(links.size).toBe(2);
-      expect(links).toEqual(
-        new Set<string>([
+      // Extract dependency storage keys from the Map
+      const dependencies = Array.from(contentLinks.entries())
+        .filter(([_, entries]) =>
+          entries.some((e) => e.type === 'Dep' || e.type === 'Dependency'),
+        )
+        .map(([key]) => key);
+
+      expect(dependencies.length).toBe(2);
+      expect(dependencies).toEqual(
+        expect.arrayContaining([
           // Link to unique
           '<link:global>/topic-456/page-789/$internalP',
 
@@ -128,6 +133,24 @@ describe('Dependency Links', () => {
           '<link:global>/topic-111/article-222/article/$externalP',
         ]),
       );
+
+      // Check labels are collected (full, not trimmed)
+      const internalLinks = contentLinks.get(
+        '<link:global>/topic-456/page-789/$internalP',
+      )!;
+      expect(internalLinks).toHaveLength(2); // Two <Dep> elements
+      expect(internalLinks[0].label).toBe('Dependency to Self Unique');
+      expect(internalLinks[1].label).toBe('Dependency to internal paragraph');
+
+      const externalLinks = contentLinks.get(
+        '<link:global>/topic-111/article-222/article/$externalP',
+      )!;
+      expect(externalLinks).toHaveLength(1);
+      expect(externalLinks[0].label).toBe('Dependency to External Unique');
+
+      // Check type differentiation
+      expect(internalLinks[0].type).toBe('Dep');
+      expect(externalLinks[0].type).toBe('Dependency');
     });
   });
 
@@ -181,7 +204,7 @@ describe('Dependency Links', () => {
         </>
       ));
 
-      const { proseElement, dependencies } = await resolveEruditRawElement({
+      const { proseElement, contentLinks } = await resolveEruditRawElement({
         context: {
           language: 'en',
           linkable: true,
@@ -195,10 +218,25 @@ describe('Dependency Links', () => {
         '<link:global>/topic-555/page-666/$internalP',
       );
 
-      expect(dependencies.size).toBe(1);
-      expect(dependencies).toEqual(
-        new Set<string>(['<link:global>/topic-555/page-666/$internalP']),
-      );
+      // Extract dependency storage keys from the Map
+      const dependencies = Array.from(contentLinks.entries())
+        .filter(([_, entries]) =>
+          entries.some((e) => e.type === 'Dep' || e.type === 'Dependency'),
+        )
+        .map(([key]) => key);
+
+      expect(dependencies.length).toBe(1);
+      expect(dependencies).toEqual([
+        '<link:global>/topic-555/page-666/$internalP',
+      ]);
+
+      // Check label is collected (full, not trimmed)
+      const links = contentLinks.get(
+        '<link:global>/topic-555/page-666/$internalP',
+      )!;
+      expect(links).toHaveLength(1);
+      expect(links[0].label).toBe('dependency');
+      expect(links[0].type).toBe('Dep');
     });
   });
 });

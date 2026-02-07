@@ -33,18 +33,6 @@ watch(asideMajorPane, (next, prev) => {
   direction.value = nextIdx > prevIdx ? 'forward' : 'backward';
 });
 
-const handleKeyDown = (event: KeyboardEvent) => {
-  if (event.shiftKey && event.code === 'KeyF') {
-    event.preventDefault();
-    asideMajorPane.value = AsideMajorPane.Search;
-    const styles = getComputedStyle(document.documentElement);
-    const aside1Bp = styles.getPropertyValue('--breakpoint-aside1');
-    if (window.matchMedia(`(max-width: ${aside1Bp})`).matches) {
-      asideState.value.opened = AsideType.Major;
-    }
-  }
-};
-
 onMounted(() => {
   if (route.query.q) {
     asideMajorPane.value = AsideMajorPane.Search;
@@ -54,12 +42,6 @@ onMounted(() => {
       asideState.value.opened = AsideType.Major;
     }
   }
-
-  window.addEventListener('keydown', handleKeyDown);
-});
-
-onUnmounted(() => {
-  window.removeEventListener('keydown', handleKeyDown);
 });
 
 // Prefetch pages data

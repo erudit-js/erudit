@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 const routePath = useRoutePath();
 
-const customLinks = ERUDIT.config.customLinks;
+const customLinks = ERUDIT.config.asideMajor?.customLinks;
 
 const { data: pagesData } =
   useNuxtData<AsideMajorPagesData>(asideMajorPagesKey);

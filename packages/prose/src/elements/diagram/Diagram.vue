@@ -245,16 +245,12 @@ async function renderDiagram() {
 
   /* Text color */
 
-  :global(.edgeLabel) {
-    *:not(.katex *):not(.katex) {
-      color: var(--color-text-muted) !important;
-    }
+  :global(.edgeLabel) * {
+    color: var(--color-text-muted) !important;
   }
 
-  :global(.nodeLabel) {
-    *:not(.katex *):not(.katex) {
-      color: var(--color-text) !important;
-    }
+  :global(.nodeLabel) * {
+    color: var(--color-text) !important;
   }
 
   /* Arrows */
@@ -328,7 +324,7 @@ async function renderDiagram() {
   /* "fill" node modificator */
 
   :global(.fill) {
-    *:not(.katex *):not(.katex) {
+    * {
       color: white !important;
     }
 
@@ -350,7 +346,7 @@ async function renderDiagram() {
         fill: color-mix(
           in hsl,
           var(--accentText) 70%,
-          var(--color-border)
+          var(--accentBackground)
         ) !important;
         stroke: transparent !important;
       }

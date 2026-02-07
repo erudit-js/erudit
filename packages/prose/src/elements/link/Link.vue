@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import { onMounted } from 'vue';
 import type { ProseElement } from '@jsprose/core';
 
 import type { depSchema } from './dependency/core.js';
@@ -27,7 +28,7 @@ const linkStorage = (await useElementStorage(element as any)) as LinkStorage;
 
 const icon = await (async () => {
   switch (linkStorage.type) {
-    case 'direct':
+    case 'external':
       return 'arrow/outward-box';
     case 'contentItem':
       return eruditIcons[
@@ -37,6 +38,8 @@ const icon = await (async () => {
       ];
     case 'unique':
       return await useElementIcon(linkStorage.schemaName);
+    case 'error':
+      return undefined;
   }
 })();
 
@@ -54,36 +57,60 @@ const doubleClick = {
 };
 
 function linkClick() {
-  if (doubleClick.timeout) {
+  if (doubleClick.timeout && linkStorage.type !== 'error') {
     doubleClick.reset();
     closePreview();
     const openUrl =
-      linkStorage.type === 'direct'
+      linkStorage.type === 'external'
         ? linkStorage.resolvedHref
         : baseUrl + linkStorage.resolvedHref.slice(1);
     window.open(openUrl, '_blank');
     return false;
   }
 
-  setPreview(linkStorage.previewRequest);
+  if (linkStorage.type === 'error') {
+    return false;
+  }
+  {
+    setPreview(linkStorage.previewRequest);
+  }
+
   doubleClick.startTimeout();
   return false;
 }
+
+onMounted(() => {
+  if (linkStorage.type === 'error') {
+    console.warn(
+      `Error in link element with id "${element.id}": ${linkStorage.error}`,
+    );
+  }
+});
 </script>
 
 <template>
   <Inliner :element>
     <EruditLink
       @click.capture.prevent="linkClick"
-      :to="linkStorage.resolvedHref"
+      :to="linkStorage.type === 'error' ? undefined : linkStorage.resolvedHref"
       :style="{ '--tGap': '1px', '--xGap': '4px', '--bGap': '4px' }"
-      class="text-brand hocus:bg-brand/15 relative -mx-[calc(var(--xGap)-3px)]
-        -mt-(--tGap) -mb-(--bGap) rounded-sm bg-transparent px-(--xGap)
-        pt-(--tGap) pb-(--bGap) whitespace-nowrap underline
-        decoration-[color-mix(in_srgb,var(--color-brand)30%,transparent)]
-        decoration-2 underline-offset-2 transition-[background]"
+      :class="[
+        `relative -mx-[calc(var(--xGap)-3px)] -mt-(--tGap) -mb-(--bGap)
+        rounded-sm bg-transparent px-(--xGap) pt-(--tGap) pb-(--bGap)
+        whitespace-nowrap underline decoration-2 underline-offset-2
+        transition-[background]`,
+        linkStorage.type === 'error'
+          ? `hocus:bg-red-400/20 cursor-not-allowed text-red-600
+            decoration-red-400/40 dark:text-red-400`
+          : `text-brand hocus:bg-brand/15
+            decoration-[color-mix(in_srgb,var(--color-brand)30%,transparent)]`,
+      ]"
     >
-      <EruditIcon :name="icon" class="micro:pr-1.5 inline pr-1 text-[1.3em]" />
+      <EruditIcon
+        v-if="icon"
+        :name="icon"
+        class="micro:pr-1.5 inline pr-1 text-[1.3em]"
+      />
       <span class="whitespace-normal">
         {{ formatText(element.data.label) }}
       </span>

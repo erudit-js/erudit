@@ -14,7 +14,7 @@ import { imageSrcStep } from './elements/image/core.js';
 import { videoSrcStep } from './elements/video/core.js';
 import { calloutIconSrcStep } from './elements/callout/core.js';
 import { problemScriptStep } from './elements/problem/step.js';
-import { dependencyStep } from './elements/link/dependency/core.js';
+import { contentLinkStep, type ContentLinks } from './elements/link/step.js';
 
 export async function resolveEruditRawElement(args: {
   context: EruditProseContext;
@@ -28,7 +28,7 @@ export async function resolveEruditRawElement(args: {
   const snippets: ResolvedSnippet[] = [];
   const tocItems: ResolvedTocItem[] = [];
   const headingStack: ResolvedTocItem[] = []; // Track heading hierarchy
-  const dependencies: Set<string> = new Set();
+  const contentLinks: ContentLinks = new Map();
   const files: Set<string> = new Set();
   const problemScripts: Set<string> = new Set();
   const uniqueTitles: Record<string, string> = {};
@@ -75,8 +75,11 @@ export async function resolveEruditRawElement(args: {
       }
     }
 
-    const resolvedDependency = dependencyStep(args);
-    if (resolvedDependency) dependencies.add(resolvedDependency);
+    const resolvedLink = contentLinkStep(args);
+    if (resolvedLink) {
+      const existing = contentLinks.get(resolvedLink.storageKey) || [];
+      contentLinks.set(resolvedLink.storageKey, [...existing, resolvedLink]);
+    }
 
     const imageSrc = imageSrcStep(args);
     if (imageSrc && !files.has(imageSrc)) files.add(imageSrc);
@@ -117,7 +120,7 @@ export async function resolveEruditRawElement(args: {
     ...baseResolveResult,
     snippets,
     tocItems,
-    dependencies,
+    contentLinks,
     files,
     problemScripts,
     uniqueTitles,
@@ -128,7 +131,7 @@ export interface ResolvedEruditRawElement {
   proseElement: ProseElement<AnySchema>;
   snippets: ResolvedSnippet[];
   tocItems: ResolvedTocItem[];
-  dependencies: Set<string>;
+  contentLinks: ContentLinks;
   files: Set<string>;
   problemScripts: Set<string>;
   uniqueTitles: Record<string, string>;

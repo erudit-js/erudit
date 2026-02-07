@@ -1,10 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import {
-  defineUnique,
-  isolateProse,
-  isProseElement,
-  isRawElement,
-} from '@jsprose/core';
+import { defineUnique, isolateProse, isRawElement } from '@jsprose/core';
 
 import { P } from '@erudit-js/prose/elements/paragraph/core';
 import {
@@ -12,11 +7,13 @@ import {
   insertProblemScriptId,
 } from '@erudit-js/prose/elements/problem/problemScript';
 import {
-  ProblemCheck,
-  problemCheckSchema,
   ProblemDescription,
   problemDescriptionSchema,
 } from '@erudit-js/prose/elements/problem/problemContent';
+import {
+  ProblemCheck,
+  problemCheckSchema,
+} from '@erudit-js/prose/elements/problem/problemCheck';
 
 import { prepareRegistry } from './problemContent.test';
 

@@ -6,32 +6,10 @@ const asideType = inject(asideTypeSymbol);
 const isMajor = computed(() => asideType === AsideType.Major);
 const isMinor = computed(() => asideType === AsideType.Minor);
 
-if (import.meta.client) {
-  callOnce(async () => {
-    // Wait for possible layout shifts triggering scroll events
-    await new Promise((resolve) => setTimeout(resolve, 100));
-
-    let lastY = window.scrollY;
-    let sumDelta = 0;
-    let scrollTimeout: any;
-
-    window.addEventListener('scroll', () => {
-      const currentY = window.scrollY;
-      const delta = currentY - lastY;
-
-      sumDelta += delta;
-
-      asideState.value.scrolledUp = sumDelta <= 5;
-
-      lastY = currentY;
-
-      clearTimeout(scrollTimeout);
-      scrollTimeout = setTimeout(() => {
-        sumDelta = 0;
-      }, 200);
-    });
-  });
-}
+const scrollUp = useScrollUp();
+watch(scrollUp, () => {
+  asideState.value.scrolledUp = scrollUp.value;
+});
 </script>
 
 <template>

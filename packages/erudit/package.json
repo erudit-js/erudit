@@ -1,14 +1,13 @@
 {
   "name": "erudit",
-  "version": "4.0.1",
+  "version": "4.1.0",
   "type": "module",
   "description": "🤓 CMS for perfect educational sites.",
   "license": "MIT",
   "main": "./nuxt.config.ts",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/erudit-js/erudit.git",
-    "directory": "packages/erudit"
+    "url": "git+https://github.com/erudit-js/erudit.git"
   },
   "bin": {
     "erudit": "bin/erudit.js"

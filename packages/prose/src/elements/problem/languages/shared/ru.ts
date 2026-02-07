@@ -1,8 +1,8 @@
-import { defineElementLanguage } from '../../../app/language/element.js';
-import type { ProblemPhrases } from '../phrases.js';
+import { defineElementLanguage } from '../../../../app/language/element.js';
+import type { ProblemPhrases } from '../../phrases.js';
 
 export default defineElementLanguage<ProblemPhrases>({
-  element_name: 'Задача',
+  element_name: '',
   'level.example': 'Пример',
   'level.easy': 'Ликбез',
   'level.medium': 'Нормальный',
@@ -26,4 +26,14 @@ export default defineElementLanguage<ProblemPhrases>({
   action_generate: 'Аналог',
   seed_explain:
     'Зерно, от которого высчитываются все случайные величины в задаче. Одинаковые зерна = полностью идентичные задачи.',
+  yes_regexp: /^\s*(да|1)\s*$/i,
+  no_regexp: /^\s*(нет|0)\s*$/i,
+  boolean_check_hint: 'Да/Нет',
+  array_check_hint: (ordered, separator) => {
+    let hint = '';
+    hint +=
+      separator === ',' ? 'Через запятую.' : `Разделитель "${separator}".`;
+    hint += ordered ? ' Порядок важен.' : ' В любом порядке.';
+    return hint;
+  },
 });

@@ -109,9 +109,9 @@ await usePhrases(
     ref="preview"
     :class="[
       `fixed-main bg-bg-main micro:max-h-[70dvh] border-border
-      pointer-events-auto bottom-0 z-100 max-h-[90dvh] touch-auto
-      overflow-hidden rounded-[25px] rounded-b-none border-t
-      transition-[max-height,height,translate,box-shadow]`,
+      pointer-events-auto bottom-0 z-5 max-h-[90dvh] touch-auto overflow-hidden
+      rounded-[25px] rounded-b-none border-t
+      transition-[max-height,height,translate,box-shadow,left,width]`,
       previewState.opened
         ? `translate-y-0
           shadow-[0px_-10px_15px_5px_light-dark(rgba(0,0,0,0.1),rgba(255,255,255,0.05))]`

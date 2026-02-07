@@ -37,6 +37,7 @@ import {
 } from './contributors/repository/contributions';
 import { getContentSeo } from './content/repository/seo';
 import { getContentElementSnippets } from './content/repository/elementSnippets';
+import { isContentHidden } from './content/repository/hidden';
 
 export const repository = {
   db: {
@@ -58,6 +59,7 @@ export const repository = {
     avatarUrl: getSponsorAvatarUrl,
   },
   content: {
+    hidden: isContentHidden,
     topicParts: getTopicParts,
     defaultTopicPart: getDefaultTopicPart,
     unique: getContentUnique,

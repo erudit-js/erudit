@@ -18,7 +18,6 @@ import {
   problemAnswer,
   problemSolution,
   problemNote,
-  problemCheckRegistryItem,
   ProblemDescription,
   problemDescriptionSchema,
   ProblemHint,
@@ -26,11 +25,12 @@ import {
   ProblemSection,
   problemSectionRegistryItem,
   problemSectionSchema,
-  ProblemCheck,
-  problemCheckSchema,
   validateProblemContent,
-  checkValue,
 } from '@erudit-js/prose/elements/problem/problemContent';
+import {
+  ProblemCheck,
+  problemCheckRegistryItem,
+} from '@erudit-js/prose/elements/problem/problemCheck';
 
 export const prepareRegistry = () =>
   PROSE_REGISTRY.setItems(
@@ -130,244 +130,6 @@ describe('Problem Section Container: Answer/Solution/Note', () => {
         true,
       );
       expect(answer.children![1].data).toBe('answer section 1');
-    });
-  });
-});
-
-describe('Problem Check', () => {
-  it('should create problem check correctly', () => {
-    isolateProse(() => {
-      prepareRegistry();
-
-      const singleAnswerCheck = asEruditRaw(<ProblemCheck answer="foo" />);
-      expect(isRawElement(singleAnswerCheck, problemCheckSchema)).toBe(true);
-      expect(singleAnswerCheck.data.answers).toEqual(['foo']);
-
-      const multipleAnswersCheck = asEruditRaw(
-        <ProblemCheck answers={['foo', 3, 'baz']} />,
-      );
-      expect(multipleAnswersCheck.data.answers).toEqual(['foo', '3', 'baz']);
-
-      const regexAnswerCheck = asEruditRaw(<ProblemCheck answer={/yes|no/i} />);
-      expect(regexAnswerCheck.data.answers).toEqual([
-        { pattern: 'yes|no', flags: 'i' },
-      ]);
-
-      const scriptCheck = asEruditRaw(<ProblemCheck script="check1" />);
-      expect(scriptCheck.data.script).toBe('check1');
-
-      const undefinedAnswerCheck = asEruditRaw(
-        <ProblemCheck answer={undefined} />,
-      );
-      expect(undefinedAnswerCheck.data.answers).toEqual([undefined]);
-
-      const multipleWithUndefinedCheck = asEruditRaw(
-        <ProblemCheck answers={['foo', undefined, 42]} />,
-      );
-      expect(multipleWithUndefinedCheck.data.answers).toEqual([
-        'foo',
-        undefined,
-        '42',
-      ]);
-    });
-  });
-
-  it('should allow nested checks', () => {
-    isolateProse(() => {
-      prepareRegistry();
-
-      const nestedCheck = asEruditRaw(
-        <ProblemCheck answer="foo">
-          <ProblemCheck answer="bar" />
-        </ProblemCheck>,
-      );
-
-      expect(isRawElement(nestedCheck, problemCheckSchema)).toBe(true);
-      expect(nestedCheck.children).toHaveLength(1);
-      expect(isRawElement(nestedCheck.children![0], problemCheckSchema)).toBe(
-        true,
-      );
-    });
-  });
-});
-
-describe('checkValue', () => {
-  describe('single and multiple answers', () => {
-    const cases = [
-      { input: 'foo', answers: ['foo'], expected: true },
-      { input: 'bar', answers: ['foo'], expected: false },
-      { input: undefined, answers: ['foo'], expected: false },
-
-      { input: 'foo', answers: ['foo', 'bar'], expected: true },
-      { input: 'bar', answers: ['foo', 'bar'], expected: true },
-      { input: 'baz', answers: ['foo', 'bar'], expected: false },
-    ];
-
-    it.each(cases)(
-      'checks input $input against answers $answers',
-      ({ input, answers, expected }) => {
-        expect(checkValue(input, { answers })).toBe(expected);
-      },
-    );
-  });
-
-  describe('undefined and empty normalization', () => {
-    const cases = [
-      { input: undefined, answers: [undefined], expected: true },
-      { input: '', answers: [undefined], expected: true },
-      { input: '   ', answers: [undefined], expected: true },
-      { input: 'foo', answers: [undefined], expected: false },
-    ];
-
-    it.each(cases)(
-      'checks input $input against answers $answers',
-      ({ input, answers, expected }) => {
-        expect(checkValue(input, { answers })).toBe(expected);
-      },
-    );
-
-    it('normalizes internal whitespace', () => {
-      expect(checkValue('hello    world', { answers: ['hello world'] })).toBe(
-        true,
-      );
-    });
-  });
-
-  describe('regex answers', () => {
-    it('matches regex patterns', () => {
-      expect(
-        checkValue('123', {
-          answers: [{ pattern: '^[0-9]+$', flags: '' }],
-        }),
-      ).toBe(true);
-
-      expect(
-        checkValue('abc', {
-          answers: [{ pattern: '^[0-9]+$', flags: '' }],
-        }),
-      ).toBe(false);
-    });
-
-    it('supports regex flags', () => {
-      expect(
-        checkValue('FoO', {
-          answers: [{ pattern: 'foo', flags: 'i' }],
-        }),
-      ).toBe(true);
-    });
-
-    it('does not match undefined or empty input', () => {
-      const data = {
-        answers: [{ pattern: '.*', flags: '' }],
-      };
-
-      expect(checkValue(undefined, data)).toBe(false);
-      expect(checkValue('', data)).toBe(false);
-      expect(checkValue('foo', data)).toBe(true);
-    });
-
-    it('fails safely on invalid regex', () => {
-      expect(
-        checkValue('test', {
-          answers: [{ pattern: '[', flags: '' }],
-        }),
-      ).toBe(false);
-    });
-  });
-
-  describe('set matching', () => {
-    it('matches unordered sets', () => {
-      const data = {
-        set: {
-          separator: ',',
-          values: [['1'], ['2']],
-        },
-      };
-
-      expect(checkValue('1, 2', data)).toBe(true);
-      expect(checkValue('2, 1', data)).toBe(true);
-    });
-
-    it('rejects mismatched length or values', () => {
-      const data = {
-        set: {
-          separator: ',',
-          values: [['1'], ['2']],
-        },
-      };
-
-      expect(checkValue('1, 1', data)).toBe(false);
-      expect(checkValue('1, 3', data)).toBe(false);
-      expect(checkValue('1, 2, 3', data)).toBe(false);
-    });
-
-    it('supports duplicate values when explicitly defined', () => {
-      const data = {
-        set: {
-          separator: ',',
-          values: [['1'], ['1'], ['2']],
-        },
-      };
-
-      expect(checkValue('1, 2, 1', data)).toBe(true);
-      expect(checkValue('1, 1', data)).toBe(false);
-    });
-
-    it('supports alternatives per position', () => {
-      const data = {
-        set: {
-          separator: ',',
-          values: [['1'], ['2', '3']],
-        },
-      };
-
-      expect(checkValue('1, 2', data)).toBe(true);
-      expect(checkValue('1, 3', data)).toBe(true);
-      expect(checkValue('3, 1', data)).toBe(true);
-      expect(checkValue('2, 2', data)).toBe(false);
-    });
-
-    it('supports regex values', () => {
-      const data = {
-        set: {
-          separator: ',',
-          values: [['1'], [{ pattern: '^[a-z]+$', flags: '' }]],
-        },
-      };
-
-      expect(checkValue('1, abc', data)).toBe(true);
-      expect(checkValue('xyz, 1', data)).toBe(true);
-      expect(checkValue('1, 123', data)).toBe(false);
-    });
-
-    it('rejects undefined or empty input', () => {
-      const data = {
-        set: {
-          separator: ',',
-          values: [['1'], ['2']],
-        },
-      };
-
-      expect(checkValue(undefined, data)).toBe(false);
-      expect(checkValue('', data)).toBe(false);
-      expect(checkValue('   ', data)).toBe(false);
-    });
-
-    it('normalizes spacing around separators', () => {
-      const data = {
-        set: {
-          separator: ',',
-          values: [['1'], ['2']],
-        },
-      };
-
-      expect(checkValue(' 1 ,  2 ', data)).toBe(true);
-    });
-  });
-
-  describe('numeric strings', () => {
-    it.each(['42', '42.5', '0'])('accepts %s', (value) => {
-      expect(checkValue(value, { answers: [value] })).toBe(true);
     });
   });
 });

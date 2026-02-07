@@ -1,4 +1,4 @@
-import { isUnique, ProseError } from '@jsprose/core';
+import { isUnique } from '@jsprose/core';
 import type { TopicPart } from '@erudit-js/core/content/topic';
 import type { ContentType } from '@erudit-js/core/content/type';
 import type { PreviewRequest } from '@erudit-js/core/preview/request';
@@ -10,7 +10,7 @@ import {
 
 import type { LinkToProp } from './core.js';
 
-export type LinkStorageType = 'direct' | 'contentItem' | 'unique';
+export type LinkStorageType = 'external' | 'contentItem' | 'unique';
 
 interface LinkStorageBase {
   type: LinkStorageType;
@@ -30,8 +30,8 @@ export type LinkStorageContent = {
     }
 );
 
-export interface DirectLinkStorage extends LinkStorageBase {
-  type: 'direct';
+export interface ExternalLinkStorage extends LinkStorageBase {
+  type: 'external';
 }
 
 export interface ContentItemLinkStorage extends LinkStorageBase {
@@ -46,12 +46,18 @@ export interface UniqueLinkStorage extends LinkStorageBase {
   content: LinkStorageContent;
 }
 
-export type LinkStorage =
-  | DirectLinkStorage
-  | ContentItemLinkStorage
-  | UniqueLinkStorage;
+export interface ErrorLinkStorage {
+  type: 'error';
+  error: string;
+}
 
-export function createLinkStorageKey(to: LinkToProp, tagName: string): string {
+export type LinkStorage =
+  | ExternalLinkStorage
+  | ContentItemLinkStorage
+  | UniqueLinkStorage
+  | ErrorLinkStorage;
+
+export function createLinkStorageKey(to: LinkToProp): string {
   if (isUnique(to)) {
     const documentId = parseDocumentId(to.documentId);
 
@@ -67,8 +73,8 @@ export function createLinkStorageKey(to: LinkToProp, tagName: string): string {
   }
 
   if (typeof to === 'string') {
-    return `<link:direct>/${to}`;
+    return `<link:external>/${to}`;
   }
 
-  throw new ProseError(`<${tagName}> is unable to resolve "to" prop value!`);
+  return `<link:unknown>/${JSON.stringify(to)}`;
 }

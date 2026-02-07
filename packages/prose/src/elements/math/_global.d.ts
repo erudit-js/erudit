@@ -43,6 +43,9 @@ export const M = '_tag_';
  *
  * Use `freeze` prop to prevent line breaks in the rendered math (scrollbars will appear if the content overflows).
  *
+ * You can also create flexible "breaking" gaps between expressions using `>>`, `>>{0|small|big|100px}` delimiters.
+ * Also you can specify the vertical aligment of such gaps using `>>{top|center|bottom}`.
+ *
  * @title Block Math
  * @layout block
  * @example
@@ -53,6 +56,10 @@ export const M = '_tag_';
  *
  * <BlockMath freeze>{math`
  *   \lim\limits_{x \to \infty} \frac{1}{x} = 0
+ * `}</BlockMath>
+ *
+ * <BlockMath>{math`
+ *   a^2 >> b^2 >>{big} c^2 >>{top} \sqrt{a^2 + b^2} >>{small}{bottom} \frac{a^2 + b^2}{c^2}
  * `}</BlockMath>
  * ```
  */

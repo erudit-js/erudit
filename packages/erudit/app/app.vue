@@ -1,7 +1,9 @@
 <script lang="ts" setup>
 initFavicon();
 initOgImage();
+initOgSiteName();
 initAnalytics();
+initScrollUpWatcher();
 
 // Watching and setting theme
 initThemeWatcher();

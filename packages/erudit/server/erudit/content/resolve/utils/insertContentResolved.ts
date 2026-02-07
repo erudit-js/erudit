@@ -1,7 +1,12 @@
+import chalk from 'chalk';
+import { sql } from 'drizzle-orm';
 import { type ResolvedRawElement } from '@jsprose/core';
 import type { ContentProseType } from '@erudit-js/core/content/prose';
 import type { ResolvedEruditRawElement } from '@erudit-js/prose';
-import { sql } from 'drizzle-orm';
+import type {
+  ContentLinks,
+  ContentLinkUsage,
+} from '@erudit-js/prose/elements/link/step';
 
 export async function insertContentResolved(
   contentFullId: string,
@@ -48,24 +53,20 @@ export async function insertContentResolved(
     await ERUDIT.repository.db.pushProblemScript(problemScript, contentFullId);
   }
 
-  const fromFullIds = new Set(
-    Array.from(resolveResult.dependencies)
-      .map((dependency) => {
-        if (dependency.startsWith('<link:')) {
-          const navNode = globalContentToNavNode(
-            dependency.replace(/^<link:.+>\//, ''),
-          );
-          return navNode.fullId;
-        }
-      })
-      .filter((id): id is string => id !== undefined),
+  const targetFullIds = filterTargetFullIds(
+    contentFullId,
+    resolveResult.contentLinks,
   );
 
-  const contentDeps = Array.from(fromFullIds)
-    .filter((fromFullId) => fromFullId !== contentFullId)
-    .map((fromFullId) => ({
+  await insertContentDeps(contentFullId, Array.from(targetFullIds));
+}
+
+async function insertContentDeps(fromFullId: string, toFullIds: string[]) {
+  const contentDeps = toFullIds
+    .filter((toFullId) => toFullId !== fromFullId)
+    .map((toFullId) => ({
       fromFullId,
-      toFullId: contentFullId,
+      toFullId,
       hard: false,
     }));
 
@@ -75,6 +76,46 @@ export async function insertContentResolved(
       .values(contentDeps)
       .onConflictDoNothing();
   }
+}
+
+function filterTargetFullIds(
+  contentFullId: string,
+  contentLinks: ContentLinks,
+) {
+  const brokenLinkMessage = (message: string, metas: ContentLinkUsage[]) => {
+    let output = `${message} in ${ERUDIT.log.stress(contentFullId)}:\n`;
+    for (const { type, label } of metas) {
+      output += `  ${chalk.gray('➔')}  <${type}>${label}</${type}>\n`;
+    }
+    return output;
+  };
+
+  const targetFullIds = new Set<string>();
+
+  for (const [storageKey, metas] of contentLinks) {
+    if (storageKey.startsWith('<link:unknown>/')) {
+      ERUDIT.log.warn(
+        brokenLinkMessage(
+          `Unknown link ${chalk.red(storageKey.replace('<link:unknown>/', ''))}`,
+          metas,
+        ),
+      );
+    } else if (storageKey.startsWith('<link:global>')) {
+      try {
+        const globalContentId = storageKey.replace('<link:global>/', '');
+        targetFullIds.add(globalContentToNavNode(globalContentId).fullId);
+      } catch {
+        ERUDIT.log.warn(
+          brokenLinkMessage(
+            `Failed to resolve content link ${chalk.red(storageKey.replace('<link:global>/', ''))}`,
+            metas,
+          ),
+        );
+      }
+    }
+  }
+
+  return targetFullIds;
 }
 
 function globalContentToNavNode(globalContentPath: string) {

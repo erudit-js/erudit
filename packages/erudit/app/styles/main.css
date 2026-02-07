@@ -86,6 +86,13 @@
 
 @layer base {
   :root {
+    /* --currentMainWidth */
+    @apply aside1:[--currentMainWidth:calc(100%-var(--w-aside))] aside2:[--currentMainWidth:min(calc(100%-2*var(--w-aside)),var(--w-max-main))] [--currentMainWidth:100%];
+    /* --currentMainLeft */
+    @apply aside1:[--currentMainLeft:var(--w-aside)] aside2:[--currentMainLeft:max(var(--w-aside),calc(50%-var(--currentMainWidth)/2))] [--currentMainLeft:0];
+  }
+
+  :root {
     background: var(--color-bg-root);
     color: var(--color-text);
     font-size: 18px;
@@ -172,5 +179,5 @@
 }
 
 @utility fixed-main {
-  @apply aside1:w-[calc(100%-var(--w-aside))] aside2:w-[min(var(--w-max-main),calc(100%-2*var(--w-aside)))] fixed w-full;
+  @apply fixed left-(--currentMainLeft) w-(--currentMainWidth);
 }

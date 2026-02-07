@@ -119,7 +119,7 @@ async function searchResultClick() {
           {{ formatText(secondaryTitle) }}
         </div>
         <div class="gap-small text-text flex items-center">
-          <div class="relative size-[1.2em]">
+          <div class="relative size-[1.2em] shrink-0">
             <TransitionFade>
               <MaybeMyIcon
                 :name="icon"
