@@ -32,11 +32,10 @@ export default defineElementLanguage<ProblemPhrases>({
   no_regexp: /^\s*(no|n|false|0)\s*$/i,
   boolean_check_hint: 'Yes/No',
   array_check_hint: (ordered, separator) => {
-    let hint =
+    let hint = '';
+    hint +=
       separator === ',' ? 'Comma separated.' : `Separator "${separator}".`;
-    if (ordered) {
-      hint += ' Order matters.';
-    }
+    hint += ordered ? ' Order matters.' : ' In any order.';
     return hint;
   },
 });

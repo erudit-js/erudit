@@ -86,6 +86,18 @@ const hint = computed(() => {
   }
 });
 
+const labelText = computed(() => {
+  const rawLabel = formatText(check.data.label ?? phrase.action_answer);
+  const trimmed = rawLabel.trimEnd();
+
+  if (!trimmed) {
+    return '';
+  }
+
+  const endsWithAlphaNum = /[\p{L}\p{N}]$/u.test(trimmed);
+  return endsWithAlphaNum ? `${trimmed}:` : trimmed;
+});
+
 const answerInputElement = useTemplateRef<HTMLInputElement>('answer');
 const answerInput = ref('');
 const lastCheckedInput = ref<string | undefined | null>(null);
@@ -98,8 +110,6 @@ watch(answerInput, () => {
 });
 
 function doCheck() {
-  console.log(script);
-
   const newInput = answerInput.value.replace(/\s+/g, ' ').trim();
 
   if (newInput === lastCheckedInput.value) {
@@ -137,7 +147,7 @@ function doCheck() {
       ]"
     >
       <span @click="answerInputElement?.focus()">
-        {{ formatText(check.data.label ?? phrase.action_answer) + ':' }}
+        {{ labelText }}
       </span>
     </div>
 

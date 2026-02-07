@@ -167,7 +167,7 @@ export const ProblemNote = '_tag_';
  *   - `string` -> exact string match
  *   - `RegExp` -> `test()` match
  *   - `undefined` -> expects an empty answer
- * - `answers`: multi-part answer (split by `separator`, default `,`).
+ * - `answers`: multi-part answer (split by `separator`, default `,`, unordered by default).
  *   - Use `{ ordered, separator, values }` to configure matching.
  *   - Each position in `values` can be a single expected value or an array of expected values (any-of).
  * - `script`: named script validator.
