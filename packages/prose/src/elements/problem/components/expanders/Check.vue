@@ -149,9 +149,10 @@ function doCheck() {
         autocomplete="off"
         :placeholder="check.data.placeholder"
         :class="[
-          `bg-bg-main text-main-sm relative z-10 min-w-0 flex-1 rounded
-          rounded-tr-none rounded-br-none border border-r-0 px-2.5 py-1
-          transition-[border,color,background]`,
+          `bg-bg-main text-main-sm focus:ring-brand relative z-10 min-w-0 flex-1
+          rounded rounded-tr-none rounded-br-none border border-r-0 px-2.5 py-1
+          ring-2 ring-transparent outline-0
+          transition-[border,color,background,box-shadow]`,
           states[state].inputClass,
         ]"
       />
