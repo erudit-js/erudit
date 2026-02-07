@@ -115,7 +115,7 @@ onMounted(() => {
       :class="[
         `group hocus:bg-(--linkColor)/10 hocus:border-(--linkColor)/40 relative
         block rounded-xl border-2 border-dashed border-(--linkColor)/20
-        bg-(--linkColor)/5 p-(--proseAsideWidth) transition-[border,background]`,
+        bg-(--linkColor)/5 transition-[border,background]`,
         linkStorage.type === 'error'
           ? `cursor-not-allowed [--linkColor:var(--color-red-500)]
             dark:[--linkColor:var(--color-red-400)]`
@@ -124,30 +124,35 @@ onMounted(() => {
     >
       <EruditIcon
         name="arrow/outward"
-        class="group-hocus:text-(--linkColor)/20 top-small right-small absolute
-          shrink-0 text-[60px] text-(--linkColor)/15"
+        class="group-hocus:text-(--linkColor)/20 p-small right-small float-right
+          shrink-0 text-[80px] text-(--linkColor)/15"
       />
-      <div
-        class="group-hocus:text-(--linkColor) mb-small gap-small font-medium
-          text-(--linkColor)/80 transition-[color]"
-      >
-        <EruditIcon
-          v-if="uiData.header.icon"
-          :name="uiData.header.icon"
-          class="mr-small relative top-0.5 inline align-baseline text-[1.1em]"
-        />
-        <span>{{ formatText(uiData.header.text) }}</span>
-      </div>
-      <div class="text-text-muted">
-        {{ formatText(uiData.main) }}
-      </div>
-      <div v-if="uiData.footer" class="text-text-dimmed mt-small text-main-xs">
-        <EruditIcon
-          v-if="uiData.footer.icon"
-          :name="uiData.footer.icon"
-          class="mr-small relative top-0.5 inline align-baseline"
-        />
-        <span>{{ formatText(uiData.footer.text) }}</span>
+      <div class="p-(--proseAsideWidth)">
+        <div
+          class="group-hocus:text-(--linkColor) mb-small gap-small font-medium
+            text-(--linkColor)/80 transition-[color]"
+        >
+          <EruditIcon
+            v-if="uiData.header.icon"
+            :name="uiData.header.icon"
+            class="mr-small relative top-0.5 inline align-baseline text-[1.1em]"
+          />
+          <span>{{ formatText(uiData.header.text) }}</span>
+        </div>
+        <div class="text-text-muted">
+          {{ formatText(uiData.main) }}
+        </div>
+        <div
+          v-if="uiData.footer"
+          class="text-text-dimmed mt-small text-main-xs"
+        >
+          <EruditIcon
+            v-if="uiData.footer.icon"
+            :name="uiData.footer.icon"
+            class="mr-small relative top-0.5 inline align-baseline"
+          />
+          <span>{{ formatText(uiData.footer.text) }}</span>
+        </div>
       </div>
     </EruditLink>
   </Block>
