@@ -3,6 +3,7 @@ initFavicon();
 initOgImage();
 initOgSiteName();
 initAnalytics();
+initScrollUpWatcher();
 
 // Watching and setting theme
 initThemeWatcher();

@@ -1,3 +1,5 @@
+import type { PreviewRequest } from '@erudit-js/core/preview/request';
+
 export const usePreview = () => {
   const previewState = useState<PreviewState>('preview', () => ({
     opened: false,

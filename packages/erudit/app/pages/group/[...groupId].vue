@@ -51,6 +51,7 @@ await useContentSeo({
       :link="mainContent.children[0].link"
     />
     <div class="h-main-half"></div>
+    <MainStickyHeader :mainContent />
   </MainSectionPreamble>
   <MainContentChildren :children="mainContent.children" />
   <MainSection>
