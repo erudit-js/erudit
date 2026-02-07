@@ -26,6 +26,10 @@ export function usePopup(
     if (showTimeout.value) {
       clearTimeout(showTimeout.value);
     }
+
+    disableScrollBreaker();
+    disableContextMenuBreaker();
+    disableOutsideTouchCloser();
     popupVisible.value = false;
   }
 
@@ -65,6 +69,32 @@ export function usePopup(
     removeEventListener('resize', scrollBreaker);
   }
 
+  const outsideTouchCloser = (e: TouchEvent) => {
+    if (!popupVisible.value) {
+      return;
+    }
+
+    const container = containerElement.value;
+    if (!container) {
+      return;
+    }
+
+    const target = e.target as Node | null;
+    if (target && container.contains(target)) {
+      return;
+    }
+
+    hidePopup();
+  };
+
+  function enableOutsideTouchCloser() {
+    addEventListener('touchstart', outsideTouchCloser, true);
+  }
+
+  function disableOutsideTouchCloser() {
+    removeEventListener('touchstart', outsideTouchCloser, true);
+  }
+
   onMounted(() => {
     if (containerElement.value) {
       containerElement.value.addEventListener('mouseenter', showPopup);
@@ -75,13 +105,12 @@ export function usePopup(
       toggleElement.value.addEventListener('touchstart', (e) => {
         if (popupVisible.value) {
           // Want to hide
-          disableScrollBreaker();
-          disableContextMenuBreaker();
           hidePopup();
         } else {
           // Want to show
           enableScrollBreaker();
           enableContextMenuBreaker();
+          enableOutsideTouchCloser();
           showPopup();
         }
       });
@@ -98,6 +127,8 @@ export function usePopup(
     if (showTimeout.value) {
       clearTimeout(showTimeout.value);
     }
+
+    disableOutsideTouchCloser();
   });
 
   return {
