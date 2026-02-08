@@ -232,7 +232,12 @@ export async function clearOldContentData(contentIds: string[]) {
 
   await ERUDIT.db
     .delete(ERUDIT.db.schema.contentDeps)
-    .where(inArray(ERUDIT.db.schema.contentDeps.toFullId, contentIds));
+    .where(
+      or(
+        inArray(ERUDIT.db.schema.contentDeps.toFullId, contentIds),
+        inArray(ERUDIT.db.schema.contentDeps.fromFullId, contentIds),
+      ),
+    );
 
   await ERUDIT.db
     .delete(ERUDIT.db.schema.contentElementStats)

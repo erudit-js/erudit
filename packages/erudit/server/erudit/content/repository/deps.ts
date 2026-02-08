@@ -4,11 +4,11 @@ export async function getContentDependencies(fullId: string) {
   const hardDependencies: ContentHardDep[] = [];
 
   const dbHardDependencies = await ERUDIT.db.query.contentDeps.findMany({
-    columns: { fromFullId: true, hard: true, reason: true },
+    columns: { toFullId: true, hard: true, reason: true },
     where: and(
       or(
-        eq(ERUDIT.db.schema.contentDeps.toFullId, fullId),
-        like(ERUDIT.db.schema.contentDeps.toFullId, `${fullId}/%`),
+        eq(ERUDIT.db.schema.contentDeps.fromFullId, fullId),
+        like(ERUDIT.db.schema.contentDeps.fromFullId, `${fullId}/%`),
       ),
       eq(ERUDIT.db.schema.contentDeps.hard, true),
     ),
@@ -16,18 +16,18 @@ export async function getContentDependencies(fullId: string) {
 
   const fullId2Reason = dbHardDependencies.reduce((map, dbDependency) => {
     if (dbDependency.reason) {
-      map.set(dbDependency.fromFullId, dbDependency.reason);
+      map.set(dbDependency.toFullId, dbDependency.reason);
     }
     return map;
   }, new Map<string, string>());
 
-  const hardFromFullIds = ERUDIT.contentNav.orderIds(
-    externalFromFullIds(dbHardDependencies),
+  const hardToFullIds = ERUDIT.contentNav.orderIds(
+    externalToFullIds(dbHardDependencies),
   );
 
-  for (const fromFullId of hardFromFullIds) {
-    const reason = fullId2Reason.get(fromFullId)!;
-    const hardDep = await createContentDep('hard', fromFullId, reason);
+  for (const toFullId of hardToFullIds) {
+    const reason = fullId2Reason.get(toFullId)!;
+    const hardDep = await createContentDep('hard', toFullId, reason);
     if (hardDep) {
       hardDependencies.push(hardDep);
     }
@@ -40,23 +40,23 @@ export async function getContentDependencies(fullId: string) {
   const autoDependencies: ContentAutoDep[] = [];
 
   const dbAutoDependencies = await ERUDIT.db.query.contentDeps.findMany({
-    columns: { fromFullId: true, hard: true },
+    columns: { toFullId: true, hard: true },
     where: and(
       or(
-        eq(ERUDIT.db.schema.contentDeps.toFullId, fullId),
-        like(ERUDIT.db.schema.contentDeps.toFullId, `${fullId}/%`),
+        eq(ERUDIT.db.schema.contentDeps.fromFullId, fullId),
+        like(ERUDIT.db.schema.contentDeps.fromFullId, `${fullId}/%`),
       ),
       eq(ERUDIT.db.schema.contentDeps.hard, false),
     ),
   });
 
   // Skip auto-dependency if a hard dependency from the same source exists
-  const autoFromFullIds = ERUDIT.contentNav
-    .orderIds(externalFromFullIds(dbAutoDependencies))
-    .filter((fromFullId) => !fullId2Reason.has(fromFullId));
+  const autoToFullIds = ERUDIT.contentNav
+    .orderIds(externalToFullIds(dbAutoDependencies))
+    .filter((toFullId) => !fullId2Reason.has(toFullId));
 
-  for (const fromFullId of autoFromFullIds) {
-    const autoDep = await createContentDep('auto', fromFullId);
+  for (const toFullId of autoToFullIds) {
+    const autoDep = await createContentDep('auto', toFullId);
     if (autoDep) {
       autoDependencies.push(autoDep);
     }
@@ -72,17 +72,17 @@ export async function getContentDependencies(fullId: string) {
   //
 
   // Skip dependency if it originates from current content item or its child
-  function externalFromFullIds(dbDeps: { fromFullId: string }[]) {
+  function externalToFullIds(dbDeps: { toFullId: string }[]) {
     return dbDeps.reduce((ids, dbDep) => {
-      const fromFullId = dbDep.fromFullId;
-      const isFromSelf = fromFullId === fullId;
-      const isFromChild = fromFullId.startsWith(`${fullId}/`);
+      const toFullId = dbDep.toFullId;
+      const isToSelf = toFullId === fullId;
+      const isToChild = toFullId.startsWith(`${fullId}/`);
 
-      if (isFromSelf || isFromChild) {
+      if (isToSelf || isToChild) {
         return ids;
       }
 
-      ids.push(fromFullId);
+      ids.push(toFullId);
       return ids;
     }, [] as string[]);
   }
@@ -94,30 +94,30 @@ export async function getContentDependents(
   const dbDependents = await ERUDIT.db.query.contentDeps.findMany({
     columns: { fromFullId: true, toFullId: true },
     where: or(
-      eq(ERUDIT.db.schema.contentDeps.fromFullId, fullId),
-      like(ERUDIT.db.schema.contentDeps.fromFullId, `${fullId}/%`),
+      eq(ERUDIT.db.schema.contentDeps.toFullId, fullId),
+      like(ERUDIT.db.schema.contentDeps.toFullId, `${fullId}/%`),
     ),
   });
 
-  // Skip dependent if it targets current content item or its child
-  const externalTargetFullIds = dbDependents.reduce((ids, dbDependent) => {
-    const toFullId = dbDependent.toFullId;
-    const targetsSelf = toFullId === fullId;
-    const targetsChild = toFullId.startsWith(`${fullId}/`);
+  // Skip dependent if it originates from current content item or its child
+  const externalFromFullIds = dbDependents.reduce((ids, dbDependent) => {
+    const fromFullId = dbDependent.fromFullId;
+    const isFromSelf = fromFullId === fullId;
+    const isFromChild = fromFullId.startsWith(`${fullId}/`);
 
-    if (targetsSelf || targetsChild) {
+    if (isFromSelf || isFromChild) {
       return ids;
     }
 
-    ids.push(toFullId);
+    ids.push(fromFullId);
     return ids;
   }, [] as string[]);
 
-  // Order targets according to nav structure
-  const targetFullIds = ERUDIT.contentNav.orderIds(externalTargetFullIds);
+  // Order sources according to nav structure
+  const fromFullIds = ERUDIT.contentNav.orderIds(externalFromFullIds);
 
   const dependents = await Promise.all(
-    targetFullIds.map((targetFullId) => createContentDep('auto', targetFullId)),
+    fromFullIds.map((fromFullId) => createContentDep('auto', fromFullId)),
   );
 
   return dependents.filter((dep): dep is ContentAutoDep => dep !== undefined);

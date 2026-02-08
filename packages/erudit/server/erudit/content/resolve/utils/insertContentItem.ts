@@ -78,10 +78,10 @@ async function resolveHardDependencies(
   if (contentItem.dependencies) {
     for (const dependency of contentItem.dependencies) {
       await ERUDIT.db.insert(ERUDIT.db.schema.contentDeps).values({
-        fromFullId: getGlobalContentPath(
+        fromFullId: fullId,
+        toFullId: getGlobalContentPath(
           dependency.dependency as any as GlobalContentItem,
         ),
-        toFullId: fullId,
         hard: true,
         reason: dependency.reason,
       });
