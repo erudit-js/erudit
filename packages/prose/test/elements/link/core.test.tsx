@@ -97,13 +97,13 @@ describe('Dependency Links', () => {
         <>
           <P>Regular Paragraph</P>
 
-          <Dependency to={otherDocument.uniques.externalP}>
+          <Dependency on={otherDocument.uniques.externalP}>
             Dependency to External Unique
           </Dependency>
 
-          <Dep to={uniques.internalP}>Dependency to Self Unique</Dep>
+          <Dep on={uniques.internalP}>Dependency to Self Unique</Dep>
 
-          <Dep to={uniques.internalP}>Dependency to internal paragraph</Dep>
+          <Dep on={uniques.internalP}>Dependency to internal paragraph</Dep>
           <P $={uniques.internalP}>Internal Paragraph</P>
         </>
       ));
@@ -198,7 +198,7 @@ describe('Dependency Links', () => {
         <>
           <P>Regular Paragraph</P>
           <P>
-            This is a <Dep to={uniques.internalP}>dependency</Dep>!
+            This is a <Dep on={uniques.internalP}>dependency</Dep>!
           </P>
           <P $={uniques.internalP}>Internal Paragraph</P>
         </>

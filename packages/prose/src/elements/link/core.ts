@@ -27,7 +27,7 @@ export function handleLinkTag(
     | typeof referenceSchema
   >,
   tagName: string,
-  props: { to: LinkToProp },
+  props: { to?: LinkToProp; on?: LinkToProp },
   children: NormalizedChildren,
 ) {
   ensureTagChild(tagName, children, [textSchema]);
@@ -39,5 +39,5 @@ export function handleLinkTag(
   }
 
   element.data = { label };
-  element.storageKey = createLinkStorageKey(props.to);
+  element.storageKey = createLinkStorageKey(props.to ?? props.on!);
 }

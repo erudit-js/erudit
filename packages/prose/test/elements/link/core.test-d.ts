@@ -7,7 +7,7 @@ import {
 } from '@erudit-js/prose/elements/link/dependency/core';
 
 describe('Link and Block Link', () => {
-  it('should require "to" tag prop', () => {
+  it('should require "to" or "on" tag prop', () => {
     // @ts-expect-error
     Ref({ children: undefined as any });
     // @ts-expect-error

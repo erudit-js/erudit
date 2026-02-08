@@ -8,12 +8,12 @@ const phrase = await usePhrases('externals_own', 'externals_from');
 </script>
 
 <template>
-  <ScrollPane class="max-h-[min(500px,30dvh)]">
+  <ScrollPane class="max-h-[50dvh]">
     <div v-for="group of externals">
       <div
         :class="[
-          `border-border gap-small pl-small py-small bg-bg-main relative sticky
-          top-0 z-10 flex w-full items-center border-b border-dashed`,
+          `border-border gap-small pl-small py-small sticky top-0 z-10 flex
+          w-full items-center border-b border-dashed backdrop-blur-sm`,
           group.type === 'own'
             ? 'font-semibold text-amber-600 dark:text-amber-400'
             : 'text-text-muted',

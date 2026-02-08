@@ -32,7 +32,7 @@ export const dependencySchema = defineSchema({
 export const Dep = defineEruditTag({
   tagName: 'Dep',
   schema: depSchema,
-})<{ to: Exclude<LinkToProp, string> } & TagChildren & NoSnippet & NoToc>(({
+})<{ on: Exclude<LinkToProp, string> } & TagChildren & NoSnippet & NoToc>(({
   element,
   tagName,
   props,
@@ -44,7 +44,7 @@ export const Dep = defineEruditTag({
 export const Dependency = defineEruditTag({
   tagName: 'Dependency',
   schema: dependencySchema,
-})<{ to: Exclude<LinkToProp, string> } & TagChildren & NoSnippet & NoToc>(({
+})<{ on: Exclude<LinkToProp, string> } & TagChildren & NoSnippet & NoToc>(({
   element,
   tagName,
   props,
