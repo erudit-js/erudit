@@ -103,7 +103,15 @@ function filterTargetFullIds(
     } else if (storageKey.startsWith('<link:global>')) {
       try {
         const globalContentId = storageKey.replace('<link:global>/', '');
-        targetFullIds.add(globalContentToNavNode(globalContentId).fullId);
+        const targetFullId = globalContentToNavNode(globalContentId).fullId;
+
+        if (
+          metas.some(
+            (meta) => meta.type === 'Dep' || meta.type === 'Dependency',
+          )
+        ) {
+          targetFullIds.add(targetFullId);
+        }
       } catch {
         ERUDIT.log.warn(
           brokenLinkMessage(
