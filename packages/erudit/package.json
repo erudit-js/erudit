@@ -39,7 +39,7 @@
     "drizzle-orm": "^0.45.1",
     "esbuild": "^0.27.2",
     "flexsearch": "^0.8.212",
-    "glob": "^13.0.0",
+    "glob": "^13.0.1",
     "image-size": "^2.0.2",
     "jiti": "^2.6.1",
     "nuxt": "4.3.0",
