@@ -50,7 +50,8 @@ export const ProblemCheck = defineEruditTag({
   { label?: string; hint?: string; placeholder?: string } & OneOf<{
     yes: true;
     no: true;
-    answer: ProblemCheckValue;
+    boolean: boolean;
+    answer: ProblemCheckValue | ProblemCheckValue[];
     answers:
       | (ProblemCheckValueDefined | ProblemCheckValueDefined[])[]
       | {
@@ -96,6 +97,11 @@ export const ProblemCheck = defineEruditTag({
     validator = {
       type: 'boolean',
       answer: false,
+    };
+  } else if ('boolean' in props) {
+    validator = {
+      type: 'boolean',
+      answer: !!props.boolean,
     };
   } else if ('answer' in props) {
     validator = {
@@ -158,7 +164,7 @@ export type ProblemCheckValueDefined = Exclude<ProblemCheckValue, undefined>;
 
 export interface ProblemCheckValidatorValue {
   type: 'value';
-  answer: ProblemCheckValue;
+  answer: ProblemCheckValue | ProblemCheckValue[];
 }
 
 export interface ProblemCheckValidatorArray {
@@ -199,7 +205,9 @@ export function toSerializableValidator(validator: ProblemCheckValidator) {
   if (validator.type === 'value') {
     return {
       type: 'value',
-      answer: toSerializableValue(validator.answer),
+      answer: Array.isArray(validator.answer)
+        ? validator.answer.map(toSerializableValue)
+        : toSerializableValue(validator.answer),
     };
   }
 
@@ -244,7 +252,9 @@ export function fromSerializableValidator(
   if (serializedValidator.type === 'value') {
     return {
       type: 'value',
-      answer: fromSerializableValue(serializedValidator.answer),
+      answer: Array.isArray(serializedValidator.answer)
+        ? serializedValidator.answer.map(fromSerializableValue)
+        : fromSerializableValue(serializedValidator.answer),
     } as ProblemCheckValidatorValue;
   }
 
@@ -299,7 +309,7 @@ export function checkProblemAnswer(
   };
 
   const checkAnswer = (expect: ProblemCheckValue, answer: string): boolean => {
-    if (expect === undefined) {
+    if (expect === undefined || expect === null) {
       return answer.trim() === '';
     }
 
@@ -307,7 +317,10 @@ export function checkProblemAnswer(
   };
 
   if (validator.type === 'value') {
-    return checkAnswer(validator.answer, answer);
+    const anyOf = Array.isArray(validator.answer)
+      ? validator.answer
+      : [validator.answer];
+    return anyOf.some((expect) => checkAnswer(expect, answer));
   }
 
   if (validator.type === 'array') {
