@@ -16,7 +16,7 @@ describe('Problem Content', () => {
     });
   });
 
-  it('should not allow multiple answer props are provided', () => {
+  it('should not allow providing multiple answer props', () => {
     // @ts-expect-error
     ProblemCheck({
       yes: true,

@@ -1,3 +1,4 @@
+import type { XOR } from 'ts-xor';
 import {
   defineRegistryItem,
   defineSchema,
@@ -55,7 +56,7 @@ export const listSchema = defineSchema({
 export const List = defineEruditTag({
   tagName: 'List',
   schema: listSchema,
-})<({ type: 'ol'; start?: number } | { type: 'ul' }) & TagChildren>(({
+})<XOR<{ ordered: true; start?: number }, { unordered: true }> & TagChildren>(({
   element,
   tagName,
   props,
@@ -64,8 +65,8 @@ export const List = defineEruditTag({
   ensureTagChildren(tagName, children, listItemSchema);
   element.children = children;
 
-  if (props.type === 'ol') {
-    element.data = { type: 'ol', start: props.start ?? 1 };
+  if ('ordered' in props) {
+    element.data = { type: 'ol', start: 'start' in props ? props.start : 1 };
   } else {
     element.data = { type: 'ul' };
   }

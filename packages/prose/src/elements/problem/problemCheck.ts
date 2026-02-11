@@ -1,3 +1,4 @@
+import type { XOR } from 'ts-xor';
 import {
   defineRegistryItem,
   defineSchema,
@@ -37,30 +38,26 @@ export const problemCheckSchema = defineSchema({
   linkable: false,
 })<ProblemCheckSchema>();
 
-type UndefinedOnly<T> = { [K in keyof T]?: undefined };
-
-type OneOf<T extends Record<string, any>> = {
-  [K in keyof T]: Pick<T, K> & UndefinedOnly<Omit<T, K>>;
-}[keyof T];
-
 export const ProblemCheck = defineEruditTag({
   tagName: 'ProblemCheck',
   schema: problemCheckSchema,
 })<
-  { label?: string; hint?: string; placeholder?: string } & OneOf<{
-    yes: true;
-    no: true;
-    boolean: boolean;
-    answer: ProblemCheckValue | ProblemCheckValue[];
-    answers:
-      | (ProblemCheckValueDefined | ProblemCheckValueDefined[])[]
-      | {
-          ordered?: boolean;
-          separator?: string;
-          values: (ProblemCheckValueDefined | ProblemCheckValueDefined[])[];
-        };
-    script: string;
-  }> &
+  { label?: string; hint?: string; placeholder?: string } & XOR<
+    { yes: true },
+    { no: true },
+    { boolean: boolean },
+    { answer: ProblemCheckValue | ProblemCheckValue[] },
+    {
+      answers:
+        | (ProblemCheckValueDefined | ProblemCheckValueDefined[])[]
+        | {
+            ordered?: boolean;
+            separator?: string;
+            values: (ProblemCheckValueDefined | ProblemCheckValueDefined[])[];
+          };
+    },
+    { script: string }
+  > &
     (TagChildren | NoTagChildren)
 >(({ element, tagName, props, children }) => {
   //

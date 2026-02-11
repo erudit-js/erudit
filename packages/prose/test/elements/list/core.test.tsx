@@ -1,11 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import {
-  isolateProse,
-  isRawElement,
-  PROSE_REGISTRY,
-  textSchema,
-} from '@jsprose/core';
+import { isolateProse, isRawElement, PROSE_REGISTRY } from '@jsprose/core';
 
 import { asEruditRaw } from '@erudit-js/prose';
 import {
@@ -31,7 +26,7 @@ describe('List Item', () => {
       );
 
       const ulList = asEruditRaw(
-        <List type="ul">
+        <List unordered>
           <Li>Item 1</Li>
           <Li>
             <P>Item 2</P>
@@ -64,7 +59,7 @@ describe('List Item', () => {
 
       expect(
         asEruditRaw(
-          <List type="ol">
+          <List ordered>
             <Li>Item</Li>
           </List>,
         ).data,
@@ -72,11 +67,11 @@ describe('List Item', () => {
 
       expect(
         asEruditRaw(
-          <List type="ol" start={5}>
+          <List ordered start={10}>
             <Li>Item</Li>
           </List>,
         ).data,
-      ).toStrictEqual({ type: 'ol', start: 5 });
+      ).toStrictEqual({ type: 'ol', start: 10 });
     });
   });
 });
