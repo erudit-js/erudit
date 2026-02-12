@@ -217,6 +217,18 @@ describe('checkProblemAnswer', () => {
       expect(check('   ', checkData)).toBe(true);
       expect(check('something', checkData)).toBe(false);
     });
+
+    it('should match any-of alternatives', () => {
+      const checkData: ProblemCheckValidator = {
+        type: 'value',
+        answer: ['a', 42, /^test$/, undefined],
+      };
+      expect(check('a', checkData)).toBe(true);
+      expect(check('42', checkData)).toBe(true);
+      expect(check('test', checkData)).toBe(true);
+      expect(check('  ', checkData)).toBe(true);
+      expect(check('b', checkData)).toBe(false);
+    });
   });
 
   describe('array type - ordered', () => {

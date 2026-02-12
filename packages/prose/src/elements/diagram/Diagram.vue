@@ -282,7 +282,7 @@ async function renderDiagram() {
   [data-prose-accent] & {
     --arrowColor: color-mix(
       in hsl,
-      var(--accentText) 45%,
+      var(--accentText) 70%,
       var(--accentBackground)
     );
 
@@ -310,12 +310,12 @@ async function renderDiagram() {
     :global(.node) ellipse {
       fill: color-mix(
         in hsl,
-        var(--accentText) 30%,
+        var(--accentText) 25%,
         var(--accentBackground)
       ) !important;
       stroke: color-mix(
         in hsl,
-        var(--accentText) 45%,
+        var(--accentText) 80%,
         var(--accentBackground)
       ) !important;
     }
@@ -333,7 +333,11 @@ async function renderDiagram() {
     polygon,
     circle,
     ellipse {
-      fill: color-mix(in hsl, var(--color-brand) 75%, transparent) !important;
+      fill: color-mix(
+        in hsl,
+        var(--color-brand) 50%,
+        var(--color-text-dimmed)
+      ) !important;
       stroke: transparent !important;
     }
 
@@ -343,10 +347,9 @@ async function renderDiagram() {
       polygon,
       circle,
       ellipse {
-        fill: color-mix(
-          in hsl,
-          var(--accentText) 70%,
-          var(--accentBackground)
+        fill: light-dark(
+          color-mix(in hsl, var(--accentText) 90%, var(--color-bg-root)),
+          color-mix(in hsl, var(--accentText) 65%, var(--color-bg-root))
         ) !important;
         stroke: transparent !important;
       }

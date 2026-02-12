@@ -1,3 +1,4 @@
+import type { XOR } from 'ts-xor';
 import {
   defineRegistryItem,
   defineSchema,
@@ -37,29 +38,26 @@ export const problemCheckSchema = defineSchema({
   linkable: false,
 })<ProblemCheckSchema>();
 
-type UndefinedOnly<T> = { [K in keyof T]?: undefined };
-
-type OneOf<T extends Record<string, any>> = {
-  [K in keyof T]: Pick<T, K> & UndefinedOnly<Omit<T, K>>;
-}[keyof T];
-
 export const ProblemCheck = defineEruditTag({
   tagName: 'ProblemCheck',
   schema: problemCheckSchema,
 })<
-  { label?: string; hint?: string; placeholder?: string } & OneOf<{
-    yes: true;
-    no: true;
-    answer: ProblemCheckValue;
-    answers:
-      | (ProblemCheckValueDefined | ProblemCheckValueDefined[])[]
-      | {
-          ordered?: boolean;
-          separator?: string;
-          values: (ProblemCheckValueDefined | ProblemCheckValueDefined[])[];
-        };
-    script: string;
-  }> &
+  { label?: string; hint?: string; placeholder?: string } & XOR<
+    { yes: true },
+    { no: true },
+    { boolean: boolean },
+    { answer: ProblemCheckValue | ProblemCheckValue[] },
+    {
+      answers:
+        | (ProblemCheckValueDefined | ProblemCheckValueDefined[])[]
+        | {
+            ordered?: boolean;
+            separator?: string;
+            values: (ProblemCheckValueDefined | ProblemCheckValueDefined[])[];
+          };
+    },
+    { script: string }
+  > &
     (TagChildren | NoTagChildren)
 >(({ element, tagName, props, children }) => {
   //
@@ -96,6 +94,11 @@ export const ProblemCheck = defineEruditTag({
     validator = {
       type: 'boolean',
       answer: false,
+    };
+  } else if ('boolean' in props) {
+    validator = {
+      type: 'boolean',
+      answer: !!props.boolean,
     };
   } else if ('answer' in props) {
     validator = {
@@ -158,7 +161,7 @@ export type ProblemCheckValueDefined = Exclude<ProblemCheckValue, undefined>;
 
 export interface ProblemCheckValidatorValue {
   type: 'value';
-  answer: ProblemCheckValue;
+  answer: ProblemCheckValue | ProblemCheckValue[];
 }
 
 export interface ProblemCheckValidatorArray {
@@ -199,7 +202,9 @@ export function toSerializableValidator(validator: ProblemCheckValidator) {
   if (validator.type === 'value') {
     return {
       type: 'value',
-      answer: toSerializableValue(validator.answer),
+      answer: Array.isArray(validator.answer)
+        ? validator.answer.map(toSerializableValue)
+        : toSerializableValue(validator.answer),
     };
   }
 
@@ -244,7 +249,9 @@ export function fromSerializableValidator(
   if (serializedValidator.type === 'value') {
     return {
       type: 'value',
-      answer: fromSerializableValue(serializedValidator.answer),
+      answer: Array.isArray(serializedValidator.answer)
+        ? serializedValidator.answer.map(fromSerializableValue)
+        : fromSerializableValue(serializedValidator.answer),
     } as ProblemCheckValidatorValue;
   }
 
@@ -299,7 +306,7 @@ export function checkProblemAnswer(
   };
 
   const checkAnswer = (expect: ProblemCheckValue, answer: string): boolean => {
-    if (expect === undefined) {
+    if (expect === undefined || expect === null) {
       return answer.trim() === '';
     }
 
@@ -307,7 +314,10 @@ export function checkProblemAnswer(
   };
 
   if (validator.type === 'value') {
-    return checkAnswer(validator.answer, answer);
+    const anyOf = Array.isArray(validator.answer)
+      ? validator.answer
+      : [validator.answer];
+    return anyOf.some((expect) => checkAnswer(expect, answer));
   }
 
   if (validator.type === 'array') {
