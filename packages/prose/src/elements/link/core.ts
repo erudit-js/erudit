@@ -1,41 +1,39 @@
 import {
-  ensureTagChild,
-  ProseError,
+  ensureTagChildren,
   textSchema,
-  type AnyUnique,
   type NormalizedChildren,
-} from '@jsprose/core';
+  type Unique,
+} from 'tsprose';
+
 import type { GlobalContentTypeguard } from '@erudit-js/core/content/global';
 
-import type { EruditRawElement } from '../../rawElement.js';
-import type { depSchema, dependencySchema } from './dependency/core.js';
+import type { ToEruditRawElement } from '../../rawElement.js';
+import type { DepSchema, DependencySchema } from './dependency/core.js';
 import { createLinkStorageKey } from './storage.js';
-import type { referenceSchema, refSchema } from './reference/core.js';
+import type { ReferenceSchema, RefSchema } from './reference/core.js';
+import { EruditProseError } from '../../error.js';
 
 export interface LinkData {
   label: string;
   storageKey?: string;
 }
 
-export type LinkToProp = string | GlobalContentTypeguard | AnyUnique;
+export type LinkToProp = string | GlobalContentTypeguard | Unique;
 
 export function handleLinkTag(
-  element: EruditRawElement<
-    | typeof depSchema
-    | typeof dependencySchema
-    | typeof refSchema
-    | typeof referenceSchema
+  element: ToEruditRawElement<
+    DepSchema | DependencySchema | RefSchema | ReferenceSchema
   >,
   tagName: string,
   props: { to?: LinkToProp; on?: LinkToProp },
   children: NormalizedChildren,
 ) {
-  ensureTagChild(tagName, children, [textSchema]);
+  ensureTagChildren(tagName, children, textSchema);
   const child = children[0];
   const label = child.data.trim();
 
   if (!label) {
-    throw new ProseError(`<${tagName}> label cannot be empty!`);
+    throw new EruditProseError(`<${tagName}> label cannot be empty!`);
   }
 
   element.data = { label };

@@ -1,15 +1,14 @@
 import type { XOR } from 'ts-xor';
 import {
-  defineRegistryItem,
   defineSchema,
   ensureTagChildren,
-  ProseError,
-  type NoTagChildren,
-  type TagChildren,
-} from '@jsprose/core';
+  type OptionalChildren,
+  type Schema,
+} from 'tsprose';
 
 import { defineEruditTag } from '../../tag.js';
-import { defineEruditProseCoreElement } from '../../coreElement.js';
+import { defineProseCoreElement } from '../../coreElement.js';
+import { EruditProseError } from '../../error.js';
 
 //
 // Prose Element
@@ -23,20 +22,20 @@ export interface ProblemCheckInfo {
 
 export type ProblemCheckData = ProblemCheckInfo & { serializedValidator: any };
 
-export type ProblemCheckSchema = {
+export interface ProblemCheckSchema extends Schema {
   name: 'problemCheck';
   type: 'block';
   linkable: false;
   Data: ProblemCheckData;
   Storage: undefined;
   Children: ProblemCheckSchema[] | undefined;
-};
+}
 
-export const problemCheckSchema = defineSchema({
+export const problemCheckSchema = defineSchema<ProblemCheckSchema>({
   name: 'problemCheck',
   type: 'block',
   linkable: false,
-})<ProblemCheckSchema>();
+});
 
 export const ProblemCheck = defineEruditTag({
   tagName: 'ProblemCheck',
@@ -58,7 +57,7 @@ export const ProblemCheck = defineEruditTag({
     },
     { script: string }
   > &
-    (TagChildren | NoTagChildren)
+    OptionalChildren
 >(({ element, tagName, props, children }) => {
   //
   // Info
@@ -76,7 +75,7 @@ export const ProblemCheck = defineEruditTag({
 
   if (children && children.length > 0) {
     ensureTagChildren(tagName, children, problemCheckSchema);
-    element.children = children as any;
+    element.children = children;
   }
 
   //
@@ -138,13 +137,9 @@ export const ProblemCheck = defineEruditTag({
   };
 });
 
-export const problemCheckRegistryItem = defineRegistryItem({
+export const problemCheckCoreElement = defineProseCoreElement({
   schema: problemCheckSchema,
   tags: [ProblemCheck],
-});
-
-export const problemCheckCoreElement = defineEruditProseCoreElement({
-  registryItem: problemCheckRegistryItem,
 });
 
 //
@@ -367,7 +362,7 @@ export function checkProblemAnswer(
     return true;
   }
 
-  throw new ProseError(
+  throw new EruditProseError(
     `"checkProblemAnswer" not implemented for type "${(validator as any).type}"!`,
   );
 }

@@ -1,180 +1,260 @@
-import { ProseError, type AnySchema, type ProseElement } from '@jsprose/core';
-
-import type { EruditProcessTagArgs } from './tag.js';
-import { defineResolveStep } from './resolveStep.js';
+import { EruditProseError } from './error.js';
+import { defineRawToProseHook } from './rawToProse/hook.js';
 import type { EruditRawElement } from './rawElement.js';
 
-/**
- * Snippet attribute - only contains title and description
- */
-export interface SnippetData {
-  /** General snippet title. Used as fallback value for flags. */
+export const NO_SNIPPET_PREFIX = '__ERDUIT_tagNoSnippet';
+export type NoSnippet = { [NO_SNIPPET_PREFIX]: true };
+
+export interface SnippetTagProp {
+  /** Compact summary of the element and where to show it (search results, preamble, SEO). */
+  snippet?: SnippetRaw;
+}
+
+export interface SnippetRawElementProp {
+  snippet?: SnippetRaw;
+}
+
+export interface SnippetRaw {
   title?: string;
-  /** General snippet description. Used as fallback value for flags. */
   description?: string;
-  /**
-   * Show element in search results.
-   */
+  /** Show element in search results. */
   search?:
     | boolean
     | string
     | string[]
-    | {
-        title?: string;
-        description?: string;
-        synonyms?: string[];
-      };
+    | { title?: string; description?: string; synonyms?: string[] };
+  /** Show element in "Key elements" section of content preamble. */
+  key?: boolean | string | { title?: string; description?: string };
   /**
-   * Show element in "Quick Links" sections at start of the page and also in TOC.
+   * Set custom page SEO metadata when targeting this element.
+   * Search engines treat it as a different "page" and therefore show it as a standalone search result.
    */
-  quick?:
-    | boolean
-    | string
-    | {
-        title?: string;
-        description?: string;
-      };
-  /**
-   * When targeting this element with '#' anchor, adjust SEO metadata (like title and description).
-   * Search engines should treat it as a different "page" and therefore show it as a standalone search result.
-   */
-  seo?:
-    | boolean
-    | string
-    | {
-        title?: string;
-        description?: string;
-      };
+  seo?: boolean | string | { title?: string; description?: string };
 }
 
-export type ObjPropSnippet = {
-  /**
-   * Compact summary of the element and where to show it (search, quick links, SEO).
-   */
-  snippet?: SnippetData;
-};
-
-export type ObjRawElementSnippet = {
-  snippet?: SnippetData;
-};
+export type Snippet = Omit<SnippetRaw, 'title'> & { title: string };
 
 export function finalizeSnippet(
-  processTagArgs: EruditProcessTagArgs,
-): SnippetData | undefined {
-  const finalSnippet: SnippetData = {};
-  const propsSnippet = processTagArgs.props.snippet as SnippetData | undefined;
-  const builtinSnippet = processTagArgs.element.snippet as
-    | SnippetData
-    | undefined;
+  rawElement: EruditRawElement,
+  snippetTagProp: SnippetTagProp['snippet'],
+): void {
+  if (snippetTagProp) {
+    // Explicitly add snippet using tag prop data
+    const normalizedSnippet = normalizeSnippet(
+      snippetTagProp,
+      rawElement.snippet?.title,
+      rawElement.title,
+    );
 
-  //
+    const tagPropHadExplicitSeo = snippetTagProp.seo !== undefined;
 
-  const quick = propsSnippet?.quick ?? builtinSnippet?.quick;
+    if (rawElement.snippet) {
+      const normalizedInternalSnippet = normalizeSnippet(
+        rawElement.snippet,
+        rawElement.title,
+      );
 
-  if (quick) {
-    finalSnippet.quick = quick;
-  }
+      // Merge internal snippet data as fallback for missing values in tag prop snippet
 
-  //
-
-  const search = propsSnippet?.search ?? builtinSnippet?.search;
-
-  if (search) {
-    finalSnippet.search = search;
-  }
-
-  //
-
-  let seo = propsSnippet?.seo ?? builtinSnippet?.seo;
-
-  // If none of the flags are set to true, no snippet is created
-  if (!quick && !search && !seo) {
-    return undefined;
-  }
-
-  // Enable SEO if either quick or search is enabled unless SEO is explicitly disabled
-  // Check both element defaults and props - if either explicitly disables seo, don't auto-enable
-  const seoExplicitlyDisabled =
-    builtinSnippet?.seo === false || propsSnippet?.seo === false;
-
-  if (!seo) {
-    if (!seoExplicitlyDisabled) {
-      if (quick || search) {
-        seo = true;
+      if (
+        !normalizedSnippet.description &&
+        normalizedInternalSnippet.description
+      ) {
+        normalizedSnippet.description = normalizedInternalSnippet.description;
       }
-    }
-  }
 
-  if (seo) {
-    finalSnippet.seo = seo;
-  }
+      if (
+        normalizedSnippet.search === undefined &&
+        normalizedInternalSnippet.search
+      ) {
+        normalizedSnippet.search = normalizedInternalSnippet.search;
+      }
 
-  //
+      if (
+        normalizedSnippet.key === undefined &&
+        normalizedInternalSnippet.key
+      ) {
+        normalizedSnippet.key = normalizedInternalSnippet.key;
+      }
 
-  const title = getGenericTitle(processTagArgs);
-
-  if (title) {
-    finalSnippet.title = title;
-  }
-
-  const description = getGenericDescription(processTagArgs);
-
-  if (description) {
-    finalSnippet.description = description;
-  }
-
-  //
-
-  if (!finalSnippet.title) {
-    let titlessFlags: string[] = [];
-
-    if (quick && typeof quick !== 'string') {
-      if (quick === true || !quick.title) {
-        titlessFlags.push('quick');
+      if (
+        normalizedSnippet.seo === undefined &&
+        normalizedInternalSnippet.seo
+      ) {
+        normalizedSnippet.seo = normalizedInternalSnippet.seo;
       }
     }
 
-    if (search && typeof search !== 'string') {
-      if (search === true || Array.isArray(search) || !search.title) {
-        titlessFlags.push('search');
-      }
+    // Add snippet to SEO if either search or key is enabled unless SEO was explicitly set in the tag prop
+    if (
+      !tagPropHadExplicitSeo &&
+      normalizedSnippet.seo !== false &&
+      (normalizedSnippet.search || normalizedSnippet.key)
+    ) {
+      normalizedSnippet.seo = true;
     }
 
-    if (seo && typeof seo !== 'string') {
-      if (seo === true || !seo.title) {
-        titlessFlags.push('seo');
-      }
+    // Prune snippet if it has no active features
+    if (
+      !normalizedSnippet.search &&
+      !normalizedSnippet.key &&
+      !normalizedSnippet.seo
+    ) {
+      delete rawElement.snippet;
+      return;
     }
 
-    throw new ProseError(
-      `Unable to get title for snippet flags (${titlessFlags.join(', ')}) because no explicit, general inherited title was provided!`,
+    rawElement.snippet = normalizedSnippet;
+    return;
+  }
+
+  if (rawElement.snippet) {
+    // This snippet was supposed to be used to merge data but not needed anymore because tag prop snippet is not provided
+    delete rawElement.snippet;
+    return;
+  }
+}
+
+export function normalizeSnippet(
+  snippet: SnippetRaw,
+  ...fallbackTitles: (string | undefined)[]
+): Snippet {
+  const title =
+    snippet.title?.trim() || fallbackTitles.map((t) => t?.trim()).find(Boolean);
+
+  if (!title) {
+    throw new EruditProseError(
+      'Unable to retrieve non-empty title for snippet!',
     );
   }
 
-  //
+  const description = snippet.description?.trim() || undefined;
 
-  processTagArgs.element.snippet = finalSnippet;
-  return finalSnippet;
+  const result: Snippet = {
+    ...snippet,
+    title,
+    description,
+  };
+
+  return result;
 }
 
-function getGenericTitle(
-  processTagArgs: EruditProcessTagArgs,
-): string | undefined {
-  const title =
-    processTagArgs.props.snippet?.title?.trim() ||
-    processTagArgs.element.snippet?.title?.trim() ||
-    processTagArgs.element.title?.trim();
-
-  return title;
+export interface SearchSnippet {
+  title: string;
+  description?: string;
+  synonyms?: string[];
 }
 
-function getGenericDescription(
-  processTagArgs: EruditProcessTagArgs,
-): string | undefined {
-  return (
-    processTagArgs.props.snippet?.description?.trim() ||
-    processTagArgs.element.snippet?.description?.trim()
-  );
+export function toSearchSnippet(snippet?: Snippet): SearchSnippet | undefined {
+  if (!snippet || !snippet.search) {
+    return undefined;
+  }
+
+  if (snippet.search === true) {
+    return {
+      title: snippet.title,
+      description: snippet.description,
+    };
+  }
+
+  if (typeof snippet.search === 'string') {
+    const title = snippet.search.trim() || snippet.title;
+    return {
+      title,
+      description: snippet.description,
+    };
+  }
+
+  if (Array.isArray(snippet.search)) {
+    const synonyms = snippet.search
+      .map((synonym) => synonym.trim())
+      .filter(Boolean);
+    return {
+      title: snippet.title,
+      description: snippet.description,
+      synonyms: synonyms.length > 0 ? synonyms : undefined,
+    };
+  }
+
+  const title = snippet.search.title?.trim() || snippet.title;
+  const description = snippet.search.description?.trim() || snippet.description;
+  const synonyms = snippet.search.synonyms
+    ?.map((synonym) => synonym.trim())
+    .filter(Boolean);
+
+  return {
+    title,
+    description,
+    synonyms: synonyms && synonyms.length > 0 ? synonyms : undefined,
+  };
+}
+
+export interface KeySnippet {
+  title: string;
+  description?: string;
+}
+
+export function toKeySnippet(snippet?: Snippet): KeySnippet | undefined {
+  if (!snippet || !snippet.key) {
+    return undefined;
+  }
+
+  if (snippet.key === true) {
+    return {
+      title: snippet.title,
+      description: snippet.description,
+    };
+  }
+
+  if (typeof snippet.key === 'string') {
+    const title = snippet.key.trim() || snippet.title;
+    return {
+      title,
+      description: snippet.description,
+    };
+  }
+
+  const title = snippet.key.title?.trim() || snippet.title;
+  const description = snippet.key.description?.trim() || snippet.description;
+
+  return {
+    title,
+    description,
+  };
+}
+
+export interface SeoSnippet {
+  title: string;
+  description?: string;
+}
+
+export function toSeoSnippet(snippet?: Snippet): SeoSnippet | undefined {
+  if (!snippet || !snippet.seo) {
+    return undefined;
+  }
+
+  if (snippet.seo === true) {
+    return {
+      title: snippet.title,
+      description: snippet.description,
+    };
+  }
+
+  if (typeof snippet.seo === 'string') {
+    const title = snippet.seo.trim() || snippet.title;
+    return {
+      title,
+      description: snippet.description,
+    };
+  }
+
+  const title = snippet.seo.title?.trim() || snippet.title;
+  const description = snippet.seo.description?.trim() || snippet.description;
+
+  return {
+    title,
+    description,
+  };
 }
 
 //
@@ -183,20 +263,25 @@ function getGenericDescription(
 
 export interface ResolvedSnippet {
   schemaName: string;
-  isUnique: boolean;
   elementId: string;
-  snippetData: SnippetData;
+  snippet: Snippet;
 }
 
-export const snippetStep = defineResolveStep(({ rawElement, proseElement }) => {
-  if (rawElement.snippet && proseElement.id) {
-    const resolvedSnippet: ResolvedSnippet = {
-      schemaName: rawElement.schemaName,
-      isUnique: Boolean(rawElement.uniqueName),
-      elementId: proseElement.id,
-      snippetData: rawElement.snippet,
-    };
-
-    return resolvedSnippet;
+export const snippetHook = defineRawToProseHook(({ context, result }) => {
+  if (!context.snippets?.enabled) {
+    return;
   }
+
+  return {
+    step: ({ rawElement, proseElement }) => {
+      if (rawElement.snippet && proseElement.id) {
+        const resolvedSnippet: ResolvedSnippet = {
+          schemaName: rawElement.schema.name,
+          elementId: proseElement.id,
+          snippet: rawElement.snippet as Snippet,
+        };
+        result.snippets.push(resolvedSnippet);
+      }
+    },
+  };
 });

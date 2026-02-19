@@ -1,7 +1,7 @@
-import { defineEruditProseAppElement } from '../../app/appElement.js';
+import { defineProseAppElement } from '../../app/appElement.js';
 import { imageSchema } from './core.js';
 
-export default defineEruditProseAppElement({
+export default defineProseAppElement({
   schema: imageSchema,
   component: () => import('./Image.vue'),
   languages: {

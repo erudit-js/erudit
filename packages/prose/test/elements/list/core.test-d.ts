@@ -1,6 +1,6 @@
 import { describe, it } from 'vitest';
 
-import { List } from '@erudit-js/prose/elements/list/core';
+import { List } from '@src/elements/list/core';
 
 describe('List', () => {
   it('should work fine when props do not intersect', () => {
@@ -13,7 +13,5 @@ describe('List', () => {
     List({ ordered: true, unordered: true, children: [] });
     // @ts-expect-error
     List({ unordered: true, start: 5, children: [] });
-    // @ts-expect-error
-    List({ unordered: true, type: 'ol', children: [] });
   });
 });

@@ -1,4 +1,4 @@
-import { ProseError } from '@jsprose/core';
+import { EruditProseError } from '../error.js';
 
 /**
  * Checks that the given absolute file path is within the given absolute project path.
@@ -9,7 +9,7 @@ export function projectRelFilePath(
   fileAbsPath: string,
 ): string {
   if (!fileAbsPath.startsWith(projectAbsPath)) {
-    throw new ProseError(
+    throw new EruditProseError(
       `File "${fileAbsPath}" is outside of project "${projectAbsPath}"`,
     );
   }

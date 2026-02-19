@@ -1,7 +1,10 @@
-export async function slugify(
-  text: string,
-  language: string,
-): Promise<string | undefined> {
+import type { EruditRawToProseContext } from '../rawToProse/index.js';
+
+export type SlugifyCreator = (
+  context: EruditRawToProseContext,
+) => Promise<(text: string) => string>;
+
+export const createDefaultSlugify: SlugifyCreator = async (context) => {
   const slugifiers: Record<
     string,
     () => Promise<{ default: (text: string) => string }>
@@ -11,13 +14,13 @@ export async function slugify(
   };
 
   const slugifyModule =
-    language in slugifiers ? await slugifiers[language]() : undefined;
+    context.language && context.language in slugifiers
+      ? await slugifiers[context.language]()
+      : undefined;
 
   if (slugifyModule) {
-    const slug = slugifyModule.default(text);
-
-    return slug || undefined;
+    return slugifyModule.default;
   }
 
-  return undefined;
-}
+  return (text: string) => text;
+};

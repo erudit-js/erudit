@@ -1,11 +1,11 @@
-import { defineEruditProseAppElement } from '../../app/appElement.js';
+import { defineProseAppElement } from '../../app/appElement.js';
 import { problemSchema } from './problem.js';
 import { problemsSchema, subProblemSchema } from './problems.js';
 
 const icon = () => import('./assets/icon.svg?raw');
 
 export default [
-  defineEruditProseAppElement({
+  defineProseAppElement({
     schema: problemSchema,
     component: () => import('./components/Problem.vue'),
     icon,
@@ -14,7 +14,7 @@ export default [
       ru: () => import('./languages/problem/ru.js'),
     },
   }),
-  defineEruditProseAppElement({
+  defineProseAppElement({
     schema: problemsSchema,
     component: () => import('./components/Problems.vue'),
     icon,
@@ -23,7 +23,7 @@ export default [
       ru: () => import('./languages/problems/ru.js'),
     },
   }),
-  defineEruditProseAppElement({
+  defineProseAppElement({
     schema: subProblemSchema,
     component: () => import('./components/SubProblem.vue'),
   }),

@@ -1,21 +1,19 @@
 import { describe, expect, it } from 'vitest';
-import { defineUnique, isolateProse, isRawElement } from '@jsprose/core';
+import { defineUnique, isRawElement } from 'tsprose';
 
-import { P } from '@erudit-js/prose/elements/paragraph/core';
+import { P } from '@src/elements/paragraph/core';
 import {
   defineProblemScript,
   insertProblemScriptId,
-} from '@erudit-js/prose/elements/problem/problemScript';
+} from '@src/elements/problem/problemScript';
 import {
   ProblemDescription,
   problemDescriptionSchema,
-} from '@erudit-js/prose/elements/problem/problemContent';
+} from '@src/elements/problem/problemContent';
 import {
   ProblemCheck,
   problemCheckSchema,
-} from '@erudit-js/prose/elements/problem/problemCheck';
-
-import { prepareRegistry } from './problemContent.test';
+} from '@src/elements/problem/problemCheck';
 
 describe('Problem Script', () => {
   it('should throw when ID is not provided', () => {
@@ -32,59 +30,52 @@ describe('Problem Script', () => {
     });
   };
 
-  it('should throw when incorrect problem content builder is provided', async () => {
-    isolateProse(async () => {
-      prepareRegistry();
-
-      const problemScript = defineProblemScript('script1/TestScript', {
-        uniques: {
-          myP: P,
-        },
-      })(({ uniques }) => {
-        return (
-          <>
-            <P $={uniques.myP}>This is paragraph</P>
-          </>
-        );
-      });
-
-      expect(() =>
-        problemScript({
-          myP: createUniqueP(),
-        }).generate(),
-      ).toThrow(/\[Problem Script\]/);
+  it('should throw when incorrect problem content builder is provided', () => {
+    const problemScript = defineProblemScript('script1/TestScript', {
+      uniques: {
+        myP: P,
+      },
+    })(({ uniques }) => {
+      return (
+        <>
+          <P $={uniques.myP}>This is paragraph</P>
+        </>
+      );
     });
+
+    expect(() =>
+      problemScript({
+        myP: createUniqueP(),
+      }).generate(),
+    ).toThrow(/\[Problem Script\]/);
   });
 
-  it('should create problem script correctly', async () => {
-    isolateProse(async () => {
-      prepareRegistry();
-      const problemScript = defineProblemScript('script1/TestScript', {
-        isGenerator: true,
-        uniques: {
-          myP: P,
-        },
-      })(({ uniques, initial, random }) => {
-        return (
-          <>
-            <ProblemDescription>
-              <P $={uniques.myP}>Problem Description</P>
-            </ProblemDescription>
-            <ProblemCheck answer={42} />
-          </>
-        );
-      });
-
-      const problemContent = problemScript({
-        myP: createUniqueP(),
-      }).generate(1337).problemContent;
-
-      expect(problemContent).toHaveLength(2);
-      expect(isRawElement(problemContent[0], problemDescriptionSchema)).toBe(
-        true,
+  it('should create problem script correctly', () => {
+    const problemScript = defineProblemScript('script1/TestScript', {
+      isGenerator: true,
+      uniques: {
+        myP: P,
+      },
+    })(({ uniques, initial, random }) => {
+      return (
+        <>
+          <ProblemDescription>
+            <P $={uniques.myP}>Problem Description</P>
+          </ProblemDescription>
+          <ProblemCheck answer={42} />
+        </>
       );
-      expect(isRawElement(problemContent[1], problemCheckSchema)).toBe(true);
     });
+
+    const problemContent = problemScript({
+      myP: createUniqueP(),
+    }).generate(1337).problemContent;
+
+    expect(problemContent).toHaveLength(2);
+    expect(isRawElement(problemContent[0], problemDescriptionSchema)).toBe(
+      true,
+    );
+    expect(isRawElement(problemContent[1], problemCheckSchema)).toBe(true);
   });
 
   it('should insert script ID correctly', () => {
@@ -108,7 +99,7 @@ export default defineProblemScript()(() => <></>);
 
     expect(transformedCode).toBe(
       `
-export default defineProblemScript('myScriptSource', {
+export default defineProblemScript('myScriptSource',{
   foo: 1
 });
 
@@ -116,9 +107,9 @@ export default defineProblemScript("already:here", {
   c: 3
 });
 
-export default defineProblemScript('myScriptSource', { d: 4 });
+export default defineProblemScript('myScriptSource',{ d: 4 });
 
-export default defineProblemScript('myScriptSource', )(() => <></>);
+export default defineProblemScript('myScriptSource')(() => <></>);
         `.trim(),
     );
   });

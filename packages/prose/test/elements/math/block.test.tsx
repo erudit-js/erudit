@@ -1,7 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
-import { isolateProse, isRawElement, PROSE_REGISTRY } from '@jsprose/core';
 
-vi.mock('@erudit-js/prose/elements/math/katex.js', async (importOriginal) => {
+vi.mock('@src/elements/math/katex.js', async (importOriginal) => {
   const original = (await importOriginal()) as any;
   return {
     ...original,
@@ -9,13 +8,14 @@ vi.mock('@erudit-js/prose/elements/math/katex.js', async (importOriginal) => {
   };
 });
 
-import { asEruditRaw } from '@erudit-js/prose';
 import {
   BlockMath,
-  blockMathRegistryItem,
   blockMathSchema,
   resolveMathGroups,
-} from '@erudit-js/prose/elements/math/block';
+  type BlockMathSchema,
+} from '@src/elements/math/block';
+import { asEruditRaw } from '@src/rawElement';
+import { isRawElement } from 'tsprose';
 
 describe('resolveMathGroups', () => {
   it('should handle empty string', async () => {
@@ -142,32 +142,23 @@ describe('resolveMathGroups', () => {
   });
 });
 
-const prepareRegistry = () => PROSE_REGISTRY.setItems(blockMathRegistryItem);
-
 describe('Block Math', () => {
   it('should create block math correctly', () => {
-    isolateProse(() => {
-      prepareRegistry();
-
-      const blockMath = asEruditRaw(
-        <BlockMath freeze>{`
+    const blockMath = asEruditRaw<BlockMathSchema>(
+      <BlockMath freeze>{`
           x + y = z >>{center} \\sin
         `}</BlockMath>,
-      );
+    );
 
-      expect(isRawElement(blockMath, blockMathSchema)).toBe(true);
-      expect(blockMath.data).toStrictEqual({
-        katex: 'x + y = z >>{center} \\sin',
-        freeze: true,
-      });
-      expect(blockMath.storageKey).toBe('$$ x + y = z >>{center} \\sin $$');
+    expect(isRawElement(blockMath, blockMathSchema)).toBe(true);
+    expect(blockMath.data).toStrictEqual({
+      katex: 'x + y = z >>{center} \\sin',
+      freeze: true,
     });
+    expect(blockMath.storageKey).toBe('$$ x + y = z >>{center} \\sin $$');
   });
 
   it('should throw when empty math expression is provided', () => {
-    isolateProse(() => {
-      prepareRegistry();
-      expect(() => asEruditRaw(<BlockMath> </BlockMath>)).toThrow();
-    });
+    expect(() => asEruditRaw(<BlockMath> </BlockMath>)).toThrow();
   });
 });

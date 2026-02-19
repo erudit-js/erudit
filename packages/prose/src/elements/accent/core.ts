@@ -1,24 +1,24 @@
 import {
-  defineRegistryItem,
   defineSchema,
   ensureTagChildren,
-  ensureTagInlinerChildren,
   isRawElement,
-  PROSE_REGISTRY,
-  ProseError,
-  type AnySchema,
-  type BlockSchema,
   type ProseElement,
-  type TagChildren,
-} from '@jsprose/core';
+  type Schema,
+  type ToProseElement,
+  type ToRawElement,
+} from 'tsprose';
 
 import { defineEruditTag } from '../../tag.js';
 import { uppercaseFirst, type UppercaseFirst } from '../../utils/case.js';
-import { tryParagraphWrap } from '../../shared/paragraphWrap.js';
+import { paragraphWrap } from '../../shared/paragraphWrap.js';
+import { EruditProseError } from '../../error.js';
+import { defineProseCoreElement } from '../../coreElement.js';
 
 function validateTitle(tagName: string, title: string) {
   if (!title) {
-    throw new ProseError(`<${tagName}> requires non-empty title attribute!`);
+    throw new EruditProseError(
+      `<${tagName}> requires non-empty title attribute!`,
+    );
   }
 }
 
@@ -30,50 +30,74 @@ export interface AccentDefinition<
   sectionNames: TSectionNames;
 }
 
-export type AccentMainSchema = Omit<BlockSchema, 'Data' | 'linkable'> & {
+export interface AccentMainSchema<
+  AccentName extends string = string,
+> extends Schema {
+  name: `accentMain_${AccentName}`;
+  type: 'block';
   linkable: false;
   Data: undefined;
-};
-export type AccentSectionSchema = Omit<BlockSchema, 'Data' | 'linkable'> & {
-  linkable: false;
-  Data: { type: 'named'; name: string } | { type: 'manual'; title: string };
-};
-export type AccentSchema = Omit<
-  BlockSchema,
-  'Data' | 'Children' | 'linkable'
-> & {
-  linkable: true;
-  Data: { title: string; layout: 'column' | 'row' };
-  Children: (AccentMainSchema | AccentSectionSchema)[];
-  SectionNames: string[];
-};
-
-export function isAccentElement(
-  element: ProseElement<AnySchema>,
-): element is ProseElement<AccentSchema> {
-  return element.schemaName.startsWith('accent_');
+  Storage: undefined;
+  Children: Schema[];
 }
 
 export function isAccentMainElement(
-  element: ProseElement<AnySchema>,
-): element is ProseElement<AccentMainSchema> {
-  return element.schemaName.startsWith('accentMain_');
+  element: ProseElement,
+): element is ToProseElement<AccentMainSchema> {
+  return element.schema.name.startsWith('accentMain_');
+}
+
+export interface AccentSectionSchema<
+  AccentName extends string = string,
+> extends Schema {
+  name: `accentSection_${AccentName}`;
+  type: 'block';
+  linkable: false;
+  Data: { type: 'named'; name: string } | { type: 'manual'; title: string };
+  Storage: undefined;
+  Children: Schema[];
 }
 
 export function isAccentSectionElement(
-  element: ProseElement<AnySchema>,
-): element is ProseElement<AccentSectionSchema> {
-  return element.schemaName.startsWith('accentSection_');
+  element: ProseElement,
+): element is ToProseElement<AccentSectionSchema> {
+  return element.schema.name.startsWith('accentSection_');
+}
+
+export interface AccentSchema<
+  AccentName extends string = string,
+> extends Schema {
+  name: `accent_${AccentName}`;
+  type: 'block';
+  linkable: true;
+  Data: { title: string; layout: 'column' | 'row' };
+  Storage: undefined;
+  Children: [
+    AccentMainSchema<AccentName>,
+    ...AccentSectionSchema<AccentName>[],
+  ];
+  SectionNames: string[];
+}
+
+export function isAccentElement(
+  element: any,
+): element is ToProseElement<AccentSchema> {
+  const name: string | undefined = element?.schema?.name;
+
+  if (!name) {
+    return false;
+  }
+
+  return name.startsWith('accent_');
 }
 
 export function defineAccentCore<
-  const I extends string,
-  const J extends string[],
-  const TDefinition extends AccentDefinition<I, J>,
->(definition: TDefinition) {
+  const TName extends string,
+  const TSectionNames extends string[],
+>(definition: AccentDefinition<TName, TSectionNames>) {
   // Accent name must start with lowercase
   if (!/^[a-z]/.test(definition.name)) {
-    throw new ProseError(
+    throw new EruditProseError(
       `
 Invalid accent name "${definition.name}"!
 Accent names should start with lower case letter.
@@ -83,14 +107,14 @@ Accent names should start with lower case letter.
 
   for (const sectionName of definition.sectionNames) {
     if (sectionName === 'section' || sectionName === 'main') {
-      throw new ProseError(
+      throw new EruditProseError(
         `Section names "section" and "main" are reserved for accent "${definition.name}"!`,
       );
     }
 
     // Section name must start with lowercase
     if (!/^[a-z]/.test(sectionName)) {
-      throw new ProseError(
+      throw new EruditProseError(
         `
 Invalid section name "${sectionName}" for accent "${definition.name}"!
 Section names should start with lower case letter.
@@ -99,42 +123,44 @@ Section names should start with lower case letter.
     }
   }
 
+  const Name = uppercaseFirst(definition.name) as UppercaseFirst<TName>;
+
+  function applyBlockChildren(
+    tagName: string,
+    children: any,
+    element: { children: any },
+  ) {
+    ensureTagChildren(tagName, children);
+    element.children = paragraphWrap(children) ?? children;
+  }
+
   //
   // Schemas
   //
 
-  const mainSchema = defineSchema({
-    name: `accentMain_${definition.name}` as `accentMain_${TDefinition['name']}`,
+  const mainSchema = defineSchema<AccentMainSchema<TName>>({
+    name: `accentMain_${definition.name}` as `accentMain_${TName}`,
     type: 'block',
     linkable: false,
-  })<{
-    Data: undefined;
-    Storage: undefined;
-    Children: AnySchema[];
-  }>();
+  });
 
-  const sectionSchema = defineSchema({
-    name: `accentSection_${definition.name}` as `accentSection_${TDefinition['name']}`,
+  const sectionSchema = defineSchema<AccentSectionSchema<TName>>({
+    name: `accentSection_${definition.name}` as `accentSection_${TName}`,
     type: 'block',
     linkable: false,
-  })<{
-    Data: { type: 'named'; name: string } | { type: 'manual'; title: string };
-    Storage: undefined;
-    Children: AnySchema[];
-  }>();
+  });
 
-  const accentSchema = defineSchema({
-    name: `accent_${definition.name}` as `accent_${TDefinition['name']}`,
+  const baseAccentSchema = defineSchema<AccentSchema<TName>>({
+    name: `accent_${definition.name}` as `accent_${TName}`,
     type: 'block',
     linkable: true,
-  })<{
-    Data: { title: string; layout: 'column' | 'row' };
-    Storage: undefined;
-    Children: [typeof mainSchema, ...(typeof sectionSchema)[]];
-  }>();
+  } as any);
 
-  const typedAccentSchema = accentSchema as typeof accentSchema & {
-    SectionNames: TDefinition['sectionNames'];
+  const accentSchema = baseAccentSchema as Omit<
+    typeof baseAccentSchema,
+    'SectionNames'
+  > & {
+    SectionNames: TSectionNames;
   };
 
   //
@@ -142,36 +168,17 @@ Section names should start with lower case letter.
   //
 
   const mainTag = defineEruditTag({
-    tagName:
-      `${uppercaseFirst(definition.name)}Main` as `${UppercaseFirst<TDefinition['name']>}Main`,
+    tagName: `${Name}Main` as `${UppercaseFirst<TName>}Main`,
     schema: mainSchema,
-  })<TagChildren>(({ tagName, element, children }) => {
-    ensureTagChildren(tagName, children);
-    element.children = children;
-
-    const paragraphWrap = tryParagraphWrap(children);
-    if (paragraphWrap) {
-      element.children = paragraphWrap;
-    }
+  })(({ tagName, element, children }) => {
+    applyBlockChildren(tagName, children, element);
   });
 
   const sectionTag = defineEruditTag({
-    tagName:
-      `${uppercaseFirst(definition.name)}Section` as `${UppercaseFirst<TDefinition['name']>}Section`,
+    tagName: `${Name}Section` as `${UppercaseFirst<TName>}Section`,
     schema: sectionSchema,
-  })<{ title: string } & TagChildren>(({
-    tagName,
-    element,
-    props,
-    children,
-  }) => {
-    ensureTagChildren(tagName, children);
-    element.children = children;
-
-    const paragraphWrap = tryParagraphWrap(children);
-    if (paragraphWrap) {
-      element.children = paragraphWrap;
-    }
+  })<{ title: string }>(({ tagName, element, props, children }) => {
+    applyBlockChildren(tagName, children, element);
 
     const title = props.title.trim();
     validateTitle(tagName, title);
@@ -184,88 +191,108 @@ Section names should start with lower case letter.
   ) {
     return defineEruditTag({
       tagName:
-        `${uppercaseFirst(definition.name)}${uppercaseFirst(suffix)}` as `${UppercaseFirst<TDefinition['name']>}${UppercaseFirst<TSuffix>}`,
+        `${Name}${uppercaseFirst(suffix)}` as `${UppercaseFirst<TName>}${UppercaseFirst<TSuffix>}`,
       schema: sectionSchema,
-    })<TagChildren>(({ tagName, element, children }) => {
-      ensureTagChildren(tagName, children);
-      element.children = children;
-
-      const paragraphWrap = tryParagraphWrap(children);
-      if (paragraphWrap) {
-        element.children = paragraphWrap;
-      }
-
+    })(({ tagName, element, children }) => {
+      applyBlockChildren(tagName, children, element);
       element.data = { type: 'named', name: suffix };
     });
   }
 
   const namedSectionTags = Object.fromEntries(
-    definition.sectionNames.map((sectionName) => {
-      const sectionTag = createSuffixSectionTag(sectionName);
-      return [sectionName, sectionTag];
-    }),
+    definition.sectionNames.map((sectionName) => [
+      sectionName,
+      createSuffixSectionTag(sectionName),
+    ]),
   ) as {
-    [K in TDefinition['sectionNames'][number]]: ReturnType<
-      typeof createSuffixSectionTag<K>
-    >;
+    [K in TSectionNames[number]]: ReturnType<typeof createSuffixSectionTag<K>>;
   };
 
   const sectionTags = [sectionTag, ...Object.values(namedSectionTags)] as [
     typeof sectionTag,
-    ...(typeof namedSectionTags)[TDefinition['sectionNames'][number]][],
+    ...(typeof namedSectionTags)[TSectionNames[number]][],
   ];
 
   const accentTag = defineEruditTag({
-    tagName:
-      `${uppercaseFirst(definition.name)}` as `${UppercaseFirst<TDefinition['name']>}`,
-    schema: typedAccentSchema,
+    tagName: Name,
+    schema: accentSchema,
   })<
     { title: string } & (
       | { row?: true; column?: undefined }
       | { row?: undefined; column?: true }
-    ) &
-      TagChildren
-  >(({ tagName, children, element, props, registry }) => {
-    try {
-      ensureTagChildren(tagName, children, [mainSchema, sectionSchema]);
-      element.children = children as any;
+    )
+  >(({ tagName, children, element, props }) => {
+    ensureTagChildren(tagName, children);
 
-      if (!isRawElement(element.children[0], mainSchema)) {
-        throw new ProseError(
-          `<${tagName}> requires a <${mainTag.tagName}> as the first child element!`,
+    let hasMainSchema = false;
+    let hasSectionSchema = false;
+    let hasOtherSchema = false;
+
+    for (const child of children) {
+      if (isRawElement(child, mainSchema)) {
+        if (hasMainSchema) {
+          throw new EruditProseError(
+            `<${tagName}> can only have one <${mainTag.tagName}> child element!`,
+          );
+        }
+        hasMainSchema = true;
+        continue;
+      }
+
+      if (isRawElement(child, sectionSchema)) {
+        hasSectionSchema = true;
+        continue;
+      }
+
+      hasOtherSchema = true;
+    }
+
+    if (hasOtherSchema) {
+      if (hasMainSchema || hasSectionSchema) {
+        throw new EruditProseError(
+          `Cannot mix <${mainTag.tagName}> or <${sectionTag.tagName}> with other child elements inside <${tagName}>!`,
         );
       }
-    } catch {
-      element.children = [
-        mainTag({
-          __JSPROSE_registryProp: PROSE_REGISTRY,
-          children: children as any,
-        } as any),
-      ];
+
+      element.children = [mainTag({ children })];
+    } else {
+      let mainChild: ToRawElement<AccentMainSchema> | undefined;
+      let sectionChildren: ToRawElement<AccentSectionSchema>[] = [];
+
+      for (const child of children) {
+        if (isRawElement(child, mainSchema)) {
+          mainChild = child;
+        } else if (isRawElement(child, sectionSchema)) {
+          sectionChildren.push(child);
+        }
+      }
+
+      if (!mainChild) {
+        throw new EruditProseError(
+          `<${tagName}> requires a <${mainTag.tagName}> child element!`,
+        );
+      }
+
+      element.children = [mainChild, ...sectionChildren] as any;
     }
 
     const title = props.title.trim();
     validateTitle(tagName, title);
 
-    let layout: 'column' | 'row' = 'column';
-    if (props.row === true) {
-      layout = 'row';
-    }
-
-    element.data = { title, layout };
+    element.data = { title, layout: props.row === true ? 'row' : 'column' };
     element.title = title;
   });
 
   //
-  // Registry Items
+  // Core Elements
   //
 
-  const mainRegistryItem = defineRegistryItem({
+  const mainCoreElement = defineProseCoreElement({
     schema: mainSchema,
     tags: [mainTag],
   });
 
-  const sectionRegistryItem = defineRegistryItem({
+  const sectionCoreElement = defineProseCoreElement({
     schema: sectionSchema,
     tags: [
       sectionTag,
@@ -273,8 +300,8 @@ Section names should start with lower case letter.
     ] as typeof sectionTags,
   });
 
-  const accentRegistryItem = defineRegistryItem({
-    schema: typedAccentSchema,
+  const accentCoreElement = defineProseCoreElement({
+    schema: accentSchema,
     tags: [accentTag],
   });
 
@@ -283,21 +310,21 @@ Section names should start with lower case letter.
   //
 
   return {
-    _sectionNames: definition.sectionNames as TDefinition['sectionNames'],
+    _sectionNames: definition.sectionNames as TSectionNames,
     accent: {
-      schema: typedAccentSchema,
+      schema: accentSchema,
       tag: accentTag,
-      registryItem: accentRegistryItem,
+      coreElement: accentCoreElement,
     },
     main: {
       schema: mainSchema,
       tag: mainTag,
-      registryItem: mainRegistryItem,
+      coreElement: mainCoreElement,
     },
     section: {
       schema: sectionSchema,
       tags: sectionTags,
-      registryItem: sectionRegistryItem,
+      coreElement: sectionCoreElement,
     },
   };
 }

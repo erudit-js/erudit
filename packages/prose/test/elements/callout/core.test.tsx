@@ -1,40 +1,59 @@
-import { isRawElement, PROSE_REGISTRY } from '@jsprose/core';
 import { describe, expect, it } from 'vitest';
+import { isRawElement } from 'tsprose';
 
-import { asEruditRaw } from '@erudit-js/prose';
-import {
-  P,
-  paragraphRegistryItem,
-} from '@erudit-js/prose/elements/paragraph/core';
-import {
+import { asEruditRaw } from '@src/rawElement';
+import core, {
   Callout,
-  calloutRegistryItem,
   calloutSchema,
-} from '@erudit-js/prose/elements/callout/core';
-
-const prepareRegistry = () =>
-  PROSE_REGISTRY.setItems(calloutRegistryItem, paragraphRegistryItem);
+  type CalloutSchema,
+} from '@src/elements/callout/core';
+import { P } from '@src/elements/paragraph/core';
+import { eruditRawToProse } from '@src/rawToProse';
 
 describe('Callout', () => {
   it('should create callout correctly', () => {
-    prepareRegistry();
-
-    const callout = asEruditRaw(
+    const callout = asEruditRaw<CalloutSchema>(
       <Callout icon="icon.png" invert="dark" title="Note Title">
         <P>Paragraph</P>
       </Callout>,
     );
 
     expect(isRawElement(callout, calloutSchema)).toBe(true);
-    expect(callout.data).toStrictEqual({
+    expect(callout.data).toEqual({
       iconSrc: 'icon.png',
       iconInvert: 'dark',
       title: 'Note Title',
     });
     expect(callout.storageKey).toBe('icon.png');
     expect(callout.children).toHaveLength(1);
-    expect(
-      isRawElement(callout.children![0], paragraphRegistryItem.schema),
-    ).toBe(true);
+    expect(isRawElement(callout.children![0], P.schema)).toBe(true);
+  });
+
+  it('should wrap inliners in paragraph', () => {
+    const callout = asEruditRaw<CalloutSchema>(
+      <Callout icon="icon.png" title="Note Title">
+        Text without paragraph
+      </Callout>,
+    );
+
+    expect(isRawElement(callout, calloutSchema)).toBe(true);
+    expect(isRawElement(callout.children[0], P.schema)).toBe(true);
+  });
+});
+
+describe('rawToProseHook', () => {
+  it('should add icon svg to files', async () => {
+    const { files } = await eruditRawToProse(
+      {
+        schemaHooks: new Map([[calloutSchema, core.rawToProseHook]]),
+      },
+      <>
+        <Callout icon="icon.png" title="Note Title">
+          <P>Paragraph</P>
+        </Callout>
+      </>,
+    );
+
+    expect(files.has('icon.png')).toBe(true);
   });
 });

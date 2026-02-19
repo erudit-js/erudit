@@ -13,5 +13,5 @@
     "types": ["./env.d.ts"]
   },
   "include": ["src/**/*"],
-  "exclude": ["src/elements/**/_global.d.ts", "src/elements/**/_global.ts"]
+  "exclude": ["src/elements/**/_global.*"]
 }

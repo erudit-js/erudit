@@ -1,37 +1,33 @@
-import {
-  defineRegistryItem,
-  defineSchema,
-  ensureTagChildren,
-  type TagChildren,
-} from '@jsprose/core';
+import { defineSchema, ensureTagChildren, type Schema } from 'tsprose';
 
 import { imageSchema } from '../image/core.js';
 import { defineEruditTag } from '../../tag.js';
-import { defineEruditProseCoreElement } from '../../coreElement.js';
+import { defineProseCoreElement } from '../../coreElement.js';
 
-export const gallerySchema = defineSchema({
-  name: 'gallery',
-  type: 'block',
-  linkable: true,
-})<{
+export interface GallerySchema extends Schema {
+  name: 'gallery';
+  type: 'block';
+  linkable: true;
   Data: undefined;
   Storage: undefined;
   Children: (typeof imageSchema)[];
-}>();
+}
+
+export const gallerySchema = defineSchema<GallerySchema>({
+  name: 'gallery',
+  type: 'block',
+  linkable: true,
+});
 
 export const Gallery = defineEruditTag({
   tagName: 'Gallery',
   schema: gallerySchema,
-})<TagChildren>(({ element, tagName, children }) => {
+})(({ element, tagName, children }) => {
   ensureTagChildren(tagName, children, imageSchema);
   element.children = children;
 });
 
-export const galleryRegistryItem = defineRegistryItem({
+export default defineProseCoreElement({
   schema: gallerySchema,
   tags: [Gallery],
-});
-
-export default defineEruditProseCoreElement({
-  registryItem: galleryRegistryItem,
 });

@@ -1,20 +1,22 @@
 import {
+  injectDocumentId,
   isRawElement,
-  ProseError,
-  type AnySchema,
-  type AnyUnique,
   type AutoUnique,
+  type DocumentUniques,
+  type DocumentUniquesTemplate,
   type LinkableTag,
   type RawElement,
+  type ToRawElement,
+  type ToUnique,
   type Unique,
-  type WrapSchemas,
-} from '@jsprose/core';
+} from 'tsprose';
 
 import { DEFAULT_SEED, type ProblemSeed, ProblemRandom } from './rng.js';
 import {
   validateProblemContent,
   type ProblemContentChild,
 } from './problemContent.js';
+import { EruditProseError } from '../../error.js';
 
 export type CheckFunction = (args: {
   answer: string | undefined;
@@ -27,24 +29,7 @@ export type CheckFunction = (args: {
 //
 
 export function insertProblemScriptId(scriptSrc: string, code: string): string {
-  // Match: export default defineProblemScript(...)
-  return code.replace(
-    /\bdefineProblemScript\(([\s\S]*?)\)/g,
-    (fullMatch, argsContent) => {
-      const trimmed = argsContent.trim();
-
-      // If the first argument already looks like a string literal, skip.
-      if (/^['"`]/.test(trimmed)) {
-        return fullMatch;
-      }
-
-      const needsNoSpace = /^\s*\n/.test(argsContent);
-      const comma = needsNoSpace ? ',' : ', ';
-      const newArgs = `'${scriptSrc}'${comma}${argsContent}`;
-
-      return `defineProblemScript(${newArgs})`;
-    },
-  );
+  return injectDocumentId(scriptSrc, code, 'defineProblemScript');
 }
 
 //
@@ -52,63 +37,85 @@ export function insertProblemScriptId(scriptSrc: string, code: string): string {
 //
 
 export interface ProblemScriptDefinition {
-  uniques?: Record<string, LinkableTag>;
+  uniques?: DocumentUniquesTemplate;
   isGenerator?: boolean;
 }
 
-export function defineProblemScript<
-  const TDefinition extends ProblemScriptDefinition,
->(scriptSrcOrDefinition?: string | TDefinition, maybeDefinition?: TDefinition) {
+// -- Helper Types --
+
+type ProblemContentFnArgs<TDef extends ProblemScriptDefinition> =
+  (TDef['uniques'] extends DocumentUniquesTemplate
+    ? { uniques: DocumentUniques<TDef['uniques']> }
+    : {}) &
+    (TDef['isGenerator'] extends true
+      ? { initial: boolean; random: ProblemRandom }
+      : {});
+
+type ProblemContentFn<TDef extends ProblemScriptDefinition> = (
+  args: ProblemContentFnArgs<TDef>,
+) => RawElement | { problemContent: RawElement; check?: CheckFunction };
+
+type ProblemScriptInstanceCreator<TDef extends ProblemScriptDefinition> =
+  TDef['uniques'] extends DocumentUniquesTemplate
+    ? (
+        uniquesMapping:
+          | (() => AutoUnique)
+          | {
+              [K in keyof TDef['uniques']]:
+                | ToUnique<TDef['uniques'][K] & LinkableTag>
+                | (() => AutoUnique);
+            },
+      ) => ProblemScriptInstance
+    : () => ProblemScriptInstance;
+
+// -- Overloads --
+
+export function defineProblemScript(): (
+  contentFn: ProblemContentFn<{}>,
+) => ProblemScriptInstanceCreator<{}>;
+
+export function defineProblemScript<const TDef extends ProblemScriptDefinition>(
+  definition: TDef,
+): (contentFn: ProblemContentFn<TDef>) => ProblemScriptInstanceCreator<TDef>;
+
+export function defineProblemScript<const TDef extends ProblemScriptDefinition>(
+  scriptSrc: string,
+  definition?: TDef,
+): (contentFn: ProblemContentFn<TDef>) => ProblemScriptInstanceCreator<TDef>;
+
+// -- Implementation --
+
+export function defineProblemScript<const TDef extends ProblemScriptDefinition>(
+  scriptSrcOrDefinition?: string | TDef,
+  maybeDefinition?: TDef,
+) {
   let scriptSrc: string;
-  let definition: TDefinition;
+  let definition: TDef;
 
   if (typeof scriptSrcOrDefinition === 'string') {
     scriptSrc = scriptSrcOrDefinition;
-    definition = maybeDefinition!;
+    definition = (maybeDefinition ?? {}) as TDef;
   } else {
-    throw new ProseError(
+    throw new EruditProseError(
       `Problem script requires script ID to be manually specified or inserted at transform time!`,
     );
   }
 
-  type ProblemContentFn = (
-    args: (TDefinition['uniques'] extends Record<string, LinkableTag>
-      ? {
-          uniques: {
-            [K in keyof NonNullable<TDefinition['uniques']>]: Unique<
-              NonNullable<TDefinition['uniques']>[K]
-            >;
-          };
-        }
-      : {}) &
-      (TDefinition['isGenerator'] extends true
-        ? { initial: boolean; random: ProblemRandom }
-        : {}),
-  ) =>
-    | RawElement<AnySchema>
-    | {
-        problemContent: RawElement<AnySchema>;
-        check?: CheckFunction;
-      };
-
-  function defineProblemContent(problemContentFn: ProblemContentFn) {
-    function createProblemScriptInstance(
-      ...args: TDefinition['uniques'] extends Record<string, LinkableTag>
-        ? [
-            uniquesMapping:
-              | (() => AutoUnique)
-              | {
-                  [K in keyof NonNullable<TDefinition['uniques']>]:
-                    | Unique<NonNullable<TDefinition['uniques']>[K]>
-                    | (() => AutoUnique);
-                },
-          ]
-        : []
-    ) {
-      const finalizedUniques: Record<string, AnyUnique> = {};
+  function defineProblemContent(
+    problemContentFn: ProblemContentFn<TDef>,
+  ): ProblemScriptInstanceCreator<TDef> {
+    function createInstance(
+      uniquesMapping?: (() => AutoUnique) | Record<string, any>,
+    ): ProblemScriptInstance {
+      const finalizedUniques: Record<string, Unique> = {};
 
       if (definition.uniques) {
-        const uniquesMapping = args[0];
+        if (!uniquesMapping) {
+          throw new EruditProseError(
+            `Problem script with uniques requires a uniques mapping!`,
+          );
+        }
+
         if (typeof uniquesMapping === 'function') {
           for (const key in definition.uniques) {
             finalizedUniques[key] = uniquesMapping() as any;
@@ -120,10 +127,6 @@ export function defineProblemScript<
               finalizedUniques[key] = mapping() as any;
             } else {
               finalizedUniques[key] = mapping;
-              // @ts-expect-error
-              delete finalizedUniques[key].rawElement;
-              // @ts-expect-error
-              delete finalizedUniques[key].tag;
             }
           }
         }
@@ -133,10 +136,10 @@ export function defineProblemScript<
         scriptSrc,
         uniques: finalizedUniques,
         isGenerator: definition.isGenerator ?? false,
-        generate: (seed?: ProblemSeed) => {
+        generate(seed?: ProblemSeed) {
           const finalizedSeed = seed ?? DEFAULT_SEED;
 
-          const problemContentResult = problemContentFn({
+          const result = problemContentFn({
             uniques: finalizedUniques,
             ...(definition.isGenerator
               ? {
@@ -146,9 +149,9 @@ export function defineProblemScript<
               : {}),
           } as any);
 
-          const problemContent = isRawElement(problemContentResult)
-            ? problemContentResult
-            : problemContentResult.problemContent;
+          const problemContent = isRawElement(result)
+            ? result
+            : result.problemContent;
 
           validateProblemContent(
             '[Problem Script]',
@@ -156,19 +159,15 @@ export function defineProblemScript<
           );
 
           return {
-            problemContent: problemContent.children as WrapSchemas<
-              'raw-prose',
-              ProblemContentChild
-            >[],
-            check: !isRawElement(problemContentResult)
-              ? problemContentResult.check
-              : undefined,
+            problemContent:
+              problemContent.children as ToRawElement<ProblemContentChild>[],
+            check: !isRawElement(result) ? result.check : undefined,
           };
         },
-      } as ProblemScriptInstance;
+      };
     }
 
-    return createProblemScriptInstance;
+    return createInstance as ProblemScriptInstanceCreator<TDef>;
   }
 
   return defineProblemContent;
@@ -176,10 +175,10 @@ export function defineProblemScript<
 
 export interface ProblemScriptInstance {
   scriptSrc: string;
-  uniques: Record<string, AnyUnique>;
+  uniques: Record<string, Unique>;
   isGenerator: boolean;
   generate: (seed?: ProblemSeed) => {
-    problemContent: WrapSchemas<'raw-prose', ProblemContentChild>[];
+    problemContent: ToRawElement<ProblemContentChild>[];
     check?: CheckFunction;
   };
 }

@@ -1,6 +1,6 @@
 {
   "name": "@erudit-js/core",
-  "version": "4.1.2",
+  "version": "4.2.0-dev.1",
   "type": "module",
   "description": "Erudit core essentials",
   "exports": {
@@ -20,7 +20,7 @@
     "prepack": "bun run build"
   },
   "dependencies": {
-    "@jsprose/core": "^1.0.0",
+    "tsprose": "catalog:",
     "gradient-string": "^3.0.0"
   }
 }

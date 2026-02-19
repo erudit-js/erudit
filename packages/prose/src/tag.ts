@@ -1,78 +1,113 @@
 import {
   defineTag,
-  Registry,
-  type AnySchema,
-  type ConfigurableTagProps,
+  TAG_PREFIX,
   type NormalizedChildren,
-  type ProcessTagFunction,
-  type TagDefinition,
-} from '@jsprose/core';
+  type Schema,
+  type TagProps,
+  type ValidateTagCustomProps,
+} from 'tsprose';
 
-import type { EruditRawElement } from './rawElement.js';
-import { finalizeSnippet, type ObjPropSnippet } from './snippet.js';
-import { finalizeToc, type ObjPropToc } from './toc.js';
-import { finalizeTitle } from './title.js';
+import type { ToEruditRawElement } from './rawElement.js';
+import {
+  finalizeSnippet,
+  NO_SNIPPET_PREFIX,
+  type NoSnippet,
+  type SnippetTagProp,
+} from './snippet.js';
+import {
+  finalizeToc,
+  NO_TOC_PREFIX,
+  type NoToc,
+  type TocTagProp,
+} from './toc.js';
 
-declare const NoTocSymbol: unique symbol;
-declare const NoSnippetSymbol: unique symbol;
+type DistributiveOmit<T, K extends PropertyKey> = T extends any
+  ? Omit<T, K>
+  : never;
 
-export type NoToc = { readonly [NoTocSymbol]?: never };
-export type NoSnippet = { readonly [NoSnippetSymbol]?: never };
+export type ToEruditTag<
+  TSchema extends Schema,
+  TagName extends string,
+  Props extends Record<string, any> = {},
+> = {
+  [TAG_PREFIX]: true;
+  tagName: TagName;
+  schema: TSchema;
+} & ((
+  props: DistributiveOmit<
+    EruditTagProps<TSchema, TagName, Props>,
+    typeof NO_TOC_PREFIX | typeof NO_SNIPPET_PREFIX
+  >,
+) => ToEruditRawElement<TSchema, TagName>);
 
-export type EruditTagProps<TProps extends Record<string, unknown>> =
-  (TProps extends NoToc ? {} : ObjPropToc) &
-    (TProps extends NoSnippet ? {} : ObjPropSnippet);
+export type EruditTag = ToEruditTag<Schema, string, any>;
 
-export type EruditProcessTagArgs = {
-  tagName: string;
-  element: EruditRawElement<AnySchema>;
-  props: ConfigurableTagProps & ObjPropSnippet & ObjPropToc;
-  children: NormalizedChildren;
-  registry: Registry;
-};
+export type EruditTagProps<
+  TSchema extends Schema,
+  TagName extends string,
+  Props extends Record<string, any> = {},
+> = TagProps<TSchema, TagName, Props> & EruditTagTocSnippet<TSchema, Props>;
+
+export type EruditTagTocSnippet<
+  TSchema extends Schema,
+  Props extends Record<string, any> = {},
+> = TSchema['linkable'] extends false
+  ? {}
+  : (Props extends NoToc ? {} : TocTagProp) &
+      (Props extends NoSnippet ? {} : SnippetTagProp);
 
 export function defineEruditTag<
-  const TSchema extends AnySchema,
-  const TTagDefinition extends TagDefinition<TSchema>,
->(definition: TTagDefinition) {
-  const baseFinalizeTag = defineTag(definition);
+  TSchema extends Schema,
+  TagName extends string,
+>(tagParameters: { tagName: TagName; schema: TSchema }) {
+  const baseFinalizeTag = defineTag(tagParameters);
 
-  function eruditFinalizeTag<
-    const TConfigurableTagProps extends ConfigurableTagProps,
-  >(
-    processTag: ProcessTagFunction<
-      TTagDefinition['schema'],
-      TTagDefinition,
-      TConfigurableTagProps &
-        (TTagDefinition['schema']['linkable'] extends true
-          ? EruditTagProps<TConfigurableTagProps>
-          : {}),
-      EruditRawElement<TTagDefinition['schema'], TTagDefinition['tagName']>
-    >,
+  function eruditFinalizeTag<const Props extends ValidateTagCustomProps<Props>>(
+    eruditTagElementHandler: EruditTagElementHandler<TagName, TSchema, Props>,
   ) {
-    const eruditTag = baseFinalizeTag<
-      TConfigurableTagProps &
-        (TTagDefinition['schema']['linkable'] extends true
-          ? EruditTagProps<TConfigurableTagProps>
-          : {})
-    >((args: EruditProcessTagArgs) => {
-      processTag(args as any);
+    const eruditTag = baseFinalizeTag<Props>((baseContext) => {
+      const specificContext = baseContext as EruditTagElementHandlerContext<
+        TagName,
+        TSchema,
+        Props
+      >;
+      const anyContext = baseContext as EruditTagElementHandlerContext;
 
-      // Use every possibility to get shared title property
-      args.element.title = finalizeTitle(args);
+      // Allow specific tag to set title, snippet and toc properties first
+      // Then used it for finalization processes
+      eruditTagElementHandler(specificContext);
 
-      args.element.snippet = finalizeSnippet(args);
-      args.element.toc = finalizeToc(args);
+      const rawElement = anyContext.element;
 
-      // Use every possibility to get human-readable slug whether it is set manually or taken from snippet or toc
-      args.element.slug ||=
-        args.element.snippet?.title ||
-        args.element.toc?.title ||
-        args.element.title;
+      finalizeSnippet(rawElement, anyContext.props.snippet);
+      finalizeToc(rawElement, anyContext.props.toc);
+
+      // Use every possibility to get human-readable slug
+      rawElement.slug ||=
+        rawElement.snippet?.title ||
+        rawElement.title ||
+        (typeof rawElement.toc === 'string' ? rawElement.toc : undefined);
     });
 
-    return eruditTag;
+    return eruditTag as unknown as ToEruditTag<TSchema, TagName, Props>;
   }
 
   return eruditFinalizeTag;
 }
+
+export type EruditTagElementHandlerContext<
+  TagName extends string = string,
+  TSchema extends Schema = Schema,
+  Props extends Record<string, any> = {},
+> = {
+  tagName: TagName;
+  props: EruditTagProps<TSchema, TagName, Props>;
+  children: NormalizedChildren;
+  element: ToEruditRawElement<TSchema, TagName>;
+};
+
+export type EruditTagElementHandler<
+  TagName extends string,
+  TSchema extends Schema,
+  Props extends Record<string, any>,
+> = (context: EruditTagElementHandlerContext<TagName, TSchema, Props>) => void;

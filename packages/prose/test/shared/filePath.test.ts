@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { projectRelFilePath } from '@erudit-js/prose/shared/filePath';
+import { projectRelFilePath } from '@src/shared/filePath';
 
 describe('projectRelFilePath', () => {
   it('should return the relative file path when the file is within the project', () => {

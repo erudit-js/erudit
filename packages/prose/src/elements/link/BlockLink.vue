@@ -1,10 +1,10 @@
 <script lang="ts" setup>
 import { onMounted, ref } from 'vue';
-import { type ProseElement } from '@jsprose/core';
+import type { ToProseElement } from 'tsprose';
 
 import Block from '../../app/shared/block/Block.vue';
-import type { dependencySchema } from './dependency/core.js';
-import { referenceSchema } from './reference/core.js';
+import type { DependencySchema } from './dependency/core.js';
+import { referenceSchema, type ReferenceSchema } from './reference/core.js';
 import type { LinkStorage } from './storage.js';
 import { useProseContext } from '../../app/composables/context.js';
 import { useElementStorage } from '../../app/composables/storage.js';
@@ -15,9 +15,7 @@ import type { ReferencePhrases } from './reference/phrases.js';
 import type { ElementPhrases } from '../../app/language/element.js';
 
 const { element } = defineProps<{
-  element:
-    | ProseElement<typeof referenceSchema>
-    | ProseElement<typeof dependencySchema>;
+  element: ToProseElement<ReferenceSchema> | ToProseElement<DependencySchema>;
 }>();
 
 const { EruditLink, EruditIcon, eruditIcons } = useProseContext();

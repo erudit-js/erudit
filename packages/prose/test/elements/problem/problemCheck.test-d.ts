@@ -1,6 +1,6 @@
 import { describe, it } from 'vitest';
 
-import { ProblemCheck } from '@erudit-js/prose/elements/problem/problemCheck';
+import { ProblemCheck } from '@src/elements/problem/problemCheck';
 
 describe('Problem Content', () => {
   it('should allow yes/no, answer, answers or script', () => {

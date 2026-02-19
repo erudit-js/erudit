@@ -1,11 +1,11 @@
 <script lang="ts" setup>
-import type { ProseElement } from '@jsprose/core';
+import type { ToProseElement } from 'tsprose';
 
-import { listSchema } from './core.js';
+import { type ListSchema } from './core.js';
 import Render from '../../app/shared/Render.vue';
 import Block from '../../app/shared/block/Block.vue';
 
-defineProps<{ element: ProseElement<typeof listSchema> }>();
+defineProps<{ element: ToProseElement<ListSchema> }>();
 </script>
 
 <template>
@@ -21,7 +21,9 @@ defineProps<{ element: ProseElement<typeof listSchema> }>();
         '--liText': 'var(--accentText, var(--color-text-muted))',
       }"
       v-bind="
-        element.data.type === 'ol' ? { start: element.data.start ?? 1 } : {}
+        element.data.type === 'ordered'
+          ? { start: element.data.start ?? 1 }
+          : {}
       "
     >
       <li
@@ -39,7 +41,7 @@ defineProps<{ element: ProseElement<typeof listSchema> }>();
               border-(--liBorder) bg-(--liBackground) font-semibold
               text-(--liText)"
           >
-            <template v-if="element.data.type === 'ol'">
+            <template v-if="element.data.type === 'ordered'">
               <div class="micro:text-[13px] text-[10px]">
                 {{ i + (element.data.start ?? 0) }}
               </div>

@@ -9,16 +9,16 @@ import {
   useId,
   useTemplateRef,
 } from 'vue';
-import type { ProseElement } from '@jsprose/core';
+import type { ToProseElement } from 'tsprose';
 
-import type { diagramSchema } from './core.js';
+import type { DiagramSchema } from './core.js';
 import { usePhotoSwipe } from '../../app/shared/photoswipe/composable.js';
 import { useProseContext } from '../../app/composables/context.js';
 import Caption from '../caption/Caption.vue';
 import Block from '../../app/shared/block/Block.vue';
 
 const { element } = defineProps<{
-  element: ProseElement<typeof diagramSchema>;
+  element: ToProseElement<DiagramSchema>;
 }>();
 
 let isWebkit = ref<boolean>();

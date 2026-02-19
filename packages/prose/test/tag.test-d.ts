@@ -1,52 +1,66 @@
 import { describe, it, expectTypeOf } from 'vitest';
-import { defineSchema, type NoTagChildren } from '@jsprose/core';
+import { defineSchema, type LinkableSchema, type Schema } from 'tsprose';
 
-import {
-  defineEruditTag,
-  type NoSnippet,
-  type NoToc,
-  type ObjRawElementToc,
-  type SnippetData,
-} from '@erudit-js/prose';
+import { defineEruditTag } from '@src/tag';
+import type { NoSnippet, SnippetRaw } from '@src/snippet';
+import type { NoToc, TocRawElementProp } from '@src/toc';
 
 describe('defineEruditTag', () => {
   it('should infer augmented properties for linkable schema', () => {
-    const linkableSchema = defineSchema({
-      name: 'linkable',
+    interface TestLinkableSchema extends LinkableSchema {
+      name: 'testLinkable';
+      type: 'block';
+      linkable: true;
+      Data: undefined;
+      Storage: undefined;
+      Children: undefined;
+    }
+
+    const linkableSchema = defineSchema<TestLinkableSchema>({
+      name: 'testLinkable',
       type: 'block',
       linkable: true,
-    })<{ Data: undefined; Storage: undefined; Children: undefined }>();
+    });
 
     defineEruditTag({
       tagName: 'LinkableTag',
       schema: linkableSchema,
-    })<NoTagChildren>(({ props, element }) => {
+    })(({ props, element }) => {
       expectTypeOf<typeof props.snippet>().toEqualTypeOf<
-        SnippetData | undefined
+        SnippetRaw | undefined
       >();
       expectTypeOf<typeof element.snippet>().toEqualTypeOf<
-        SnippetData | undefined
+        SnippetRaw | undefined
       >();
       expectTypeOf<typeof props.toc>().toEqualTypeOf<
         boolean | string | undefined
       >();
       expectTypeOf<typeof element.toc>().toEqualTypeOf<
-        ObjRawElementToc['toc'] | undefined
+        TocRawElementProp['toc'] | undefined
       >();
     });
   });
 
   it('should infer no augmented for unlinkable schema', () => {
-    const unlinkableSchema = defineSchema({
-      name: 'unlinkable',
+    interface UnlinkableSchema extends Schema {
+      name: 'testUnlinkable';
+      type: 'block';
+      linkable: false;
+      Data: undefined;
+      Storage: undefined;
+      Children: undefined;
+    }
+
+    const unlinkableSchema = defineSchema<UnlinkableSchema>({
+      name: 'testUnlinkable',
       type: 'block',
       linkable: false,
-    })<{ Data: undefined; Storage: undefined; Children: undefined }>();
+    });
 
     defineEruditTag({
       tagName: 'UnlinkableTag',
       schema: unlinkableSchema,
-    })<NoTagChildren>(({ props }) => {
+    })(({ props }) => {
       // @ts-expect-error No snippet prop on unlinkable schema
       props.snippet;
       // @ts-expect-error No toc prop on unlinkable schema
@@ -55,40 +69,47 @@ describe('defineEruditTag', () => {
   });
 
   it('should respect NoSnippet and NoToc markers', () => {
-    const linkableSchema = defineSchema({
-      name: 'linkable',
+    interface TestSchema extends LinkableSchema {
+      name: 'testSchema';
+      type: 'block';
+      linkable: true;
+      Data: undefined;
+      Storage: undefined;
+      Children: undefined;
+    }
+
+    const linkableSchema = defineSchema<TestSchema>({
+      name: 'testSchema',
       type: 'block',
       linkable: true,
-    })<{ Data: undefined; Storage: undefined; Children: undefined }>();
+    });
 
     const noSnippetTag = defineEruditTag({
       tagName: 'NoSnippetTag',
       schema: linkableSchema,
-    })<NoTagChildren & NoSnippet>(({ props }) => {
-      // @ts-expect-error No snippet prop when __noSnippet is set
+    })<NoSnippet>(({ props }) => {
+      // @ts-expect-error No `snippet` prop when NoSnippet is set
       props.snippet;
       expectTypeOf<typeof props.toc>().toEqualTypeOf<
         boolean | string | undefined
       >();
     });
 
-    noSnippetTag({
-      /* No phantom NoSnippet property required */
-    });
+    // No NO_SNIPPET_PREFIX property is required when NoSnippet is set
+    noSnippetTag({});
 
     const noTocTag = defineEruditTag({
       tagName: 'NoTocTag',
       schema: linkableSchema,
-    })<NoTagChildren & NoToc>(({ props }) => {
+    })<NoToc>(({ props }) => {
       expectTypeOf<typeof props.snippet>().toEqualTypeOf<
-        SnippetData | undefined
+        SnippetRaw | undefined
       >();
-      // @ts-expect-error No toc prop when __noToc is set
+      // @ts-expect-error No toc prop when NoToc is set
       props.toc;
     });
 
-    noTocTag({
-      /* No phantom NoToc property required */
-    });
+    // No NO_TOC_PREFIX property is required when NoToc is set
+    noTocTag({});
   });
 });

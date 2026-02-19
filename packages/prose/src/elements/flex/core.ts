@@ -1,12 +1,21 @@
 import {
-  defineRegistryItem,
   defineSchema,
   ensureTagBlockChildren,
   type BlockSchema,
-  type TagChildren,
-} from '@jsprose/core';
+  type Schema,
+} from 'tsprose';
+
 import { defineEruditTag } from '../../tag.js';
-import { defineEruditProseCoreElement } from '../../coreElement.js';
+import { defineProseCoreElement } from '../../coreElement.js';
+
+export interface FlexSchema extends Schema {
+  name: 'flex';
+  type: 'block';
+  linkable: true;
+  Data: FlexData | undefined;
+  Storage: undefined;
+  Children: BlockSchema[];
+}
 
 export interface FlexData {
   gap?: string;
@@ -14,27 +23,22 @@ export interface FlexData {
   flexes?: string[];
 }
 
-export const flexSchema = defineSchema({
+export const flexSchema = defineSchema<FlexSchema>({
   name: 'flex',
   type: 'block',
   linkable: true,
-})<{
-  Data: FlexData | undefined;
-  Storage: undefined;
-  Children: BlockSchema[];
-}>();
+});
 
 export const Flex = defineEruditTag({
   tagName: 'Flex',
   schema: flexSchema,
-})<{ gap?: string; justify?: string; flexes?: string[] } & TagChildren>(({
+})<{ gap?: string; justify?: string; flexes?: string[] }>(({
   element,
   tagName,
   children,
   props,
-  registry,
 }) => {
-  ensureTagBlockChildren(tagName, children, registry);
+  ensureTagBlockChildren(tagName, children);
   element.children = children;
 
   if (props.gap) {
@@ -53,11 +57,7 @@ export const Flex = defineEruditTag({
   }
 });
 
-export const flexRegistryItem = defineRegistryItem({
+export default defineProseCoreElement({
   schema: flexSchema,
   tags: [Flex],
-});
-
-export default defineEruditProseCoreElement({
-  registryItem: flexRegistryItem,
 });

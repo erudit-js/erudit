@@ -1,35 +1,27 @@
-import {
-  isUnique,
-  type AnySchema,
-  type AnyUnique,
-  type RawElement,
-} from '@jsprose/core';
+import { isUnique, type RawElement, type Unique } from 'tsprose';
 
 import type { EruditRawElement } from './rawElement.js';
 import { finalizeToc } from './toc.js';
 
-const includedKey = '__ERUDIT_included';
+const ERUDIT_INCLUDE_FLAG = '__ERUDIT_included';
 
 export function Include(props: {
-  children: AnyUnique | RawElement<AnySchema>;
+  children: Unique | RawElement;
   toc?: true | string;
-}): RawElement<AnySchema> {
+}): RawElement {
   const rawElement = isUnique(props.children)
     ? props.children.rawElement
     : props.children;
 
-  function augmentRawElement(element: EruditRawElement<AnySchema>) {
+  function augmentRawElement(element: EruditRawElement) {
     const isRoot = element === rawElement;
 
     if (isRoot) {
       if (props.toc) {
         if (props.toc === true) {
-          element.toc = finalizeToc({
-            props: { toc: props.toc },
-            element,
-          } as any);
+          finalizeToc(element, true);
         } else {
-          element.toc = { add: true, title: props.toc };
+          finalizeToc(element, props.toc);
         }
       } else {
         delete element.toc;
@@ -41,22 +33,20 @@ export function Include(props: {
     delete element.snippet;
     delete element.uniqueName;
 
-    (element as any)[includedKey] = true;
+    (element as any)[ERUDIT_INCLUDE_FLAG] = true;
 
     if (element.children) {
       for (const child of element.children) {
-        augmentRawElement(child as EruditRawElement<AnySchema>);
+        augmentRawElement(child as EruditRawElement);
       }
     }
   }
 
-  augmentRawElement(rawElement as EruditRawElement<AnySchema>);
+  augmentRawElement(rawElement as EruditRawElement);
 
   return rawElement;
 }
 
-export function isIncludedRawElement(
-  rawElement: RawElement<AnySchema>,
-): boolean {
-  return (rawElement as any)[includedKey] === true;
+export function isIncludedRawElement(rawElement: RawElement): boolean {
+  return (rawElement as any)[ERUDIT_INCLUDE_FLAG] === true;
 }

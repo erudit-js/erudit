@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { extractTagDocs } from '@erudit-js/prose';
+import { extractTagDocs } from '@src/utils/docs';
 
 describe('extractTagDocs', () => {
   it('should return undefined when no JSDoc blocks are present', () => {
