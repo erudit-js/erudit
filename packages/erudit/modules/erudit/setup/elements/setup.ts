@@ -1,13 +1,14 @@
 import chalk from 'chalk';
 import type { Nuxt } from 'nuxt/schema';
 import { findPath } from 'nuxt/kit';
-import type { EruditProseCoreElement } from '@erudit-js/prose';
+
+import type { ProseCoreElement } from '@erudit-js/prose';
 
 import type { EruditRuntimeConfig } from '../../../../shared/types/runtimeConfig';
 import { moduleLogger } from '../../logger';
 import type { ElementData } from './shared';
 import { createTagsTable } from './tagsTable';
-import { createGlobalTypes } from './globalTypes';
+import { createElementGlobalTypes } from './elementGlobalTypes';
 import { createGlobalTemplate } from './globalTemplate';
 import { createAppTemplate } from './appTemplate';
 import { PROJECT_PATH } from '../../env';
@@ -60,7 +61,7 @@ export async function setupProseElements(
 
     const elementData: ElementData = {
       name: uniqueElementName,
-      registryItems: [],
+      coreElements: [],
       absDirectory: '',
       absCorePath: '',
       absAppPath: undefined,
@@ -91,7 +92,7 @@ export async function setupProseElements(
       elementData.absAppPath = appAbsPath;
     }
 
-    const coreDefault: EruditProseCoreElement | EruditProseCoreElement[] = (
+    const coreDefault: ProseCoreElement | ProseCoreElement[] = (
       await import(coreAbsPath)
     ).default;
 
@@ -100,7 +101,7 @@ export async function setupProseElements(
       : [coreDefault];
 
     for (const coreElement of coreElements) {
-      const schemaName = coreElement.registryItem.schema.name;
+      const schemaName = coreElement.schema.name;
 
       if (seenSchemas.has(schemaName)) {
         throw new Error(
@@ -109,23 +110,24 @@ export async function setupProseElements(
       }
 
       seenSchemas.add(schemaName);
-      elementData.registryItems.push({
+      elementData.coreElements.push({
         schemaName,
-        tagNames: [],
+        tags: {},
       });
 
-      if (coreElement.registryItem.tags) {
-        for (const tagName of Object.keys(coreElement.registryItem.tags)) {
-          if (seenTags.has(tagName)) {
+      if (coreElement.tags) {
+        for (let i = 0; i < coreElement.tags.length; i++) {
+          const tag = coreElement.tags[i]!;
+          if (seenTags.has(tag.tagName)) {
             throw new Error(
-              `Prose element tag name "<${tagName}>" is already registered by another element!`,
+              `Prose element tag name "<${tag.tagName}>" is already registered by another element!`,
             );
           }
 
-          seenTags.add(tagName);
-          elementData.registryItems[
-            elementData.registryItems.length - 1
-          ]!.tagNames.push(tagName);
+          seenTags.add(tag.tagName);
+          elementData.coreElements[elementData.coreElements.length - 1]!.tags[
+            tag.tagName
+          ] = i;
         }
       }
 
@@ -144,7 +146,7 @@ export async function setupProseElements(
     elementsData.push(elementData);
   }
 
-  createGlobalTypes(elementsData);
+  createElementGlobalTypes(elementsData);
   createGlobalTemplate(nuxt, elementsData);
   createAppTemplate(nuxt, elementsData);
 

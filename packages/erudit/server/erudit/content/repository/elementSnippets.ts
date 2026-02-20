@@ -15,7 +15,7 @@ export async function getContentElementSnippets(
     where: and(
       eq(ERUDIT.db.schema.contentSnippets.contentFullId, fullId),
       or(
-        eq(ERUDIT.db.schema.contentSnippets.quick, true),
+        eq(ERUDIT.db.schema.contentSnippets.key, true),
         eq(ERUDIT.db.schema.contentSnippets.seo, true),
       ),
     ),
@@ -45,27 +45,27 @@ export async function getContentElementSnippets(
       title: snippetData.title!,
     };
 
-    if (snippetData.quick) {
-      snippet.quick = {};
-      let quickTitle: string | undefined;
-      let quickDescription: string | undefined;
+    if (snippetData.key) {
+      snippet.key = {};
+      let keyTitle: string | undefined;
+      let keyDescription: string | undefined;
 
-      if (typeof snippetData.quick === 'string') {
-        quickTitle = snippetData.quick;
-      } else if (typeof snippetData.quick === 'object') {
-        if (snippetData.quick.title) {
-          quickTitle = snippetData.quick.title;
+      if (typeof snippetData.key === 'string') {
+        keyTitle = snippetData.key;
+      } else if (typeof snippetData.key === 'object') {
+        if (snippetData.key.title) {
+          keyTitle = snippetData.key.title;
         }
-        if (snippetData.quick.description) {
-          quickDescription = snippetData.quick.description;
+        if (snippetData.key.description) {
+          keyDescription = snippetData.key.description;
         }
       }
 
-      if (quickTitle) {
-        snippet.quick.title = quickTitle;
+      if (keyTitle) {
+        snippet.key.title = keyTitle;
       }
-      if (quickDescription) {
-        snippet.quick.description = quickDescription;
+      if (keyDescription) {
+        snippet.key.description = keyDescription;
       }
     }
 

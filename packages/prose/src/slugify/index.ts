@@ -1,7 +1,7 @@
-import type { EruditRawToProseContext } from '../rawToProse/index.js';
+import type { EruditRawToProseTask } from '../rawToProse/index.js';
 
 export type SlugifyCreator = (
-  context: EruditRawToProseContext,
+  context: EruditRawToProseTask,
 ) => Promise<(text: string) => string>;
 
 export const createDefaultSlugify: SlugifyCreator = async (context) => {

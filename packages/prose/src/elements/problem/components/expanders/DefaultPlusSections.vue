@@ -1,16 +1,12 @@
 <script lang="ts" setup>
-import {
-  isProseElement,
-  type AnySchema,
-  type ProseElement,
-} from '@jsprose/core';
+import { isProseElement, type ProseElement } from 'tsprose';
 
 import { problemSectionSchema } from '../../problemContent.js';
 import ProblemExpander from '../ProblemExpander.vue';
 import ProblemExpanderSection from '../ProblemExpanderSection.vue';
 import Render from '../../../../app/shared/Render.vue';
 
-const { value } = defineProps<{ value: ProseElement<AnySchema> }>();
+const { value } = defineProps<{ value: ProseElement }>();
 
 const defaultBlocks = value.children!.filter(
   (element) => !isProseElement(element, problemSectionSchema),
@@ -18,7 +14,7 @@ const defaultBlocks = value.children!.filter(
 
 const sections = value.children!.filter((element) =>
   isProseElement(element, problemSectionSchema),
-) as ProseElement<typeof problemSectionSchema>[];
+);
 </script>
 
 <template>

@@ -75,7 +75,9 @@ describe('Dependency Links', () => {
       </>
     ));
 
-    const { contentLinks } = await eruditRawToProse({}, thisDocument.rawProse);
+    const { contentLinks } = await eruditRawToProse({
+      rawProse: thisDocument.rawProse,
+    });
 
     // Extract dependency storage keys from the Map
     const dependencies = Array.from(contentLinks.entries())
@@ -134,10 +136,9 @@ describe('Dependency Links', () => {
       </>
     ));
 
-    const { prose, contentLinks } = await eruditRawToProse(
-      {},
-      thisDocument.rawProse,
-    );
+    const { prose, contentLinks } = await eruditRawToProse({
+      rawProse: thisDocument.rawProse,
+    });
 
     const depElement = prose.children!.at(1)?.children!.at(1)!;
     expect(isProseElement(depElement, depSchema)).toBe(true);

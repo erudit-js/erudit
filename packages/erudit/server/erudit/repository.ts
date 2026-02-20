@@ -6,7 +6,6 @@ import {
 } from './content/repository/topicParts';
 import { countContributors } from './contributors/repository/count';
 import { countSponsors } from './sponsors/repository/count';
-import { resolveEruditProse } from './prose/repository/resolve';
 import { pushFile } from './db/repository/pushFile';
 import { pushProblemScript } from './db/repository/pushProblemScript';
 import { pushProseLink } from './db/repository/pushProseLink';
@@ -26,7 +25,7 @@ import { getSponsorAvatarUrl } from './sponsors/repository/avatarUrl';
 import { getContentDescription } from './content/repository/description';
 import { getContentChildren } from './content/repository/children';
 import {
-  addContentElementCount,
+  updateContentSchemaCounts,
   getContentStats,
 } from './content/repository/stats';
 import { countNewsBatches, getNewsNextBatch } from './news/repository/batch';
@@ -38,6 +37,7 @@ import {
 import { getContentSeo } from './content/repository/seo';
 import { getContentElementSnippets } from './content/repository/elementSnippets';
 import { isContentHidden } from './content/repository/hidden';
+import { serverRawToProse } from './prose/repository/rawToProse';
 
 export const repository = {
   db: {
@@ -74,12 +74,12 @@ export const repository = {
     connections: getContentConnections,
     children: getContentChildren,
     stats: getContentStats,
-    addElementCount: addContentElementCount,
+    updateSchemaCounts: updateContentSchemaCounts,
     contentContributions: getContentContributions,
     seo: getContentSeo,
   },
   prose: {
-    resolve: resolveEruditProse,
+    fromRaw: serverRawToProse,
     getContent: getContentProse,
     getContributor: getContributorProse,
     finalize: finalizeProse,

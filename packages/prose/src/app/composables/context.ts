@@ -14,6 +14,7 @@ import type { ProseAppElement } from '../appElement.js';
 
 export interface ProseContext {
   mode: EruditMode;
+  setHtmlIds: boolean;
   languageCode: EruditLanguageCode;
   appElements: Record<string, ProseAppElement>;
   formatText: FormatText;

@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { useTemplateRef, ref, watch, computed } from 'vue';
-import type { ProseElement } from '@jsprose/core';
+import type { ToProseElement } from 'tsprose';
 
 import {
   checkProblemAnswer,
   fromSerializableValidator,
-  type problemCheckSchema,
+  type ProblemCheckSchema,
 } from '../../problemCheck.js';
 import checkIcon from '../../assets/actions/check.svg?raw';
 import plusIcon from '../../../../app/shared/assets/plus.svg?raw';
@@ -25,7 +25,7 @@ type CheckState = {
 };
 
 const { check, script } = defineProps<{
-  check: ProseElement<typeof problemCheckSchema>;
+  check: ToProseElement<ProblemCheckSchema>;
   script?: {
     check: (answer: string | undefined) => boolean;
     clear: () => void;

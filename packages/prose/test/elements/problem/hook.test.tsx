@@ -33,22 +33,23 @@ export const problemScript2 = defineProblemScript('script-2', {
 
 describe('rawToProseHook', () => {
   it('should add problem script files', async () => {
-    const { problemScripts } = await eruditRawToProse(
-      {},
-      <>
-        <Problem
-          title="Script Problem"
-          level="example"
-          applied
-          script={problemScript1()}
-        />
-        <P>Test Paragraph</P>
-        <Problems title="Multiple Problems" level="hard">
-          <P>Shared description</P>
-          <SubProblem script={problemScript2()} />
-        </Problems>
-      </>,
-    );
+    const { problemScripts } = await eruditRawToProse({
+      rawProse: (
+        <>
+          <Problem
+            title="Script Problem"
+            level="example"
+            applied
+            script={problemScript1()}
+          />
+          <P>Test Paragraph</P>
+          <Problems title="Multiple Problems" level="hard">
+            <P>Shared description</P>
+            <SubProblem script={problemScript2()} />
+          </Problems>
+        </>
+      ),
+    });
 
     expect(problemScripts.has('script-1')).toBe(true);
     expect(problemScripts.has('script-2')).toBe(true);

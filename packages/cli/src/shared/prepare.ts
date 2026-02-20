@@ -106,7 +106,7 @@ export async function prepareProject({
           allowSyntheticDefaultImports: true,
           jsx: 'react-jsx',
           jsxImportSource: 'tsprose',
-          types: ['tsprose/externals', '@erudit-js/prose/types'],
+          types: ['tsprose/externals', '@erudit-js/prose/raw'],
           lib: ['ESNext'],
         },
         include: [`${absProjectPath}/**/*`, `${eruditBuildPath}/**/*`],

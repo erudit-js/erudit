@@ -8,7 +8,6 @@ import {
   watchEffect,
 } from 'vue';
 import { useFloating, autoUpdate, offset, shift } from '@floating-ui/vue';
-import type { BlockSchema, ProseElement } from '@jsprose/core';
 
 import { useProseContext } from '../../composables/context.js';
 import { useElementIcon } from '../../composables/elementIcon.js';
@@ -19,9 +18,10 @@ import {
 } from '../../composables/anchor.js';
 import AsideMenu from './AsideMenu.vue';
 import { useFormatTextState } from '../../composables/formatText.js';
+import type { BlockProseElement } from 'tsprose';
 
-const { element } = defineProps<{ element: ProseElement<BlockSchema> }>();
-const { EruditIcon, EruditTransition } = useProseContext();
+const { element } = defineProps<{ element: BlockProseElement }>();
+const { EruditIcon, EruditTransition, setHtmlIds } = useProseContext();
 const elementIcon = await useElementIcon(element);
 
 const formatTextState = useFormatTextState();
@@ -173,7 +173,7 @@ onBeforeUnmount(() => {
 <template>
   <div
     ref="block"
-    :id="element.id"
+    :id="setHtmlIds ? element.id : undefined"
     :class="[$style.block, 'scroll-mt-big pr-(--proseAsideWidth)']"
   >
     <div :class="[$style.blockAbove, 'h-(--proseGap)']"></div>

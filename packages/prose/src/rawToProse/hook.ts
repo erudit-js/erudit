@@ -1,10 +1,7 @@
 import type { ProseElement, Schema } from 'tsprose';
 
 import type { EruditRawElement, ToEruditRawElement } from '../rawElement.js';
-import type {
-  EruditRawToProseContext,
-  EruditRawToProseResult,
-} from './index.js';
+import type { EruditRawToProseTask, EruditRawToProseResult } from './index.js';
 
 export type RawToProseHookReturn = void | {
   step?: (elements: {
@@ -15,7 +12,7 @@ export type RawToProseHookReturn = void | {
 };
 
 export type RawToProseHook = (args: {
-  context: EruditRawToProseContext;
+  task: EruditRawToProseTask;
   result: EruditRawToProseResult;
 }) => RawToProseHookReturn | Promise<RawToProseHookReturn>;
 
@@ -51,7 +48,7 @@ export type RawToProseSchemaHookReturn<TSchema extends Schema = Schema> =
       });
 
 export type RawToProseSchemaHook<TSchema extends Schema = Schema> = (args: {
-  context: EruditRawToProseContext;
+  task: EruditRawToProseTask;
   result: EruditRawToProseResult;
 }) =>
   | RawToProseSchemaHookReturn<TSchema>

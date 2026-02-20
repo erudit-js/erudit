@@ -1,12 +1,9 @@
 import {
-  fillStorage,
+  fillProseStorage,
   isProseElement,
-  PROSE_REGISTRY,
-  type AnySchema,
-  type FinalizedProse,
-  type GenericStorage,
   type ProseElement,
-} from '@jsprose/core';
+  type ProseWithStorage,
+} from 'tsprose';
 import { imageSchema } from '@erudit-js/prose/elements/image/core';
 import { videoSchema } from '@erudit-js/prose/elements/video/core';
 import { calloutSchema } from '@erudit-js/prose/elements/callout/core';
@@ -27,16 +24,21 @@ import { createCalloutStorage } from '../storage/callout';
 import { createLinkStorage } from '../storage/link';
 import { createProblemScriptStorage } from '../storage/problemScript';
 
-export async function finalizeProse(
-  proseElement: ProseElement<AnySchema>,
-): Promise<FinalizedProse> {
-  const storage: GenericStorage = {};
+import { coreElements } from '#erudit/prose/global';
 
-  await fillStorage({
-    storage,
-    proseElement,
-    storageCreators: PROSE_REGISTRY.getStorageCreators(),
-    step: async (element) => {
+export async function finalizeProse(
+  prose: ProseElement,
+): Promise<ProseWithStorage> {
+  const storageCreators = Object.fromEntries(
+    Object.entries(coreElements)
+      .map(([key, coreElement]) => [key, coreElement.createStorage])
+      .filter(([, createStorage]) => Boolean(createStorage)),
+  );
+
+  const storage = await fillProseStorage({
+    prose,
+    storageCreators,
+    alterValue: async (element) => {
       switch (true) {
         case isProseElement(element, imageSchema):
           await createImageStorage(element, storage);
@@ -62,7 +64,7 @@ export async function finalizeProse(
   });
 
   return {
-    proseElement,
+    prose,
     storage,
   };
 }

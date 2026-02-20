@@ -1,6 +1,6 @@
 import { createJiti, type Jiti, type JitiOptions } from 'jiti';
-import { insertDocumentId } from '@jsprose/core';
 import { sn } from 'unslash';
+import { injectDocumentId } from 'tsprose';
 import {
   pathToDocumentId,
   stringifyDocumentId,
@@ -45,11 +45,11 @@ export async function setupServerImporter() {
       const documentId = pathToDocumentId(filename, ERUDIT.paths.project());
 
       if (documentId) {
-        code = insertDocumentId({
+        code = injectDocumentId(
+          stringifyDocumentId(documentId),
           code,
-          documentId: stringifyDocumentId(documentId),
-          aliasName: 'defineProse',
-        });
+          'defineProse',
+        );
       }
 
       //
@@ -77,7 +77,7 @@ function createBaseJitiOptions(): JitiOptions {
     },
     jsx: {
       runtime: 'automatic',
-      importSource: '@jsprose/core',
+      importSource: 'tsprose',
     },
   };
 }

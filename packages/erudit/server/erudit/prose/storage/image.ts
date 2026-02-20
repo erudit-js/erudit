@@ -1,13 +1,13 @@
-import type { GenericStorage, ProseElement } from '@jsprose/core';
+import type { ProseStorage, ToProseElement } from 'tsprose';
 import type {
-  imageSchema,
+  ImageSchema,
   ImageStorage,
 } from '@erudit-js/prose/elements/image/core';
 import { createImageStorage as _createImageStorage } from '@erudit-js/prose/elements/image/storage';
 
 export async function createImageStorage(
-  element: ProseElement<typeof imageSchema>,
-  storage: GenericStorage,
+  element: ToProseElement<ImageSchema>,
+  storage: ProseStorage,
 ) {
   const runtimeConfig = useRuntimeConfig();
 

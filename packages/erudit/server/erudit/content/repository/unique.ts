@@ -1,12 +1,13 @@
 import { and, eq } from 'drizzle-orm';
 import {
+  isProseElement,
+  makeProseElement,
   mixSchema,
-  walkElements,
   WalkNoDeeper,
+  walkPreSync,
   WalkStop,
-  type AnySchema,
   type ProseElement,
-} from '@jsprose/core';
+} from 'tsprose';
 import type { ContentProseType } from '@erudit-js/core/content/prose';
 import { headingSchema } from '@erudit-js/prose/elements/heading/core';
 
@@ -36,21 +37,18 @@ export async function getContentUnique(
 export async function getContentHeadingUnique(
   fullId: string,
   proseType: ContentProseType,
-  uniqueName: string,
+  uniqueId: string,
 ) {
   const contentProse = await ERUDIT.repository.prose.getContent(
     proseType,
     fullId,
   );
 
-  const afterHeadingElements: ProseElement<AnySchema>[] = [];
+  const afterHeadingElements: ProseElement[] = [];
   let adding = false;
 
-  await walkElements(contentProse, async (element) => {
-    if (
-      element.schemaName === headingSchema.name &&
-      element.uniqueName === uniqueName
-    ) {
+  walkPreSync(contentProse, (element) => {
+    if (isProseElement(element, headingSchema) && element.id === uniqueId) {
       adding = true;
     }
 
@@ -66,11 +64,12 @@ export async function getContentHeadingUnique(
     }
   });
 
-  const mix: ProseElement<typeof mixSchema> = {
-    __JSPROSE_element: true,
-    schemaName: mixSchema.name,
-    children: afterHeadingElements,
-  } as ProseElement<typeof mixSchema>;
+  const mix = makeProseElement({
+    schema: mixSchema,
+    elementHandler: (proseElement) => {
+      proseElement.children = afterHeadingElements;
+    },
+  });
 
   return mix;
 }

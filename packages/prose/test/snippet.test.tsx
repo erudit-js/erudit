@@ -625,20 +625,22 @@ describe('snippetHook', () => {
   });
 
   it('should collect snippets from elements with snippet prop', async () => {
-    const result = await eruditRawToProse(
-      { snippets: { enabled: true } },
-      <>
-        <SnippetTest
-          label="First"
-          snippet={{ title: 'First Snippet', search: true }}
-        />
-        <SnippetTest label="No Snippet" />
-        <SnippetTest
-          label="Second"
-          snippet={{ title: 'Second Snippet', key: true }}
-        />
-      </>,
-    );
+    const result = await eruditRawToProse({
+      snippets: { enabled: true },
+      rawProse: (
+        <>
+          <SnippetTest
+            label="First"
+            snippet={{ title: 'First Snippet', search: true }}
+          />
+          <SnippetTest label="No Snippet" />
+          <SnippetTest
+            label="Second"
+            snippet={{ title: 'Second Snippet', key: true }}
+          />
+        </>
+      ),
+    });
 
     expect(result.snippets).toHaveLength(2);
     expect(result.snippets[0]).toEqual({
@@ -654,66 +656,75 @@ describe('snippetHook', () => {
   });
 
   it('should not collect snippets when disabled', async () => {
-    const result = await eruditRawToProse(
-      { snippets: { enabled: false } },
-      <SnippetTest
-        label="Ignored"
-        snippet={{ title: 'Ignored Snippet', search: true }}
-      />,
-    );
+    const result = await eruditRawToProse({
+      snippets: { enabled: false },
+      rawProse: (
+        <SnippetTest
+          label="Ignored"
+          snippet={{ title: 'Ignored Snippet', search: true }}
+        />
+      ),
+    });
 
     expect(result.snippets).toHaveLength(0);
   });
 
   it('should not collect snippets when context has no snippets config', async () => {
-    const result = await eruditRawToProse(
-      {},
-      <SnippetTest
-        label="Ignored"
-        snippet={{ title: 'Ignored Snippet', search: true }}
-      />,
-    );
+    const result = await eruditRawToProse({
+      rawProse: (
+        <SnippetTest
+          label="Ignored"
+          snippet={{ title: 'Ignored Snippet', search: true }}
+        />
+      ),
+    });
 
     expect(result.snippets).toHaveLength(0);
   });
 
   it('should use element title as snippet title fallback', async () => {
-    const result = await eruditRawToProse(
-      { snippets: { enabled: true } },
-      <SnippetTest label="Element Label" snippet={{ search: true }} />,
-    );
+    const result = await eruditRawToProse({
+      snippets: { enabled: true },
+      rawProse: (
+        <SnippetTest label="Element Label" snippet={{ search: true }} />
+      ),
+    });
 
     expect(result.snippets).toHaveLength(1);
     expect(result.snippets[0].snippet.title).toBe('Element Label');
   });
 
   it('should delete internal snippet when no tag prop snippet provided', async () => {
-    const result = await eruditRawToProse(
-      { snippets: { enabled: true } },
-      <SnippetTest
-        label="Has Internal"
-        internalSnippet={{ title: 'Internal Only', search: true }}
-      />,
-    );
+    const result = await eruditRawToProse({
+      snippets: { enabled: true },
+      rawProse: (
+        <SnippetTest
+          label="Has Internal"
+          internalSnippet={{ title: 'Internal Only', search: true }}
+        />
+      ),
+    });
 
     // Internal snippet without tag prop snippet should be deleted
     expect(result.snippets).toHaveLength(0);
   });
 
   it('should merge internal snippet data with tag prop snippet', async () => {
-    const result = await eruditRawToProse(
-      { snippets: { enabled: true } },
-      <SnippetTest
-        label="Merged"
-        internalSnippet={{
-          title: 'Internal Title',
-          description: 'Internal Desc',
-          search: true,
-          key: 'Internal Key',
-        }}
-        snippet={{ title: 'Tag Title' }}
-      />,
-    );
+    const result = await eruditRawToProse({
+      snippets: { enabled: true },
+      rawProse: (
+        <SnippetTest
+          label="Merged"
+          internalSnippet={{
+            title: 'Internal Title',
+            description: 'Internal Desc',
+            search: true,
+            key: 'Internal Key',
+          }}
+          snippet={{ title: 'Tag Title' }}
+        />
+      ),
+    });
 
     expect(result.snippets).toHaveLength(1);
     const snippet = result.snippets[0].snippet;
@@ -726,22 +737,24 @@ describe('snippetHook', () => {
   });
 
   it('should prefer tag prop fields over internal when both present', async () => {
-    const result = await eruditRawToProse(
-      { snippets: { enabled: true } },
-      <SnippetTest
-        label="Both"
-        internalSnippet={{
-          title: 'Internal Title',
-          description: 'Internal Desc',
-          search: true,
-        }}
-        snippet={{
-          title: 'Tag Title',
-          description: 'Tag Desc',
-          search: 'Custom Search',
-        }}
-      />,
-    );
+    const result = await eruditRawToProse({
+      snippets: { enabled: true },
+      rawProse: (
+        <SnippetTest
+          label="Both"
+          internalSnippet={{
+            title: 'Internal Title',
+            description: 'Internal Desc',
+            search: true,
+          }}
+          snippet={{
+            title: 'Tag Title',
+            description: 'Tag Desc',
+            search: 'Custom Search',
+          }}
+        />
+      ),
+    });
 
     expect(result.snippets).toHaveLength(1);
     const snippet = result.snippets[0].snippet;
@@ -751,16 +764,20 @@ describe('snippetHook', () => {
   });
 
   it('should work alongside other elements like P', async () => {
-    const result = await eruditRawToProse(
-      { snippets: { enabled: true } },
-      <>
-        <P snippet={{ title: 'Paragraph Snippet', search: true }}>Some text</P>
-        <SnippetTest
-          label="Custom"
-          snippet={{ title: 'Custom Snippet', key: true }}
-        />
-      </>,
-    );
+    const result = await eruditRawToProse({
+      snippets: { enabled: true },
+      rawProse: (
+        <>
+          <P snippet={{ title: 'Paragraph Snippet', search: true }}>
+            Some text
+          </P>
+          <SnippetTest
+            label="Custom"
+            snippet={{ title: 'Custom Snippet', key: true }}
+          />
+        </>
+      ),
+    });
 
     expect(result.snippets).toHaveLength(2);
     expect(result.snippets[0].schemaName).toBe('paragraph');

@@ -3,7 +3,7 @@ export interface ElementSnippet {
   link: string;
   title: string;
   description?: string;
-  quick?: {
+  key?: {
     title?: string;
     description?: string;
   };

@@ -39,16 +39,16 @@ describe('Video', () => {
 
 describe('rawToProseHook', () => {
   it('collect video srcs', async () => {
-    const { files } = await eruditRawToProse(
-      {
-        schemaHooks: new Map([[videoSchema, core.rawToProseHook]]),
-      },
-      <>
-        <Video src="video1.mp4" />
-        Some text
-        <Video src="video2.mp4" autoplay={true} />
-      </>,
-    );
+    const { files } = await eruditRawToProse({
+      rawProse: (
+        <>
+          <Video src="video1.mp4" />
+          Some text
+          <Video src="video2.mp4" autoplay={true} />
+        </>
+      ),
+      schemaHooks: new Map([[videoSchema, core.rawToProseHook]]),
+    });
 
     expect(files).toEqual(new Set(['video1.mp4', 'video2.mp4']));
   });

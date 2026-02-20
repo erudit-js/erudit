@@ -5,13 +5,13 @@ import { sn } from 'unslash';
 import type { ElementData } from './shared';
 import { PROJECT_PATH } from '../../env';
 
-export function createGlobalTypes(elementsData: ElementData[]) {
+export function createElementGlobalTypes(elementsData: ElementData[]) {
   for (const elementData of elementsData) {
-    // Collect all tag names from registry
-    const allRegistryTagNames = new Set<string>();
-    for (const registryItem of elementData.registryItems) {
-      for (const tagName of registryItem.tagNames) {
-        allRegistryTagNames.add(tagName);
+    // Collect tag names from core element
+    const allCoreTagNames = new Set<string>();
+    for (const coreElement of elementData.coreElements) {
+      for (const tagName of Object.keys(coreElement.tags)) {
+        allCoreTagNames.add(tagName);
       }
     }
 
@@ -32,8 +32,8 @@ export function createGlobalTypes(elementsData: ElementData[]) {
       other = parsed.other;
     }
 
-    // Add missing tags from registry
-    for (const tagName of allRegistryTagNames) {
+    // Add missing tags from core element
+    for (const tagName of allCoreTagNames) {
       if (!(tagName in tags)) {
         tags[tagName] = '';
       }
@@ -58,18 +58,18 @@ export function createGlobalTypes(elementsData: ElementData[]) {
       );
     });
 
-    // Create typeof imports for tags that exist in element's registry items
+    // Create typeof imports for tags that exist in element's core elements
     const tagDefinitions = Object.entries(tags).map(([tagName, jsdoc]) => {
-      // Find which registry item contains this tag
+      // Find which core element contains this tag
       let tagDefinition = "'_tag_'";
-      for (let i = 0; i < elementData.registryItems.length; i++) {
-        const registryItem = elementData.registryItems[i]!;
-        if (registryItem.tagNames.includes(tagName)) {
+      for (let i = 0; i < elementData.coreElements.length; i++) {
+        const coreElement = elementData.coreElements[i]!;
+        if (coreElement.tags[tagName] !== undefined) {
           // If there are multiple schemas, include the index
-          if (elementData.registryItems.length > 1) {
-            tagDefinition = `typeof import('${elementData.absCorePath}')['default'][${i}]['registryItem']['tags']['${tagName}']`;
+          if (elementData.coreElements.length > 1) {
+            tagDefinition = `typeof import('${elementData.absCorePath}')['default'][${i}]['tags']['${coreElement.tags[tagName]}']`;
           } else {
-            tagDefinition = `typeof import('${elementData.absCorePath}')['default']['registryItem']['tags']['${tagName}']`;
+            tagDefinition = `typeof import('${elementData.absCorePath}')['default']['tags']['${coreElement.tags[tagName]}']`;
           }
           break;
         }
@@ -78,8 +78,8 @@ export function createGlobalTypes(elementsData: ElementData[]) {
       const indentedJsdoc = indentJsDoc(jsdoc);
 
       return indentedJsdoc
-        ? `${indentedJsdoc}\n    const ${tagName}: ${tagDefinition};`
-        : `    const ${tagName}: ${tagDefinition};`;
+        ? `${indentedJsdoc}\n  const ${tagName}: ${tagDefinition};`
+        : `  const ${tagName}: ${tagDefinition};`;
     });
 
     const finalDts = `
@@ -96,8 +96,8 @@ ${Object.entries(other)
         ? `type ${typeName} = ${definition};`
         : `const ${typeName}: ${definition};`;
     return indentedJsdoc
-      ? `${indentedJsdoc}\n    ${declaration}`
-      : `    ${declaration}`;
+      ? `${indentedJsdoc}\n  ${declaration}`
+      : `  ${declaration}`;
   })
   .join('\n')}
 }
@@ -250,7 +250,7 @@ function parseGlobalDts(dts: string): {
   return { imports, tags, other };
 }
 
-function indentJsDoc(jsdoc: string, indent: string = '    '): string {
+function indentJsDoc(jsdoc: string, indent: string = '  '): string {
   if (!jsdoc) return '';
   return jsdoc
     .split('\n')

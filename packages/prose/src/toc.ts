@@ -99,7 +99,7 @@ export type ResolvedTocElement = {
 
 export type ResolvedTocItem = ResolvedTocHeading | ResolvedTocElement;
 
-export const tocHook = defineRawToProseHook(({ context, result }) => {
+export const tocHook = defineRawToProseHook(({ task: context, result }) => {
   if (!context.toc?.enabled) {
     return;
   }

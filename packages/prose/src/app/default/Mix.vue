@@ -1,9 +1,9 @@
 <script lang="ts" setup>
-import { type mixSchema, type ProseElement } from '@jsprose/core';
+import type { MixSchema, ToProseElement } from 'tsprose';
 
 import Render from '../shared/Render.vue';
 
-const { element } = defineProps<{ element: ProseElement<typeof mixSchema> }>();
+const { element } = defineProps<{ element: ToProseElement<MixSchema> }>();
 </script>
 
 <template>

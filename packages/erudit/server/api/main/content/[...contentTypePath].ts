@@ -64,7 +64,7 @@ export default defineEventHandler<Promise<MainContent>>(async (event) => {
   }
 
   if (contentTypePath.type === 'page' || contentTypePath.type === 'topic') {
-    const proseElement = await ERUDIT.repository.prose.getContent(
+    const prose = await ERUDIT.repository.prose.getContent(
       contentTypePath.type === 'topic'
         ? contentTypePath.topicPart
         : contentTypePath.type,
@@ -72,7 +72,7 @@ export default defineEventHandler<Promise<MainContent>>(async (event) => {
     );
 
     const topicParts = await ERUDIT.repository.content.topicParts(fullId);
-    const { storage } = await ERUDIT.repository.prose.finalize(proseElement);
+    const { storage } = await ERUDIT.repository.prose.finalize(prose);
 
     const where = (() => {
       if (contentTypePath.type === 'topic') {
@@ -101,7 +101,7 @@ export default defineEventHandler<Promise<MainContent>>(async (event) => {
         type: 'topic',
         part: contentTypePath.topicPart,
         parts: topicParts,
-        proseElement,
+        prose,
         storage,
       };
 
@@ -123,7 +123,7 @@ export default defineEventHandler<Promise<MainContent>>(async (event) => {
     const mainContentPage: MainContentPage = {
       ...mainContentBase,
       type: 'page',
-      proseElement,
+      prose,
       storage,
     };
 

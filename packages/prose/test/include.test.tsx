@@ -44,15 +44,17 @@ describe('isIncludedRawElement', () => {
 
 describe('<Include /> integration', () => {
   it('should strip toc from included elements by default', async () => {
-    const result = await eruditRawToProse(
-      { toc: { enabled: true, addSchemas: [testSchema] } },
-      <>
-        <H1>Real Heading</H1>
-        <Include>
-          <Test label="Included" toc="Should Be Stripped" />
-        </Include>
-      </>,
-    );
+    const result = await eruditRawToProse({
+      rawProse: (
+        <>
+          <H1>Real Heading</H1>
+          <Include>
+            <Test label="Included" toc="Should Be Stripped" />
+          </Include>
+        </>
+      ),
+      toc: { enabled: true, addSchemas: [testSchema] },
+    });
 
     expect(result.toc).toEqual([
       expect.objectContaining({ type: 'heading', title: 'Real Heading' }),
@@ -60,15 +62,17 @@ describe('<Include /> integration', () => {
   });
 
   it('should keep toc when Include has toc prop', async () => {
-    const result = await eruditRawToProse(
-      { toc: { enabled: true, addSchemas: [testSchema] } },
-      <>
-        <H1>Heading</H1>
-        <Include toc="Custom TOC">
-          <Test label="Included" />
-        </Include>
-      </>,
-    );
+    const result = await eruditRawToProse({
+      rawProse: (
+        <>
+          <H1>Heading</H1>
+          <Include toc="Custom TOC">
+            <Test label="Included" />
+          </Include>
+        </>
+      ),
+      toc: { enabled: true, addSchemas: [testSchema] },
+    });
 
     const heading = result.toc.find(
       (e) => e.type === 'heading' && e.title === 'Heading',
@@ -79,18 +83,20 @@ describe('<Include /> integration', () => {
   });
 
   it('should strip snippets from included elements', async () => {
-    const result = await eruditRawToProse(
-      { snippets: { enabled: true } },
-      <>
-        <P snippet={{ title: 'Normal', search: true }}>Normal</P>
-        <Include>
-          <Test
-            label="Included"
-            snippet={{ title: 'Included Snippet', search: true }}
-          />
-        </Include>
-      </>,
-    );
+    const result = await eruditRawToProse({
+      rawProse: (
+        <>
+          <P snippet={{ title: 'Normal', search: true }}>Normal</P>
+          <Include>
+            <Test
+              label="Included"
+              snippet={{ title: 'Included Snippet', search: true }}
+            />
+          </Include>
+        </>
+      ),
+      snippets: { enabled: true },
+    });
 
     expect(result.snippets).toHaveLength(1);
     expect(result.snippets[0].snippet.title).toBe('Normal');

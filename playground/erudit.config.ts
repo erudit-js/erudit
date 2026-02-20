@@ -5,6 +5,9 @@ export default defineEruditConfig({
   language: {
     current: 'ru',
   },
+  contributors: {
+    enabled: true,
+  },
   asideMajor: {
     siteInfo: {
       title: 'Мажор Имя',

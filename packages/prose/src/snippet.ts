@@ -267,7 +267,7 @@ export interface ResolvedSnippet {
   snippet: Snippet;
 }
 
-export const snippetHook = defineRawToProseHook(({ context, result }) => {
+export const snippetHook = defineRawToProseHook(({ task: context, result }) => {
   if (!context.snippets?.enabled) {
     return;
   }

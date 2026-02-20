@@ -20,8 +20,11 @@ import { tocHook, type ResolvedTocItem } from '../toc.js';
 import { createDefaultSlugify, type SlugifyCreator } from '../slugify/index.js';
 import { problemScriptHook } from '../elements/problem/hook.js';
 import { linkHook, type ContentLinks } from '../elements/link/hook.js';
+import { countSchemasHook } from './countSchemas.js';
+import { uniqueTitlesHook } from './uniqueTitles.js';
 
-export type EruditRawToProseContext = {
+export type EruditRawToProseTask = {
+  rawProse: EruditRawElement;
   language?: EruditLanguageCode;
   snippets?: {
     enabled: boolean;
@@ -43,13 +46,14 @@ export interface EruditRawToProseResult extends RawToProseResult {
   files: Set<string>;
   problemScripts: Set<string>;
   contentLinks: ContentLinks;
+  schemaCounts: Record<string, number>;
+  uniqueTitles: Record<string, string>;
 }
 
 export async function eruditRawToProse(
-  context: EruditRawToProseContext,
-  rawProse: EruditRawElement,
-) {
-  const { hooks, schemaHooks } = context;
+  task: EruditRawToProseTask,
+): Promise<EruditRawToProseResult> {
+  const { rawProse, hooks, schemaHooks } = task;
 
   const result: EruditRawToProseResult = {
     prose: undefined as any,
@@ -61,6 +65,8 @@ export async function eruditRawToProse(
     files: new Set(),
     problemScripts: new Set(),
     contentLinks: new Map(),
+    schemaCounts: {},
+    uniqueTitles: {},
   };
 
   const _hooks: RawToProseHooks = [
@@ -68,11 +74,13 @@ export async function eruditRawToProse(
     tocHook,
     problemScriptHook,
     linkHook,
+    countSchemasHook,
+    uniqueTitlesHook,
     ...(hooks || []),
   ];
   const createdHooks: Exclude<Awaited<ReturnType<RawToProseHook>>, void>[] = [];
   for (const hook of _hooks) {
-    const createdHook = await hook({ context, result });
+    const createdHook = await hook({ task, result });
     if (createdHook) {
       createdHooks.push(createdHook);
     }
@@ -83,7 +91,7 @@ export async function eruditRawToProse(
     Exclude<Awaited<ReturnType<RawToProseSchemaHook>>, void>
   > = new Map();
   for (const [schema, hook] of schemaHooks || []) {
-    const createdHook = await hook({ context, result });
+    const createdHook = await hook({ task, result });
     if (createdHook) {
       createdSchemaHooks.set(schema, createdHook);
     }
@@ -115,10 +123,10 @@ export async function eruditRawToProse(
   const baseRawToProseResult = await rawToProse({
     rawProse,
     step,
-    idMaker: context.idMaker,
-    slugify: context.createSlugify
-      ? await context.createSlugify(context)
-      : await createDefaultSlugify(context),
+    idMaker: task.idMaker,
+    slugify: task.createSlugify
+      ? await task.createSlugify(task)
+      : await createDefaultSlugify(task),
   });
 
   result.prose = baseRawToProseResult.prose;

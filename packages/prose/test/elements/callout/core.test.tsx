@@ -43,16 +43,16 @@ describe('Callout', () => {
 
 describe('rawToProseHook', () => {
   it('should add icon svg to files', async () => {
-    const { files } = await eruditRawToProse(
-      {
-        schemaHooks: new Map([[calloutSchema, core.rawToProseHook]]),
-      },
-      <>
-        <Callout icon="icon.png" title="Note Title">
-          <P>Paragraph</P>
-        </Callout>
-      </>,
-    );
+    const { files } = await eruditRawToProse({
+      rawProse: (
+        <>
+          <Callout icon="icon.png" title="Note Title">
+            <P>Paragraph</P>
+          </Callout>
+        </>
+      ),
+      schemaHooks: new Map([[calloutSchema, core.rawToProseHook]]),
+    });
 
     expect(files.has('icon.png')).toBe(true);
   });

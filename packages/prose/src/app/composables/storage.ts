@@ -1,10 +1,5 @@
 import { inject, type InjectionKey } from 'vue';
-import type {
-  ProseElement,
-  ProseStorage,
-  Schema,
-  ToProseElement,
-} from 'tsprose';
+import type { ProseElement, ProseStorage } from 'tsprose';
 
 import { useAppElement } from './appElement.js';
 

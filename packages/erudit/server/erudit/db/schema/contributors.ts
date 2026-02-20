@@ -1,5 +1,7 @@
 import { integer, sqliteTable, text } from 'drizzle-orm/sqlite-core';
-import type { AnySchema, ProseElement } from '@jsprose/core';
+import type { ProseElement } from 'tsprose';
+
+import { jsonProse } from '../jsonProse';
 
 export const contributors = sqliteTable('contributors', {
   contributorId: text().primaryKey(),
@@ -8,5 +10,5 @@ export const contributors = sqliteTable('contributors', {
   avatarExtension: text(),
   editor: integer({ mode: 'boolean' }),
   links: text({ mode: 'json' }).$type<Record<string, string>>(),
-  description: text({ mode: 'json' }).$type<ProseElement<AnySchema>>(),
+  description: jsonProse().$type<ProseElement>(),
 });

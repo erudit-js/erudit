@@ -1,42 +1,41 @@
 import chalk from 'chalk';
 import { sql } from 'drizzle-orm';
-import { type ResolvedRawElement } from '@jsprose/core';
 import type { ContentProseType } from '@erudit-js/core/content/prose';
-import type { ResolvedEruditRawElement } from '@erudit-js/prose';
 import type {
   ContentLinks,
   ContentLinkUsage,
-} from '@erudit-js/prose/elements/link/step';
+} from '@erudit-js/prose/elements/link/hook';
+import type { EruditRawToProseResult } from '@erudit-js/prose';
 
 export async function insertContentResolved(
   contentFullId: string,
   contentProseType: ContentProseType,
-  resolveResult: ResolvedRawElement & ResolvedEruditRawElement,
+  result: EruditRawToProseResult,
 ) {
-  for (const file of resolveResult.files) {
+  for (const file of result.files) {
     await ERUDIT.repository.db.pushFile(file, `content-item:${contentFullId}`);
   }
 
-  for (const [uniqueName, unique] of Object.entries(resolveResult.uniques)) {
+  for (const [uniqueName, unique] of Object.entries(result.uniques)) {
     await ERUDIT.db.insert(ERUDIT.db.schema.contentUniques).values({
       contentFullId,
       contentProseType,
       uniqueName,
-      title: resolveResult.uniqueTitles[uniqueName],
+      title: result.uniqueTitles[uniqueName],
       prose: unique,
     });
   }
 
-  for (const snippet of resolveResult.snippets) {
+  for (const snippet of result.snippets) {
     await ERUDIT.db.insert(ERUDIT.db.schema.contentSnippets).values({
       contentFullId,
       contentProseType,
       elementId: snippet.elementId,
       schemaName: snippet.schemaName,
-      snippetData: snippet.snippetData,
-      search: !!snippet.snippetData.search,
-      quick: !!snippet.snippetData.quick,
-      seo: !!snippet.snippetData.seo,
+      snippetData: snippet.snippet,
+      search: !!snippet.snippet.search,
+      key: !!snippet.snippet.key,
+      seo: !!snippet.snippet.seo,
     });
   }
 
@@ -49,14 +48,11 @@ export async function insertContentResolved(
     await deduplicateTopicSnippetsSearch(contentFullId);
   }
 
-  for (const problemScript of resolveResult.problemScripts) {
+  for (const problemScript of result.problemScripts) {
     await ERUDIT.repository.db.pushProblemScript(problemScript, contentFullId);
   }
 
-  const targetFullIds = filterTargetFullIds(
-    contentFullId,
-    resolveResult.contentLinks,
-  );
+  const targetFullIds = filterTargetFullIds(contentFullId, result.contentLinks);
 
   await insertContentDeps(contentFullId, Array.from(targetFullIds));
 }

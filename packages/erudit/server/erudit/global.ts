@@ -10,6 +10,8 @@ import type { EruditServerLogger } from './logger';
 import type { EruditServerPaths } from './path';
 import type { EruditServerRepository } from './repository';
 
+import { registerProseGlobals } from '#erudit/prose/global';
+
 export const ERUDIT: {
   buildError: EruditServerBuildError;
   buildPromise: Promise<void>;
@@ -36,3 +38,5 @@ Object.assign(globalThis, {
   defineProse,
   Include,
 });
+
+registerProseGlobals();

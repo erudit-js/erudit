@@ -138,25 +138,25 @@ describe('tocHook', () => {
   });
 
   it('should build toc tree with correct hierarchy', async () => {
-    const rawToProseResult = await eruditRawToProse(
-      {
-        toc: {
-          enabled: true,
-          addSchemas: [autoTocSchema],
-        },
+    const rawToProseResult = await eruditRawToProse({
+      toc: {
+        enabled: true,
+        addSchemas: [autoTocSchema],
       },
-      <>
-        <AutoToc label="The First!" />
-        <H1>Article Heading</H1>
-        <AutoToc label="The Skipped!" toc={false} />
-        <P toc="Important Paragraph">Some text</P>
-        <AutoToc label="The Second!" />
-        <H2>Sub Heading</H2>
-        <AutoToc label="The Third!" />
-        <H1>Another Big Section</H1>
-        <AutoToc label="The Fourth!" />
-      </>,
-    );
+      rawProse: (
+        <>
+          <AutoToc label="The First!" />
+          <H1>Article Heading</H1>
+          <AutoToc label="The Skipped!" toc={false} />
+          <P toc="Important Paragraph">Some text</P>
+          <AutoToc label="The Second!" />
+          <H2>Sub Heading</H2>
+          <AutoToc label="The Third!" />
+          <H1>Another Big Section</H1>
+          <AutoToc label="The Fourth!" />
+        </>
+      ),
+    });
 
     const toc = rawToProseResult.toc;
 

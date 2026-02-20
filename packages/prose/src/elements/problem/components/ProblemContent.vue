@@ -206,7 +206,7 @@ async function doGenerate(seed: ProblemSeed) {
   const rawElements = generateResult.problemContent;
   const proseElements: ToProseElement<ProblemContentChild>[] = [];
   for (const rawElement of rawElements) {
-    const resolveResult = await eruditRawToProse({}, rawElement);
+    const resolveResult = await eruditRawToProse({ rawProse: rawElement });
     proseElements.push(resolveResult.prose as any);
   }
 

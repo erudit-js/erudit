@@ -1,10 +1,10 @@
-import type { GenericStorage, ProseElement } from '@jsprose/core';
-import type { videoSchema } from '@erudit-js/prose/elements/video/core';
+import type { ProseStorage, ToProseElement } from 'tsprose';
+import type { VideoSchema } from '@erudit-js/prose/elements/video/core';
 import { createVideoStorage as _createVideoStorage } from '@erudit-js/prose/elements/video/storage';
 
 export async function createVideoStorage(
-  element: ProseElement<typeof videoSchema>,
-  storage: GenericStorage,
+  element: ToProseElement<VideoSchema>,
+  storage: ProseStorage,
 ) {
   const runtimeConfig = useRuntimeConfig();
 

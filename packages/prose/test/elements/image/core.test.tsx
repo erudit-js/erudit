@@ -39,12 +39,10 @@ describe('Image', () => {
 
 describe('rawToProseHook', () => {
   it('should add image src to files', async () => {
-    const { files } = await eruditRawToProse(
-      {
-        schemaHooks: new Map([[imageSchema, core.rawToProseHook]]),
-      },
-      <Image src="image.png" />,
-    );
+    const { files } = await eruditRawToProse({
+      rawProse: <Image src="image.png" />,
+      schemaHooks: new Map([[imageSchema, core.rawToProseHook]]),
+    });
 
     expect(files.has('image.png')).toBe(true);
   });

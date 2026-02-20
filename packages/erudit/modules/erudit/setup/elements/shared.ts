@@ -1,8 +1,8 @@
 export interface ElementData {
   name: string;
-  registryItems: {
+  coreElements: {
     schemaName: string;
-    tagNames: string[];
+    tags: Record<string, number>;
   }[];
   absDirectory: string;
   absCorePath: string;

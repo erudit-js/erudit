@@ -1,29 +1,23 @@
-import {
-  ProseError,
-  uniqueName2Id,
-  type GenericStorage,
-  type ProseElement,
-} from '@jsprose/core';
-
+import type { ProseStorage, ToProseElement } from 'tsprose';
 import { isTopicPart } from '@erudit-js/core/content/topic';
 import type { ContentPointer } from '@erudit-js/core/content/pointer';
 import type {
-  referenceSchema,
-  refSchema,
+  ReferenceSchema,
+  RefSchema,
 } from '@erudit-js/prose/elements/link/reference/core';
 import type {
-  dependencySchema,
-  depSchema,
+  DependencySchema,
+  DepSchema,
 } from '@erudit-js/prose/elements/link/dependency/core';
 import type { LinkStorage } from '@erudit-js/prose/elements/link/storage';
 
 export async function createLinkStorage(
   element:
-    | ProseElement<typeof refSchema>
-    | ProseElement<typeof referenceSchema>
-    | ProseElement<typeof depSchema>
-    | ProseElement<typeof dependencySchema>,
-  storage: GenericStorage,
+    | ToProseElement<RefSchema>
+    | ToProseElement<ReferenceSchema>
+    | ToProseElement<DepSchema>
+    | ToProseElement<DependencySchema>,
+  storage: ProseStorage,
 ) {
   try {
     let linkStorage: LinkStorage | undefined;

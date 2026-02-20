@@ -1,7 +1,6 @@
 import {
   defineSchema,
   ensureTagBlockChildren,
-  ensureTagChildren,
   type BlockSchema,
   type Schema,
 } from 'tsprose';
@@ -63,19 +62,6 @@ export const Callout = defineEruditTag({
   if (props.invert) {
     element.data.iconInvert = props.invert;
   }
-});
-
-const aaa = defineProseCoreElement({
-  schema: calloutSchema,
-  tags: [Callout],
-  dependencies: {},
-  rawToProseHook: ({ result }) => {
-    return {
-      matchStep: ({ rawElement }) => {
-        result.files.add(rawElement.data.iconSrc);
-      },
-    };
-  },
 });
 
 export default defineProseCoreElement({

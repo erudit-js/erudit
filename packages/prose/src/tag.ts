@@ -82,11 +82,13 @@ export function defineEruditTag<
       finalizeSnippet(rawElement, anyContext.props.snippet);
       finalizeToc(rawElement, anyContext.props.toc);
 
-      // Use every possibility to get human-readable slug
-      rawElement.slug ||=
-        rawElement.snippet?.title ||
-        rawElement.title ||
+      // Preserve title
+      rawElement.title ||=
+        anyContext.props.snippet?.title?.trim() ||
         (typeof rawElement.toc === 'string' ? rawElement.toc : undefined);
+
+      // Use every possibility to get human-readable slug
+      rawElement.slug ||= rawElement.title;
     });
 
     return eruditTag as unknown as ToEruditTag<TSchema, TagName, Props>;
