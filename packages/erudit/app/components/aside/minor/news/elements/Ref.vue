@@ -1,12 +1,12 @@
 <script lang="ts" setup>
 import { onMounted } from 'vue';
-import type { ProseElement } from '@jsprose/core';
-import type { refSchema } from '@erudit-js/prose/elements/link/reference/core';
+import type { ToProseElement } from 'tsprose';
+import type { RefSchema } from '@erudit-js/prose/elements/link/reference/core';
 import type { LinkStorage } from '@erudit-js/prose/elements/link/storage';
 
 const withBaseUrl = useBaseUrl();
 const { closePreview, setPreview } = usePreview();
-const { element } = defineProps<{ element: ProseElement<typeof refSchema> }>();
+const { element } = defineProps<{ element: ToProseElement<RefSchema> }>();
 const linkStorage = (element as any).storageValue as LinkStorage;
 
 const doubleClick = {

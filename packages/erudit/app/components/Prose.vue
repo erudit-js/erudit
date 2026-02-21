@@ -1,14 +1,15 @@
 <script lang="ts" setup>
-import type { AnySchema, GenericStorage, ProseElement } from '@jsprose/core';
+import type { ProseElement, ProseStorage } from 'tsprose';
 import type { EruditMode } from '@erudit-js/core/mode';
 import { Prose, type ProseContext } from '@erudit-js/prose/app';
 
 import { EruditLink, MaybeMyIcon, TransitionFade } from '#components';
 
-const { element, storage, useHashUrl } = defineProps<{
-  element: ProseElement<AnySchema>;
-  storage: GenericStorage;
+const { element, storage, useHashUrl, setHtmlIds } = defineProps<{
+  element: ProseElement;
+  storage: ProseStorage;
   useHashUrl: boolean;
+  setHtmlIds: boolean;
 }>();
 
 const runtimeConfig = useRuntimeConfig();
@@ -28,6 +29,7 @@ const { setPreview, closePreview } = usePreview();
 
 const context: ProseContext = {
   appElements,
+  setHtmlIds,
   mode: runtimeConfig.public.eruditMode as EruditMode,
   languageCode: ERUDIT.config.language.current,
   formatText,

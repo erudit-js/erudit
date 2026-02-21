@@ -8,6 +8,7 @@ export default defineEruditConfig({
   contributors: {
     enabled: true,
   },
+  countElements: ['heading', ['problem', 'problems']],
   asideMajor: {
     siteInfo: {
       title: 'Мажор Имя',

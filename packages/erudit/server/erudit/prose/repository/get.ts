@@ -1,5 +1,5 @@
 import { eq } from 'drizzle-orm';
-import type { ProseElement } from 'tsprose';
+import { type ProseElement } from 'tsprose';
 import type { ContentProseType } from '@erudit-js/core/content/prose';
 import { isTopicPart } from '@erudit-js/core/content/topic';
 

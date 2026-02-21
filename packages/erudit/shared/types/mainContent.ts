@@ -34,7 +34,7 @@ export interface MainContentChildrenItem {
   link: string;
   title: string;
   description?: string;
-  quickLinks?: ElementSnippet[];
+  keyLinks?: ElementSnippet[];
   stats?: ContentStats;
 }
 

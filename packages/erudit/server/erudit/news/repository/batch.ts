@@ -6,7 +6,7 @@ export async function countNewsBatches(): Promise<number> {
   const newsTotal = await ERUDIT.db
     .select({ count: count() })
     .from(ERUDIT.db.schema.news)
-    .then((result) => result[0].count);
+    .then((result) => result[0]!.count);
 
   return Math.ceil(newsTotal / newsNumberPerBatch);
 }
@@ -15,7 +15,7 @@ export async function getNewsNextBatch(index: number): Promise<NewsBatch> {
   const newsTotal = await ERUDIT.db
     .select({ count: count() })
     .from(ERUDIT.db.schema.news)
-    .then((result) => result[0].count);
+    .then((result) => result[0]!.count);
 
   const dbNews = await ERUDIT.db.query.news.findMany({
     columns: {

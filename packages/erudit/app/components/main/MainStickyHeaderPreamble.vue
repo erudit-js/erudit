@@ -11,7 +11,7 @@ const { mainContent } = defineProps<{ mainContent: MainContent }>();
       :description="mainContent.description"
       class="text-main!"
     />
-    <MainQuickLinks
+    <MainKeyLinks
       v-if="mainContent.type === 'topic' || mainContent.type === 'page'"
       mode="single"
       :elementSnippets="mainContent.snippets"

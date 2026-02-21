@@ -24,7 +24,7 @@ export async function getContentChildren(
     const elementSnippets = await ERUDIT.repository.content.elementSnippets(
       childNode.fullId,
     );
-    const quickLinks = elementSnippets?.filter((snippet) => snippet.key);
+    const keyLinks = elementSnippets?.filter((snippet) => snippet.key);
     const stats = await ERUDIT.repository.content.stats(childNode.fullId);
 
     const child: MainContentChildrenItem = {
@@ -37,8 +37,8 @@ export async function getContentChildren(
       child.description = description;
     }
 
-    if (quickLinks && quickLinks.length > 0) {
-      child.quickLinks = quickLinks;
+    if (keyLinks && keyLinks.length > 0) {
+      child.keyLinks = keyLinks;
     }
 
     if (stats) {

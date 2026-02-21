@@ -1,4 +1,5 @@
 import type { ContentType } from '@erudit-js/core/content/type';
+
 import type { ElementSnippet } from './elementSnippet';
 import type { ContentStats } from './contentStats';
 

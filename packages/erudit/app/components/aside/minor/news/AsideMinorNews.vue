@@ -42,9 +42,7 @@ async function fetchNews(index: number) {
   newsLoading.value = true;
 
   try {
-    const newsBatch = await $fetch<NewsBatch>(`/api/news/batch/${index}`, {
-      responseType: 'json',
-    });
+    const newsBatch = await fetchJson<NewsBatch>(`/api/news/batch/${index}`);
 
     if (index === 0) {
       newsTotal.value = newsBatch.total!;

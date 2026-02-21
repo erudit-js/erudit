@@ -10,6 +10,8 @@ import type { ContentNavNode } from '../nav/types';
 import { logContentError } from './utils/contentError';
 import { insertContentItem } from './utils/insertContentItem';
 import { insertContentResolved } from './utils/insertContentResolved';
+import { problemSchema } from '@erudit-js/prose/elements/problem/problem';
+import { problemsSchema } from '@erudit-js/prose/elements/problem/problems';
 
 export async function resolveTopic(topicNode: ContentNavNode) {
   ERUDIT.log.debug.start(
@@ -43,6 +45,14 @@ export async function resolveTopic(topicNode: ContentNavNode) {
       if (isDocument(topicPartDocument?.default)) {
         const result = await ERUDIT.repository.prose.fromRaw({
           rawProse: topicPartDocument.default.rawProse,
+          toc: {
+            enabled: true,
+            addSchemas:
+              topicPart === 'practice'
+                ? [problemSchema, problemsSchema]
+                : undefined,
+          },
+          snippets: { enabled: true },
         });
 
         if (result.toc?.length) {

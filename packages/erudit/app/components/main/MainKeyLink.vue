@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { autoUpdate, shift } from '@floating-ui/vue';
 
-const { quickLink } = defineProps<{ quickLink: ElementSnippet }>();
+const { keyLink } = defineProps<{ keyLink: ElementSnippet }>();
 
 const containerElement = useTemplateRef('container');
 const toggleElement = useTemplateRef('toggle');
@@ -21,21 +21,21 @@ const { popupVisible, popupStyles } = usePopup(
   },
 );
 
-const elementIcon = await getElementIcon(quickLink.schemaName);
+const elementIcon = await getElementIcon(keyLink.schemaName);
 
 const title = computed(() => {
-  if (quickLink.quick?.title) {
-    return quickLink.quick.title;
+  if (keyLink.key?.title) {
+    return keyLink.key.title;
   } else {
-    return quickLink.title;
+    return keyLink.title;
   }
 });
 
 const description = computed(() => {
-  if (quickLink.quick?.description) {
-    return quickLink.quick.description;
+  if (keyLink.key?.description) {
+    return keyLink.key.description;
   } else {
-    return quickLink.description;
+    return keyLink.description;
   }
 });
 </script>
@@ -44,11 +44,11 @@ const description = computed(() => {
   <div ref="container">
     <div ref="toggle">
       <EruditLink
-        :to="quickLink.link"
+        :to="keyLink.link"
         class="gap-small border-border px-small text-text-muted text-main-sm
           hocus:text-brand hocus:border-brand hocus:ring-brand/25 flex
-          items-center rounded border bg-(--quickBg) py-1 ring-2
-          ring-transparent transition-[color,border,box-shadow]"
+          items-center rounded border bg-(--keyBg) py-1 ring-2 ring-transparent
+          transition-[color,border,box-shadow]"
       >
         <MaybeMyIcon :name="elementIcon" class="-mr-0.5 text-[1.2em]" />
         <span>{{ formatText(title) }}</span>

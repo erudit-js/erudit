@@ -38,7 +38,7 @@ await useContentSeo({
     <MainTitle icon="lines" :title="mainContent.title" />
     <MainFlags :flags="mainContent.flags" />
     <MainDescription :description="mainContent.description" />
-    <MainQuickLinks mode="single" :elementSnippets="mainContent.snippets" />
+    <MainKeyLinks mode="single" :elementSnippets="mainContent.snippets" />
     <MainConnections :connections="mainContent.connections" />
     <MainContentStats mode="single" :stats="mainContent.stats" />
     <div class="h-main-half"></div>
@@ -48,10 +48,11 @@ await useContentSeo({
   </MainSectionPreamble>
   <MainSection>
     <Prose
-      :element="mainContent.proseElement"
+      :element="mainContent.prose"
       :storage="mainContent.storage"
       :urlPath="'/' + mainContent.fullId"
       :useHashUrl="true"
+      :setHtmlIds="true"
       @vue:mounted="proseMounted"
     />
   </MainSection>

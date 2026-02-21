@@ -141,6 +141,7 @@ export default defineEventHandler<Promise<MainContent>>(async (event) => {
   //
   // Rest content types
   //
+
   return {
     ...mainContentBase,
     type: contentTypePath.type,

@@ -31,6 +31,8 @@ export async function resolvePage(pageNode: ContentNavNode) {
     const proseDocument = pageModule.content;
     const result = await ERUDIT.repository.prose.fromRaw({
       rawProse: proseDocument.rawProse,
+      toc: { enabled: true },
+      snippets: { enabled: true },
     });
 
     if (result.toc?.length) {

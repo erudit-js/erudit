@@ -1,4 +1,4 @@
-import type { ProseStorage, ToProseElement } from 'tsprose';
+import type { ToProseElement } from 'tsprose';
 import type {
   ImageSchema,
   ImageStorage,
@@ -7,16 +7,13 @@ import { createImageStorage as _createImageStorage } from '@erudit-js/prose/elem
 
 export async function createImageStorage(
   element: ToProseElement<ImageSchema>,
-  storage: ProseStorage,
-) {
+): Promise<ImageStorage> {
   const runtimeConfig = useRuntimeConfig();
 
   const imageAbsPath = element.data.src;
-  const imageStorage = await _createImageStorage(
+  return (await _createImageStorage(
     ERUDIT.paths.project(),
     runtimeConfig.app.baseURL,
     imageAbsPath,
-  );
-
-  storage[element.storageKey!] = imageStorage satisfies ImageStorage;
+  )) satisfies ImageStorage;
 }

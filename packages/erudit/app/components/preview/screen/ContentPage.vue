@@ -6,13 +6,10 @@ const { request } = defineProps<{ request: PreviewRequestContentPage }>();
 const contentTypeKey =
   request.contentType === 'topic' ? request.topicPart : request.contentType;
 
-const previewData: PreviewContentPage = await $fetch(
+const previewData: PreviewContentPage = await fetchJson(
   '/api/preview/contentPage/' +
     stringifyContentTypePath(contentTypeKey, request.fullId) +
     '.json',
-  {
-    responseType: 'json',
-  },
 );
 
 const icon = ICONS[contentTypeKey];

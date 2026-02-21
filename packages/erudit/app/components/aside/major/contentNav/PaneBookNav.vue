@@ -28,11 +28,8 @@ async function bookChange() {
   const fetchPayload = async (): Promise<BookPayloadValue> => {
     return {
       shortBookId: shortBookId.value!,
-      frontNav: await $fetch(
+      frontNav: await fetchJson(
         `/api/aside/major/frontNav/book/${shortBookId.value}`,
-        {
-          responseType: 'json',
-        },
       ),
     };
   };
