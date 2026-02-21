@@ -15,9 +15,11 @@ export const PAGES = {
     return sn(`/group/${shortId}/`);
   },
   ['page']: (shortId: string, elementId?: string) => {
-    return sn(`/page/${shortId}/${elementId ? '#' + elementId : ''}`);
+    return sn(`/page/${shortId}/${elementId ? '?element=' + elementId : ''}`);
   },
   ['topic']: (part: TopicPart, shortId: string, elementId?: string) => {
-    return sn(`/${part}/${shortId}/${elementId ? '#' + elementId : ''}`);
+    return sn(
+      `/${part}/${shortId}/${elementId ? '?element=' + elementId : ''}`,
+    );
   },
 };

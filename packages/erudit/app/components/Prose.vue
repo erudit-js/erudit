@@ -19,9 +19,7 @@ const route = useRoute();
 
 const hashUrl = computed(() => {
   return useHashUrl
-    ? route.hash
-      ? route.hash.slice(1)
-      : undefined
+    ? ((route.query.element as string | undefined) ?? undefined)
     : undefined;
 });
 
