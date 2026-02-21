@@ -27,7 +27,7 @@ export async function getContentDependencies(fullId: string) {
 
   for (const toFullId of hardToFullIds) {
     const reason = fullId2Reason.get(toFullId)!;
-    const hardDep = await createContentDep('hard', toFullId, reason);
+    const hardDep = await createContentDep('hard', toFullId, undefined, reason);
     if (hardDep) {
       hardDependencies.push(hardDep);
     }
@@ -40,7 +40,7 @@ export async function getContentDependencies(fullId: string) {
   const autoDependencies: ContentAutoDep[] = [];
 
   const dbAutoDependencies = await ERUDIT.db.query.contentDeps.findMany({
-    columns: { toFullId: true, hard: true },
+    columns: { toFullId: true, hard: true, uniqueNames: true },
     where: and(
       or(
         eq(ERUDIT.db.schema.contentDeps.fromFullId, fullId),
@@ -50,13 +50,30 @@ export async function getContentDependencies(fullId: string) {
     ),
   });
 
+  // Merge unique names across rows that share the same toFullId
+  // (can happen when a topic and its children both dep on the same target).
+  const autoUniqueMap = new Map<string, Set<string>>();
+  for (const row of dbAutoDependencies) {
+    if (!autoUniqueMap.has(row.toFullId)) {
+      autoUniqueMap.set(row.toFullId, new Set());
+    }
+    if (row.uniqueNames) {
+      for (const name of row.uniqueNames.split(',')) {
+        autoUniqueMap.get(row.toFullId)!.add(name);
+      }
+    }
+  }
+
   // Skip auto-dependency if a hard dependency from the same source exists
   const autoToFullIds = ERUDIT.contentNav
     .orderIds(externalToFullIds(dbAutoDependencies))
     .filter((toFullId) => !fullId2Reason.has(toFullId));
 
   for (const toFullId of autoToFullIds) {
-    const autoDep = await createContentDep('auto', toFullId);
+    const uniquePairs = Array.from(autoUniqueMap.get(toFullId) ?? []).map(
+      (uniqueName) => ({ contentFullId: toFullId, uniqueName }),
+    );
+    const autoDep = await createContentDep('auto', toFullId, uniquePairs);
     if (autoDep) {
       autoDependencies.push(autoDep);
     }
@@ -92,32 +109,50 @@ export async function getContentDependents(
   fullId: string,
 ): Promise<ContentAutoDep[]> {
   const dbDependents = await ERUDIT.db.query.contentDeps.findMany({
-    columns: { fromFullId: true, toFullId: true },
+    columns: { fromFullId: true, toFullId: true, uniqueNames: true },
     where: or(
       eq(ERUDIT.db.schema.contentDeps.toFullId, fullId),
       like(ERUDIT.db.schema.contentDeps.toFullId, `${fullId}/%`),
     ),
   });
 
-  // Skip dependent if it originates from current content item or its child
-  const externalFromFullIds = dbDependents.reduce((ids, dbDependent) => {
-    const fromFullId = dbDependent.fromFullId;
+  // Group rows by fromFullId, collecting {contentFullId, uniqueName} pairs
+  // (toFullId can vary when a dependent references different child pages).
+  const fromUniquePairsMap = new Map<
+    string,
+    { contentFullId: string; uniqueName: string }[]
+  >();
+  const externalFromFullIds: string[] = [];
+
+  for (const row of dbDependents) {
+    const fromFullId = row.fromFullId;
     const isFromSelf = fromFullId === fullId;
     const isFromChild = fromFullId.startsWith(`${fullId}/`);
 
-    if (isFromSelf || isFromChild) {
-      return ids;
+    if (isFromSelf || isFromChild) continue;
+
+    if (!fromUniquePairsMap.has(fromFullId)) {
+      fromUniquePairsMap.set(fromFullId, []);
+      externalFromFullIds.push(fromFullId);
     }
 
-    ids.push(fromFullId);
-    return ids;
-  }, [] as string[]);
+    if (row.uniqueNames) {
+      for (const name of row.uniqueNames.split(',')) {
+        fromUniquePairsMap
+          .get(fromFullId)!
+          .push({ contentFullId: row.toFullId, uniqueName: name });
+      }
+    }
+  }
 
   // Order sources according to nav structure
   const fromFullIds = ERUDIT.contentNav.orderIds(externalFromFullIds);
 
   const dependents = await Promise.all(
-    fromFullIds.map((fromFullId) => createContentDep('auto', fromFullId)),
+    fromFullIds.map((fromFullId) => {
+      const uniquePairs = fromUniquePairsMap.get(fromFullId) ?? [];
+      return createContentDep('auto', fromFullId, uniquePairs);
+    }),
   );
 
   return dependents.filter((dep): dep is ContentAutoDep => dep !== undefined);
@@ -126,15 +161,18 @@ export async function getContentDependents(
 async function createContentDep(
   type: 'auto',
   fullId: string,
+  uniquePairs: { contentFullId: string; uniqueName: string }[],
 ): Promise<ContentAutoDep | undefined>;
 async function createContentDep(
   type: 'hard',
   fullId: string,
+  uniquePairs: undefined,
   reason: string,
 ): Promise<ContentHardDep | undefined>;
 async function createContentDep(
   type: 'auto' | 'hard',
   fullId: string,
+  uniquePairs?: { contentFullId: string; uniqueName: string }[],
   reason?: string,
 ): Promise<ContentDep | undefined> {
   const navNode = ERUDIT.contentNav.getNodeOrThrow(fullId);
@@ -160,10 +198,60 @@ async function createContentDep(
     };
   }
 
+  const uniques =
+    uniquePairs && uniquePairs.length > 0
+      ? await resolveUniqueEntries(uniquePairs)
+      : undefined;
+
   return {
     type: 'auto',
     contentType,
     title,
     link,
+    ...(uniques && uniques.length > 0 ? { uniques } : {}),
   };
+}
+
+async function resolveUniqueEntries(
+  pairs: { contentFullId: string; uniqueName: string }[],
+): Promise<ContentDepUnique[]> {
+  // Deduplicate by "contentFullId/uniqueName" to avoid showing the same
+  // element twice when multiple prose types reference it.
+  const seen = new Set<string>();
+  const unique: typeof pairs = [];
+  for (const pair of pairs) {
+    const key = `${pair.contentFullId}/${pair.uniqueName}`;
+    if (!seen.has(key)) {
+      seen.add(key);
+      unique.push(pair);
+    }
+  }
+
+  const results = await Promise.all(
+    unique.map(async ({ contentFullId, uniqueName }) => {
+      const dbUnique = await ERUDIT.db.query.contentUniques.findFirst({
+        columns: { title: true, prose: true },
+        where: and(
+          eq(ERUDIT.db.schema.contentUniques.contentFullId, contentFullId),
+          eq(ERUDIT.db.schema.contentUniques.uniqueName, uniqueName),
+        ),
+      });
+
+      if (!dbUnique) return null;
+
+      const pageLink = await ERUDIT.repository.content.link(contentFullId);
+      const schemaName = dbUnique.prose.schema.name;
+
+      if (!schemaName) return null;
+
+      return {
+        name: uniqueName,
+        title: dbUnique.title ?? undefined,
+        link: `${pageLink}?element=${dbUnique.prose.id}`,
+        schemaName,
+      } satisfies ContentDepUnique;
+    }),
+  );
+
+  return results.filter((r): r is ContentDepUnique => r !== null);
 }

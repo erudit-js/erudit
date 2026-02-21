@@ -58,18 +58,22 @@ export async function insertContentResolved(
     await ERUDIT.repository.db.pushProblemScript(problemScript, contentFullId);
   }
 
-  const targetFullIds = filterTargetFullIds(contentFullId, result.contentLinks);
+  const targetMap = filterTargetMap(contentFullId, result.contentLinks);
 
-  await insertContentDeps(contentFullId, Array.from(targetFullIds));
+  await insertContentDeps(contentFullId, targetMap);
 }
 
-async function insertContentDeps(fromFullId: string, toFullIds: string[]) {
-  const contentDeps = toFullIds
-    .filter((toFullId) => toFullId !== fromFullId)
-    .map((toFullId) => ({
+async function insertContentDeps(
+  fromFullId: string,
+  targetMap: Map<string, Set<string>>,
+) {
+  const contentDeps = Array.from(targetMap.entries())
+    .filter(([toFullId]) => toFullId !== fromFullId)
+    .map(([toFullId, uniqueSet]) => ({
       fromFullId,
       toFullId,
       hard: false,
+      uniqueNames: uniqueSet.size > 0 ? Array.from(uniqueSet).join(',') : null,
     }));
 
   if (contentDeps.length > 0) {
@@ -80,10 +84,12 @@ async function insertContentDeps(fromFullId: string, toFullIds: string[]) {
   }
 }
 
-function filterTargetFullIds(
+// Returns a map from resolved toFullId → set of unique names targeted in that
+// content item. An empty set means the dep targets the whole page (no unique).
+function filterTargetMap(
   contentFullId: string,
   contentLinks: ContentLinks,
-) {
+): Map<string, Set<string>> {
   const brokenLinkMessage = (message: string, metas: ContentLinkUsage[]) => {
     let output = `${message} in ${ERUDIT.log.stress(contentFullId)}:\n`;
     for (const { type, label } of metas) {
@@ -92,7 +98,7 @@ function filterTargetFullIds(
     return output;
   };
 
-  const targetFullIds = new Set<string>();
+  const targetMap = new Map<string, Set<string>>();
 
   for (const [storageKey, metas] of contentLinks) {
     if (storageKey.startsWith('<link:unknown>/')) {
@@ -105,6 +111,14 @@ function filterTargetFullIds(
     } else if (storageKey.startsWith('<link:global>')) {
       try {
         const globalContentId = storageKey.replace('<link:global>/', '');
+
+        // Extract unique name before stripping it for nav resolution
+        const parts = globalContentId.split('/');
+        const lastPart = parts.at(-1);
+        const uniqueName = lastPart?.startsWith('$')
+          ? lastPart.slice(1)
+          : undefined;
+
         const targetFullId = globalContentToNavNode(globalContentId).fullId;
 
         if (
@@ -112,7 +126,12 @@ function filterTargetFullIds(
             (meta) => meta.type === 'Dep' || meta.type === 'Dependency',
           )
         ) {
-          targetFullIds.add(targetFullId);
+          if (!targetMap.has(targetFullId)) {
+            targetMap.set(targetFullId, new Set());
+          }
+          if (uniqueName) {
+            targetMap.get(targetFullId)!.add(uniqueName);
+          }
         }
       } catch {
         ERUDIT.log.warn(
@@ -125,7 +144,7 @@ function filterTargetFullIds(
     }
   }
 
-  return targetFullIds;
+  return targetMap;
 }
 
 function globalContentToNavNode(globalContentPath: string) {

@@ -82,6 +82,7 @@ const parentExternalsCount = computed(() => {
     <template v-if="currentType && connections[currentType]">
       <Deps
         v-if="currentType !== 'externals'"
+        :type="currentType === 'autoDependencies' ? 'dependency' : 'dependent'"
         :deps="connections[currentType]!"
       />
       <Externals v-else :externals="connections[currentType]!" />
