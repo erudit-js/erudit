@@ -9,7 +9,7 @@ export default defineEventHandler<Promise<PreviewContentUnique>>(
       event.context.params!.contentTypePathUnique!.slice(0, -5);
     const parts = strContentTypePathUnique.split('/');
     const strContentTypePath = parts.slice(0, -1).join('/');
-    const uniqueName = parts.at(-1)!;
+    const uniqueName = decodeURIComponent(parts.at(-1)!);
     const contentTypePath = parseContentTypePath(strContentTypePath);
     const fullId = contentTypePath.contentId;
     const navNode = ERUDIT.contentNav.getNodeOrThrow(fullId);

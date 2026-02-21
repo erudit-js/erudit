@@ -6,7 +6,12 @@ import type {
   ContentLinks,
   ContentLinkUsage,
 } from '@erudit-js/prose/elements/link/hook';
-import type { EruditRawToProseResult } from '@erudit-js/prose';
+import {
+  toKeySnippet,
+  toSearchSnippet,
+  toSeoSnippet,
+  type EruditRawToProseResult,
+} from '@erudit-js/prose';
 
 export async function insertContentResolved(
   contentFullId: string,
@@ -34,9 +39,9 @@ export async function insertContentResolved(
       elementId: snippet.elementId,
       schemaName: snippet.schemaName,
       snippetData: snippet.snippet,
-      search: !!snippet.snippet.search,
-      key: !!snippet.snippet.key,
-      seo: !!snippet.snippet.seo,
+      search: !!toSearchSnippet(snippet.snippet),
+      key: !!toKeySnippet(snippet.snippet),
+      seo: !!toSeoSnippet(snippet.snippet),
     });
   }
 

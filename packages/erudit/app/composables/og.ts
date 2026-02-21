@@ -1,4 +1,5 @@
 import type { ContentSeo } from '@erudit-js/core/content/seo';
+import { toSeoSnippet } from '@erudit-js/prose';
 
 export function initOgSiteName() {
   const siteTitle =
@@ -132,23 +133,11 @@ export async function useContentSeo(args: {
         return;
       }
 
+      const seoSnippet = toSeoSnippet(snippet)!;
       const elementPhrase = await getElementPhrase(snippet.schemaName);
 
-      const title = (() => {
-        if (snippet.seo?.title) {
-          return snippet.seo.title;
-        } else {
-          return snippet.title;
-        }
-      })();
-
-      const description = (() => {
-        if (snippet.seo?.description) {
-          return snippet.seo.description;
-        } else {
-          return snippet.description;
-        }
-      })();
+      const title = (() => seoSnippet.title)();
+      const description = (() => seoSnippet.description)();
 
       setupSeo({
         title: `${title} [${elementPhrase.element_name}] - ${seoSiteTitle}`,
