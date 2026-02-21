@@ -80,6 +80,7 @@ export const phrases: LanguagePhrases = {
   no_contribution: 'No contributions yet.',
   editor: 'Editor',
   materials: 'Materials',
+  updated: 'Updated',
   x_sponsors: (count: number) => m(count, 'Sponsor', 'Sponsors'),
   x_contributors: (count: number) => m(count, 'Contributor', 'Contributors'),
   news: 'News',

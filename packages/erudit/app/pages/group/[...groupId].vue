@@ -42,7 +42,11 @@ await useContentSeo({
     <MainFlags :flags="mainContent.flags" />
     <MainDescription :description="mainContent.description" />
     <MainConnections :connections="mainContent.connections" />
-    <MainContentStats mode="single" :stats="mainContent.stats" />
+    <MainContentStats
+      mode="single"
+      :stats="mainContent.stats"
+      :contentRelativePath="mainContent.contentRelativePath"
+    />
     <div class="h-main-half"></div>
     <MainAction
       v-if="mainContent.children[0]"

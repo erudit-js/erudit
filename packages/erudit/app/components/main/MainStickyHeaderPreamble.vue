@@ -17,7 +17,11 @@ const { mainContent } = defineProps<{ mainContent: MainContent }>();
       :elementSnippets="mainContent.snippets"
     />
     <MainConnections mode="single" :connections="mainContent.connections" />
-    <MainContentStats mode="single" :stats="mainContent.stats" />
+    <MainContentStats
+      mode="single"
+      :stats="mainContent.stats"
+      :contentRelativePath="mainContent.contentRelativePath"
+    />
     <div class="h-main-half"></div>
   </div>
 </template>

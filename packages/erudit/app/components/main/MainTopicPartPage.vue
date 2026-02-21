@@ -59,7 +59,11 @@ await useContentSeo({
     <MainDescription :description="mainContent.description" />
     <MainKeyLinks mode="single" :elementSnippets="mainContent.snippets" />
     <MainConnections :connections="mainContent.connections" />
-    <MainContentStats mode="single" :stats="mainContent.stats" />
+    <MainContentStats
+      mode="single"
+      :stats="mainContent.stats"
+      :contentRelativePath="mainContent.contentRelativePath"
+    />
     <div class="h-main-half"></div>
     <MainQuoteLoader />
     <div class="h-main-half"></div>

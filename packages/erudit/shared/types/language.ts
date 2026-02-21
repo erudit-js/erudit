@@ -79,6 +79,7 @@ export type LanguagePhrases = Phrases<{
   no_contribution: string;
   editor: string;
   materials: string;
+  updated: string;
   x_sponsors: (count: number) => string;
   x_contributors: (count: number) => string;
   news: string;
