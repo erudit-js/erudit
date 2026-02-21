@@ -1,8 +1,8 @@
 <script lang="ts" setup>
 import { Text, h } from 'vue';
-import type { ProseElement, textSchema } from '@jsprose/core';
+import type { TextSchema, ToProseElement } from 'tsprose';
 
-const { element } = defineProps<{ element: ProseElement<typeof textSchema> }>();
+const { element } = defineProps<{ element: ToProseElement<TextSchema> }>();
 
 const originalText = element.data;
 const leadingSpace = originalText.match(/^(\s*)/)?.[1] ? ' ' : '';

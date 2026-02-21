@@ -1,5 +1,4 @@
-import type { AnySchema, RawElement } from '@jsprose/core';
+import type { RawElement } from 'tsprose';
+export { defineDocument as defineProse, type RawElement } from 'tsprose';
 
-export { defineDocument as defineProse } from '@jsprose/core';
-
-export type AnyProseElement = RawElement<AnySchema>;
+export type ProseElement = RawElement;

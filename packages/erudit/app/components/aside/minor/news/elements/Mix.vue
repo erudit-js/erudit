@@ -1,9 +1,8 @@
 <script lang="ts" setup>
-import type { mixSchema, ProseElement } from '@jsprose/core';
-
+import type { MixSchema, ToProseElement } from 'tsprose';
 import RenderNewsElement from '../RenderNewsElement.vue';
 
-defineProps<{ element: ProseElement<typeof mixSchema> }>();
+defineProps<{ element: ToProseElement<MixSchema> }>();
 </script>
 
 <template>

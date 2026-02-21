@@ -1,15 +1,18 @@
-import {
-  defineRegistryItem,
-  defineSchema,
-  ensureTagChild,
-  isRawElement,
-} from '@jsprose/core';
+import { defineSchema, ensureTagChildren, type Schema } from 'tsprose';
 
 import type { Invert } from '../../shared/invert.js';
 import { captionSchema } from '../caption/core.js';
 import { defineEruditTag } from '../../tag.js';
-import { defineEruditProseCoreElement } from '../../coreElement.js';
-import { defineResolveStep } from '../../resolveStep.js';
+import { defineProseCoreElement } from '../../coreElement.js';
+
+export interface VideoSchema extends Schema {
+  name: 'video';
+  type: 'block';
+  linkable: true;
+  Data: VideoData;
+  Storage: VideoStorage;
+  Children: [typeof captionSchema] | undefined;
+}
 
 export interface VideoData {
   src: string;
@@ -22,15 +25,11 @@ export interface VideoStorage {
   resolvedSrc: string;
 }
 
-export const videoSchema = defineSchema({
+export const videoSchema = defineSchema<VideoSchema>({
   name: 'video',
   type: 'block',
   linkable: true,
-})<{
-  Data: VideoData;
-  Storage: VideoStorage;
-  Children: [typeof captionSchema] | undefined;
-}>();
+});
 
 export const Video = defineEruditTag({
   tagName: 'Video',
@@ -43,8 +42,8 @@ export const Video = defineEruditTag({
   children?: {};
 }>(({ element, tagName, props, children }) => {
   if (children) {
-    ensureTagChild(tagName, children, captionSchema);
-    element.children = children;
+    ensureTagChildren(tagName, children, captionSchema);
+    element.children = [children[0]];
   }
 
   element.data = {
@@ -66,21 +65,14 @@ export const Video = defineEruditTag({
   }
 });
 
-export const videoRegistryItem = defineRegistryItem({
+export default defineProseCoreElement({
   schema: videoSchema,
   tags: [Video],
-});
-
-export default defineEruditProseCoreElement({
-  registryItem: videoRegistryItem,
-});
-
-//
-// Resolve
-//
-
-export const videoSrcStep = defineResolveStep(({ rawElement }) => {
-  if (isRawElement(rawElement, videoSchema)) {
-    return rawElement.data.src;
-  }
+  rawToProseHook: ({ result }) => {
+    return {
+      matchStep: ({ rawElement }) => {
+        result.files.add(rawElement.data.src);
+      },
+    };
+  },
 });

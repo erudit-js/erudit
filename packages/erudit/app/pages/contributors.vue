@@ -11,7 +11,7 @@ const payloadKey = 'list-contributors';
 const listContributors: ListContributor[] =
   (nuxtApp.static.data[payloadKey] ||=
   nuxtApp.payload.data[payloadKey] ||=
-    await $fetch('/api/contributor/list', { responseType: 'json' }));
+    await fetchJson('/api/contributor/list'));
 
 const phrase = await usePhrases(
   'contributors',

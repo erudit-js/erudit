@@ -1,6 +1,5 @@
 <script lang="ts" setup>
-import { walkElements } from '@jsprose/core';
-
+import { walkPreSync } from 'tsprose';
 import RenderNewsElement from './RenderNewsElement.vue';
 
 const { item, isNew } = defineProps<{
@@ -26,7 +25,7 @@ const dateOptions: Intl.DateTimeFormatOptions = {
 const formattedTitle = itemDate.toLocaleDateString(undefined, dateOptions);
 
 // Prepopulate storage values in order not to fuck with provide/inject shit
-await walkElements(item.content.proseElement, async (element) => {
+walkPreSync(item.content.prose, (element) => {
   if (element.storageKey) {
     const storageKey = element.storageKey;
     if (item.content.storage[storageKey] !== undefined) {
@@ -63,7 +62,7 @@ await walkElements(item.content.proseElement, async (element) => {
       }"
       class="gap-small flex flex-col text-[0.95em]"
     >
-      <RenderNewsElement :element="item.content.proseElement" />
+      <RenderNewsElement :element="item.content.prose" />
     </div>
   </div>
 </template>

@@ -1,33 +1,39 @@
 import {
-  defineRegistryItem,
   defineSchema,
-  ensureTagChild,
-  ProseError,
+  ensureTagSingleChild,
   textSchema,
   type NormalizedChildren,
-  type TagChildren,
-} from '@jsprose/core';
+  type RequiredChildren,
+  type Schema,
+} from 'tsprose';
 
-import { defineEruditTag, type NoToc } from '../../tag.js';
-import { defineEruditProseCoreElement } from '../../coreElement.js';
-import type { EruditRawElement } from '../../rawElement.js';
+import { defineEruditTag } from '../../tag.js';
+import type { ToEruditRawElement } from '../../rawElement.js';
+import { EruditProseError } from '../../error.js';
+import { defineProseCoreElement } from '../../coreElement.js';
+import type { NoToc } from '../../toc.js';
 
-export const headingSchema = defineSchema({
-  name: 'heading',
-  type: 'block',
-  linkable: true,
-})<{
+export interface HeadingSchema extends Schema {
+  name: 'heading';
+  type: 'block';
+  linkable: true;
   Data: HeadingData;
   Storage: undefined;
   Children: undefined;
-}>();
+}
+
+export const headingSchema = defineSchema<HeadingSchema>({
+  name: 'heading',
+  type: 'block',
+  linkable: true,
+});
 
 export interface HeadingData {
   level: 1 | 2 | 3;
   title: string;
 }
 
-export type HeadingProps = TagChildren & NoToc;
+export type HeadingProps = NoToc & RequiredChildren;
 
 export const H1 = defineEruditTag({
   tagName: 'H1',
@@ -53,15 +59,15 @@ export const H3 = defineEruditTag({
 function processHeadingElement(
   level: 1 | 2 | 3,
   tagName: string,
-  element: EruditRawElement<typeof headingSchema>,
+  element: ToEruditRawElement<HeadingSchema>,
   children: NormalizedChildren,
 ) {
-  ensureTagChild(tagName, children, textSchema);
+  ensureTagSingleChild(tagName, children, textSchema);
   const child = children[0];
   const title = child.data.trim();
 
   if (!title) {
-    throw new ProseError(`<${tagName}> title cannot be empty!`);
+    throw new EruditProseError(`<${tagName}> title cannot be empty!`);
   }
 
   element.data = {
@@ -70,17 +76,10 @@ function processHeadingElement(
   };
 
   element.title = title;
-
-  element.toc = {
-    add: true,
-  };
+  element.toc = true;
 }
 
-export const headingRegistryItem = defineRegistryItem({
+export default defineProseCoreElement({
   schema: headingSchema,
   tags: [H1, H2, H3],
-});
-
-export default defineEruditProseCoreElement({
-  registryItem: headingRegistryItem,
 });

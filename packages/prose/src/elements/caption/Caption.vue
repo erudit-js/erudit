@@ -1,12 +1,12 @@
 <script lang="ts" setup>
 import { onMounted, useTemplateRef } from 'vue';
-import { isProseElement, type ProseElement } from '@jsprose/core';
+import { isProseElement, type ToProseElement } from 'tsprose';
 
-import { captionSecondarySchema, type captionSchema } from './core.js';
+import { captionSecondarySchema, type CaptionSchema } from './core.js';
 import Render from '../../app/shared/Render.vue';
 
 const { caption } = defineProps<{
-  caption: ProseElement<typeof captionSchema>;
+  caption: ToProseElement<CaptionSchema>;
 }>();
 
 const emit = defineEmits(['captionMounted']);

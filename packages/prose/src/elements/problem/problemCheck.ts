@@ -1,14 +1,14 @@
+import type { XOR } from 'ts-xor';
 import {
-  defineRegistryItem,
   defineSchema,
   ensureTagChildren,
-  ProseError,
-  type NoTagChildren,
-  type TagChildren,
-} from '@jsprose/core';
+  type OptionalChildren,
+  type Schema,
+} from 'tsprose';
 
 import { defineEruditTag } from '../../tag.js';
-import { defineEruditProseCoreElement } from '../../coreElement.js';
+import { defineProseCoreElement } from '../../coreElement.js';
+import { EruditProseError } from '../../error.js';
 
 //
 // Prose Element
@@ -22,45 +22,42 @@ export interface ProblemCheckInfo {
 
 export type ProblemCheckData = ProblemCheckInfo & { serializedValidator: any };
 
-export type ProblemCheckSchema = {
+export interface ProblemCheckSchema extends Schema {
   name: 'problemCheck';
   type: 'block';
   linkable: false;
   Data: ProblemCheckData;
   Storage: undefined;
   Children: ProblemCheckSchema[] | undefined;
-};
+}
 
-export const problemCheckSchema = defineSchema({
+export const problemCheckSchema = defineSchema<ProblemCheckSchema>({
   name: 'problemCheck',
   type: 'block',
   linkable: false,
-})<ProblemCheckSchema>();
-
-type UndefinedOnly<T> = { [K in keyof T]?: undefined };
-
-type OneOf<T extends Record<string, any>> = {
-  [K in keyof T]: Pick<T, K> & UndefinedOnly<Omit<T, K>>;
-}[keyof T];
+});
 
 export const ProblemCheck = defineEruditTag({
   tagName: 'ProblemCheck',
   schema: problemCheckSchema,
 })<
-  { label?: string; hint?: string; placeholder?: string } & OneOf<{
-    yes: true;
-    no: true;
-    answer: ProblemCheckValue;
-    answers:
-      | (ProblemCheckValueDefined | ProblemCheckValueDefined[])[]
-      | {
-          ordered?: boolean;
-          separator?: string;
-          values: (ProblemCheckValueDefined | ProblemCheckValueDefined[])[];
-        };
-    script: string;
-  }> &
-    (TagChildren | NoTagChildren)
+  { label?: string; hint?: string; placeholder?: string } & XOR<
+    { yes: true },
+    { no: true },
+    { boolean: boolean },
+    { answer: ProblemCheckValue | ProblemCheckValue[] },
+    {
+      answers:
+        | (ProblemCheckValueDefined | ProblemCheckValueDefined[])[]
+        | {
+            ordered?: boolean;
+            separator?: string;
+            values: (ProblemCheckValueDefined | ProblemCheckValueDefined[])[];
+          };
+    },
+    { script: string }
+  > &
+    OptionalChildren
 >(({ element, tagName, props, children }) => {
   //
   // Info
@@ -78,7 +75,7 @@ export const ProblemCheck = defineEruditTag({
 
   if (children && children.length > 0) {
     ensureTagChildren(tagName, children, problemCheckSchema);
-    element.children = children as any;
+    element.children = children;
   }
 
   //
@@ -96,6 +93,11 @@ export const ProblemCheck = defineEruditTag({
     validator = {
       type: 'boolean',
       answer: false,
+    };
+  } else if ('boolean' in props) {
+    validator = {
+      type: 'boolean',
+      answer: !!props.boolean,
     };
   } else if ('answer' in props) {
     validator = {
@@ -135,13 +137,9 @@ export const ProblemCheck = defineEruditTag({
   };
 });
 
-export const problemCheckRegistryItem = defineRegistryItem({
+export const problemCheckCoreElement = defineProseCoreElement({
   schema: problemCheckSchema,
   tags: [ProblemCheck],
-});
-
-export const problemCheckCoreElement = defineEruditProseCoreElement({
-  registryItem: problemCheckRegistryItem,
 });
 
 //
@@ -158,7 +156,7 @@ export type ProblemCheckValueDefined = Exclude<ProblemCheckValue, undefined>;
 
 export interface ProblemCheckValidatorValue {
   type: 'value';
-  answer: ProblemCheckValue;
+  answer: ProblemCheckValue | ProblemCheckValue[];
 }
 
 export interface ProblemCheckValidatorArray {
@@ -199,7 +197,9 @@ export function toSerializableValidator(validator: ProblemCheckValidator) {
   if (validator.type === 'value') {
     return {
       type: 'value',
-      answer: toSerializableValue(validator.answer),
+      answer: Array.isArray(validator.answer)
+        ? validator.answer.map(toSerializableValue)
+        : toSerializableValue(validator.answer),
     };
   }
 
@@ -244,7 +244,9 @@ export function fromSerializableValidator(
   if (serializedValidator.type === 'value') {
     return {
       type: 'value',
-      answer: fromSerializableValue(serializedValidator.answer),
+      answer: Array.isArray(serializedValidator.answer)
+        ? serializedValidator.answer.map(fromSerializableValue)
+        : fromSerializableValue(serializedValidator.answer),
     } as ProblemCheckValidatorValue;
   }
 
@@ -299,7 +301,7 @@ export function checkProblemAnswer(
   };
 
   const checkAnswer = (expect: ProblemCheckValue, answer: string): boolean => {
-    if (expect === undefined) {
+    if (expect === undefined || expect === null) {
       return answer.trim() === '';
     }
 
@@ -307,7 +309,10 @@ export function checkProblemAnswer(
   };
 
   if (validator.type === 'value') {
-    return checkAnswer(validator.answer, answer);
+    const anyOf = Array.isArray(validator.answer)
+      ? validator.answer
+      : [validator.answer];
+    return anyOf.some((expect) => checkAnswer(expect, answer));
   }
 
   if (validator.type === 'array') {
@@ -357,7 +362,7 @@ export function checkProblemAnswer(
     return true;
   }
 
-  throw new ProseError(
+  throw new EruditProseError(
     `"checkProblemAnswer" not implemented for type "${(validator as any).type}"!`,
   );
 }

@@ -6,7 +6,7 @@
 
 Erudit is a CMS for perfect community-driven educational sites:
 
-- Content is written in **JSX/TSX** using custom DSL tags (like `<P>`, `<Problem>`, `<Flex>` and many more) provided by [`@jsprose/core`](https://github.com/jsprose/core) package.
+- Content is written in **JSX/TSX** using custom DSL tags like `<P>`, `<Problem>`, `<Flex>` and many more provided by [`@erudit-js/prose`](https://github.com/erudit-js/erudit/tree/main/packages/prose) package and powered by [`tsprose`](https://github.com/Gwynerva/tsprose).
 - **Type-safe cross-references** with automatic generation of tables of contents, search indexes, and content dependencies.
 - Full **TypeScript power**: variables, functions, type-safe tag props, and more.
 - Nuxt-powered **fully static** (no server required) site with **adaptive design** (looks good on both mobile and desktop).

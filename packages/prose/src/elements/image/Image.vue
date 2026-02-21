@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import type { ProseElement } from '@jsprose/core';
+import type { ToProseElement } from 'tsprose';
 
-import type { imageSchema } from './core.js';
+import type { ImageSchema } from './core.js';
 import Block from '../../app/shared/block/Block.vue';
 import ImageElement from './ImageElement.vue';
 
-defineProps<{ element: ProseElement<typeof imageSchema> }>();
+defineProps<{ element: ToProseElement<ImageSchema> }>();
 </script>
 
 <template>

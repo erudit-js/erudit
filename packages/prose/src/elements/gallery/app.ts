@@ -1,7 +1,7 @@
-import { defineEruditProseAppElement } from '../../app/appElement.js';
+import { defineProseAppElement } from '../../app/appElement.js';
 import { gallerySchema } from './core.js';
 
-export default defineEruditProseAppElement({
+export default defineProseAppElement({
   schema: gallerySchema,
   component: () => import('./Gallery.vue'),
   languages: {

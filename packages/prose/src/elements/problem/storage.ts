@@ -1,5 +1,3 @@
-import { projectRelFilePath } from '../../shared/filePath.js';
-
 export type ProblemScriptStorage =
   | {
       resolvedScriptSrc: string;
@@ -13,12 +11,12 @@ export function problemScriptStorageKey(scriptId: string): string {
 export function createProblemScriptStorage(
   projectAbsPath: string,
   projectBaseUrl: string,
-  scriptSrc: string,
+  scriptRelSrc: string,
 ): ProblemScriptStorage {
   const resolvedSrc =
     projectBaseUrl +
     'api/problemScript/' +
-    projectRelFilePath(projectAbsPath, scriptSrc.replace('.tsx', '')) +
+    scriptRelSrc.replace('.tsx', '') +
     '.js';
   return {
     resolvedScriptSrc: resolvedSrc,

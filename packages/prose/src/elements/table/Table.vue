@@ -1,15 +1,15 @@
 <script lang="ts" setup>
 import { computed } from 'vue';
-import { isProseElement, type ProseElement } from '@jsprose/core';
+import { isProseElement, type ToProseElement } from 'tsprose';
 
-import type { tableSchema } from './core.js';
+import type { TableSchema } from './core.js';
 import { captionSchema } from '../caption/core.js';
 import Render from '../../app/shared/Render.vue';
 import Block from '../../app/shared/block/Block.vue';
 import Caption from '../caption/Caption.vue';
 
 const { element } = defineProps<{
-  element: ProseElement<typeof tableSchema>;
+  element: ToProseElement<TableSchema>;
 }>();
 
 const caption = computed(() => {

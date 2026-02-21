@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { shallowRef } from 'vue';
-import { type ProseElement } from '@jsprose/core';
+import type { ToProseElement } from 'tsprose';
 
 import {
   isAccentMainElement,
@@ -19,7 +19,7 @@ import Render from '../../app/shared/Render.vue';
 import AccentColumnSection from './AccentColumnSection.vue';
 import AccentRowSections from './AccentRowSections.vue';
 
-const { element } = defineProps<{ element: ProseElement<AccentSchema> }>();
+const { element } = defineProps<{ element: ToProseElement<AccentSchema> }>();
 
 const { EruditIcon } = useProseContext();
 const formatText = useFormatText();
@@ -28,8 +28,8 @@ const accentIcon = await useElementIcon(element);
 const phrase =
   await useElementPhrase<ElementPhrases<Record<string, string>>>(element);
 
-const mainSection = shallowRef<ProseElement<AccentMainSchema>>();
-const sections = shallowRef<ProseElement<AccentSectionSchema>[]>([]);
+const mainSection = shallowRef<ToProseElement<AccentMainSchema>>();
+const sections = shallowRef<ToProseElement<AccentSectionSchema>[]>([]);
 
 for (const child of element.children) {
   if (isAccentMainElement(child)) {

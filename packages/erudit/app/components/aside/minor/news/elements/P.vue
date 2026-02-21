@@ -1,10 +1,10 @@
 <script lang="ts" setup>
-import type { ProseElement } from '@jsprose/core';
-import type { paragraphSchema } from '@erudit-js/prose/elements/paragraph/core';
+import type { ToProseElement } from 'tsprose';
+import type { ParagraphSchema } from '@erudit-js/prose/elements/paragraph/core';
 
 import RenderNewsElement from '../RenderNewsElement.vue';
 
-defineProps<{ element: ProseElement<typeof paragraphSchema> }>();
+defineProps<{ element: ToProseElement<ParagraphSchema> }>();
 </script>
 
 <template>

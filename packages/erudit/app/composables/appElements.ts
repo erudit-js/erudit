@@ -1,7 +1,5 @@
-import type { AppElement } from '@erudit-js/prose/app';
-import { appElements as _appElements } from '#erudit/prose/app';
-
-export const appElements: Record<string, AppElement> = { ..._appElements };
+import { appElements } from '#erudit/prose/app';
+export { appElements } from '#erudit/prose/app';
 
 export async function initAppElements() {
   for (const [name, element] of Object.entries(appElements)) {

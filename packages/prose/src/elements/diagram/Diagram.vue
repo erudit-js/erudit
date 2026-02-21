@@ -9,16 +9,16 @@ import {
   useId,
   useTemplateRef,
 } from 'vue';
-import type { ProseElement } from '@jsprose/core';
+import type { ToProseElement } from 'tsprose';
 
-import type { diagramSchema } from './core.js';
+import type { DiagramSchema } from './core.js';
 import { usePhotoSwipe } from '../../app/shared/photoswipe/composable.js';
 import { useProseContext } from '../../app/composables/context.js';
 import Caption from '../caption/Caption.vue';
 import Block from '../../app/shared/block/Block.vue';
 
 const { element } = defineProps<{
-  element: ProseElement<typeof diagramSchema>;
+  element: ToProseElement<DiagramSchema>;
 }>();
 
 let isWebkit = ref<boolean>();
@@ -282,7 +282,7 @@ async function renderDiagram() {
   [data-prose-accent] & {
     --arrowColor: color-mix(
       in hsl,
-      var(--accentText) 45%,
+      var(--accentText) 70%,
       var(--accentBackground)
     );
 
@@ -310,12 +310,12 @@ async function renderDiagram() {
     :global(.node) ellipse {
       fill: color-mix(
         in hsl,
-        var(--accentText) 30%,
+        var(--accentText) 25%,
         var(--accentBackground)
       ) !important;
       stroke: color-mix(
         in hsl,
-        var(--accentText) 45%,
+        var(--accentText) 80%,
         var(--accentBackground)
       ) !important;
     }
@@ -333,7 +333,11 @@ async function renderDiagram() {
     polygon,
     circle,
     ellipse {
-      fill: color-mix(in hsl, var(--color-brand) 75%, transparent) !important;
+      fill: color-mix(
+        in hsl,
+        var(--color-brand) 50%,
+        var(--color-text-dimmed)
+      ) !important;
       stroke: transparent !important;
     }
 
@@ -343,10 +347,9 @@ async function renderDiagram() {
       polygon,
       circle,
       ellipse {
-        fill: color-mix(
-          in hsl,
-          var(--accentText) 70%,
-          var(--accentBackground)
+        fill: light-dark(
+          color-mix(in hsl, var(--accentText) 90%, var(--color-bg-root)),
+          color-mix(in hsl, var(--accentText) 65%, var(--color-bg-root))
         ) !important;
         stroke: transparent !important;
       }

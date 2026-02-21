@@ -1,4 +1,4 @@
-import type { AnySchema, ProseElement } from '@jsprose/core';
+import type { ProseElement } from 'tsprose';
 
 import type { ElementPhrases } from '../language/element.js';
 import { proseLanguages } from '../language/prose.js';
@@ -14,16 +14,16 @@ export async function useElementPhrase<TPhrases extends ElementPhrases>(
   schemaName: string,
 ): Promise<TPhrases>;
 export async function useElementPhrase<TPhrases extends ElementPhrases>(
-  element: ProseElement<AnySchema>,
+  element: ProseElement,
 ): Promise<TPhrases>;
 export async function useElementPhrase<TPhrases extends ElementPhrases>(
-  elementOrName: string | ProseElement<AnySchema>,
+  elementOrName: string | ProseElement,
 ): Promise<TPhrases> {
   const { languageCode } = useProseContext();
   const appElement = useAppElement(
     typeof elementOrName === 'string'
       ? elementOrName
-      : elementOrName.schemaName,
+      : elementOrName.schema.name,
   );
   const languages = appElement.languages;
   return (await languages[languageCode]()) as TPhrases;

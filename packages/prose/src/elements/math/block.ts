@@ -1,14 +1,15 @@
 import {
-  defineRegistryItem,
   defineSchema,
-  ensureTagChild,
-  ProseError,
+  ensureTagChildren,
   textSchema,
-  type TagChildren,
-} from '@jsprose/core';
+  type RequiredChildren,
+  type Schema,
+} from 'tsprose';
 
-import { latexToHtml, normalizeKatex } from './katex.js';
+import { katexDependency, latexToHtml, normalizeKatex } from './katex.js';
 import { defineEruditTag } from '../../tag.js';
+import { EruditProseError } from '../../error.js';
+import { defineProseCoreElement } from '../../coreElement.js';
 
 export const mathGroupTypes = ['0', 'small', 'normal', 'big'] as const;
 export type MathGroupGapType = (typeof mathGroupTypes)[number] | 'custom';
@@ -147,36 +148,45 @@ export async function resolveMathGroups(
   };
 }
 
+//
+//
+//
+
+export interface BlockMathSchema extends Schema {
+  name: 'blockMath';
+  type: 'block';
+  linkable: true;
+  Data: BlockMathData;
+  Storage: MathGroup;
+  Children: undefined;
+}
+
 export interface BlockMathData {
   katex: string;
   freeze?: boolean;
 }
 
-export const blockMathSchema = defineSchema({
+export const blockMathSchema = defineSchema<BlockMathSchema>({
   name: 'blockMath',
   type: 'block',
   linkable: true,
-})<{
-  Data: BlockMathData;
-  Storage: MathGroup;
-  Children: undefined;
-}>();
+});
 
 export const BlockMath = defineEruditTag({
   tagName: 'BlockMath',
   schema: blockMathSchema,
-})<{ freeze?: boolean } & TagChildren>(({
+})<{ freeze?: boolean } & RequiredChildren>(({
   element,
   tagName,
   props,
   children,
 }) => {
-  ensureTagChild(tagName, children, textSchema);
+  ensureTagChildren(tagName, children, textSchema);
 
   const katex = normalizeKatex(children[0].data);
 
   if (!katex) {
-    throw new ProseError(
+    throw new EruditProseError(
       `<${tagName}> tag must contain non-empty KaTeX math expression.`,
     );
   }
@@ -189,12 +199,11 @@ export const BlockMath = defineEruditTag({
   element.storageKey = `$$ ${katex} $$`;
 });
 
-export const blockMathRegistryItem = defineRegistryItem({
+export const blockMathCoreElement = defineProseCoreElement({
   schema: blockMathSchema,
   tags: [BlockMath],
-  async createStorage(element) {
-    return createBlockMathStorage(element.data.katex);
-  },
+  createStorage: async (element) => createBlockMathStorage(element.data.katex),
+  dependencies: katexDependency,
 });
 
 export async function createBlockMathStorage(

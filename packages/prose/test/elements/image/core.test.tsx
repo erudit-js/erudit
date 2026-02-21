@@ -1,75 +1,49 @@
 import { describe, expect, it } from 'vitest';
-import { isolateProse, isRawElement, PROSE_REGISTRY } from '@jsprose/core';
+import { isRawElement } from 'tsprose';
 
-import { asEruditRaw, resolveEruditRawElement } from '@erudit-js/prose';
-import {
-  Caption,
-  captionRegistryItem,
-  captionSchema,
-} from '@erudit-js/prose/elements/caption/core';
-import {
+import { asEruditRaw } from '@src/rawElement';
+import core, {
   Image,
-  imageRegistryItem,
   imageSchema,
-} from '@erudit-js/prose/elements/image/core';
-
-const prepareRegistry = () =>
-  PROSE_REGISTRY.setItems(imageRegistryItem, captionRegistryItem);
+  type ImageSchema,
+} from '@src/elements/image/core';
+import { Caption, captionSchema } from '@src/elements/caption/core';
+import { eruditRawToProse } from '@src/rawToProse';
 
 describe('Image', () => {
   it('should create image correctly', () => {
-    isolateProse(() => {
-      prepareRegistry();
+    const image = asEruditRaw<ImageSchema>(
+      <Image src="image.png" width="600px" invert="dark">
+        <Caption>Image Caption</Caption>
+      </Image>,
+    );
 
-      const image = asEruditRaw(
-        <Image src="image.png" width="600px" invert="dark">
-          <Caption>Image Caption</Caption>
-        </Image>,
-      );
-
-      expect(isRawElement(image, imageSchema)).toBe(true);
-      expect(image.data).toStrictEqual({
-        invert: 'dark',
-        src: 'image.png',
-        width: '600px',
-      });
-      expect(image.storageKey).toBe('image.png');
-      expect(image.children).toHaveLength(1);
-      expect(isRawElement(image.children![0], captionSchema)).toBe(true);
-
-      expect(() => <Image src="image.png" />).not.toThrow();
+    expect(isRawElement(image, imageSchema)).toBe(true);
+    expect(image.data).toEqual({
+      invert: 'dark',
+      src: 'image.png',
+      width: '600px',
     });
+    expect(image.storageKey).toBe('image.png');
+    expect(image.children).toHaveLength(1);
+    expect(isRawElement(image.children![0], captionSchema)).toBe(true);
+
+    expect(() => <Image src="image.png" />).not.toThrow();
   });
 
   it('should throw when wrong children are provided', () => {
-    isolateProse(() => {
-      prepareRegistry();
-      // Not caption child
-      expect(() => <Image src="image.png">Only Content</Image>).toThrow();
-    });
+    // Not caption child
+    expect(() => <Image src="image.png">Only Content</Image>).toThrow();
   });
 });
 
-describe('imageSrcStep', () => {
-  it('collect image srcs', async () => {
-    await isolateProse(async () => {
-      PROSE_REGISTRY.setItems(imageRegistryItem);
-
-      const { files } = await resolveEruditRawElement({
-        context: {
-          language: 'en',
-          linkable: true,
-        },
-        rawElement: (
-          <>
-            <Image src="image1.png" />
-            Some text
-            <Image src="image2.jpg" invert="dark" />
-          </>
-        ),
-      });
-
-      expect(files).toEqual(new Set(['image1.png', 'image2.jpg']));
+describe('rawToProseHook', () => {
+  it('should add image src to files', async () => {
+    const { files } = await eruditRawToProse({
+      rawProse: <Image src="image.png" />,
+      schemaHooks: new Map([[imageSchema, core.rawToProseHook]]),
     });
+
+    expect(files.has('image.png')).toBe(true);
   });
 });

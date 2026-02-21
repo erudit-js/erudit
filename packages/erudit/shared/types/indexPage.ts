@@ -1,3 +1,6 @@
+import type { ContentStats } from './contentStats';
+import type { MainContentChildrenItem } from './mainContent';
+
 export interface IndexPage {
   title: string;
   short: string;

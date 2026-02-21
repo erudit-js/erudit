@@ -1,4 +1,5 @@
 import type { ContentSeo } from '@erudit-js/core/content/seo';
+import { toSeoSnippet } from '@erudit-js/prose';
 
 export function initOgSiteName() {
   const siteTitle =
@@ -105,54 +106,61 @@ export async function useContentSeo(args: {
 
   const seoSnippets = args.snippets?.filter((snippet) => snippet.seo);
 
+  const route = useRoute();
+
+  function findElementSnippet(elementId: string | undefined) {
+    if (!elementId || !seoSnippets) return undefined;
+    return seoSnippets.find((candidate) => {
+      const url = new URL(candidate.link, 'http://x');
+      const sameParam = url.searchParams.get('element') === elementId;
+      const sameType =
+        candidate.link.split('/')[1] ===
+        (args.contentTypePath.type === 'topic'
+          ? args.contentTypePath.topicPart
+          : args.contentTypePath.type);
+      return sameParam && sameType;
+    });
+  }
+
+  // On a static site the server always serves the canonical-path HTML,
+  // so SSR-time element SEO is not possible. Instead we set SEO
+  // synchronously (before the first await) so the title/description are
+  // applied during the first client render without a visible flash.
+  // Google's crawler executes JS and will see the final values.
   if (!import.meta.client || !seoSnippets || seoSnippets.length === 0) {
     return;
   }
 
-  const route = useRoute();
-  const anchor = computed(() => route.hash.replace('#', ''));
+  const elementQuery = computed(
+    () => route.query.element as string | undefined,
+  );
 
   const stopWatch = watch(
-    anchor,
-    async (hash) => {
-      const snippet = hash
-        ? seoSnippets.find((candidate) => {
-            const sameHash = candidate.link.split('#')[1] === hash;
-            const sameType =
-              candidate.link.split('/')[1] ===
-              (args.contentTypePath.type === 'topic'
-                ? args.contentTypePath.topicPart
-                : args.contentTypePath.type);
-            return sameHash && sameType;
-          })
-        : undefined;
-
+    elementQuery,
+    async (elementId) => {
+      const snippet = findElementSnippet(elementId);
       if (!snippet) {
         setupSeo(baseSeo);
         return;
       }
 
-      const elementPhrase = await getElementPhrase(snippet.schemaName);
-
-      const title = (() => {
-        if (snippet.seo?.title) {
-          return snippet.seo.title;
-        } else {
-          return snippet.title;
-        }
-      })();
-
-      const description = (() => {
-        if (snippet.seo?.description) {
-          return snippet.seo.description;
-        } else {
-          return snippet.description;
-        }
-      })();
-
+      // ── Synchronous: set title/description immediately so there is no
+      //    flash of the base-page title on first render.
+      const seoSnippet = toSeoSnippet(snippet)!;
+      const quickTitle = (() => seoSnippet.title)();
+      const quickDescription = (() => seoSnippet.description)();
       setupSeo({
-        title: `${title} [${elementPhrase.element_name}] - ${seoSiteTitle}`,
-        description: description || '',
+        title: `${quickTitle} - ${seoSiteTitle}`,
+        description: quickDescription || '',
+        urlPath: snippet.link,
+      });
+
+      // ── Async: refine title with element-type phrase once loaded.
+      const elementPhrase = await getElementPhrase(snippet.schemaName);
+      const fullTitle = (() => seoSnippet.title)();
+      setupSeo({
+        title: `${fullTitle} [${elementPhrase.element_name}] - ${seoSiteTitle}`,
+        description: quickDescription || '',
         urlPath: snippet.link,
       });
     },

@@ -1,17 +1,17 @@
 <script setup lang="ts">
 import { shallowRef } from 'vue';
-import type { ProseElement } from '@jsprose/core';
+import type { ToProseElement } from 'tsprose';
 
-import type { imageSchema } from './core.js';
+import type { ImageSchema, imageSchema } from './core.js';
 import { useElementStorage } from '../../app/composables/storage.js';
 import { usePhotoSwipe } from '../../app/shared/photoswipe/composable.js';
 import { lightInvert, darkInvert } from '../../app/shared/invert.js';
 import Caption from '../caption/Caption.vue';
 
 const { element } = defineProps<{
-  element: ProseElement<typeof imageSchema>;
+  element: ToProseElement<ImageSchema>;
 }>();
-const imageStorage = await useElementStorage<typeof imageSchema>(element);
+const imageStorage = await useElementStorage(element);
 
 const captionElement = shallowRef<HTMLElement>();
 const { lightbox, initLightbox } = usePhotoSwipe();

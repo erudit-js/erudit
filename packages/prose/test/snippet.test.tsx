@@ -1,597 +1,788 @@
-import { describe, it, expect } from 'vitest';
-import { defineUnique, isolateProse, PROSE_REGISTRY } from '@jsprose/core';
+import { describe, expect, it } from 'vitest';
 
 import {
   finalizeSnippet,
-  resolveEruditRawElement,
-  type ResolvedSnippet,
-} from '@erudit-js/prose';
-import {
-  P,
-  paragraphRegistryItem,
-} from '@erudit-js/prose/elements/paragraph/core';
-import {
-  H1,
-  headingRegistryItem,
-} from '@erudit-js/prose/elements/heading/core';
-import {
-  B,
-  emphasisRegistryItem,
-} from '@erudit-js/prose/elements/emphasis/core';
+  normalizeSnippet,
+  toSearchSnippet,
+  toKeySnippet,
+  toSeoSnippet,
+  type Snippet,
+  type SnippetRaw,
+  type SnippetRawElementProp,
+} from '@src/snippet';
+import type { EruditRawElement } from '@src/rawElement';
+import { defineSchema, type Schema } from 'tsprose';
+import { defineEruditTag } from '@src/tag';
+import { eruditRawToProse } from '@src/rawToProse';
+import { P } from '@src/elements/paragraph/core';
 
-type DeepPartial<T> = T extends object
-  ? {
-      [P in keyof T]?: DeepPartial<T[P]>;
-    }
-  : T;
+function mockRawElement(
+  overrides: SnippetRawElementProp & { title?: string } = {},
+): EruditRawElement {
+  return { ...overrides } as any;
+}
 
-const testFinalizeSnippet = finalizeSnippet as (
-  args: DeepPartial<Parameters<typeof finalizeSnippet>[0]>,
-) => any;
+function makeSnippet(overrides: Partial<Snippet> = {}): Snippet {
+  return { title: 'Default Title', ...overrides };
+}
+
+describe('normalizeSnippet', () => {
+  it('should use snippet title when present', () => {
+    const result = normalizeSnippet({ title: 'My Title' });
+    expect(result.title).toBe('My Title');
+  });
+
+  it('should trim snippet title', () => {
+    const result = normalizeSnippet({ title: '   Padded   ' });
+    expect(result.title).toBe('Padded');
+  });
+
+  it('should fall back to first non-empty fallback title', () => {
+    const result = normalizeSnippet({}, undefined, '  Fallback  ');
+    expect(result.title).toBe('Fallback');
+  });
+
+  it('should skip empty fallback titles', () => {
+    const result = normalizeSnippet({}, '', '   ', 'Valid');
+    expect(result.title).toBe('Valid');
+  });
+
+  it('should throw when no title and no fallbacks', () => {
+    expect(() => normalizeSnippet({})).toThrow();
+  });
+
+  it('should throw when title is empty and fallbacks are empty', () => {
+    expect(() => normalizeSnippet({ title: '   ' }, '', '  ')).toThrow();
+  });
+
+  it('should trim description', () => {
+    const result = normalizeSnippet({
+      title: 'T',
+      description: '  Desc  ',
+    });
+    expect(result.description).toBe('Desc');
+  });
+
+  it('should set description to undefined when empty', () => {
+    const result = normalizeSnippet({ title: 'T', description: '' });
+    expect(result.description).toBeUndefined();
+  });
+
+  it('should set description to undefined when whitespace-only', () => {
+    const result = normalizeSnippet({ title: 'T', description: '   ' });
+    expect(result.description).toBeUndefined();
+  });
+
+  it('should preserve other fields in output', () => {
+    const result = normalizeSnippet({
+      title: 'T',
+      search: true,
+      key: 'K',
+      seo: { title: 'S' },
+    });
+    expect(result.search).toBe(true);
+    expect(result.key).toBe('K');
+    expect(result.seo).toEqual({ title: 'S' });
+  });
+});
 
 describe('finalizeSnippet', () => {
-  it('should return undefined when no flags are enabled', () => {
-    // No snippet provided
-    expect(
-      testFinalizeSnippet({
-        element: {},
-        props: {},
-      }),
-    ).toBeUndefined();
-
-    // Snippet without any flags
-    expect(
-      testFinalizeSnippet({
-        element: {},
-        props: { snippet: { title: 'Test' } },
-      }),
-    ).toBeUndefined();
-
-    // All flags explicitly false
-    expect(
-      testFinalizeSnippet({
-        element: {},
-        props: {
-          snippet: {
-            title: 'Title',
-            quick: false,
-            search: false,
-            seo: false,
-          },
-        },
-      }),
-    ).toBeUndefined();
-  });
-
-  it('should resolve snippet with quick flag', () => {
-    // Quick as boolean
-    expect(
-      testFinalizeSnippet({
-        element: {},
-        props: { snippet: { title: 'Quick Title', quick: true } },
-      }),
-    ).toEqual({
-      title: 'Quick Title',
-      quick: true,
-      seo: true, // Auto-enabled
+  describe('when tag prop snippet is provided', () => {
+    it('should set snippet from tag prop', () => {
+      const el = mockRawElement();
+      finalizeSnippet(el, { title: 'Tag Title', search: true });
+      expect(el.snippet).toEqual(
+        expect.objectContaining({ title: 'Tag Title' }),
+      );
     });
 
-    // Quick with custom title
-    expect(
-      testFinalizeSnippet({
-        element: {},
-        props: {
-          snippet: {
-            title: 'General Title',
-            quick: { title: 'Quick Title' },
-          },
-        },
-      }),
-    ).toEqual({
-      title: 'General Title',
-      quick: { title: 'Quick Title' },
-      seo: true,
+    it('should prune snippet when no active features', () => {
+      const el = mockRawElement();
+      finalizeSnippet(el, { title: 'Tag Title' });
+      expect(el.snippet).toBeUndefined();
     });
 
-    // Quick with custom title and description
-    expect(
-      testFinalizeSnippet({
-        element: {},
-        props: {
-          snippet: {
-            title: 'General Title',
-            quick: {
-              title: 'Quick Title',
-              description: 'Quick Desc',
-            },
-          },
-        },
-      }),
-    ).toEqual({
-      title: 'General Title',
-      quick: { title: 'Quick Title', description: 'Quick Desc' },
-      seo: true,
+    it('should use element title as fallback for tag prop snippet title', () => {
+      const el = mockRawElement({ title: 'Element Title' });
+      finalizeSnippet(el, { search: true });
+      expect(el.snippet).toEqual(
+        expect.objectContaining({ title: 'Element Title' }),
+      );
+    });
+
+    it('should use internal snippet title as fallback before element title', () => {
+      const el = mockRawElement({
+        snippet: { title: 'Internal Title' },
+        title: 'Element Title',
+      });
+      finalizeSnippet(el, { search: true });
+      expect(el.snippet).toEqual(
+        expect.objectContaining({ title: 'Internal Title' }),
+      );
+    });
+
+    it('should throw when tag prop snippet has no title and no fallbacks', () => {
+      const el = mockRawElement();
+      expect(() => finalizeSnippet(el, { search: true })).toThrow();
     });
   });
 
-  it('should resolve snippet with search flag', () => {
-    // Search as boolean
-    expect(
-      testFinalizeSnippet({
-        element: {},
-        props: { snippet: { title: 'Search Title', search: true } },
-      }),
-    ).toEqual({
-      title: 'Search Title',
-      search: true,
-      seo: true, // Auto-enabled
-    });
-
-    // Search with synonyms array
-    expect(
-      testFinalizeSnippet({
-        element: {},
-        props: {
-          snippet: {
-            title: 'Title',
-            search: ['alias1', 'alias2'],
-          },
-        },
-      }),
-    ).toEqual({
-      title: 'Title',
-      search: ['alias1', 'alias2'],
-      seo: true,
-    });
-
-    // Search with custom configuration
-    expect(
-      testFinalizeSnippet({
-        element: {},
-        props: {
-          snippet: {
-            title: 'General Title',
-            search: {
-              title: 'Search Title',
-              description: 'Search Desc',
-              synonyms: ['syn1', 'syn2'],
-            },
-          },
-        },
-      }),
-    ).toEqual({
-      title: 'General Title',
-      search: {
-        title: 'Search Title',
-        description: 'Search Desc',
-        synonyms: ['syn1', 'syn2'],
-      },
-      seo: true,
-    });
-  });
-
-  it('should resolve snippet with seo flag', () => {
-    // SEO as boolean
-    expect(
-      testFinalizeSnippet({
-        element: {},
-        props: { snippet: { title: 'SEO Title', seo: true } },
-      }),
-    ).toEqual({
-      title: 'SEO Title',
-      seo: true,
-    });
-
-    // SEO with custom title and description
-    expect(
-      testFinalizeSnippet({
-        element: {},
-        props: {
-          snippet: {
-            title: 'General Title',
-            seo: {
-              title: 'SEO Title',
-              description: 'SEO Desc',
-            },
-          },
-        },
-      }),
-    ).toEqual({
-      title: 'General Title',
-      seo: { title: 'SEO Title', description: 'SEO Desc' },
-    });
-  });
-
-  it('should combine multiple flags', () => {
-    // Quick and search
-    expect(
-      testFinalizeSnippet({
-        element: {},
-        props: {
-          snippet: {
-            title: 'Title',
-            quick: true,
-            search: true,
-          },
-        },
-      }),
-    ).toEqual({
-      title: 'Title',
-      quick: true,
-      search: true,
-      seo: true,
-    });
-
-    // All flags with custom configurations
-    expect(
-      testFinalizeSnippet({
-        element: {},
-        props: {
-          snippet: {
-            title: 'General Title',
-            description: 'General Desc',
-            quick: { title: 'Quick' },
-            search: { synonyms: ['alias'] },
-            seo: { title: 'SEO Title' },
-          },
-        },
-      }),
-    ).toEqual({
-      title: 'General Title',
-      description: 'General Desc',
-      quick: { title: 'Quick' },
-      search: { synonyms: ['alias'] },
-      seo: { title: 'SEO Title' },
-    });
-  });
-
-  it('should auto-enable SEO when quick or search is enabled', () => {
-    // SEO auto-enabled with quick
-    const resultQuick = testFinalizeSnippet({
-      element: {},
-      props: { snippet: { title: 'Title', quick: true } },
-    });
-    expect(resultQuick!.seo).toBe(true);
-
-    // SEO auto-enabled with search
-    const resultSearch = testFinalizeSnippet({
-      element: {},
-      props: { snippet: { title: 'Title', search: true } },
-    });
-    expect(resultSearch!.seo).toBe(true);
-
-    // SEO not auto-enabled when explicitly disabled (but snippet still created)
-    const resultDisabled = testFinalizeSnippet({
-      element: {},
-      props: {
-        snippet: { title: 'Title', quick: true, seo: false },
-      },
-    });
-    expect(resultDisabled).toEqual({
-      title: 'Title',
-      quick: true,
-    });
-  });
-
-  it('should prefer props snippet over element snippet', () => {
-    // Prop snippet overrides element snippet (but flags are merged)
-    expect(
-      testFinalizeSnippet({
-        props: {
-          snippet: { title: 'Prop Title', quick: true },
-        },
-        element: {
-          snippet: { title: 'Element Title', search: true },
-        },
-      }),
-    ).toEqual({
-      title: 'Prop Title',
-      quick: true,
-      search: true, // Element flag is merged
-      seo: true,
-    });
-
-    // Prop flags override element flags
-    expect(
-      testFinalizeSnippet({
-        props: {
-          snippet: {
-            title: 'Title',
-            quick: true,
-            search: false,
-          },
-        },
-        element: {
-          snippet: { title: 'Title', quick: false, search: true },
-        },
-      }),
-    ).toEqual({
-      title: 'Title',
-      quick: true,
-      seo: true,
-    });
-  });
-
-  it('should fallback to element snippet when props are not provided', () => {
-    // Use element snippet when no prop snippet
-    expect(
-      testFinalizeSnippet({
-        props: {},
-        element: {
-          snippet: { title: 'Element Title', quick: true },
-        },
-      }),
-    ).toEqual({
-      title: 'Element Title',
-      quick: true,
-      seo: true,
-    });
-
-    // Merge prop flags with element snippet
-    expect(
-      testFinalizeSnippet({
-        props: { snippet: { quick: true } },
-        element: {
-          snippet: { title: 'Element Title' },
-        },
-      }),
-    ).toEqual({
-      title: 'Element Title',
-      quick: true,
-      seo: true,
-    });
-  });
-
-  it('should trim whitespace from title and description', () => {
-    const result = testFinalizeSnippet({
-      props: {
+  describe('merging with internal snippet', () => {
+    it('should merge internal description when tag prop has none', () => {
+      const el = mockRawElement({
         snippet: {
-          title: '  Trimmed Title  ',
-          description: '  Trimmed Description  ',
-          quick: true,
+          title: 'Internal',
+          description: 'Internal Desc',
+          search: true,
         },
-      },
-      element: {},
-    });
-    expect(result!.title).toBe('Trimmed Title');
-    expect(result!.description).toBe('Trimmed Description');
-  });
-
-  it('should fallback to element title when snippet title is not provided', () => {
-    expect(
-      testFinalizeSnippet({
-        props: { snippet: { quick: true } },
-        element: { title: 'Element Title' },
-      }),
-    ).toEqual({
-      title: 'Element Title',
-      quick: true,
-      seo: true,
-    });
-  });
-
-  it('should throw error when title cannot be resolved', () => {
-    // No title at all with quick flag
-    expect(() => {
-      testFinalizeSnippet({
-        props: { snippet: { quick: true } },
-        element: {},
       });
-    }).toThrow(/Unable to get title for snippet flags/);
-
-    // Whitespace-only title with search flag
-    expect(() => {
-      testFinalizeSnippet({
-        props: { snippet: { title: '   ', search: true } },
-        element: {},
-      });
-    }).toThrow(/Unable to get title for snippet flags/);
-
-    // No title with seo flag
-    expect(() => {
-      testFinalizeSnippet({
-        props: { snippet: { seo: true } },
-        element: {},
-      });
-    }).toThrow(/Unable to get title for snippet flags/);
-
-    // Multiple flags without title
-    expect(() => {
-      testFinalizeSnippet({
-        props: { snippet: { quick: true, search: true, seo: true } },
-        element: {},
-      });
-    }).toThrow(/Unable to get title for snippet flags/);
-  });
-
-  it('should respect explicit SEO disable from element', () => {
-    // Element has seo: false, prop enables quick - snippet created without SEO
-    expect(
-      testFinalizeSnippet({
-        props: { snippet: { title: 'Title', quick: true } },
-        element: { snippet: { seo: false } },
-      }),
-    ).toEqual({
-      title: 'Title',
-      quick: true,
+      finalizeSnippet(el, { title: 'Tag Title' });
+      expect(el.snippet!.description).toBe('Internal Desc');
     });
 
-    // Prop has seo: false, element enables search - snippet created without SEO
-    expect(
-      testFinalizeSnippet({
-        props: { snippet: { title: 'Title', seo: false } },
-        element: { snippet: { search: true } },
-      }),
-    ).toEqual({
-      title: 'Title',
-      search: true,
+    it('should prefer tag prop description over internal', () => {
+      const el = mockRawElement({
+        snippet: {
+          title: 'Internal',
+          description: 'Internal Desc',
+          search: true,
+        },
+      });
+      finalizeSnippet(el, {
+        title: 'Tag Title',
+        description: 'Tag Desc',
+      });
+      expect(el.snippet!.description).toBe('Tag Desc');
+    });
+
+    it('should merge internal search when tag prop has none', () => {
+      const el = mockRawElement({
+        snippet: { title: 'Internal', search: true },
+      });
+      finalizeSnippet(el, { title: 'Tag Title' });
+      expect(el.snippet!.search).toBe(true);
+    });
+
+    it('should prefer tag prop search over internal', () => {
+      const el = mockRawElement({
+        snippet: { title: 'Internal', search: true },
+      });
+      finalizeSnippet(el, { title: 'Tag Title', search: 'Custom' });
+      expect(el.snippet!.search).toBe('Custom');
+    });
+
+    it('should merge internal key when tag prop has none', () => {
+      const el = mockRawElement({
+        snippet: { title: 'Internal', key: true },
+      });
+      finalizeSnippet(el, { title: 'Tag Title' });
+      expect(el.snippet!.key).toBe(true);
+    });
+
+    it('should prefer tag prop key over internal', () => {
+      const el = mockRawElement({
+        snippet: { title: 'Internal', key: true },
+      });
+      finalizeSnippet(el, { title: 'Tag Title', key: 'Override' });
+      expect(el.snippet!.key).toBe('Override');
+    });
+
+    it('should merge internal seo when tag prop has none', () => {
+      const el = mockRawElement({
+        snippet: { title: 'Internal', seo: true },
+      });
+      finalizeSnippet(el, { title: 'Tag Title' });
+      expect(el.snippet!.seo).toBe(true);
+    });
+
+    it('should prefer tag prop seo over internal', () => {
+      const el = mockRawElement({
+        snippet: { title: 'Internal', seo: true },
+      });
+      finalizeSnippet(el, {
+        title: 'Tag Title',
+        seo: { title: 'Custom SEO' },
+      });
+      expect(el.snippet!.seo).toEqual({ title: 'Custom SEO' });
+    });
+
+    it('should auto-enable seo when search is present', () => {
+      const el = mockRawElement({
+        snippet: { title: 'Internal', search: true },
+      });
+      finalizeSnippet(el, { title: 'Tag Title' });
+      expect(el.snippet!.seo).toBe(true);
+    });
+
+    it('should auto-enable seo when key is present', () => {
+      const el = mockRawElement({
+        snippet: { title: 'Internal', key: true },
+      });
+      finalizeSnippet(el, { title: 'Tag Title' });
+      expect(el.snippet!.seo).toBe(true);
+    });
+
+    it('should auto-enable seo when tag prop search is present', () => {
+      const el = mockRawElement({
+        snippet: { title: 'Internal' },
+      });
+      finalizeSnippet(el, { title: 'Tag Title', search: true });
+      expect(el.snippet!.seo).toBe(true);
+    });
+
+    it('should not auto-enable seo when seo is explicitly false', () => {
+      const el = mockRawElement({
+        snippet: { title: 'Internal', search: true },
+      });
+      finalizeSnippet(el, { title: 'Tag Title', seo: false });
+      expect(el.snippet!.seo).toBe(false);
+    });
+
+    it('should not merge internal search when tag prop search is false', () => {
+      const el = mockRawElement({
+        snippet: { title: 'Internal', search: true },
+      });
+      finalizeSnippet(el, { title: 'Tag Title', search: false, key: true });
+      expect(el.snippet!.search).toBe(false);
+    });
+
+    it('should not merge internal key when tag prop key is false', () => {
+      const el = mockRawElement({
+        snippet: { title: 'Internal', key: true },
+      });
+      finalizeSnippet(el, { title: 'Tag Title', key: false, search: true });
+      expect(el.snippet!.key).toBe(false);
+    });
+
+    it('should not merge internal seo when tag prop seo is false', () => {
+      const el = mockRawElement({
+        snippet: { title: 'Internal', seo: true },
+      });
+      finalizeSnippet(el, { title: 'Tag Title', seo: false, search: true });
+      expect(el.snippet!.seo).toBe(false);
+    });
+
+    it('should merge all fields from internal as fallback', () => {
+      const el = mockRawElement({
+        snippet: {
+          title: 'Internal',
+          description: 'Desc',
+          search: ['syn1', 'syn2'],
+          key: { title: 'Key T', description: 'Key D' },
+          seo: { title: 'SEO T' },
+        },
+      });
+      finalizeSnippet(el, { title: 'Tag Title' });
+      expect(el.snippet).toEqual(
+        expect.objectContaining({
+          title: 'Tag Title',
+          description: 'Desc',
+          search: ['syn1', 'syn2'],
+          key: { title: 'Key T', description: 'Key D' },
+          // seo auto-enabled because search and key are present
+          seo: true,
+        }),
+      );
+    });
+  });
+
+  describe('when tag prop snippet is not provided', () => {
+    it('should delete internal snippet from element', () => {
+      const el = mockRawElement({
+        snippet: { title: 'Internal', search: true },
+      });
+      finalizeSnippet(el, undefined);
+      expect(el.snippet).toBeUndefined();
+    });
+
+    it('should leave element unchanged when no snippet at all', () => {
+      const el = mockRawElement();
+      finalizeSnippet(el, undefined);
+      expect(el.snippet).toBeUndefined();
     });
   });
 });
 
-describe('snippetStep', () => {
-  it('should collect snippets', async () => {
-    await isolateProse(async () => {
-      PROSE_REGISTRY.setItems(
-        paragraphRegistryItem,
-        headingRegistryItem,
-        emphasisRegistryItem,
+describe('toSearchSnippet', () => {
+  it('should return undefined for undefined snippet', () => {
+    expect(toSearchSnippet(undefined)).toBeUndefined();
+  });
+
+  it('should return undefined when search is falsy', () => {
+    expect(toSearchSnippet(makeSnippet())).toBeUndefined();
+  });
+
+  it('should return undefined when search is false', () => {
+    expect(toSearchSnippet(makeSnippet({ search: false }))).toBeUndefined();
+  });
+
+  describe('search: true', () => {
+    it('should return snippet title and description', () => {
+      const result = toSearchSnippet(
+        makeSnippet({ description: 'Desc', search: true }),
       );
-
-      const pUnique = defineUnique({
-        documentId: undefined as any,
-        name: 'pUnique',
-        tag: P,
+      expect(result).toEqual({
+        title: 'Default Title',
+        description: 'Desc',
       });
+    });
 
-      const { snippets, proseElement } = await resolveEruditRawElement({
-        context: {
-          language: 'en',
-          linkable: true,
-        },
-        rawElement: (
-          <>
-            <H1>Heading 1 Title</H1>
-            <P>Paragraph 1</P>
-            <P $={pUnique} snippet={{ title: 'P-Snippet', quick: true }}>
-              Paragraph with{' '}
-              <B snippet={{ title: 'Bold', quick: true }}>manual</B>
-              snippet title
-            </P>
-            <P snippet={{ search: true }} toc="Toc Title">
-              Paragraph with snippet title taken from toc title
-            </P>
-          </>
-        ),
+    it('should return undefined description when snippet has none', () => {
+      const result = toSearchSnippet(makeSnippet({ search: true }));
+      expect(result).toEqual({
+        title: 'Default Title',
+        description: undefined,
       });
-
-      expect(snippets).toHaveLength(3);
-      expect(snippets).toEqual<ResolvedSnippet[]>([
-        {
-          schemaName: 'emphasis',
-          snippetData: {
-            quick: true,
-            seo: true,
-            title: 'Bold',
-          },
-          isUnique: false,
-          elementId: proseElement.children![2].children![1].id!,
-        },
-        {
-          schemaName: 'paragraph',
-          snippetData: {
-            quick: true,
-            seo: true,
-            title: 'P-Snippet',
-          },
-          isUnique: true,
-          elementId: proseElement.children![2].id!,
-        },
-        {
-          schemaName: 'paragraph',
-          snippetData: {
-            search: true,
-            seo: true,
-            title: 'Toc Title',
-          },
-          isUnique: false,
-          elementId: proseElement.children![3].id!,
-        },
-      ]);
     });
   });
 
-  it('should collect snippets with custom flag configurations', async () => {
-    await isolateProse(async () => {
-      PROSE_REGISTRY.setItems(
-        paragraphRegistryItem,
-        headingRegistryItem,
-        emphasisRegistryItem,
-      );
-
-      const { snippets, proseElement } = await resolveEruditRawElement({
-        context: {
-          language: 'en',
-          linkable: true,
-        },
-        rawElement: (
-          <>
-            <H1
-              snippet={{
-                title: 'Advanced Search',
-                search: {
-                  title: 'Search Title',
-                  synonyms: ['lookup', 'find', 'query'],
-                },
-              }}
-            >
-              Search Heading
-            </H1>
-            <P
-              snippet={{
-                title: 'Paragraph with synonyms',
-                description: 'Test description',
-                search: { synonyms: ['alternative', 'alias'] },
-                seo: true,
-              }}
-            >
-              Some content here with{' '}
-              <B
-                snippet={{
-                  title: 'Bold Text',
-                  quick: {
-                    title: 'Quick Title',
-                    description: 'Quick Desc',
-                  },
-                }}
-              >
-                emphasis
-              </B>
-            </P>
-          </>
-        ),
-      });
-
-      expect(snippets).toHaveLength(3);
-      expect(snippets).toEqual<ResolvedSnippet[]>([
-        {
-          schemaName: 'heading',
-          isUnique: false,
-          elementId: proseElement.children![0].id!,
-          snippetData: {
-            search: {
-              title: 'Search Title',
-              synonyms: ['lookup', 'find', 'query'],
-            },
-            title: 'Advanced Search',
-            seo: true,
-          },
-        },
-        {
-          schemaName: 'emphasis',
-          isUnique: false,
-          elementId: proseElement.children![1].children![1].id!,
-          snippetData: {
-            title: 'Bold Text',
-            quick: {
-              title: 'Quick Title',
-              description: 'Quick Desc',
-            },
-            seo: true,
-          },
-        },
-        {
-          schemaName: 'paragraph',
-          isUnique: false,
-          elementId: proseElement.children![1].id!,
-          snippetData: {
-            search: { synonyms: ['alternative', 'alias'] },
-            seo: true,
-            title: 'Paragraph with synonyms',
-            description: 'Test description',
-          },
-        },
-      ]);
+  describe('search: string', () => {
+    it('should use string as title', () => {
+      const result = toSearchSnippet(makeSnippet({ search: 'Custom' }));
+      expect(result!.title).toBe('Custom');
     });
+
+    it('should trim string title', () => {
+      const result = toSearchSnippet(makeSnippet({ search: '  Trimmed  ' }));
+      expect(result!.title).toBe('Trimmed');
+    });
+
+    it('should fall back to snippet title when string is empty', () => {
+      const result = toSearchSnippet(makeSnippet({ search: '   ' }));
+      expect(result!.title).toBe('Default Title');
+    });
+
+    it('should include snippet description', () => {
+      const result = toSearchSnippet(
+        makeSnippet({ search: 'S', description: 'D' }),
+      );
+      expect(result!.description).toBe('D');
+    });
+  });
+
+  describe('search: string[]', () => {
+    it('should use snippet title with synonyms', () => {
+      const result = toSearchSnippet(makeSnippet({ search: ['alt1', 'alt2'] }));
+      expect(result).toEqual({
+        title: 'Default Title',
+        description: undefined,
+        synonyms: ['alt1', 'alt2'],
+      });
+    });
+
+    it('should trim synonyms and filter empty', () => {
+      const result = toSearchSnippet(
+        makeSnippet({ search: ['  good  ', '', '   ', 'ok'] }),
+      );
+      expect(result!.synonyms).toEqual(['good', 'ok']);
+    });
+
+    it('should set synonyms to undefined when all empty', () => {
+      const result = toSearchSnippet(makeSnippet({ search: ['', '   '] }));
+      expect(result!.synonyms).toBeUndefined();
+    });
+  });
+
+  describe('search: object', () => {
+    it('should use object title and description', () => {
+      const result = toSearchSnippet(
+        makeSnippet({
+          search: { title: 'ObjTitle', description: 'ObjDesc' },
+        }),
+      );
+      expect(result).toEqual({
+        title: 'ObjTitle',
+        description: 'ObjDesc',
+        synonyms: undefined,
+      });
+    });
+
+    it('should fall back to snippet title when object title is empty', () => {
+      const result = toSearchSnippet(makeSnippet({ search: { title: '   ' } }));
+      expect(result!.title).toBe('Default Title');
+    });
+
+    it('should fall back to snippet description when object description is empty', () => {
+      const result = toSearchSnippet(
+        makeSnippet({
+          description: 'Snippet Desc',
+          search: { description: '   ' },
+        }),
+      );
+      expect(result!.description).toBe('Snippet Desc');
+    });
+
+    it('should include synonyms', () => {
+      const result = toSearchSnippet(
+        makeSnippet({
+          search: { title: 'T', synonyms: ['a', 'b'] },
+        }),
+      );
+      expect(result!.synonyms).toEqual(['a', 'b']);
+    });
+
+    it('should trim and filter synonyms', () => {
+      const result = toSearchSnippet(
+        makeSnippet({
+          search: { title: 'T', synonyms: ['  x  ', '', '  y  '] },
+        }),
+      );
+      expect(result!.synonyms).toEqual(['x', 'y']);
+    });
+
+    it('should set synonyms to undefined when all empty', () => {
+      const result = toSearchSnippet(
+        makeSnippet({ search: { title: 'T', synonyms: ['', '  '] } }),
+      );
+      expect(result!.synonyms).toBeUndefined();
+    });
+
+    it('should set synonyms to undefined when not provided', () => {
+      const result = toSearchSnippet(makeSnippet({ search: { title: 'T' } }));
+      expect(result!.synonyms).toBeUndefined();
+    });
+  });
+});
+
+describe('toKeySnippet', () => {
+  it('should return undefined for undefined snippet', () => {
+    expect(toKeySnippet(undefined)).toBeUndefined();
+  });
+
+  it('should return undefined when key is falsy', () => {
+    expect(toKeySnippet(makeSnippet())).toBeUndefined();
+  });
+
+  it('should return undefined when key is false', () => {
+    expect(toKeySnippet(makeSnippet({ key: false }))).toBeUndefined();
+  });
+
+  describe('key: true', () => {
+    it('should return snippet title and description', () => {
+      const result = toKeySnippet(makeSnippet({ description: 'D', key: true }));
+      expect(result).toEqual({ title: 'Default Title', description: 'D' });
+    });
+
+    it('should return undefined description when snippet has none', () => {
+      const result = toKeySnippet(makeSnippet({ key: true }));
+      expect(result).toEqual({
+        title: 'Default Title',
+        description: undefined,
+      });
+    });
+  });
+
+  describe('key: string', () => {
+    it('should use string as title', () => {
+      const result = toKeySnippet(makeSnippet({ key: 'Custom Key' }));
+      expect(result!.title).toBe('Custom Key');
+    });
+
+    it('should trim string title', () => {
+      const result = toKeySnippet(makeSnippet({ key: '  Trimmed  ' }));
+      expect(result!.title).toBe('Trimmed');
+    });
+
+    it('should fall back to snippet title when string is empty', () => {
+      const result = toKeySnippet(makeSnippet({ key: '   ' }));
+      expect(result!.title).toBe('Default Title');
+    });
+
+    it('should include snippet description', () => {
+      const result = toKeySnippet(makeSnippet({ key: 'K', description: 'D' }));
+      expect(result!.description).toBe('D');
+    });
+  });
+
+  describe('key: object', () => {
+    it('should use object title and description', () => {
+      const result = toKeySnippet(
+        makeSnippet({ key: { title: 'KT', description: 'KD' } }),
+      );
+      expect(result).toEqual({ title: 'KT', description: 'KD' });
+    });
+
+    it('should fall back to snippet title when object title is empty', () => {
+      const result = toKeySnippet(makeSnippet({ key: { title: '   ' } }));
+      expect(result!.title).toBe('Default Title');
+    });
+
+    it('should fall back to snippet description when object description is empty', () => {
+      const result = toKeySnippet(
+        makeSnippet({
+          description: 'Snippet D',
+          key: { description: '   ' },
+        }),
+      );
+      expect(result!.description).toBe('Snippet D');
+    });
+  });
+});
+
+//
+// toSeoSnippet
+//
+
+describe('toSeoSnippet', () => {
+  it('should return undefined for undefined snippet', () => {
+    expect(toSeoSnippet(undefined)).toBeUndefined();
+  });
+
+  it('should return undefined when seo is falsy', () => {
+    expect(toSeoSnippet(makeSnippet())).toBeUndefined();
+  });
+
+  it('should return undefined when seo is false', () => {
+    expect(toSeoSnippet(makeSnippet({ seo: false }))).toBeUndefined();
+  });
+
+  describe('seo: true', () => {
+    it('should return snippet title and description', () => {
+      const result = toSeoSnippet(makeSnippet({ description: 'D', seo: true }));
+      expect(result).toEqual({ title: 'Default Title', description: 'D' });
+    });
+
+    it('should return undefined description when snippet has none', () => {
+      const result = toSeoSnippet(makeSnippet({ seo: true }));
+      expect(result).toEqual({
+        title: 'Default Title',
+        description: undefined,
+      });
+    });
+  });
+
+  describe('seo: string', () => {
+    it('should use string as title', () => {
+      const result = toSeoSnippet(makeSnippet({ seo: 'SEO Title' }));
+      expect(result!.title).toBe('SEO Title');
+    });
+
+    it('should trim string title', () => {
+      const result = toSeoSnippet(makeSnippet({ seo: '  Trimmed  ' }));
+      expect(result!.title).toBe('Trimmed');
+    });
+
+    it('should fall back to snippet title when string is empty', () => {
+      const result = toSeoSnippet(makeSnippet({ seo: '   ' }));
+      expect(result!.title).toBe('Default Title');
+    });
+
+    it('should include snippet description', () => {
+      const result = toSeoSnippet(makeSnippet({ seo: 'S', description: 'D' }));
+      expect(result!.description).toBe('D');
+    });
+  });
+
+  describe('seo: object', () => {
+    it('should use object title and description', () => {
+      const result = toSeoSnippet(
+        makeSnippet({ seo: { title: 'ST', description: 'SD' } }),
+      );
+      expect(result).toEqual({ title: 'ST', description: 'SD' });
+    });
+
+    it('should fall back to snippet title when object title is empty', () => {
+      const result = toSeoSnippet(makeSnippet({ seo: { title: '   ' } }));
+      expect(result!.title).toBe('Default Title');
+    });
+
+    it('should fall back to snippet description when object description is empty', () => {
+      const result = toSeoSnippet(
+        makeSnippet({
+          description: 'Snippet D',
+          seo: { description: '   ' },
+        }),
+      );
+      expect(result!.description).toBe('Snippet D');
+    });
+  });
+});
+
+describe('snippetHook', () => {
+  interface SnippetTestSchema extends Schema {
+    name: 'snippetTest';
+    type: 'block';
+    linkable: true;
+    Data: undefined;
+    Storage: undefined;
+    Children: undefined;
+  }
+
+  const snippetTestSchema = defineSchema<SnippetTestSchema>({
+    name: 'snippetTest',
+    type: 'block',
+    linkable: true,
+  });
+
+  const SnippetTest = defineEruditTag({
+    schema: snippetTestSchema,
+    tagName: 'SnippetTest',
+  })<{ label: string; internalSnippet?: SnippetRaw }>(({ element, props }) => {
+    element.title = props.label;
+    if (props.internalSnippet) {
+      element.snippet = props.internalSnippet;
+    }
+  });
+
+  it('should collect snippets from elements with snippet prop', async () => {
+    const result = await eruditRawToProse({
+      snippets: { enabled: true },
+      rawProse: (
+        <>
+          <SnippetTest
+            label="First"
+            snippet={{ title: 'First Snippet', search: true }}
+          />
+          <SnippetTest label="No Snippet" />
+          <SnippetTest
+            label="Second"
+            snippet={{ title: 'Second Snippet', key: true }}
+          />
+        </>
+      ),
+    });
+
+    expect(result.snippets).toHaveLength(2);
+    expect(result.snippets[0]).toEqual({
+      schemaName: 'snippetTest',
+      elementId: expect.any(String),
+      snippet: expect.objectContaining({ title: 'First Snippet' }),
+    });
+    expect(result.snippets[1]).toEqual({
+      schemaName: 'snippetTest',
+      elementId: expect.any(String),
+      snippet: expect.objectContaining({ title: 'Second Snippet' }),
+    });
+  });
+
+  it('should not collect snippets when disabled', async () => {
+    const result = await eruditRawToProse({
+      snippets: { enabled: false },
+      rawProse: (
+        <SnippetTest
+          label="Ignored"
+          snippet={{ title: 'Ignored Snippet', search: true }}
+        />
+      ),
+    });
+
+    expect(result.snippets).toHaveLength(0);
+  });
+
+  it('should not collect snippets when context has no snippets config', async () => {
+    const result = await eruditRawToProse({
+      rawProse: (
+        <SnippetTest
+          label="Ignored"
+          snippet={{ title: 'Ignored Snippet', search: true }}
+        />
+      ),
+    });
+
+    expect(result.snippets).toHaveLength(0);
+  });
+
+  it('should use element title as snippet title fallback', async () => {
+    const result = await eruditRawToProse({
+      snippets: { enabled: true },
+      rawProse: (
+        <SnippetTest label="Element Label" snippet={{ search: true }} />
+      ),
+    });
+
+    expect(result.snippets).toHaveLength(1);
+    expect(result.snippets[0].snippet.title).toBe('Element Label');
+  });
+
+  it('should delete internal snippet when no tag prop snippet provided', async () => {
+    const result = await eruditRawToProse({
+      snippets: { enabled: true },
+      rawProse: (
+        <SnippetTest
+          label="Has Internal"
+          internalSnippet={{ title: 'Internal Only', search: true }}
+        />
+      ),
+    });
+
+    // Internal snippet without tag prop snippet should be deleted
+    expect(result.snippets).toHaveLength(0);
+  });
+
+  it('should merge internal snippet data with tag prop snippet', async () => {
+    const result = await eruditRawToProse({
+      snippets: { enabled: true },
+      rawProse: (
+        <SnippetTest
+          label="Merged"
+          internalSnippet={{
+            title: 'Internal Title',
+            description: 'Internal Desc',
+            search: true,
+            key: 'Internal Key',
+          }}
+          snippet={{ title: 'Tag Title' }}
+        />
+      ),
+    });
+
+    expect(result.snippets).toHaveLength(1);
+    const snippet = result.snippets[0].snippet;
+    expect(snippet.title).toBe('Tag Title');
+    expect(snippet.description).toBe('Internal Desc');
+    expect(snippet.search).toBe(true);
+    expect(snippet.key).toBe('Internal Key');
+    // Auto-enabled because search and key are present
+    expect(snippet.seo).toBe(true);
+  });
+
+  it('should prefer tag prop fields over internal when both present', async () => {
+    const result = await eruditRawToProse({
+      snippets: { enabled: true },
+      rawProse: (
+        <SnippetTest
+          label="Both"
+          internalSnippet={{
+            title: 'Internal Title',
+            description: 'Internal Desc',
+            search: true,
+          }}
+          snippet={{
+            title: 'Tag Title',
+            description: 'Tag Desc',
+            search: 'Custom Search',
+          }}
+        />
+      ),
+    });
+
+    expect(result.snippets).toHaveLength(1);
+    const snippet = result.snippets[0].snippet;
+    expect(snippet.title).toBe('Tag Title');
+    expect(snippet.description).toBe('Tag Desc');
+    expect(snippet.search).toBe('Custom Search');
+  });
+
+  it('should work alongside other elements like P', async () => {
+    const result = await eruditRawToProse({
+      snippets: { enabled: true },
+      rawProse: (
+        <>
+          <P snippet={{ title: 'Paragraph Snippet', search: true }}>
+            Some text
+          </P>
+          <SnippetTest
+            label="Custom"
+            snippet={{ title: 'Custom Snippet', key: true }}
+          />
+        </>
+      ),
+    });
+
+    expect(result.snippets).toHaveLength(2);
+    expect(result.snippets[0].schemaName).toBe('paragraph');
+    expect(result.snippets[0].snippet.title).toBe('Paragraph Snippet');
+    expect(result.snippets[1].schemaName).toBe('snippetTest');
+    expect(result.snippets[1].snippet.title).toBe('Custom Snippet');
   });
 });

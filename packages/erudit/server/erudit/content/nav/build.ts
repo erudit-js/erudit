@@ -216,16 +216,16 @@ function parseContentPath(relPath: string):
 
   for (let i = 0; i < parts.length; i++) {
     const part = parts[i];
-    const typeDelimiterPos = part.search(/[+-]/);
+    const typeDelimiterPos = part!.search(/[+-]/);
     if (typeDelimiterPos <= 0) return;
 
-    const posStr = part.slice(0, typeDelimiterPos);
+    const posStr = part!.slice(0, typeDelimiterPos);
     if (!/^\d+$/.test(posStr)) return;
     const posNum = Number(posStr);
 
-    const typeDelimiter = part.charAt(typeDelimiterPos);
+    const typeDelimiter = part!.charAt(typeDelimiterPos);
     skip = typeDelimiter === '+';
-    idPart = part.slice(typeDelimiterPos + 1);
+    idPart = part!.slice(typeDelimiterPos + 1);
     if (!idPart) return;
 
     fullId += `/${idPart}`;

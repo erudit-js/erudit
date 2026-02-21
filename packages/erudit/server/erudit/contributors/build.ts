@@ -1,7 +1,7 @@
 import { existsSync, readdirSync, writeFileSync } from 'node:fs';
 import { eq, like } from 'drizzle-orm';
 import { globSync } from 'glob';
-import { isRawElement, type AnySchema, type ProseElement } from '@jsprose/core';
+import { isRawElement, type ProseElement } from 'tsprose';
 import {
   contributorIdToPropertyName,
   globalContributorsObject,
@@ -131,19 +131,18 @@ async function buildContributor(contributorId: string) {
     }
   }
 
-  let description: ProseElement<AnySchema> | undefined;
+  let description: ProseElement | undefined;
 
   if (isRawElement(def?.description)) {
-    const resolved = await ERUDIT.repository.prose.resolve(
-      def.description,
-      false,
-    );
+    const result = await ERUDIT.repository.prose.fromRaw({
+      rawProse: def.description,
+    });
 
-    for (const file of resolved.files) {
+    for (const file of result.files) {
       await ERUDIT.repository.db.pushFile(file, `contributor:${contributorId}`);
     }
 
-    description = resolved.proseElement;
+    description = result.prose;
   }
 
   await ERUDIT.db.insert(ERUDIT.db.schema.contributors).values({

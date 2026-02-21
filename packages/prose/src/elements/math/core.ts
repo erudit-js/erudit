@@ -1,15 +1,4 @@
-import { defineEruditProseCoreElements } from '../../coreElement.js';
-import { blockMathRegistryItem } from './block.js';
-import { inlinerMathRegistryItem } from './inliner.js';
-import { katexDependency } from './katex.js';
+import { blockMathCoreElement } from './block.js';
+import { inlinerMathCoreElement } from './inliner.js';
 
-export default defineEruditProseCoreElements(
-  {
-    registryItem: inlinerMathRegistryItem,
-    dependencies: katexDependency,
-  },
-  {
-    registryItem: blockMathRegistryItem,
-    dependencies: katexDependency,
-  },
-);
+export default [blockMathCoreElement, inlinerMathCoreElement] as const;

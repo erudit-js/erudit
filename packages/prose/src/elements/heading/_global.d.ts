@@ -22,8 +22,8 @@
  *
  * // ... Content ...
  *
- * // Add heading in "Quick links" section
- * <H2 snippet={{ quick: true }}>
+ * // Add heading in "Key links" section
+ * <H2 snippet={{ key: true }}>
  *   Triangles and squares
  * </H2>
  *

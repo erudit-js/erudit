@@ -7,23 +7,23 @@ import {
   type InjectionKey,
   type Ref,
 } from 'vue';
-import type { AnySchema, ProseElement } from '@jsprose/core';
+import type { Schema, ToProseElement } from 'tsprose';
 
 export interface AnchorState {
   anchorResolving: Ref<boolean>;
   allowJumpToAnchor: Ref<boolean>;
-  anchorElement: Ref<ProseElement<AnySchema> | undefined>;
-  containsAnchorElements: Ref<Set<ProseElement<AnySchema>>>;
+  anchorElement: Ref<ToProseElement<Schema> | undefined>;
+  containsAnchorElements: Ref<Set<ToProseElement<Schema>>>;
 }
 
 export function useAnchorState(
   hashId: Ref<string | undefined>,
-  element: ProseElement<AnySchema>,
+  element: ToProseElement<Schema>,
 ): AnchorState {
   const anchorResolving = shallowRef(false);
   const allowJumpToAnchor = shallowRef(false);
-  const anchorElement = shallowRef<ProseElement<AnySchema>>();
-  const containsAnchorElements = shallowRef<Set<ProseElement<AnySchema>>>(
+  const anchorElement = shallowRef<ToProseElement<Schema>>();
+  const containsAnchorElements = shallowRef<Set<ToProseElement<Schema>>>(
     new Set(),
   );
 
@@ -42,9 +42,9 @@ export function useAnchorState(
           return;
         }
 
-        const stack: ProseElement<AnySchema>[] = [];
+        const stack: ToProseElement<Schema>[] = [];
 
-        const dfs = (_element: ProseElement<AnySchema>): boolean => {
+        const dfs = (_element: ToProseElement<Schema>): boolean => {
           stack.push(_element);
 
           if (_element.id === hashId.value) {
@@ -87,7 +87,7 @@ export function useAnchorState(
 
 export const anchorStateSymbol = Symbol() as InjectionKey<AnchorState>;
 
-export function useIsAnchor(element: ProseElement<AnySchema>) {
+export function useIsAnchor(element: ToProseElement<Schema>) {
   const { anchorElement } = inject(anchorStateSymbol)!;
 
   return computed(() => {
@@ -95,7 +95,7 @@ export function useIsAnchor(element: ProseElement<AnySchema>) {
   });
 }
 
-export function useContainsAnchor(element: ProseElement<AnySchema>) {
+export function useContainsAnchor(element: ToProseElement<Schema>) {
   const { containsAnchorElements } = inject(anchorStateSymbol)!;
 
   return computed(() => {
@@ -103,7 +103,7 @@ export function useContainsAnchor(element: ProseElement<AnySchema>) {
   });
 }
 
-export function useArrayContainsAnchor(elements: ProseElement<AnySchema>[]) {
+export function useArrayContainsAnchor(elements: ToProseElement<Schema>[]) {
   const { containsAnchorElements } = inject(anchorStateSymbol)!;
 
   return computed(() => {

@@ -6,12 +6,9 @@ const { request } = defineProps<{ request: PreviewRequestUnique }>();
 const contentTypeKey =
   request.contentType === 'topic' ? request.topicPart : request.contentType;
 
-const previewData = await $fetch<PreviewContentUnique>(
+const previewData = await fetchJson<PreviewContentUnique>(
   `/api/preview/contentUnique/${stringifyContentTypePath(contentTypeKey, request.contentFullId)}/${request.uniqueName}` +
     '.json',
-  {
-    responseType: 'json',
-  },
 );
 
 const elementIcon = await getElementIcon(previewData.schemaName);
@@ -38,10 +35,11 @@ const secondary = (() => {
       class="nice-scrollbars py-small relative max-h-[inherit] overflow-auto"
     >
       <Prose
-        :element="previewData.proseElement"
+        :element="previewData.prose"
         :storage="previewData.storage"
         :urlPath="'/' + previewData.link.split('#')[0]"
         :useHashUrl="false"
+        :setHtmlIds="false"
       />
       <div
         v-if="previewData.fadeOverlay"

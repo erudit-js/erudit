@@ -61,9 +61,6 @@ ${escapeHtml(ERUDIT.buildError.stack || '')}
 
 async function setupServer() {
   try {
-    const { registerProseGlobals } = await import('#erudit/prose/global');
-    registerProseGlobals();
-
     const runtimeConfig = useRuntimeConfig();
 
     ERUDIT.mode = runtimeConfig.public.eruditMode as EruditMode;

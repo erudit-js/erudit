@@ -1,31 +1,36 @@
 import {
-  defineRegistryItem,
   defineSchema,
   ensureRawElement,
   ensureTagChildren,
   textSchema,
-  type TagChildren,
-} from '@jsprose/core';
+  type Schema,
+  type TextSchema,
+} from 'tsprose';
 
-import { captionSchema } from '../caption/core.js';
+import { captionSchema, type CaptionSchema } from '../caption/core.js';
 import { defineEruditTag } from '../../tag.js';
-import { defineEruditProseCoreElement } from '../../coreElement.js';
 import { photoswipeDependency } from '../../shared/photoswipe.js';
+import { defineProseCoreElement } from '../../coreElement.js';
 
-export const diagramSchema = defineSchema({
+export interface DiagramSchema extends Schema {
+  name: 'diagram';
+  type: 'block';
+  linkable: true;
+  Data: undefined;
+  Storage: undefined;
+  Children: [TextSchema] | [TextSchema, CaptionSchema];
+}
+
+export const diagramSchema = defineSchema<DiagramSchema>({
   name: 'diagram',
   type: 'block',
   linkable: true,
-})<{
-  Data: undefined;
-  Storage: undefined;
-  Children: [typeof textSchema] | [typeof textSchema, typeof captionSchema];
-}>();
+});
 
 export const Diagram = defineEruditTag({
   tagName: 'Diagram',
   schema: diagramSchema,
-})<TagChildren>(({ element, tagName, children }) => {
+})(({ element, tagName, children }) => {
   ensureTagChildren(tagName, children, [textSchema, captionSchema]);
 
   ensureRawElement(children[0], textSchema);
@@ -37,13 +42,9 @@ export const Diagram = defineEruditTag({
   }
 });
 
-export const diagramRegistryItem = defineRegistryItem({
+export default defineProseCoreElement({
   schema: diagramSchema,
   tags: [Diagram],
-});
-
-export default defineEruditProseCoreElement({
-  registryItem: diagramRegistryItem,
   dependencies: {
     ...photoswipeDependency,
   },

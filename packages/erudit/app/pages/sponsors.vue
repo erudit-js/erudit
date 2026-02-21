@@ -11,7 +11,7 @@ const payloadKey = 'page-sponsors';
 const pageSponsors: PageSponsor[] =
   (nuxtApp.static.data[payloadKey] ||=
   nuxtApp.payload.data[payloadKey] ||=
-    await $fetch('/api/pageSponsors', { responseType: 'json' }));
+    await fetchJson('/api/pageSponsors'));
 
 const phrase = await usePhrases(
   'sponsors',

@@ -30,14 +30,14 @@ const { closePreview, hasPreviousRequest, setPreviousPreview } = usePreview();
           class="micro:text-sm overflow-hidden text-xs font-bold text-nowrap
             overflow-ellipsis"
         >
-          {{ main }}
+          {{ formatText(main) }}
         </div>
         <div
           v-if="secondary"
           class="text-text-muted text-tiny micro:text-xs overflow-hidden
             text-nowrap overflow-ellipsis"
         >
-          {{ secondary }}
+          {{ formatText(secondary) }}
         </div>
       </div>
       <div class="gap-small flex shrink-0 items-center">

@@ -9,6 +9,8 @@ let initialBuild = true;
 
 const contentRoot = () => ERUDIT.paths.project('content');
 
+export let builtLinkObject: Record<string, any> | null = null;
+
 export async function buildGlobalContent() {
   ERUDIT.log.debug.start('Building global content...');
 
@@ -21,6 +23,7 @@ export async function buildGlobalContent() {
   }
 
   const linkObject = await buildLinkObject();
+  builtLinkObject = linkObject;
 
   const linkTypes = linkObjectToTypes(linkObject);
   writeFileSync(
@@ -51,6 +54,10 @@ function linkObjectToTypes(linkObject: any): string {
     return str.replace(/[-_](.)/g, (_, char) => char.toUpperCase());
   }
 
+  function isValidIdentifier(key: string): boolean {
+    return /^[$_a-zA-Z][$_a-zA-Z0-9]*$/.test(key);
+  }
+
   function processObject(obj: any, level: number): string {
     const lines: string[] = [];
 
@@ -58,6 +65,9 @@ function linkObjectToTypes(linkObject: any): string {
       if (key === '__jsdoc' || key === '__typeguard') continue;
 
       const camelKey = toCamelCase(key);
+      const outputKey = isValidIdentifier(camelKey)
+        ? camelKey
+        : `'${camelKey}'`;
 
       // Add JSDoc comment if present
       if (value && typeof value === 'object' && value.__jsdoc) {
@@ -77,11 +87,11 @@ function linkObjectToTypes(linkObject: any): string {
       const typeguard = value?.__typeguard || 'GlobalContentItemTypeguard';
 
       if (hasNestedProps) {
-        lines.push(indent(level) + `${camelKey}: ${typeguard} & {`);
+        lines.push(indent(level) + `${outputKey}: ${typeguard} & {`);
         lines.push(processObject(value, level + 1));
         lines.push(indent(level) + `}`);
       } else {
-        lines.push(indent(level) + `${camelKey}: ${typeguard} & {}`);
+        lines.push(indent(level) + `${outputKey}: ${typeguard} & {}`);
       }
     }
 
@@ -118,7 +128,7 @@ async function buildLinkObject() {
 
     // Navigate through parent parts
     for (let i = 0; i < pathParts.length - 1; i++) {
-      cursor = cursor[pathParts[i]];
+      cursor = cursor[pathParts[i]!];
     }
 
     //
@@ -230,10 +240,10 @@ ${jsdoc}
 }
 
 function tryGetTitle(moduleContent: string) {
-  const titleMatch = moduleContent.match(/title:\s*['"`](.*?)['"`]/);
+  const titleMatch = moduleContent.match(/title:\s*(['"`])(.*?)\1/);
 
   if (titleMatch) {
-    return titleMatch[1].trim();
+    return titleMatch[2]!.trim();
   }
 }
 
@@ -259,7 +269,7 @@ function tryGetUniquesObject(
   const uniquesContent = uniquesMatch[1];
 
   // Parse key-value pairs from uniques object
-  const lines = uniquesContent.split('\n');
+  const lines = uniquesContent!.split('\n');
   const result: any = {};
 
   for (const line of lines) {
@@ -273,7 +283,11 @@ function tryGetUniquesObject(
       continue;
     }
 
-    const pairMatch = line.match(/(\w+):\s*(\w+)/);
+    // Support bracket notation ['any string'], quoted keys "any string" / 'any string', and plain identifiers
+    const pairMatch =
+      line.match(/\[['"](.*?)['"]\]:\s*(\w+)/) ||
+      line.match(/['"](.*?)['"]:\s*(\w+)/) ||
+      line.match(/(\w+):\s*(\w+)/);
     if (!pairMatch) {
       continue;
     }

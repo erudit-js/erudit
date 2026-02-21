@@ -12,7 +12,7 @@ export function initScrollUpWatcher() {
   watch(
     () => route.path,
     () => {
-      if (route.hash) {
+      if (route.query.element) {
         return;
       }
 

@@ -1,13 +1,13 @@
 import { describe, it, expect, test } from 'vitest';
-import { isolateProse, isRawElement, PROSE_REGISTRY } from '@jsprose/core';
+import { isRawElement } from 'tsprose';
 
-import { asEruditRaw } from '@erudit-js/prose';
 import {
-  inlinerMathRegistryItem,
   inlinerMathSchema,
   M,
   tryTextInlinerMath,
-} from '@erudit-js/prose/elements/math/inliner';
+  type InlinerMathSchema,
+} from '@src/elements/math/inliner';
+import { asEruditRaw } from '@src/rawElement';
 
 describe('tryTextInlinerMath', () => {
   it('should tokenize simple expressions', () => {
@@ -132,25 +132,16 @@ describe('tryTextInlinerMath', () => {
   });
 });
 
-const prepareRegistry = () => PROSE_REGISTRY.setItems(inlinerMathRegistryItem);
-
 describe('Inliner Math', () => {
   it('should create inliner math correctly', () => {
-    isolateProse(() => {
-      prepareRegistry();
+    const inlinerMath = asEruditRaw<InlinerMathSchema>(<M>A + b</M>);
 
-      const inlinerMath = asEruditRaw(<M>A + b</M>);
-
-      expect(isRawElement(inlinerMath, inlinerMathSchema)).toBe(true);
-      expect(inlinerMath.data).toBe('A + b');
-      expect(inlinerMath.storageKey).toBe('$ A + b $');
-    });
+    expect(isRawElement(inlinerMath, inlinerMathSchema)).toBe(true);
+    expect(inlinerMath.data).toBe('A + b');
+    expect(inlinerMath.storageKey).toBe('$ A + b $');
   });
 
   it('should throw when empty math expression is provided', () => {
-    isolateProse(() => {
-      prepareRegistry();
-      expect(() => asEruditRaw(<M> </M>)).toThrow();
-    });
+    expect(() => asEruditRaw(<M> </M>)).toThrow();
   });
 });

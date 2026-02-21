@@ -69,9 +69,6 @@ export function usePhrases<const T extends readonly LanguagePhraseKey[]>(
       try {
         payloadPhraseValue = await $fetch<PayloadLanguagePhraseValue>(
           `/api/language/phrase/${phraseKey}`,
-          {
-            responseType: 'json',
-          },
         );
 
         payloadLanguage.phrases[phraseKey] = payloadPhraseValue;

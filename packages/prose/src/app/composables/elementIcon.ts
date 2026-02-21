@@ -1,17 +1,18 @@
-import type { AnySchema, ProseElement } from '@jsprose/core';
+import type { ToProseElement, Schema } from 'tsprose';
+
 import { useAppElement } from './appElement.js';
 
 export async function useElementIcon(schemaName: string): Promise<string>;
 export async function useElementIcon(
-  element: ProseElement<AnySchema>,
+  element: ToProseElement<Schema>,
 ): Promise<string>;
 export async function useElementIcon(
-  elementOrName: string | ProseElement<AnySchema>,
+  elementOrName: string | ToProseElement<Schema>,
 ): Promise<string> {
   const appElement = useAppElement(
     typeof elementOrName === 'string'
       ? elementOrName
-      : elementOrName.schemaName,
+      : elementOrName.schema.name,
   );
   return appElement.icon();
 }

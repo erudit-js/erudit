@@ -15,7 +15,7 @@ export function createAppTemplate(nuxt: Nuxt, elementsData: ElementData[]) {
   }
 
   const template = `
-import type { AppElement } from '@erudit-js/prose/app';
+import type { ProseAppElements } from '@erudit-js/prose/app';
 
 ${Object.entries(apps)
   .map(
@@ -24,12 +24,11 @@ ${Object.entries(apps)
   )
   .join('\n')}
 
-export const appElementsArray: AppElement[] = [
-    ${Object.keys(apps).join(',\n    ')}
-].flatMap(element => (Array.isArray(element) ? element : [element]) as any);
-
-export const appElements = Object.fromEntries(
-    appElementsArray.map(element => [element.schema.name, element])
+export const appElements: ProseAppElements = Object.fromEntries([
+  ${Object.keys(apps).join(',\n  ')}
+  ]
+  .flatMap((element: any) => (Array.isArray(element) ? element : [element]))
+  .map((element: any) => [element.schema.name, element])
 );
     `.trim();
 

@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { ref, watchEffect } from 'vue';
-import type { ProseElement } from '@jsprose/core';
+import type { ToProseElement } from 'tsprose';
 
 import type { AccentSectionSchema } from './core.js';
 import { useArrayContainsAnchor } from '../../app/composables/anchor.js';
@@ -8,7 +8,7 @@ import Render from '../../app/shared/Render.vue';
 
 const { sections } = defineProps<{
   sectionTitles: string[];
-  sections: ProseElement<AccentSectionSchema>[];
+  sections: ToProseElement<AccentSectionSchema>[];
 }>();
 
 const openedSectionI = ref<number>();

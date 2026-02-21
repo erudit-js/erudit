@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { provide } from 'vue';
-import type { AnySchema, GenericStorage, ProseElement } from '@jsprose/core';
+import type { ProseElement, ProseStorage } from 'tsprose';
 import { createFormatTextState } from '@erudit-js/core/formatText';
 
 import {
@@ -13,8 +13,8 @@ import { anchorStateSymbol, useAnchorState } from '../composables/anchor.js';
 import { formatTextStateSymbol } from '../composables/formatText.js';
 
 const { element, storage, context } = defineProps<{
-  element: ProseElement<AnySchema>;
-  storage: GenericStorage;
+  element: ProseElement;
+  storage: ProseStorage;
   context: ProseContext;
 }>();
 

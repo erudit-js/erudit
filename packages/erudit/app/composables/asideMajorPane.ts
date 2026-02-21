@@ -78,9 +78,9 @@ export async function initGlobalContentNav() {
   const payloadValue: FrontGlobalContentNav =
     (nuxtApp.static.data[payloadKey] ||=
     nuxtApp.payload.data[payloadKey] ||=
-      await $fetch('/api/aside/major/frontNav/global', {
-        responseType: 'json',
-      }));
+      await fetchJson<FrontGlobalContentNav>(
+        '/api/aside/major/frontNav/global',
+      ));
 
   globalContentNav = payloadValue;
 }

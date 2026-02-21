@@ -2,7 +2,7 @@ import type { ElementData } from './shared';
 
 export function createTagsTable(elementsData: ElementData[], columns = 4) {
   const tagNames = elementsData.flatMap((data) =>
-    data.registryItems.flatMap((item) => item.tagNames),
+    data.coreElements.flatMap((coreElement) => Object.keys(coreElement.tags)),
   );
 
   if (tagNames.length === 0) return '';

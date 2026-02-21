@@ -1,4 +1,3 @@
-import { rmSync } from 'node:fs';
 import { defineCommand } from 'citty';
 import type { EruditMode } from '@erudit-js/core/mode';
 
@@ -43,12 +42,6 @@ export const build = defineCommand({
         NUXT_PUBLIC_ERUDIT_MODE: <EruditMode>'write',
         NUXT_PUBLIC_ERUDIT_VERSION: version,
       },
-    });
-
-    // Just fucking remove @jsprose because not a single fucking option inside Nuxt/Nitro allows NOT TO bundle it!
-    rmSync(`${absProjectPath}/.output/server/node_modules/@jsprose`, {
-      recursive: true,
-      force: true,
     });
   },
 });

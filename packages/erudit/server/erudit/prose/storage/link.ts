@@ -1,34 +1,28 @@
-import {
-  ProseError,
-  uniqueName2Id,
-  type GenericStorage,
-  type ProseElement,
-} from '@jsprose/core';
-
+import type { ToProseElement } from 'tsprose';
 import { isTopicPart } from '@erudit-js/core/content/topic';
 import type { ContentPointer } from '@erudit-js/core/content/pointer';
 import type {
-  referenceSchema,
-  refSchema,
+  ReferenceSchema,
+  RefSchema,
 } from '@erudit-js/prose/elements/link/reference/core';
 import type {
-  dependencySchema,
-  depSchema,
+  DependencySchema,
+  DepSchema,
 } from '@erudit-js/prose/elements/link/dependency/core';
 import type { LinkStorage } from '@erudit-js/prose/elements/link/storage';
 
 export async function createLinkStorage(
   element:
-    | ProseElement<typeof refSchema>
-    | ProseElement<typeof referenceSchema>
-    | ProseElement<typeof depSchema>
-    | ProseElement<typeof dependencySchema>,
-  storage: GenericStorage,
-) {
+    | ToProseElement<RefSchema>
+    | ToProseElement<ReferenceSchema>
+    | ToProseElement<DepSchema>
+    | ToProseElement<DependencySchema>,
+  storageKey: string,
+): Promise<LinkStorage> {
   try {
     let linkStorage: LinkStorage | undefined;
 
-    const storageKeyParts = element.storageKey!.split('/');
+    const storageKeyParts = storageKey.split('/');
     const linkType = storageKeyParts[0];
     const strProseLink = storageKeyParts.slice(1).join('/');
 
@@ -72,7 +66,7 @@ export async function createLinkStorage(
         if (contentPointer.type === 'topic') {
           linkStorage = {
             type: 'unique',
-            schemaName: unique.prose.schemaName,
+            schemaName: unique.prose.schema.name,
             elementTitle: unique.title || undefined,
             content: {
               contentType: 'topic',
@@ -82,7 +76,7 @@ export async function createLinkStorage(
             resolvedHref: PAGES.topic(
               contentPointer.part,
               shortId,
-              uniqueName2Id(uniqueName),
+              unique.prose.id,
             ),
             previewRequest: {
               type: 'unique',
@@ -95,13 +89,13 @@ export async function createLinkStorage(
         } else {
           linkStorage = {
             type: 'unique',
-            schemaName: unique.prose.schemaName,
+            schemaName: unique.prose.schema.name,
             elementTitle: unique.title || undefined,
             content: {
               contentType: contentPointer.type,
               contentTitle,
             },
-            resolvedHref: PAGES.page(shortId, uniqueName2Id(uniqueName)),
+            resolvedHref: PAGES.page(shortId, unique.prose.id),
             previewRequest: {
               type: 'unique',
               contentFullId: contentPointer.id,
@@ -160,14 +154,14 @@ export async function createLinkStorage(
     }
 
     if (!linkStorage) {
-      throw new ProseError(
-        `Unable to create prose link storage for link: ${element.storageKey}`,
+      throw new Error(
+        `Unable to create prose link storage for link: ${storageKey}`,
       );
     }
 
-    storage[element.storageKey!] = linkStorage;
+    return linkStorage;
   } catch (error) {
-    storage[element.storageKey!] = {
+    return {
       type: 'error',
       error: error instanceof Error ? error.message : String(error),
     };
@@ -178,7 +172,7 @@ async function getContentPointerFor(
   contentId: string,
 ): Promise<ContentPointer> {
   if (!contentId) {
-    throw new ProseError(`Invalid content ID: "${contentId}"!`);
+    throw new Error(`Invalid content ID: "${contentId}"!`);
   }
 
   const contentNavNode = ERUDIT.contentNav.getNode(contentId);
@@ -188,7 +182,7 @@ async function getContentPointerFor(
       contentNavNode.fullId,
     );
     if (hidden) {
-      throw new ProseError(`Target content is hidden!`);
+      throw new Error(`Target content is hidden!`);
     }
 
     if (contentNavNode.type === 'topic') {
@@ -213,7 +207,7 @@ async function getContentPointerFor(
   const maybeTopicPart = contentIdParts.pop()!;
 
   if (!isTopicPart(maybeTopicPart)) {
-    throw new ProseError(
+    throw new Error(
       `Prose link part "${contentId}" must be a valid topic part!`,
     );
   }
@@ -230,7 +224,5 @@ async function getContentPointerFor(
     };
   }
 
-  throw new ProseError(
-    `Unable to find content for prose link: "${contentId}"!`,
-  );
+  throw new Error(`Unable to find content for prose link: "${contentId}"!`);
 }

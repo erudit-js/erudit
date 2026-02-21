@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import type { ProseElement } from '@jsprose/core';
+import type { ToProseElement } from 'tsprose';
 
-import type { paragraphSchema } from './core.js';
+import type { ParagraphSchema } from './core.js';
 import Block from '../../app/shared/block/Block.vue';
 import Render from '../../app/shared/Render.vue';
 
-defineProps<{ element: ProseElement<typeof paragraphSchema> }>();
+defineProps<{ element: ToProseElement<ParagraphSchema> }>();
 </script>
 
 <template>

@@ -9,7 +9,7 @@ const payloadKey = 'index-page';
 const indexPage: IndexPage =
   (nuxtApp.static.data[payloadKey] ||=
   nuxtApp.payload.data[payloadKey] ||=
-    await $fetch<IndexPage>('/api/indexPage', { responseType: 'json' }));
+    await fetchJson<IndexPage>('/api/indexPage'));
 
 useIndexSeo(indexPage);
 

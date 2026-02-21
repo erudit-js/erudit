@@ -1,13 +1,11 @@
 import {
-  defineRegistryItem,
   defineSchema,
   ensureTagInlinerChildren,
   type InlinerSchema,
-  type TagChildren,
-} from '@jsprose/core';
+} from 'tsprose';
 
-import { defineEruditProseCoreElement } from '../../coreElement.js';
 import { defineEruditTag } from '../../tag.js';
+import { defineProseCoreElement } from '../../coreElement.js';
 
 export type EmphasisData =
   | {
@@ -18,27 +16,26 @@ export type EmphasisData =
       accent?: boolean;
     };
 
-export const emphasisSchema = defineSchema({
-  name: 'emphasis',
-  type: 'inliner',
-  linkable: true,
-})<{
+export interface EmphasisSchema extends InlinerSchema {
+  name: 'emphasis';
+  type: 'inliner';
+  linkable: true;
   Data: EmphasisData;
   Storage: undefined;
   Children: InlinerSchema[];
-}>();
+}
+
+export const emphasisSchema = defineSchema<EmphasisSchema>({
+  name: 'emphasis',
+  type: 'inliner',
+  linkable: true,
+});
 
 export const B = defineEruditTag({
   tagName: 'B',
   schema: emphasisSchema,
-})<{ accent?: boolean } & TagChildren>(({
-  element,
-  tagName,
-  props,
-  children,
-  registry,
-}) => {
-  ensureTagInlinerChildren(tagName, children, registry);
+})<{ accent?: boolean }>(({ element, tagName, props, children }) => {
+  ensureTagInlinerChildren(tagName, children);
   element.children = children;
   element.data = { type: 'bold' };
 
@@ -50,17 +47,13 @@ export const B = defineEruditTag({
 export const I = defineEruditTag({
   tagName: 'I',
   schema: emphasisSchema,
-})<TagChildren>(({ element, tagName, children, registry }) => {
-  ensureTagInlinerChildren(tagName, children, registry);
+})(({ element, tagName, children }) => {
+  ensureTagInlinerChildren(tagName, children);
   element.children = children;
   element.data = { type: 'italic' };
 });
 
-export const emphasisRegistryItem = defineRegistryItem({
+export default defineProseCoreElement({
   schema: emphasisSchema,
   tags: [B, I],
-});
-
-export default defineEruditProseCoreElement({
-  registryItem: emphasisRegistryItem,
 });

@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import { computed } from 'vue';
-import type { AnySchema, ProseElement } from '@jsprose/core';
+import type { ProseElement } from 'tsprose';
 
 import { useElementPhrase } from '../../composables/language.js';
 import AsideMenuSeparator from './AsideMenuSeparator.vue';
 import AsideMenuCopyLink from './AsideMenuCopyLink.vue';
 
 const { element } = defineProps<{
-  element: ProseElement<AnySchema>;
+  element: ProseElement;
 }>();
 
 const hasLink = computed(() => {

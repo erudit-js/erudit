@@ -1,12 +1,12 @@
-import { defineEruditProseAppElement } from '../../../app/appElement.js';
+import { defineProseAppElement } from '../../../app/appElement.js';
 import { dependencySchema, depSchema } from './core.js';
 
 export default [
-  defineEruditProseAppElement({
+  defineProseAppElement({
     schema: depSchema,
     component: () => import('../Link.vue'),
   }),
-  defineEruditProseAppElement({
+  defineProseAppElement({
     schema: dependencySchema,
     component: () => import('../BlockLink.vue'),
     icon: () => import('../icon.svg?raw'),

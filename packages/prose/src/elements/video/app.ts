@@ -1,7 +1,7 @@
-import { defineEruditProseAppElement } from '../../app/appElement.js';
+import { defineProseAppElement } from '../../app/appElement.js';
 import { videoSchema } from './core.js';
 
-export default defineEruditProseAppElement({
+export default defineProseAppElement({
   schema: videoSchema,
   component: () => import('./Video.vue'),
   languages: {

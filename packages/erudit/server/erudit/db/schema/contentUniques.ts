@@ -1,5 +1,5 @@
 import { primaryKey, sqliteTable, text } from 'drizzle-orm/sqlite-core';
-import type { AnySchema, ProseElement } from '@jsprose/core';
+import type { ProseElement } from 'tsprose';
 import type { ContentProseType } from '@erudit-js/core/content/prose';
 
 export const contentUniques = sqliteTable(
@@ -9,7 +9,7 @@ export const contentUniques = sqliteTable(
     contentProseType: text().notNull().$type<ContentProseType>(),
     uniqueName: text().notNull(),
     title: text(),
-    prose: text({ mode: 'json' }).$type<ProseElement<AnySchema>>().notNull(),
+    prose: text({ mode: 'json' }).$type<ProseElement>().notNull(),
   },
   (table) => [
     primaryKey({

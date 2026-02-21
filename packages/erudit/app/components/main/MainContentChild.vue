@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 const { child } = defineProps<{ child: MainContentChildrenItem }>();
 
-const hasExtra = child.stats || child.quickLinks;
+const hasExtra = child.stats || child.keyLinks;
 </script>
 
 <template>
@@ -33,8 +33,8 @@ const hasExtra = child.stats || child.quickLinks;
       v-if="hasExtra"
       class="border-t-border p-normal gap-normal flex flex-col border-t"
     >
-      <div v-if="child.quickLinks" class="relative top-[1px]">
-        <MainQuickLinks :elementSnippets="child.quickLinks" mode="children" />
+      <div v-if="child.keyLinks" class="relative top-[1px]">
+        <MainKeyLinks :elementSnippets="child.keyLinks" mode="children" />
       </div>
       <div v-if="child.stats">
         <MainContentStats :stats="child.stats" mode="children" />

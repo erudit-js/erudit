@@ -1,7 +1,7 @@
 import {
-  defineEruditProseAppElement,
-  type AppElement,
-  type AppElementDefinition,
+  defineProseAppElement,
+  type ProseAppElement,
+  type ProseAppElementDefinition,
 } from '../../app/appElement.js';
 import type {
   ElementLanguagesRaw,
@@ -24,7 +24,7 @@ export function accentSectionNamePhrase<TSectionName extends string>(
 }
 
 export type AccentAppDefinition<TAccentSchema extends AccentSchema> = Omit<
-  AppElementDefinition<TAccentSchema>,
+  ProseAppElementDefinition<TAccentSchema>,
   'component' | 'createStorage'
 > & {
   schema: TAccentSchema;
@@ -40,8 +40,8 @@ export type AccentAppDefinition<TAccentSchema extends AccentSchema> = Omit<
 
 export function defineAccentApp<TAccentSchema extends AccentSchema>(
   accentApp: AccentAppDefinition<TAccentSchema>,
-): AppElement<TAccentSchema> & { accent: AccentAppOptions } {
-  const appElement = defineEruditProseAppElement({
+): ProseAppElement<TAccentSchema> & { accent: AccentAppOptions } {
+  const appElement = defineProseAppElement({
     schema: accentApp.schema,
     component: () => import('./Accent.vue'),
     icon: accentApp.icon,

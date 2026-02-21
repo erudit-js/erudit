@@ -1,10 +1,10 @@
 <script lang="ts" setup>
-import type { ProseElement } from '@jsprose/core';
+import type { ToProseElement } from 'tsprose';
 
-import type { emphasisSchema } from './core.js';
+import type { EmphasisSchema } from './core.js';
 import Render from '../../app/shared/Render.vue';
 
-defineProps<{ element: ProseElement<typeof emphasisSchema> }>();
+defineProps<{ element: ToProseElement<EmphasisSchema> }>();
 </script>
 
 <template>

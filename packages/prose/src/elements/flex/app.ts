@@ -1,7 +1,7 @@
-import { defineEruditProseAppElement } from '../../app/appElement.js';
+import { defineProseAppElement } from '../../app/appElement.js';
 import { flexSchema } from './core.js';
 
-export default defineEruditProseAppElement({
+export default defineProseAppElement({
   schema: flexSchema,
   component: () => import('./Flex.vue'),
   languages: {

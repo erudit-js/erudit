@@ -4,7 +4,7 @@ import { serveStaticFile } from '#layers/erudit/server/erudit/staticFile';
 
 export default defineEventHandler(async (event) => {
   const path = event.context.params?.path;
-  const fullPath = ERUDIT.paths.project(path!);
+  const fullPath = decodeURIComponent(ERUDIT.paths.project(path!));
 
   if (!existsSync(fullPath)) {
     throw createError({

@@ -6,7 +6,7 @@ const payloadKey = 'quote-ids';
 const payloadValue: QuoteIds =
   (nuxtApp.static.data[payloadKey] ||=
   nuxtApp.payload.data[payloadKey] ||=
-    await $fetch('/api/quote/ids', { responseType: 'json' }));
+    await fetchJson('/api/quote/ids'));
 
 // Calculate total number of quotes
 const totalQuotes = computed(() => {
@@ -56,9 +56,7 @@ async function nextQuote() {
 
   const nextQuoteId = getRandomQuoteId();
   currentQuoteId.value = nextQuoteId;
-  const nextQuote = await $fetch(`/api/quote/data/${nextQuoteId}`, {
-    responseType: 'json',
-  });
+  const nextQuote = await fetchJson<Quote>(`/api/quote/data/${nextQuoteId}`);
   quote.value = nextQuote;
   quoteKey.value++;
 

@@ -1,35 +1,18 @@
 import { describe, expect, it } from 'vitest';
-import { isRawElement, PROSE_REGISTRY } from '@jsprose/core';
+import { isRawElement } from 'tsprose';
 
-import { asEruditRaw } from '@erudit-js/prose';
+import { asEruditRaw } from '@src/rawElement';
 import {
-  Image,
-  imageRegistryItem,
-  imageSchema,
-} from '@erudit-js/prose/elements/image/core';
-import {
-  Caption,
-  captionRegistryItem,
-  captionSchema,
-} from '@erudit-js/prose/elements/caption/core';
-import {
+  type GallerySchema,
   Gallery,
-  galleryRegistryItem,
   gallerySchema,
-} from '@erudit-js/prose/elements/gallery/core';
-
-const prepareRegistry = () =>
-  PROSE_REGISTRY.setItems(
-    galleryRegistryItem,
-    imageRegistryItem,
-    captionRegistryItem,
-  );
+} from '@src/elements/gallery/core';
+import { Image, imageSchema } from '@src/elements/image/core';
+import { Caption, captionSchema } from '@src/elements/caption/core';
 
 describe('Gallery', () => {
   it('should create gallery correctly', () => {
-    prepareRegistry();
-
-    const gallery = asEruditRaw(
+    const gallery = asEruditRaw<GallerySchema>(
       <Gallery>
         <Image src="image1.jpg" />
         <Image src="image2.jpg">
@@ -49,8 +32,6 @@ describe('Gallery', () => {
   });
 
   it('should throw when wrong children are provided', () => {
-    prepareRegistry();
-
     // Not image child
     expect(() => (
       <Gallery>

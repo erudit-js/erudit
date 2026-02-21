@@ -4,6 +4,7 @@ import { headingSchema } from '@erudit-js/prose/elements/heading/core';
 
 const { item, level } = defineProps<{ item: ResolvedTocItem; level: number }>();
 
+const route = useRoute();
 const elementIcon = await (async () => {
   let schemaName =
     item.type === 'heading' ? headingSchema.name : item.schemaName;
@@ -57,7 +58,7 @@ onMounted(() => {
       :icon="elementIcon"
       :main="formatText(item.title)"
       :state="active ? 'active' : undefined"
-      :to="'#' + item.elementId"
+      :to="route.path + '?element=' + item.elementId"
     />
     <div
       v-if="item.type === 'heading'"

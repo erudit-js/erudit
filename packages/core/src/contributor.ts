@@ -1,4 +1,5 @@
-import type { AnySchema, FinalizedProse, RawElement } from '@jsprose/core';
+import type { ProseWithStorage, RawElement } from 'tsprose';
+
 import type { ContributorContribution } from './content/contributions.js';
 
 export interface EruditContributors {
@@ -14,7 +15,7 @@ export type ContributorDefinition = Partial<{
   short: string;
   editor: boolean;
   links: Record<string, string>;
-  description: RawElement<AnySchema>;
+  description: RawElement;
 }>;
 
 export function defineContributor(contributor: ContributorDefinition) {
@@ -92,7 +93,7 @@ export interface PageContributor {
   short?: string;
   links?: Record<string, string>;
   avatarUrl?: string;
-  description?: FinalizedProse;
+  description?: ProseWithStorage;
   editor?: boolean;
   contributions?: ContributorContribution[];
 }

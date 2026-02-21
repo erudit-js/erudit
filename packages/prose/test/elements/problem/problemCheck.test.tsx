@@ -1,16 +1,15 @@
 import { describe, expect, it } from 'vitest';
-
-import { type RawElement, PROSE_REGISTRY, isolateProse } from '@jsprose/core';
+import type { RawElement, ToRawElement } from 'tsprose';
 
 import {
   toSerializableValidator,
   checkProblemAnswer,
-  type ProblemCheckValidator,
   fromSerializableValidator,
-  problemCheckRegistryItem,
   problemCheckSchema,
   ProblemCheck,
-} from '@erudit-js/prose/elements/problem/problemCheck';
+  type ProblemCheckValidator,
+  type ProblemCheckSchema,
+} from '@src/elements/problem/problemCheck';
 
 const check = (
   answer: string,
@@ -28,61 +27,52 @@ const check = (
   );
 };
 
-export const prepareRegistry = () => {
-  PROSE_REGISTRY.setItems(problemCheckRegistryItem);
-};
-
 describe('<ProblemCheck>', () => {
   it('should throw on non-check children', () => {
     expect(() => <ProblemCheck yes> </ProblemCheck>).toThrow();
   });
 
   it('should fill info and serialized validator for root check and nested check correctly', () => {
-    isolateProse(() => {
-      prepareRegistry();
+    const rootCheck = (
+      <ProblemCheck label="Root label" yes>
+        <ProblemCheck
+          hint="Nested label"
+          answers={{
+            ordered: false,
+            separator: '|',
+            values: ['a', ['b', /\d+/i], 42],
+          }}
+        />
+      </ProblemCheck>
+    ) as ToRawElement<ProblemCheckSchema>;
 
-      const rootCheck = (
-        <ProblemCheck label="Root label" yes>
-          <ProblemCheck
-            hint="Nested label"
-            answers={{
-              ordered: false,
-              separator: '|',
-              values: ['a', ['b', /\d+/i], 42],
-            }}
-          />
-        </ProblemCheck>
-      ) as RawElement<typeof problemCheckSchema>;
+    const childrenCheck = rootCheck
+      .children![0] as ToRawElement<ProblemCheckSchema>;
 
-      const childrenCheck = rootCheck.children![0] as RawElement<
-        typeof problemCheckSchema
-      >;
+    expect(rootCheck.data).toEqual({
+      label: 'Root label',
+      hint: undefined,
+      placeholder: undefined,
+      serializedValidator: {
+        type: 'boolean',
+        answer: true,
+      },
+    });
 
-      expect(rootCheck.data).toEqual({
-        label: 'Root label',
-        hint: undefined,
-        placeholder: undefined,
-        serializedValidator: {
-          type: 'boolean',
-          answer: true,
-        },
-      });
-
-      expect(childrenCheck.data).toEqual({
-        label: undefined,
-        hint: 'Nested label',
-        placeholder: undefined,
-        serializedValidator: {
-          type: 'array',
-          ordered: false,
-          separator: '|',
-          answers: [
-            'a',
-            ['b', { type: 'regexp', source: '\\d+', flags: 'i' }],
-            42,
-          ],
-        },
-      });
+    expect(childrenCheck.data).toEqual({
+      label: undefined,
+      hint: 'Nested label',
+      placeholder: undefined,
+      serializedValidator: {
+        type: 'array',
+        ordered: false,
+        separator: '|',
+        answers: [
+          'a',
+          ['b', { type: 'regexp', source: '\\d+', flags: 'i' }],
+          42,
+        ],
+      },
     });
   });
 });
@@ -216,6 +206,18 @@ describe('checkProblemAnswer', () => {
       expect(check('', checkData)).toBe(true);
       expect(check('   ', checkData)).toBe(true);
       expect(check('something', checkData)).toBe(false);
+    });
+
+    it('should match any-of alternatives', () => {
+      const checkData: ProblemCheckValidator = {
+        type: 'value',
+        answer: ['a', 42, /^test$/, undefined],
+      };
+      expect(check('a', checkData)).toBe(true);
+      expect(check('42', checkData)).toBe(true);
+      expect(check('test', checkData)).toBe(true);
+      expect(check('  ', checkData)).toBe(true);
+      expect(check('b', checkData)).toBe(false);
     });
   });
 

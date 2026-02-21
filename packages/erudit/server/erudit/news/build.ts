@@ -1,9 +1,7 @@
 import { existsSync } from 'node:fs';
 import { inArray } from 'drizzle-orm';
 import { globSync } from 'glob';
-import type { AnySchema, RawElement } from '@jsprose/core';
-
-import { resolveEruditProse } from '../prose/repository/resolve';
+import type { RawElement } from 'tsprose';
 
 let initialBuild = true;
 
@@ -88,7 +86,7 @@ async function buildNewsItem(filename: string) {
     `Building news item ${ERUDIT.log.stress(filename)}...`,
   );
 
-  let newsModule: { default: RawElement<AnySchema> } | undefined;
+  let newsModule: { default: RawElement } | undefined;
 
   try {
     newsModule = await ERUDIT.import(`${newsRoot()}/${filename}`);
@@ -103,10 +101,12 @@ async function buildNewsItem(filename: string) {
     return;
   }
 
-  const resolvedProse = await resolveEruditProse(newsModule.default, false);
+  const resolvedProse = await ERUDIT.repository.prose.fromRaw({
+    rawProse: newsModule.default,
+  });
 
   await ERUDIT.db.insert(ERUDIT.db.schema.news).values({
     date: filename.replace('.tsx', ''),
-    prose: resolvedProse.proseElement,
+    prose: resolvedProse.prose,
   });
 }

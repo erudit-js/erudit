@@ -1,51 +1,56 @@
 import {
-  defineRegistryItem,
   defineSchema,
-  ensureTagChildren,
-  ProseError,
-  type AnySchema,
-  type Tag,
-  type TagChildren,
-  type Unique,
-} from '@jsprose/core';
+  ensureTagBlockChildren,
+  type BlockSchema,
+  type Schema,
+} from 'tsprose';
 
-import { defineEruditProseCoreElement } from '../../coreElement.js';
-import { defineEruditTag, type NoSnippet, type NoToc } from '../../tag.js';
+import { defineEruditTag } from '../../tag.js';
+import type { NoToc } from '../../toc.js';
+import type { NoSnippet } from '../../snippet.js';
+import { EruditProseError } from '../../error.js';
+import { paragraphWrap } from '../../shared/paragraphWrap.js';
+import { defineProseCoreElement } from '../../coreElement.js';
+
+export interface DetailsSchema extends Schema {
+  name: 'details';
+  type: 'block';
+  linkable: 'always';
+  Data: DetailsData;
+  Storage: undefined;
+  Children: BlockSchema[];
+}
 
 export interface DetailsData {
   title?: string;
 }
 
-export const detailsSchema = defineSchema({
+export const detailsSchema = defineSchema<DetailsSchema>({
   name: 'details',
   type: 'block',
-  linkable: true,
-})<{
-  Data: DetailsData;
-  Storage: undefined;
-  Children: AnySchema[];
-}>();
-
-export const detailsTagName = 'Details';
+  linkable: 'always',
+});
 
 export const Details = defineEruditTag({
-  tagName: detailsTagName,
+  tagName: 'Details',
   schema: detailsSchema,
-})<
-  {
-    title?: string;
-    // Require unique
-    $: Unique<Tag<typeof detailsTagName, typeof detailsSchema, any>>;
-  } & TagChildren &
-    NoToc &
-    NoSnippet
->(({ element, tagName, children, props }) => {
+})<{ title?: string } & NoToc & NoSnippet>(({
+  element,
+  tagName,
+  children,
+  props,
+}) => {
   if (!element.uniqueName) {
-    throw new ProseError(`<${tagName}> must be connected to unique!`);
+    throw new EruditProseError(`<${tagName}> must be connected to unique!`);
   }
 
-  ensureTagChildren(tagName, children);
-  element.children = children;
+  const wrap = paragraphWrap(children);
+  if (wrap) {
+    element.children = wrap;
+  } else {
+    ensureTagBlockChildren(tagName, children);
+    element.children = children;
+  }
 
   const title = props.title?.trim();
   if (title) {
@@ -55,11 +60,7 @@ export const Details = defineEruditTag({
   }
 });
 
-export const detailsRegistryItem = defineRegistryItem({
+export default defineProseCoreElement({
   schema: detailsSchema,
   tags: [Details],
-});
-
-export default defineEruditProseCoreElement({
-  registryItem: detailsRegistryItem,
 });

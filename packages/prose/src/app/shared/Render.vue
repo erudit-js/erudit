@@ -1,26 +1,17 @@
 <script lang="ts" setup>
 import { h, type Component } from 'vue';
-import {
-  inlinersSchema,
-  mixSchema,
-  textSchema,
-  type AnySchema,
-  type ProseElement,
-} from '@jsprose/core';
+import { mixSchema, textSchema, type ProseElement } from 'tsprose';
 
 import { useAppElement } from '../composables/appElement.js';
 import Mix from '../default/Mix.vue';
-import Inliners from '../default/Inliners.vue';
 import Text from '../default/Text.vue';
 
-const { element } = defineProps<{ element: ProseElement<AnySchema> }>();
+const { element } = defineProps<{ element: ProseElement }>();
 
 const ElementComponent: Component = await (async () => {
-  switch (element.schemaName) {
+  switch (element.schema.name) {
     case mixSchema.name:
       return Mix;
-    case inlinersSchema.name:
-      return Inliners;
     case textSchema.name:
       return Text;
   }
@@ -30,7 +21,7 @@ const ElementComponent: Component = await (async () => {
     return await appElement.component();
   } catch (error) {
     console.warn(
-      `[Prose] [Render] Missing component for element schema: ${element.schemaName}`,
+      `[Prose] [Render] Missing component for element schema: ${element.schema.name}`,
     );
 
     return {
@@ -38,7 +29,7 @@ const ElementComponent: Component = await (async () => {
         return h(
           'span',
           { class: 'text-red-500 font-semibold font-mono' },
-          `<${element.schemaName}/>`,
+          `<${element.schema.name}/>`,
         );
       },
     };

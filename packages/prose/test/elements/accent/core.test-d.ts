@@ -1,5 +1,5 @@
 import { describe, expectTypeOf, it } from 'vitest';
-import { schemaKind, type AnySchema, type ProseElement } from '@jsprose/core';
+import type { ProseElement, ToProseElement } from 'tsprose';
 
 import {
   defineAccentCore,
@@ -9,7 +9,7 @@ import {
   type AccentSchema,
   type AccentMainSchema,
   type AccentSectionSchema,
-} from '@erudit-js/prose/elements/accent/core';
+} from '@src/elements/accent/core';
 
 describe('Accent', () => {
   it('should constuct final object infering accent and section names in type level', () => {
@@ -26,31 +26,26 @@ describe('Accent', () => {
     >();
     expectTypeOf(fooAccent.accent.schema.SectionNames).toEqualTypeOf<['bar']>();
     expectTypeOf(fooAccent.accent.tag.tagName).toEqualTypeOf<'Foo'>();
-    expectTypeOf(fooAccent.accent.tag[schemaKind]).toEqualTypeOf(
+    expectTypeOf(fooAccent.accent.coreElement.schema).toEqualTypeOf(
       fooAccent.accent.schema,
     );
-    expectTypeOf(fooAccent.accent.registryItem).toEqualTypeOf({
-      schema: fooAccent.accent.schema,
-      tags: {
-        [fooAccent.accent.tag.tagName]: fooAccent.accent.tag,
-      },
-      createStorage: undefined,
-    });
+    expectTypeOf(fooAccent.accent.coreElement.tags).toEqualTypeOf<
+      [typeof fooAccent.accent.tag]
+    >();
     expectTypeOf<
       Parameters<typeof fooAccent.accent.tag>[0]['title']
     >().toEqualTypeOf<string>();
 
     expectTypeOf(fooAccent.main.schema.name).toEqualTypeOf<'accentMain_foo'>();
-    expectTypeOf(fooAccent.main.tag[schemaKind]).toEqualTypeOf(
+    expectTypeOf(fooAccent.main.tag.schema).toEqualTypeOf(
       fooAccent.main.schema,
     );
-    expectTypeOf(fooAccent.main.registryItem).toEqualTypeOf({
-      schema: fooAccent.main.schema,
-      tags: {
-        [fooAccent.main.tag.tagName]: fooAccent.main.tag,
-      },
-      createStorage: undefined,
-    });
+    expectTypeOf(fooAccent.main.coreElement.schema).toEqualTypeOf(
+      fooAccent.main.schema,
+    );
+    expectTypeOf(fooAccent.main.coreElement.tags).toEqualTypeOf<
+      [typeof fooAccent.main.tag]
+    >();
 
     expectTypeOf(
       fooAccent.section.schema.name,
@@ -60,34 +55,32 @@ describe('Accent', () => {
     >();
 
     const manualSectionTag = fooAccent.section.tags[0];
-    expectTypeOf(manualSectionTag[schemaKind]).toEqualTypeOf(
+    expectTypeOf(manualSectionTag.schema).toEqualTypeOf(
       fooAccent.section.schema,
     );
     expectTypeOf(manualSectionTag.tagName).toEqualTypeOf<'FooSection'>();
 
     const barSectionTag = fooAccent.section.tags[1];
-    expectTypeOf(barSectionTag[schemaKind]).toEqualTypeOf(
-      fooAccent.section.schema,
-    );
+    expectTypeOf(barSectionTag.schema).toEqualTypeOf(fooAccent.section.schema);
     expectTypeOf(barSectionTag.tagName).toEqualTypeOf<'FooBar'>();
   });
 
   it('should correctly type guard ProseElement accent types', () => {
-    const element = {} as ProseElement<AnySchema>;
+    const element = {} as ProseElement;
 
     // Test type narrowing for accent
     if (isAccentElement(element)) {
-      expectTypeOf(element).toEqualTypeOf<ProseElement<AccentSchema>>();
+      expectTypeOf(element).toExtend<ToProseElement<AccentSchema>>();
     }
 
     // Test type narrowing for main section
     if (isAccentMainElement(element)) {
-      expectTypeOf(element).toEqualTypeOf<ProseElement<AccentMainSchema>>();
+      expectTypeOf(element).toExtend<ToProseElement<AccentMainSchema>>();
     }
 
     // Test type narrowing for section
     if (isAccentSectionElement(element)) {
-      expectTypeOf(element).toEqualTypeOf<ProseElement<AccentSectionSchema>>();
+      expectTypeOf(element).toExtend<ToProseElement<AccentSectionSchema>>();
     }
 
     // Test return types

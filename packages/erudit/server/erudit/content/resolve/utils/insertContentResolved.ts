@@ -1,42 +1,47 @@
 import chalk from 'chalk';
 import { sql } from 'drizzle-orm';
-import { type ResolvedRawElement } from '@jsprose/core';
 import type { ContentProseType } from '@erudit-js/core/content/prose';
-import type { ResolvedEruditRawElement } from '@erudit-js/prose';
+import { builtLinkObject } from '../../global/build';
 import type {
   ContentLinks,
   ContentLinkUsage,
-} from '@erudit-js/prose/elements/link/step';
+} from '@erudit-js/prose/elements/link/hook';
+import {
+  toKeySnippet,
+  toSearchSnippet,
+  toSeoSnippet,
+  type EruditRawToProseResult,
+} from '@erudit-js/prose';
 
 export async function insertContentResolved(
   contentFullId: string,
   contentProseType: ContentProseType,
-  resolveResult: ResolvedRawElement & ResolvedEruditRawElement,
+  result: EruditRawToProseResult,
 ) {
-  for (const file of resolveResult.files) {
+  for (const file of result.files) {
     await ERUDIT.repository.db.pushFile(file, `content-item:${contentFullId}`);
   }
 
-  for (const [uniqueName, unique] of Object.entries(resolveResult.uniques)) {
+  for (const [uniqueName, unique] of Object.entries(result.uniques)) {
     await ERUDIT.db.insert(ERUDIT.db.schema.contentUniques).values({
       contentFullId,
       contentProseType,
       uniqueName,
-      title: resolveResult.uniqueTitles[uniqueName],
+      title: result.uniqueTitles[uniqueName],
       prose: unique,
     });
   }
 
-  for (const snippet of resolveResult.snippets) {
+  for (const snippet of result.snippets) {
     await ERUDIT.db.insert(ERUDIT.db.schema.contentSnippets).values({
       contentFullId,
       contentProseType,
       elementId: snippet.elementId,
       schemaName: snippet.schemaName,
-      snippetData: snippet.snippetData,
-      search: !!snippet.snippetData.search,
-      quick: !!snippet.snippetData.quick,
-      seo: !!snippet.snippetData.seo,
+      snippetData: snippet.snippet,
+      search: !!toSearchSnippet(snippet.snippet),
+      key: !!toKeySnippet(snippet.snippet),
+      seo: !!toSeoSnippet(snippet.snippet),
     });
   }
 
@@ -49,14 +54,11 @@ export async function insertContentResolved(
     await deduplicateTopicSnippetsSearch(contentFullId);
   }
 
-  for (const problemScript of resolveResult.problemScripts) {
+  for (const problemScript of result.problemScripts) {
     await ERUDIT.repository.db.pushProblemScript(problemScript, contentFullId);
   }
 
-  const targetFullIds = filterTargetFullIds(
-    contentFullId,
-    resolveResult.contentLinks,
-  );
+  const targetFullIds = filterTargetFullIds(contentFullId, result.contentLinks);
 
   await insertContentDeps(contentFullId, Array.from(targetFullIds));
 }
@@ -127,17 +129,39 @@ function filterTargetFullIds(
 }
 
 function globalContentToNavNode(globalContentPath: string) {
+  // Validate the full path (including any $unique suffix) against the link
+  // object that was built from the source files. This catches broken unique
+  // names as well as broken content paths before we ever touch the nav tree.
+  if (builtLinkObject) {
+    const parts = globalContentPath.split('/');
+    let cursor: any = builtLinkObject;
+    let valid = true;
+
+    for (const part of parts) {
+      if (!cursor || typeof cursor !== 'object' || !(part in cursor)) {
+        valid = false;
+        break;
+      }
+      cursor = cursor[part];
+    }
+
+    if (!valid) {
+      throw new Error(`Path not found in \$CONTENT: ${globalContentPath}`);
+    }
+  }
+
   const parts = globalContentPath.split('/');
 
   if (parts.at(-1)?.startsWith('$')) {
     parts.pop();
   }
 
-  const navNode =
+  // Path already validated against builtLinkObject, so if the exact node
+  // isn't found the last segment must be a topic part — fall back to parent.
+  return (
     ERUDIT.contentNav.getNode(parts.join('/')) ??
-    ERUDIT.contentNav.getNodeOrThrow(parts.slice(0, -1).join('/'));
-
-  return navNode;
+    ERUDIT.contentNav.getNodeOrThrow(parts.slice(0, -1).join('/'))
+  );
 }
 
 async function deduplicateTopicSnippetsSearch(contentFullId: string) {

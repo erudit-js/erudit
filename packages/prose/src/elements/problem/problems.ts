@@ -1,14 +1,13 @@
 import {
-  defineRegistryItem,
   defineSchema,
   ensureTagBlockChildren,
   isRawElement,
-  ProseError,
-  type AnyUnique,
+  type BlockRawElement,
   type BlockSchema,
-  type RawElement,
-  type TagChildren,
-} from '@jsprose/core';
+  type Schema,
+  type ToRawElement,
+  type Unique,
+} from 'tsprose';
 
 import {
   validateProblemContent,
@@ -20,31 +19,37 @@ import {
   type ProblemInfo,
   type ProblemInfoProps,
 } from './shared.js';
-import { defineEruditProseCoreElement } from '../../coreElement.js';
 import {
   problemScriptStorageKey,
   type ProblemScriptStorage,
 } from './storage.js';
 import { type ProblemScriptInstance } from './problemScript.js';
+import { EruditProseError } from '../../error.js';
+import { defineProseCoreElement } from '../../coreElement.js';
 
 //
 // SubProblem
 //
 
-export interface SubProblemData {
-  label?: string;
-  scriptUniques?: Record<string, AnyUnique>;
-}
-
-export const subProblemSchema = defineSchema({
-  name: 'subProblem',
-  type: 'block',
-  linkable: false,
-})<{
+export interface SubProblemSchema extends Schema {
+  name: 'subProblem';
+  type: 'block';
+  linkable: false;
   Data: SubProblemData;
   Storage: ProblemScriptStorage;
   Children: ProblemContentChild[];
-}>();
+}
+
+export interface SubProblemData {
+  label?: string;
+  scriptUniques?: Record<string, Unique>;
+}
+
+export const subProblemSchema = defineSchema<SubProblemSchema>({
+  name: 'subProblem',
+  type: 'block',
+  linkable: false,
+});
 
 export const SubProblem = defineEruditTag({
   tagName: 'SubProblem',
@@ -63,7 +68,9 @@ export const SubProblem = defineEruditTag({
   }
 
   if (props.script && children) {
-    throw new ProseError(`<${tagName}> cannot have both script and children!`);
+    throw new EruditProseError(
+      `<${tagName}> cannot have both script and children!`,
+    );
   }
 
   if (props.script) {
@@ -78,43 +85,38 @@ export const SubProblem = defineEruditTag({
   }
 });
 
-export const subProblemRegistryItem = defineRegistryItem({
+export const subProblemCoreElement = defineProseCoreElement({
   schema: subProblemSchema,
   tags: [SubProblem],
-});
-
-export const subProblemCoreElement = defineEruditProseCoreElement({
-  registryItem: subProblemRegistryItem,
 });
 
 //
 // Problems
 //
 
-export const problemsSchema = defineSchema({
+export interface ProblemsSchema extends Schema {
+  name: 'problems';
+  type: 'block';
+  linkable: true;
+  Data: ProblemInfo;
+  Storage: undefined;
+  Children: (SubProblemSchema | BlockSchema)[];
+}
+
+export const problemsSchema = defineSchema<ProblemsSchema>({
   name: 'problems',
   type: 'block',
   linkable: true,
-})<{
-  Data: ProblemInfo;
-  Storage: undefined;
-  Children: (typeof subProblemSchema | BlockSchema)[];
-}>();
+});
 
 export const Problems = defineEruditTag({
   tagName: 'Problems',
   schema: problemsSchema,
-})<ProblemInfoProps & TagChildren>(({
-  element,
-  tagName,
-  props,
-  children,
-  registry,
-}) => {
-  ensureTagBlockChildren(tagName, children, registry);
+})<ProblemInfoProps>(({ element, tagName, props, children }) => {
+  ensureTagBlockChildren(tagName, children);
 
-  const subProblemChildren: RawElement<typeof subProblemSchema>[] = [];
-  const otherChildren: RawElement<BlockSchema>[] = [];
+  const subProblemChildren: ToRawElement<SubProblemSchema>[] = [];
+  const otherChildren: BlockRawElement[] = [];
 
   for (const child of children) {
     if (isRawElement(child, subProblemSchema)) {
@@ -125,7 +127,7 @@ export const Problems = defineEruditTag({
   }
 
   if (subProblemChildren.length === 0) {
-    throw new ProseError(
+    throw new EruditProseError(
       `<${tagName}> must have at least one <SubProblem> child!`,
     );
   }
@@ -136,11 +138,7 @@ export const Problems = defineEruditTag({
   element.title = problemInfo.title;
 });
 
-export const problemsRegistryItem = defineRegistryItem({
+export const problemsCoreElement = defineProseCoreElement({
   schema: problemsSchema,
   tags: [Problems],
-});
-
-export const problemsCoreElement = defineEruditProseCoreElement({
-  registryItem: problemsRegistryItem,
 });

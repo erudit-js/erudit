@@ -1,4 +1,4 @@
-import type { FinalizedProse } from '@jsprose/core';
+import type { ProseWithStorage } from 'tsprose';
 
 export interface NewsBatch {
   items: NewsItem[];
@@ -9,5 +9,5 @@ export interface NewsBatch {
 
 export interface NewsItem {
   date: string;
-  content: FinalizedProse;
+  content: ProseWithStorage;
 }

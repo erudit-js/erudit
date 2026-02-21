@@ -2,11 +2,15 @@
 import { ref, watchEffect } from 'vue';
 import {
   isProseElement,
-  type BlockSchema,
-  type ProseElement,
-} from '@jsprose/core';
+  type BlockProseElement,
+  type ToProseElement,
+} from 'tsprose';
 
-import { subProblemSchema, type problemsSchema } from '../problems.js';
+import {
+  subProblemSchema,
+  type ProblemsSchema,
+  type SubProblemSchema,
+} from '../problems.js';
 import { useFormatText } from '../../../app/composables/formatText.js';
 import { useArrayContainsAnchor } from '../../../app/composables/anchor.js';
 import SubProblem from './SubProblem.vue';
@@ -17,18 +21,18 @@ import Render from '../../../app/shared/Render.vue';
 import ProblemButton from './ProblemButton.vue';
 
 const { element } = defineProps<{
-  element: ProseElement<typeof problemsSchema>;
+  element: ToProseElement<ProblemsSchema>;
 }>();
 
 const formatText = useFormatText();
 
 const sharedChildren = element.children.filter(
   (child) => !isProseElement(child, subProblemSchema),
-) as ProseElement<BlockSchema>[];
+) as BlockProseElement[];
 
 const subProblems = element.children.filter((child) =>
   isProseElement(child, subProblemSchema),
-) as ProseElement<typeof subProblemSchema>[];
+) as ToProseElement<SubProblemSchema>[];
 
 const activeSubProblemI = ref(0);
 

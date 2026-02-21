@@ -1,13 +1,13 @@
 <script lang="ts" setup>
 import { h } from 'vue';
-import type { ProseElement } from '@jsprose/core';
+import type { ToProseElement } from 'tsprose';
 
 import { useFormatText } from '../../app/composables/formatText.js';
-import type { headingSchema } from './core.js';
+import type { HeadingSchema } from './core.js';
 import Block from '../../app/shared/block/Block.vue';
 
 const { element } = defineProps<{
-  element: ProseElement<typeof headingSchema>;
+  element: ToProseElement<HeadingSchema>;
 }>();
 
 const formatText = useFormatText();

@@ -1,23 +1,27 @@
 import {
-  defineRegistryItem,
   defineSchema,
   ensureTagInlinerChildren,
   type InlinerSchema,
-  type TagChildren,
-} from '@jsprose/core';
+  type Schema,
+} from 'tsprose';
 
-import { defineEruditProseCoreElement } from '../../coreElement.js';
 import { defineEruditTag } from '../../tag.js';
+import { defineProseCoreElement } from '../../coreElement.js';
 
-export const paragraphSchema = defineSchema({
-  name: 'paragraph',
-  type: 'block',
-  linkable: true,
-})<{
+export interface ParagraphSchema extends Schema {
+  name: 'paragraph';
+  type: 'block';
+  linkable: true;
   Data: ParagraphData;
   Storage: undefined;
   Children: InlinerSchema[];
-}>();
+}
+
+export const paragraphSchema = defineSchema<ParagraphSchema>({
+  name: 'paragraph',
+  type: 'block',
+  linkable: true,
+});
 
 export type ParagraphData =
   | undefined
@@ -29,14 +33,8 @@ export type ParagraphData =
 export const P = defineEruditTag({
   tagName: 'P',
   schema: paragraphSchema,
-})<{ center?: true; serif?: true } & TagChildren>(({
-  element,
-  tagName,
-  props,
-  children,
-  registry,
-}) => {
-  ensureTagInlinerChildren(tagName, children, registry);
+})<{ center?: true; serif?: true }>(({ element, tagName, props, children }) => {
+  ensureTagInlinerChildren(tagName, children);
   element.children = children;
 
   if (props.center || props.serif) {
@@ -50,11 +48,7 @@ export const P = defineEruditTag({
   }
 });
 
-export const paragraphRegistryItem = defineRegistryItem({
+export default defineProseCoreElement({
   schema: paragraphSchema,
   tags: [P],
-});
-
-export default defineEruditProseCoreElement({
-  registryItem: paragraphRegistryItem,
 });

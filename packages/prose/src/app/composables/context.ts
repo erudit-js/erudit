@@ -10,12 +10,13 @@ import type { EruditLanguageCode } from '@erudit-js/core/eruditConfig/language';
 import type { EruditMode } from '@erudit-js/core/mode';
 import type { FormatText } from '@erudit-js/core/formatText';
 
-import type { AppElement } from '../appElement.js';
+import type { ProseAppElement } from '../appElement.js';
 
 export interface ProseContext {
   mode: EruditMode;
+  setHtmlIds: boolean;
   languageCode: EruditLanguageCode;
-  appElements: Record<string, AppElement>;
+  appElements: Record<string, ProseAppElement>;
   formatText: FormatText;
   pathUrl: string;
   baseUrl: string;

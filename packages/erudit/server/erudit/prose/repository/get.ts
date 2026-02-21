@@ -1,12 +1,12 @@
 import { eq } from 'drizzle-orm';
-import type { AnySchema, ProseElement } from '@jsprose/core';
+import { type ProseElement } from 'tsprose';
 import type { ContentProseType } from '@erudit-js/core/content/prose';
 import { isTopicPart } from '@erudit-js/core/content/topic';
 
 export async function getContentProse(
   contentType: ContentProseType,
   contentId: string,
-): Promise<ProseElement<AnySchema>> {
+): Promise<ProseElement> {
   const navNode = ERUDIT.contentNav.getNodeOrThrow(contentId);
   const fullContentId = navNode.fullId;
 
@@ -40,7 +40,7 @@ export async function getContentProse(
 
 export async function getContributorProse(
   contributorId: string,
-): Promise<ProseElement<AnySchema> | undefined> {
+): Promise<ProseElement | undefined> {
   const dbContributor = await ERUDIT.db.query.contributors.findFirst({
     columns: {
       description: true,
@@ -50,5 +50,3 @@ export async function getContributorProse(
 
   return dbContributor?.description || undefined;
 }
-
-// @TODO: Get news item prose

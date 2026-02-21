@@ -1,16 +1,16 @@
 <script lang="ts" setup>
-import type { ProseElement } from '@jsprose/core';
+import type { ToProseElement } from 'tsprose';
 
-import type { calloutSchema } from './core.js';
+import type { CalloutSchema } from './core.js';
 import { useElementStorage } from '../../app/composables/storage.js';
 import { useFormatText } from '../../app/composables/formatText.js';
 import Block from '../../app/shared/block/Block.vue';
 import Render from '../../app/shared/Render.vue';
 
 const { element } = defineProps<{
-  element: ProseElement<typeof calloutSchema>;
+  element: ToProseElement<CalloutSchema>;
 }>();
-const calloutStorage = await useElementStorage<typeof calloutSchema>(element);
+const calloutStorage = await useElementStorage(element);
 const formatText = useFormatText();
 </script>
 

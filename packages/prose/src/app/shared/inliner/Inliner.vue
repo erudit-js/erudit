@@ -1,7 +1,7 @@
 <script lang="ts" setup>
-import type { InlinerSchema, ProseElement } from '@jsprose/core';
+import type { InlinerProseElement } from 'tsprose';
 
-defineProps<{ element: ProseElement<InlinerSchema> }>();
+defineProps<{ element: InlinerProseElement }>();
 </script>
 
 <template>

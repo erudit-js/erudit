@@ -7,11 +7,7 @@ import {
   watchEffect,
   type Component,
 } from 'vue';
-import {
-  isProseElement,
-  resolveRawElement,
-  type ProseElement,
-} from '@jsprose/core';
+import { isProseElement, type ToProseElement } from 'tsprose';
 
 import {
   problemAnswer,
@@ -28,7 +24,7 @@ import { useProblemPhrase } from '../composables/phrase.js';
 import type { ProblemAction } from '../shared.js';
 import { useArrayContainsAnchor } from '../../../app/composables/anchor.js';
 import type { ProblemScriptInstance } from '../problemScript.js';
-import type { problemSchema } from '../problem.js';
+import type { ProblemSchema } from '../problem.js';
 import type { subProblemSchema } from '../problems.js';
 import { useElementStorage } from '../../../app/composables/storage.js';
 import type { ProblemScriptStorage } from '../storage.js';
@@ -40,12 +36,13 @@ import DefaultPlusSections from './expanders/DefaultPlusSections.vue';
 import ProblemButton from './ProblemButton.vue';
 import Checks from './expanders/Checks.vue';
 import ProblemButtonGenerate from './ProblemButtonGenerate.vue';
+import { eruditRawToProse } from '../../../rawToProse/index.js';
 
 const { element, initialElements } = defineProps<{
   element:
-    | ProseElement<typeof problemSchema>
-    | ProseElement<typeof subProblemSchema>;
-  initialElements: ProseElement<ProblemContentChild>[];
+    | ToProseElement<ProblemSchema>
+    | ToProseElement<typeof subProblemSchema>;
+  initialElements: ToProseElement<ProblemContentChild>[];
 }>();
 
 const { EruditIcon } = useProseContext();
@@ -67,7 +64,7 @@ const actionIcons: Record<ProblemAction, string> = Object.fromEntries(
 
 const key = ref(0);
 const elements =
-  shallowRef<ProseElement<ProblemContentChild>[]>(initialElements);
+  shallowRef<ToProseElement<ProblemContentChild>[]>(initialElements);
 
 const description = computed(() => {
   return elements.value.find((element) =>
@@ -93,12 +90,12 @@ const expandableActions = computed(() => {
       : never;
 
   const actionMap: ActionMap<{
-    hint?: ProseElement<typeof problemHintSchema>[];
-    answer?: ProseElement<typeof problemAnswer.schema>;
-    solution?: ProseElement<typeof problemSolution.schema>;
-    note?: ProseElement<typeof problemNote.schema>;
+    hint?: ToProseElement<typeof problemHintSchema>[];
+    answer?: ToProseElement<typeof problemAnswer.schema>;
+    solution?: ToProseElement<typeof problemSolution.schema>;
+    note?: ToProseElement<typeof problemNote.schema>;
     check?: {
-      checkElements: ProseElement<typeof problemCheckSchema>[];
+      checkElements: ToProseElement<typeof problemCheckSchema>[];
       checkFunction?: CheckFunction;
     };
   }> = {};
@@ -207,13 +204,10 @@ async function doGenerate(seed: ProblemSeed) {
   }
 
   const rawElements = generateResult.problemContent;
-  const proseElements: ProseElement<ProblemContentChild>[] = [];
+  const proseElements: ToProseElement<ProblemContentChild>[] = [];
   for (const rawElement of rawElements) {
-    const resolveResult = await resolveRawElement({
-      rawElement,
-      linkable: false,
-    });
-    proseElements.push(resolveResult.proseElement as any);
+    const resolveResult = await eruditRawToProse({ rawProse: rawElement });
+    proseElements.push(resolveResult.prose as any);
   }
 
   if (currentSeed !== seed) {

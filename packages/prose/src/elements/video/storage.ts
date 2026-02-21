@@ -1,15 +1,11 @@
-import { projectRelFilePath } from '../../shared/filePath.js';
 import type { VideoStorage } from './core.js';
 
 export function createVideoStorage(
   projectAbsPath: string,
   projectBaseUrl: string,
-  videoAbsoluteSrc: string,
+  videoRelSrc: string,
 ): VideoStorage {
-  const resolvedSrc =
-    projectBaseUrl +
-    'file/' +
-    projectRelFilePath(projectAbsPath, videoAbsoluteSrc);
+  const resolvedSrc = projectBaseUrl + 'file/' + videoRelSrc;
 
   return {
     resolvedSrc,

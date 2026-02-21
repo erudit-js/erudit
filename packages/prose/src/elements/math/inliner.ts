@@ -1,14 +1,15 @@
 import {
-  defineRegistryItem,
   defineSchema,
-  ensureTagChild,
-  ProseError,
+  ensureTagChildren,
   textSchema,
-  type TagChildren,
-} from '@jsprose/core';
+  type RequiredChildren,
+  type Schema,
+} from 'tsprose';
 
 import { defineEruditTag } from '../../tag.js';
-import { latexToHtml, normalizeKatex } from './katex.js';
+import { katexDependency, latexToHtml, normalizeKatex } from './katex.js';
+import { EruditProseError } from '../../error.js';
+import { defineProseCoreElement } from '../../coreElement.js';
 
 export type InlinerMathType = 'katex' | 'text';
 
@@ -83,25 +84,30 @@ export function tryTextInlinerMath(
 //
 //
 
-export const inlinerMathSchema = defineSchema({
-  name: 'inlinerMath',
-  type: 'inliner',
-  linkable: true,
-})<{
+export interface InlinerMathSchema extends Schema {
+  name: 'inlinerMath';
+  type: 'inliner';
+  linkable: true;
   Data: string;
   Storage: InlinerMathStorage;
   Children: undefined;
-}>();
+}
+
+export const inlinerMathSchema = defineSchema<InlinerMathSchema>({
+  name: 'inlinerMath',
+  type: 'inliner',
+  linkable: true,
+});
 
 export const M = defineEruditTag({
   tagName: 'M',
   schema: inlinerMathSchema,
-})<TagChildren>(({ element, tagName, children }) => {
-  ensureTagChild(tagName, children, textSchema);
+})<RequiredChildren>(({ element, tagName, children }) => {
+  ensureTagChildren(tagName, children, textSchema);
   const katex = normalizeKatex(children[0].data);
 
   if (!katex) {
-    throw new ProseError(
+    throw new EruditProseError(
       `<${tagName}> tag must contain non-empty KaTeX math expression.`,
     );
   }
@@ -110,12 +116,11 @@ export const M = defineEruditTag({
   element.storageKey = `$ ${katex} $`;
 });
 
-export const inlinerMathRegistryItem = defineRegistryItem({
+export const inlinerMathCoreElement = defineProseCoreElement({
   schema: inlinerMathSchema,
   tags: [M],
-  async createStorage(element) {
-    return createInlinerMathStorage(element.data);
-  },
+  createStorage: async (element) => createInlinerMathStorage(element.data),
+  dependencies: katexDependency,
 });
 
 export async function createInlinerMathStorage(

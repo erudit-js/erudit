@@ -28,7 +28,7 @@ export default defineNuxtPlugin({
     ];
 
     for (const provider of routeProviders) {
-      const fetchedRoutes = await $fetch<string[]>(provider);
+      const fetchedRoutes = await fetchJson<string[]>(provider);
       routes.push(...fetchedRoutes);
     }
 
