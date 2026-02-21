@@ -1,4 +1,5 @@
 import { eq } from 'drizzle-orm';
+import { existsSync } from 'node:fs';
 import { isDocument, type Document } from 'tsprose';
 import {
   topicParts,
@@ -33,14 +34,19 @@ export async function resolveTopic(topicNode: ContentNavNode) {
     });
 
     for (const topicPart of topicParts) {
+      const topicPartPath = ERUDIT.paths.project(
+        `content/${topicNode.contentRelPath}/${topicPart}`,
+      );
+
+      const topicPartExists = ['.js', '.jsx', '.ts', '.tsx'].some((ext) =>
+        existsSync(topicPartPath + ext),
+      );
+
+      if (!topicPartExists) continue;
+
       const topicPartDocument = await ERUDIT.import<{
         default: Document;
-      }>(
-        ERUDIT.paths.project(
-          `content/${topicNode.contentRelPath}/${topicPart}`,
-        ),
-        { try: true },
-      );
+      }>(topicPartPath, { try: true });
 
       if (isDocument(topicPartDocument?.default)) {
         const result = await ERUDIT.repository.prose.fromRaw({
