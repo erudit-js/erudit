@@ -145,7 +145,11 @@ const staticFilesPlugin: Plugin = {
       },
       async (args) => {
         const absPath = resolve(args.path).replace(/\\/g, '/');
-        const contents = `export default ${JSON.stringify(absPath)};`;
+        const projectPath = ERUDIT.paths.project();
+        const relPath = absPath.startsWith(projectPath + '/')
+          ? absPath.slice(projectPath.length + 1)
+          : absPath;
+        const contents = `export default ${JSON.stringify(relPath)};`;
         return { contents, loader: 'js' };
       },
     );

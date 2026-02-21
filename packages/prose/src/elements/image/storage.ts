@@ -1,7 +1,6 @@
 import { imageSizeFromFile } from 'image-size/fromFile';
 
 import type { ImageStorage } from './core.js';
-import { projectRelFilePath } from '../../shared/filePath.js';
 import { EruditProseError } from '../../error.js';
 
 export async function getImageSize(
@@ -20,13 +19,11 @@ export async function getImageSize(
 export async function createImageStorage(
   projectAbsPath: string,
   projectBaseUrl: string,
-  imageAbsoluteSrc: string,
+  imageRelSrc: string,
 ): Promise<ImageStorage> {
-  const size = await getImageSize(imageAbsoluteSrc);
-  const resolvedSrc =
-    projectBaseUrl +
-    'file/' +
-    projectRelFilePath(projectAbsPath, imageAbsoluteSrc);
+  const imageAbsSrc = `${projectAbsPath}/${imageRelSrc}`;
+  const size = await getImageSize(imageAbsSrc);
+  const resolvedSrc = projectBaseUrl + 'file/' + imageRelSrc;
 
   return {
     resolvedSrc,

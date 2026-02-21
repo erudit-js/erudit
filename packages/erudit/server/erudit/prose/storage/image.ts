@@ -10,10 +10,10 @@ export async function createImageStorage(
 ): Promise<ImageStorage> {
   const runtimeConfig = useRuntimeConfig();
 
-  const imageAbsPath = element.data.src;
+  const imageRelSrc = element.data.src;
   return (await _createImageStorage(
     ERUDIT.paths.project(),
     runtimeConfig.app.baseURL,
-    imageAbsPath,
+    imageRelSrc,
   )) satisfies ImageStorage;
 }

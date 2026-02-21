@@ -56,7 +56,7 @@ export async function setupServerImporter() {
       // Problem Scripts
       //
 
-      code = insertProblemScriptId(filename, code);
+      code = insertProblemScriptId(toRelPath(filename), code);
 
       return { code };
     },
@@ -82,13 +82,21 @@ function createBaseJitiOptions(): JitiOptions {
   };
 }
 
+function toRelPath(filename: string): string {
+  const projectPath = ERUDIT.paths.project();
+  if (filename.startsWith(projectPath + '/')) {
+    return filename.slice(projectPath.length + 1);
+  }
+  return filename;
+}
+
 function tryStaticAssetModule(filename: unknown) {
   if (
     typeof filename === 'string' &&
     STATIC_ASSET_EXTENSIONS.some((ext) => filename.endsWith('.' + ext))
   ) {
     return {
-      code: `exports.default = "${filename}";`,
+      code: `exports.default = "${toRelPath(filename)}";`,
     };
   }
 }
