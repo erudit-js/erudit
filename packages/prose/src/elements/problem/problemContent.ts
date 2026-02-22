@@ -2,7 +2,6 @@ import {
   defineSchema,
   ensureTagBlockChildren,
   ensureTagChildren,
-  isRawBlock,
   isRawElement,
   type BlockRawElement,
   type BlockSchema,
@@ -161,7 +160,7 @@ function defineProblemSectionContainer<ContainerName extends string>(
   });
 
   const tag = defineEruditTag({ tagName, schema })(({ element, children }) => {
-    const head: ToEruditRawElement<BlockSchema>[] = [];
+    const headRaw: NonNullable<NormalizedChildren>[number][] = [];
     const sections: ToEruditRawElement<ProblemSectionSchema>[] = [];
 
     let seenSection = false;
@@ -171,19 +170,19 @@ function defineProblemSectionContainer<ContainerName extends string>(
         seenSection = true;
         sections.push(child);
       } else {
-        if (!isRawBlock(child)) {
-          throw new EruditProseError(
-            `${tagName} cannot have inline children (found "${child.schema.name}").`,
-          );
-        }
         if (seenSection) {
           throw new EruditProseError(
             `${tagName}: non-section children must come before <ProblemSection>.`,
           );
         }
-        head.push(child);
+        headRaw.push(child);
       }
     }
+
+    const head =
+      headRaw.length > 0
+        ? toBlockChildren(tagName, headRaw as NormalizedChildren)
+        : [];
 
     element.children = [...head, ...sections];
   });

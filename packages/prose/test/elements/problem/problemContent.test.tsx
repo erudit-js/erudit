@@ -1,10 +1,12 @@
 import { describe, expect, it } from 'vitest';
-import { isRawElement, TSProseError } from 'tsprose';
+import { isRawElement } from 'tsprose';
 
 import { asEruditRaw } from '@src/rawElement';
 import { P, paragraphSchema } from '@src/elements/paragraph/core';
 import {
   problemAnswer,
+  problemNote,
+  problemSolution,
   ProblemDescription,
   problemDescriptionSchema,
   ProblemHint,
@@ -14,9 +16,10 @@ import {
   validateProblemContent,
 } from '@src/elements/problem/problemContent';
 import { ProblemCheck } from '@src/elements/problem/problemCheck';
-import { EruditProseError } from '@src/error';
 
 export const ProblemAnswer = problemAnswer.tag;
+export const ProblemSolution = problemSolution.tag;
+export const ProblemNote = problemNote.tag;
 
 describe('Problem Description', () => {
   it('should create description correctly', () => {
@@ -28,6 +31,15 @@ describe('Problem Description', () => {
 
     expect(isRawElement(description, problemDescriptionSchema)).toBe(true);
     expect(description.children).toHaveLength(1);
+  });
+
+  it('should wrap direct inliner children into paragraph', () => {
+    const description = asEruditRaw(
+      <ProblemDescription>Direct text content</ProblemDescription>,
+    );
+
+    expect(isRawElement(description, problemDescriptionSchema)).toBe(true);
+    expect(isRawElement(description.children![0], paragraphSchema)).toBe(true);
   });
 });
 
@@ -41,6 +53,13 @@ describe('Problem Hint', () => {
 
     expect(isRawElement(hint, problemHintSchema)).toBe(true);
     expect(hint.children).toHaveLength(1);
+  });
+
+  it('should wrap direct inliner children into paragraph', () => {
+    const hint = asEruditRaw(<ProblemHint>Direct text content</ProblemHint>);
+
+    expect(isRawElement(hint, problemHintSchema)).toBe(true);
+    expect(isRawElement(hint.children![0], paragraphSchema)).toBe(true);
   });
 });
 
@@ -80,6 +99,67 @@ describe('Problem Section Container: Answer/Solution/Note', () => {
     expect(isRawElement(answer.children![0], paragraphSchema)).toBe(true);
     expect(isRawElement(answer.children![1], problemSectionSchema)).toBe(true);
     expect(answer.children![1].data).toBe('answer section 1');
+  });
+
+  it('should wrap direct inliner children into paragraph', () => {
+    const answer = asEruditRaw(
+      <ProblemAnswer>Direct text content</ProblemAnswer>,
+    );
+
+    expect(isRawElement(answer, problemAnswer.schema)).toBe(true);
+    expect(isRawElement(answer.children![0], paragraphSchema)).toBe(true);
+  });
+});
+
+describe('Problem Solution: inline wrapping', () => {
+  it('should wrap direct inliner children into paragraph', () => {
+    const solution = asEruditRaw(
+      <ProblemSolution>Direct text content</ProblemSolution>,
+    );
+
+    expect(isRawElement(solution, problemSolution.schema)).toBe(true);
+    expect(isRawElement(solution.children![0], paragraphSchema)).toBe(true);
+  });
+
+  it('should wrap inliners before section into paragraph', () => {
+    const solution = asEruditRaw(
+      <ProblemSolution>
+        Direct text content
+        <ProblemSection title="section 1">
+          <P>Section content</P>
+        </ProblemSection>
+      </ProblemSolution>,
+    );
+
+    expect(isRawElement(solution, problemSolution.schema)).toBe(true);
+    expect(isRawElement(solution.children![0], paragraphSchema)).toBe(true);
+    expect(isRawElement(solution.children![1], problemSectionSchema)).toBe(
+      true,
+    );
+  });
+});
+
+describe('Problem Note: inline wrapping', () => {
+  it('should wrap direct inliner children into paragraph', () => {
+    const note = asEruditRaw(<ProblemNote>Direct text content</ProblemNote>);
+
+    expect(isRawElement(note, problemNote.schema)).toBe(true);
+    expect(isRawElement(note.children![0], paragraphSchema)).toBe(true);
+  });
+
+  it('should wrap inliners before section into paragraph', () => {
+    const note = asEruditRaw(
+      <ProblemNote>
+        Direct text content
+        <ProblemSection title="section 1">
+          <P>Section content</P>
+        </ProblemSection>
+      </ProblemNote>,
+    );
+
+    expect(isRawElement(note, problemNote.schema)).toBe(true);
+    expect(isRawElement(note.children![0], paragraphSchema)).toBe(true);
+    expect(isRawElement(note.children![1], problemSectionSchema)).toBe(true);
   });
 });
 
