@@ -1,6 +1,6 @@
 {
   "name": "@erudit-js/core",
-  "version": "4.2.0",
+  "version": "4.2.1",
   "type": "module",
   "description": "Erudit core essentials",
   "exports": {
