@@ -23,7 +23,6 @@ const lastChangedSource = useLastChangedSource(() => props.contentRelativePath);
       class="micro:justify-start gap-small micro:gap-normal flex flex-wrap
         justify-center"
     >
-      <ItemLastChanged v-if="lastChangedSource" :source="lastChangedSource" />
       <ItemMaterials
         v-if="stats?.materials"
         :count="stats.materials"
@@ -36,6 +35,7 @@ const lastChangedSource = useLastChangedSource(() => props.contentRelativePath);
         :count
         mode="detailed"
       />
+      <ItemLastChanged v-if="lastChangedSource" :source="lastChangedSource" />
     </div>
   </section>
   <div
