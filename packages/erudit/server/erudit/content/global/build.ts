@@ -9,6 +9,13 @@ let initialBuild = true;
 
 const contentRoot = () => ERUDIT.paths.project('content');
 
+export let builtLinkObject: Record<string, any> | null = null;
+
+/** All valid fully-qualified $CONTENT paths — content items, topic parts,
+ *  public uniques, and internal (underscore) uniques.
+ *  Used for server-side prose link validation. */
+export let builtValidPaths: Set<string> | null = null;
+
 export async function buildGlobalContent() {
   ERUDIT.log.debug.start('Building global content...');
 
@@ -20,7 +27,9 @@ export async function buildGlobalContent() {
     return;
   }
 
-  const linkObject = await buildLinkObject();
+  const { linkObject, validPaths } = await buildLinkObject();
+  builtLinkObject = linkObject;
+  builtValidPaths = validPaths;
 
   const linkTypes = linkObjectToTypes(linkObject);
   writeFileSync(
@@ -51,6 +60,10 @@ function linkObjectToTypes(linkObject: any): string {
     return str.replace(/[-_](.)/g, (_, char) => char.toUpperCase());
   }
 
+  function isValidIdentifier(key: string): boolean {
+    return /^[$_a-zA-Z][$_a-zA-Z0-9]*$/.test(key);
+  }
+
   function processObject(obj: any, level: number): string {
     const lines: string[] = [];
 
@@ -58,6 +71,9 @@ function linkObjectToTypes(linkObject: any): string {
       if (key === '__jsdoc' || key === '__typeguard') continue;
 
       const camelKey = toCamelCase(key);
+      const outputKey = isValidIdentifier(camelKey)
+        ? camelKey
+        : `'${camelKey}'`;
 
       // Add JSDoc comment if present
       if (value && typeof value === 'object' && value.__jsdoc) {
@@ -77,11 +93,11 @@ function linkObjectToTypes(linkObject: any): string {
       const typeguard = value?.__typeguard || 'GlobalContentItemTypeguard';
 
       if (hasNestedProps) {
-        lines.push(indent(level) + `${camelKey}: ${typeguard} & {`);
+        lines.push(indent(level) + `${outputKey}: ${typeguard} & {`);
         lines.push(processObject(value, level + 1));
         lines.push(indent(level) + `}`);
       } else {
-        lines.push(indent(level) + `${camelKey}: ${typeguard} & {}`);
+        lines.push(indent(level) + `${outputKey}: ${typeguard} & {}`);
       }
     }
 
@@ -110,6 +126,7 @@ ${body}
  */
 async function buildLinkObject() {
   const linkTree: any = {};
+  const validPaths = new Set<string>();
 
   await ERUDIT.contentNav.walk((navItem) => {
     // Navigate to the correct position in the tree based on the full path
@@ -118,7 +135,7 @@ async function buildLinkObject() {
 
     // Navigate through parent parts
     for (let i = 0; i < pathParts.length - 1; i++) {
-      cursor = cursor[pathParts[i]];
+      cursor = cursor[pathParts[i]!];
     }
 
     //
@@ -151,6 +168,11 @@ ${jsdoc}
           navItem.contentRelPath,
         ),
       };
+
+      validPaths.add(navItem.fullId);
+      for (const name of getAllUniqueNames(moduleContent)) {
+        validPaths.add(`${navItem.fullId}/$${name}`);
+      }
     } else if (navItem.type === 'topic') {
       const pathToTopicFile = ERUDIT.paths.project(
         `content/${navItem.contentRelPath}/topic.ts`,
@@ -172,6 +194,8 @@ ${jsdoc}
  */
                 `.trim(),
       };
+
+      validPaths.add(navItem.fullId);
 
       for (const part of topicParts) {
         try {
@@ -200,6 +224,11 @@ ${jsdoc}
               navItem.contentRelPath,
             ),
           };
+
+          validPaths.add(`${navItem.fullId}/${part}`);
+          for (const name of getAllUniqueNames(partContent)) {
+            validPaths.add(`${navItem.fullId}/${part}/$${name}`);
+          }
         } catch {}
       }
     } else {
@@ -223,17 +252,19 @@ ${jsdoc}
  */
                 `.trim(),
       };
+
+      validPaths.add(navItem.fullId);
     }
   });
 
-  return linkTree;
+  return { linkObject: linkTree, validPaths };
 }
 
 function tryGetTitle(moduleContent: string) {
-  const titleMatch = moduleContent.match(/title:\s*['"`](.*?)['"`]/);
+  const titleMatch = moduleContent.match(/title:\s*(['"`])(.*?)\1/);
 
   if (titleMatch) {
-    return titleMatch[1].trim();
+    return titleMatch[2]!.trim();
   }
 }
 
@@ -242,6 +273,25 @@ function jsdocLines(lines: any[]) {
     .filter(Boolean)
     .map((line) => ` * * ${line}`)
     .join('\n');
+}
+
+/** Returns ALL unique names from a module — both public and internal. Used to
+ *  populate builtValidPaths for server-side prose link validation. */
+function getAllUniqueNames(moduleContent: string): string[] {
+  const uniquesMatch = moduleContent.match(/uniques:\s*\{([^}]*)\}/s);
+  if (!uniquesMatch) return [];
+
+  const names: string[] = [];
+  for (const line of uniquesMatch[1]!.split('\n')) {
+    if (line.trim().startsWith('//')) continue;
+
+    const pairMatch =
+      line.match(/\[['"](.*?)['"]\]:\s*(\w+)/) ||
+      line.match(/['"](.*?)['"]:\s*(\w+)/) ||
+      line.match(/(\w+):\s*(\w+)/);
+    if (pairMatch) names.push(pairMatch[1]!);
+  }
+  return names;
 }
 
 function tryGetUniquesObject(
@@ -259,7 +309,7 @@ function tryGetUniquesObject(
   const uniquesContent = uniquesMatch[1];
 
   // Parse key-value pairs from uniques object
-  const lines = uniquesContent.split('\n');
+  const lines = uniquesContent!.split('\n');
   const result: any = {};
 
   for (const line of lines) {
@@ -268,12 +318,16 @@ function tryGetUniquesObject(
       continue;
     }
 
-    // Skip uniques starting with underscore
+    // Skip uniques starting with underscore (internal — excluded from $CONTENT types)
     if (line.trim().startsWith('_')) {
       continue;
     }
 
-    const pairMatch = line.match(/(\w+):\s*(\w+)/);
+    // Support bracket notation ['any string'], quoted keys "any string" / 'any string', and plain identifiers
+    const pairMatch =
+      line.match(/\[['"](.*?)['"]\]:\s*(\w+)/) ||
+      line.match(/['"](.*?)['"]:\s*(\w+)/) ||
+      line.match(/(\w+):\s*(\w+)/);
     if (!pairMatch) {
       continue;
     }

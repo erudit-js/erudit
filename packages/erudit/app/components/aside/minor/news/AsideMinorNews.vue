@@ -42,9 +42,7 @@ async function fetchNews(index: number) {
   newsLoading.value = true;
 
   try {
-    const newsBatch = await $fetch<NewsBatch>(`/api/news/batch/${index}`, {
-      responseType: 'json',
-    });
+    const newsBatch = await fetchJson<NewsBatch>(`/api/news/batch/${index}`);
 
     if (index === 0) {
       newsTotal.value = newsBatch.total!;
@@ -100,7 +98,7 @@ const phrase = await usePhrases('news', 'no_news', 'show_more');
     <div class="flex h-full w-full flex-col">
       <AsideMinorPlainHeader
         icon="bell"
-        :title="phrase!.news"
+        :title="phrase.news"
         :count="newsTotal === 0 ? undefined : newsTotal"
       />
       <section v-if="newsItems.length === 0">

@@ -1,4 +1,5 @@
-import type { FinalizedProse } from '@jsprose/core';
+import type { ProseWithStorage } from 'tsprose';
+
 import type { PreviewRequest } from '@erudit-js/core/preview/request';
 import type { ContentType } from '@erudit-js/core/content/type';
 
@@ -25,4 +26,4 @@ export type PreviewContentUnique = {
   elementTitle?: string;
   schemaName: string;
   fadeOverlay?: boolean;
-} & FinalizedProse;
+} & ProseWithStorage;

@@ -1,13 +1,13 @@
 <script lang="ts" setup>
 import { Text, h } from 'vue';
-import type { ProseElement, textSchema } from '@jsprose/core';
+import type { TextSchema, ToProseElement } from 'tsprose';
 
 import {
   useFormatText,
   useFormatTextState,
 } from '../composables/formatText.js';
 
-const { element } = defineProps<{ element: ProseElement<typeof textSchema> }>();
+const { element } = defineProps<{ element: ToProseElement<TextSchema> }>();
 const formatTextState = useFormatTextState();
 const formatText = useFormatText();
 

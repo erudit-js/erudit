@@ -1,12 +1,9 @@
 import {
-  fillStorage,
+  fillProseStorage,
   isProseElement,
-  PROSE_REGISTRY,
-  type AnySchema,
-  type FinalizedProse,
-  type GenericStorage,
   type ProseElement,
-} from '@jsprose/core';
+  type ProseWithStorage,
+} from 'tsprose';
 import { imageSchema } from '@erudit-js/prose/elements/image/core';
 import { videoSchema } from '@erudit-js/prose/elements/video/core';
 import { calloutSchema } from '@erudit-js/prose/elements/callout/core';
@@ -27,42 +24,42 @@ import { createCalloutStorage } from '../storage/callout';
 import { createLinkStorage } from '../storage/link';
 import { createProblemScriptStorage } from '../storage/problemScript';
 
-export async function finalizeProse(
-  proseElement: ProseElement<AnySchema>,
-): Promise<FinalizedProse> {
-  const storage: GenericStorage = {};
+import { coreElements } from '#erudit/prose/global';
 
-  await fillStorage({
-    storage,
-    proseElement,
-    storageCreators: PROSE_REGISTRY.getStorageCreators(),
-    step: async (element) => {
+export async function finalizeProse(
+  prose: ProseElement,
+): Promise<ProseWithStorage> {
+  const storageCreators = Object.fromEntries(
+    Object.entries(coreElements)
+      .map(([key, coreElement]) => [key, coreElement.createStorage])
+      .filter(([, createStorage]) => Boolean(createStorage)),
+  );
+
+  const storage = await fillProseStorage({
+    prose,
+    storageCreators,
+    alterValue: async ({ element, storageKey }) => {
       switch (true) {
         case isProseElement(element, imageSchema):
-          await createImageStorage(element, storage);
-          break;
+          return await createImageStorage(element);
         case isProseElement(element, videoSchema):
-          await createVideoStorage(element, storage);
-          break;
+          return createVideoStorage(element);
         case isProseElement(element, calloutSchema):
-          await createCalloutStorage(element, storage);
-          break;
+          return createCalloutStorage(element);
         case isProseElement(element, refSchema):
         case isProseElement(element, referenceSchema):
         case isProseElement(element, depSchema):
         case isProseElement(element, dependencySchema):
-          await createLinkStorage(element, storage);
-          break;
+          return await createLinkStorage(element, storageKey);
         case isProseElement(element, problemSchema):
         case isProseElement(element, subProblemSchema):
-          await createProblemScriptStorage(element, storage);
-          break;
+          return createProblemScriptStorage(element, storageKey);
       }
     },
   });
 
   return {
-    proseElement,
+    prose,
     storage,
   };
 }

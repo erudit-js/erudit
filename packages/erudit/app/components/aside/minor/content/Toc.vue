@@ -138,7 +138,30 @@ onMounted(() => {
   elements.forEach(({ el }) => observer.observe(el));
 
   /**
-   * 6️⃣ Cleanup
+   * 6️⃣ Re-sync active heading when ?element navigation jumps past headings.
+   * IntersectionObserver only fires on gradual scrolls; programmatic
+   * scrollIntoView skips headings without triggering intersection events.
+   */
+  const route = useRoute();
+  watch(
+    () => route.query.element,
+    async (elementId) => {
+      if (!elementId) return;
+      // Wait for scrollIntoView to finish (it's synchronous but DOM
+      // layout needs a tick + frame to reflect the new scrollY)
+      await nextTick();
+      requestAnimationFrame(() => {
+        lastAboveViewportId = findLastHeadingAboveViewport(elements);
+        visibleIds.clear();
+        activeHeadingIds.value = lastAboveViewportId
+          ? new Set([lastAboveViewportId])
+          : new Set();
+      });
+    },
+  );
+
+  /**
+   * 7️⃣ Cleanup
    */
   onUnmounted(() => {
     observer.disconnect();

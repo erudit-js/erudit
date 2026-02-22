@@ -1,7 +1,7 @@
 <script lang="ts" setup>
-import type { ProseElement } from '@jsprose/core';
+import type { ToProseElement } from 'tsprose';
 
-import type { detailsSchema } from './core.js';
+import type { DetailsSchema } from './core.js';
 import { useFormatText } from '../../app/composables/formatText.js';
 import { useProseContext } from '../../app/composables/context.js';
 import {
@@ -14,7 +14,7 @@ import Block from '../../app/shared/block/Block.vue';
 import Render from '../../app/shared/Render.vue';
 
 const { element } = defineProps<{
-  element: ProseElement<typeof detailsSchema>;
+  element: ToProseElement<DetailsSchema>;
 }>();
 
 const { EruditIcon } = useProseContext();

@@ -27,6 +27,7 @@ export interface EruditPublicRuntimeConfig {
     ads: boolean;
     fakeApi: {
       repository: boolean;
+      lastChanged: boolean | string;
     };
     analytics?: boolean;
   };

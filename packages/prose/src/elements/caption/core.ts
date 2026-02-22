@@ -1,72 +1,70 @@
 import {
-  defineRegistryItem,
   defineSchema,
   ensureTagInlinerChildren,
   isRawElement,
-  ProseError,
   type InlinerSchema,
-  type TagChildren,
-} from '@jsprose/core';
+  type Schema,
+} from 'tsprose';
 
 import { defineEruditTag } from '../../tag.js';
-import { defineEruditProseCoreElements } from '../../coreElement.js';
+import { EruditProseError } from '../../error.js';
+import { defineProseCoreElements } from '../../coreElement.js';
 
 //
 // Caption Secondary
 //
 
-export const captionSecondarySchema = defineSchema({
-  name: 'captionSecondary',
-  type: 'inliner',
-  linkable: false,
-})<{
+export interface CaptionSecondarySchema extends Schema {
+  name: 'captionSecondary';
+  type: 'inliner';
+  linkable: false;
   Data: undefined;
   Storage: undefined;
   Children: InlinerSchema[];
-}>();
+}
+
+export const captionSecondarySchema = defineSchema<CaptionSecondarySchema>({
+  name: 'captionSecondary',
+  type: 'inliner',
+  linkable: false,
+});
 
 export const CaptionSecondary = defineEruditTag({
   tagName: 'CaptionSecondary',
   schema: captionSecondarySchema,
-})<TagChildren>(({ element, tagName, children, registry }) => {
-  ensureTagInlinerChildren(tagName, children, registry);
+})(({ element, tagName, children }) => {
+  ensureTagInlinerChildren(tagName, children);
   element.children = children;
-});
-
-export const captionSecondaryRegistryItem = defineRegistryItem({
-  schema: captionSecondarySchema,
-  tags: [CaptionSecondary],
 });
 
 //
 // Caption
 //
 
+export interface CaptionSchema extends Schema {
+  name: 'caption';
+  type: 'inliner';
+  linkable: false;
+  Data: CaptionData | undefined;
+  Storage: undefined;
+  Children: InlinerSchema[];
+}
+
 export interface CaptionData {
   width?: string;
 }
 
-export const captionSchema = defineSchema({
+export const captionSchema = defineSchema<CaptionSchema>({
   name: 'caption',
   type: 'inliner',
   linkable: false,
-})<{
-  Data: CaptionData | undefined;
-  Storage: undefined;
-  Children: InlinerSchema[];
-}>();
+});
 
 export const Caption = defineEruditTag({
   tagName: 'Caption',
   schema: captionSchema,
-})<{ width?: string } & TagChildren>(({
-  tagName,
-  element,
-  props,
-  children,
-  registry,
-}) => {
-  ensureTagInlinerChildren(tagName, children, registry);
+})<{ width?: string }>(({ tagName, element, props, children }) => {
+  ensureTagInlinerChildren(tagName, children);
 
   let containsNonSecondary = false;
   let containsSecondary = false;
@@ -74,7 +72,7 @@ export const Caption = defineEruditTag({
   for (const child of children) {
     if (isRawElement(child, captionSecondarySchema)) {
       if (containsSecondary) {
-        throw new ProseError(
+        throw new EruditProseError(
           `Duplicate <${CaptionSecondary.tagName}> detected!`,
         );
       }
@@ -85,7 +83,7 @@ export const Caption = defineEruditTag({
   }
 
   if (containsSecondary && !containsNonSecondary) {
-    throw new ProseError(
+    throw new EruditProseError(
       `Cannot have a <${CaptionSecondary.tagName}> without a main caption content!`,
     );
   }
@@ -98,16 +96,17 @@ export const Caption = defineEruditTag({
   }
 });
 
-export const captionRegistryItem = defineRegistryItem({
-  schema: captionSchema,
-  tags: [Caption],
-});
-
 //
-// Erudit Core Elements
+// Core Elements
 //
 
-export default defineEruditProseCoreElements(
-  { registryItem: captionRegistryItem },
-  { registryItem: captionSecondaryRegistryItem },
+export default defineProseCoreElements(
+  {
+    schema: captionSecondarySchema,
+    tags: [CaptionSecondary],
+  },
+  {
+    schema: captionSchema,
+    tags: [Caption],
+  },
 );

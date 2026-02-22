@@ -1,13 +1,13 @@
 <script lang="ts" setup>
-import type { ProseElement } from '@jsprose/core';
+import type { ToProseElement } from 'tsprose';
 
-import type { problemHintSchema } from '../../problemContent.js';
+import type { ProblemHintSchema } from '../../problemContent.js';
 import { useProblemPhrase } from '../../composables/phrase.js';
 import ProblemExpander from '../ProblemExpander.vue';
 import Render from '../../../../app/shared/Render.vue';
 import ProblemExpanderSection from '../ProblemExpanderSection.vue';
 
-defineProps<{ value: ProseElement<typeof problemHintSchema>[] }>();
+defineProps<{ value: ToProseElement<ProblemHintSchema>[] }>();
 const phrase = await useProblemPhrase();
 </script>
 

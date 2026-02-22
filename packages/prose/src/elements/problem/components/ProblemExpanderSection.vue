@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { ref, watchEffect } from 'vue';
-import type { AnySchema, ProseElement } from '@jsprose/core';
+import type { ProseElement } from 'tsprose';
 
 import plusIcon from '../../../app/shared/assets/plus.svg?raw';
 import { useProseContext } from '../../../app/composables/context.js';
@@ -10,7 +10,7 @@ import Render from '../../../app/shared/Render.vue';
 
 const { element } = defineProps<{
   title: string;
-  element: ProseElement<AnySchema>;
+  element: ProseElement;
 }>();
 
 const formatText = useFormatText();

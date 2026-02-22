@@ -2,6 +2,7 @@ import { eq } from 'drizzle-orm';
 import { contentTypes } from '@erudit-js/core/content/type';
 import { headingSchema } from '@erudit-js/prose/elements/heading/core';
 import type { TopicPart } from '@erudit-js/core/content/topic';
+import { toSearchSnippet } from '@erudit-js/prose';
 
 export async function searchIndexContentTypes(): Promise<SearchEntriesList[]> {
   const entryLists: SearchEntriesList[] = [];
@@ -119,33 +120,15 @@ export async function searchIndexSnippets(): Promise<SearchEntriesList[]> {
         });
     }
 
-    const snippetSearch = dbSnippet.snippetData.search;
-    let searchTitle = dbSnippet.snippetData.title!;
-    let searchDescription = dbSnippet.snippetData.description;
-    let searchSynonyms: string[] | undefined = undefined;
-    if (snippetSearch) {
-      if (typeof snippetSearch === 'boolean') {
-      } else if (typeof snippetSearch === 'string') {
-        snippetSearch.trim() && (searchTitle = snippetSearch.trim());
-      } else if (Array.isArray(snippetSearch)) {
-        searchSynonyms = snippetSearch.length > 0 ? snippetSearch : undefined;
-      } else {
-        searchTitle = snippetSearch.title || searchTitle;
-        searchDescription = snippetSearch.description || searchDescription;
-        searchSynonyms =
-          snippetSearch.synonyms && snippetSearch.synonyms.length > 0
-            ? snippetSearch.synonyms
-            : undefined;
-      }
-    }
+    const searchSnippet = toSearchSnippet(dbSnippet.snippetData)!;
 
     entryLists.get(dbSnippet.schemaName)!.entries.push({
       category: 'element:' + dbSnippet.schemaName,
-      title: searchTitle,
-      description: searchDescription,
+      title: searchSnippet.title,
+      description: searchSnippet.description,
       link,
       location: locationTitle,
-      synonyms: searchSynonyms,
+      synonyms: searchSnippet.synonyms,
     });
   }
 

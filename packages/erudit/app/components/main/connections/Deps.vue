@@ -1,7 +1,8 @@
-<script setup lang="ts">
+<script lang="ts" setup>
 import ScrollPane from './ScrollPane.vue';
+import DepUnique from './DepUnique.vue';
 
-defineProps<{ deps: ContentDep[] }>();
+defineProps<{ type: 'dependency' | 'dependent'; deps: ContentDep[] }>();
 </script>
 
 <template>
@@ -23,6 +24,17 @@ defineProps<{ deps: ContentDep[] }>();
           class="text-text-muted text-main-sm italic"
         >
           {{ formatText(dep.reason) }}
+        </div>
+        <div
+          v-if="dep.type === 'auto' && dep.uniques?.length"
+          class="mt-small flex flex-col gap-0.5"
+        >
+          <DepUnique
+            v-for="unique in dep.uniques"
+            :type
+            :key="unique.name"
+            :unique="unique"
+          />
         </div>
       </div>
     </div>

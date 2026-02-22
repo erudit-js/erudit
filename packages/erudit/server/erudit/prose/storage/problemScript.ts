@@ -1,23 +1,17 @@
-import type { GenericStorage, ProseElement } from '@jsprose/core';
-import type { problemSchema } from '@erudit-js/prose/elements/problem/problem';
-import type { subProblemSchema } from '@erudit-js/prose/elements/problem/problems';
+import type { ToProseElement } from 'tsprose';
+import type { ProblemSchema } from '@erudit-js/prose/elements/problem/problem';
+import type { SubProblemSchema } from '@erudit-js/prose/elements/problem/problems';
 import { createProblemScriptStorage as _createProblemScriptStorage } from '@erudit-js/prose/elements/problem/storage';
 
-export async function createProblemScriptStorage(
-  element:
-    | ProseElement<typeof problemSchema>
-    | ProseElement<typeof subProblemSchema>,
-  storage: GenericStorage,
+export function createProblemScriptStorage(
+  element: ToProseElement<ProblemSchema> | ToProseElement<SubProblemSchema>,
+  storageKey: string,
 ) {
-  if (!element.storageKey) {
-    return;
-  }
-
   const runtimeConfig = useRuntimeConfig();
 
-  storage[element.storageKey!] = _createProblemScriptStorage(
+  return _createProblemScriptStorage(
     ERUDIT.paths.project(),
     runtimeConfig.app.baseURL,
-    element.storageKey.replace('problemScript:', ''),
+    storageKey.replace('problemScript:', ''),
   );
 }

@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { ref, watchEffect } from 'vue';
-import type { ProseElement } from '@jsprose/core';
+import type { ToProseElement } from 'tsprose';
 
 import type { AccentSectionSchema } from './core.js';
 import { useProseContext } from '../../app/composables/context.js';
@@ -10,7 +10,7 @@ import Render from '../../app/shared/Render.vue';
 
 const { section } = defineProps<{
   title: string;
-  section: ProseElement<AccentSectionSchema>;
+  section: ToProseElement<AccentSectionSchema>;
 }>();
 
 const { EruditIcon } = useProseContext();

@@ -1,6 +1,6 @@
 import { describe, it } from 'vitest';
 
-import { Details } from '@erudit-js/prose/elements/details/core';
+import { Details } from '@src/elements/details/core';
 
 describe('Details', () => {
   it('should require unique tag prop', () => {
@@ -9,9 +9,16 @@ describe('Details', () => {
   });
 
   it('should not let use toc and snippet tag props', () => {
-    // @ts-expect-error
-    Details({ toc: true });
-    // @ts-expect-error
-    Details({ snippet: { title: 'something' } });
+    Details({
+      $: {} as any,
+      // @ts-expect-error
+      toc: true,
+    });
+
+    Details({
+      $: {} as any,
+      // @ts-expect-error
+      snippet: { title: 'something' },
+    });
   });
 });

@@ -11,13 +11,17 @@ const { mainContent } = defineProps<{ mainContent: MainContent }>();
       :description="mainContent.description"
       class="text-main!"
     />
-    <MainQuickLinks
+    <MainKeyLinks
       v-if="mainContent.type === 'topic' || mainContent.type === 'page'"
       mode="single"
       :elementSnippets="mainContent.snippets"
     />
     <MainConnections mode="single" :connections="mainContent.connections" />
-    <MainContentStats mode="single" :stats="mainContent.stats" />
+    <MainContentStats
+      mode="single"
+      :stats="mainContent.stats"
+      :contentRelativePath="mainContent.contentRelativePath"
+    />
     <div class="h-main-half"></div>
   </div>
 </template>

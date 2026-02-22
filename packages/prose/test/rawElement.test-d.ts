@@ -1,29 +1,33 @@
-import { describe, it, expectTypeOf } from 'vitest';
-import { defineSchema, type NoTagChildren } from '@jsprose/core';
+import { describe, expectTypeOf, it } from 'vitest';
+import type { RawElement, Schema, ToRawElement } from 'tsprose';
 
 import {
-  defineEruditTag,
   asEruditRaw,
   type EruditRawElement,
-} from '@erudit-js/prose';
+  type ToEruditRawElement,
+} from '@src/rawElement';
 
-describe('asEruditRaw', () => {
-  it('should infer original schema and tag name', () => {
-    const testSchema = defineSchema({
-      name: 'test',
-      type: 'block',
-      linkable: false,
-    })<{ Data: undefined; Storage: undefined; Children: undefined }>();
+describe('Erudit Raw Element', () => {
+  it('should widen correctly', () => {
+    expectTypeOf<EruditRawElement>().toExtend<RawElement>();
+  });
+});
 
-    const TestTag = defineEruditTag({
-      tagName: 'TestTag',
-      schema: testSchema,
-    })<NoTagChildren>(() => {});
+describe('asEruditRawElement', () => {
+  it('should infer schema types', () => {
+    interface TestSchema extends Schema {
+      name: 'test';
+      type: 'block';
+      linkable: 'always';
+      Data: string;
+      Storage: undefined;
+      Children: TestSchema[];
+    }
 
-    const eruditRawElement = asEruditRaw(TestTag({}));
+    type TestRawElement = ToRawElement<TestSchema>;
+    type EruditTestRawElement = ToEruditRawElement<TestSchema>;
 
-    expectTypeOf<typeof eruditRawElement>().toEqualTypeOf<
-      EruditRawElement<typeof testSchema, 'TestTag'>
-    >();
+    const result = asEruditRaw<TestSchema>({} as TestRawElement);
+    expectTypeOf<typeof result>().toEqualTypeOf<EruditTestRawElement>();
   });
 });

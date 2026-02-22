@@ -1,7 +1,7 @@
-import { defineEruditProseAppElement } from '../../app/appElement.js';
+import { defineProseAppElement } from '../../app/appElement.js';
 import { hrSchema } from './core.js';
 
-export default defineEruditProseAppElement({
+export default defineProseAppElement({
   schema: hrSchema,
   component: () => import('./HorizontalLine.vue'),
 });

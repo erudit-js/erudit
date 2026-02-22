@@ -9,7 +9,7 @@
  * @layout block
  * @example
  * ```tsx
- * <List type="ul">
+ * <List unordered>
  *   <Li>First unordered item</Li>
  *   <Li>
  *     <P>Second unordered item with paragraph inside</P>
@@ -17,11 +17,11 @@
  *   </Li>
  * </List>
  *
- * <List type="ol">
+ * <List ordered>
  *   <Li>First ordered item (numbered 1)</Li>
  * </List>
  *
- * <List type="ol" start={3}>
+ * <List ordered start={3}>
  *   <Li>Third ordered item (numbered 3)</Li>
  *   <Li>Fourth ordered item (numbered 4)</Li>
  * </List>

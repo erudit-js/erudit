@@ -3,7 +3,7 @@ import { eq } from 'drizzle-orm';
 export default defineEventHandler<Promise<PreviewContentPage>>(
   async (event) => {
     // <typeOrPart>/<fullOrShortId>.json
-    const strContentTypePath = event.context.params!.contentTypePath.slice(
+    const strContentTypePath = event.context.params!.contentTypePath!.slice(
       0,
       -5,
     );
@@ -17,7 +17,6 @@ export default defineEventHandler<Promise<PreviewContentPage>>(
       columns: {
         title: true,
         description: true,
-        // TODO: decoration svg!
       },
       where: eq(ERUDIT.db.schema.content.fullId, fullId),
     }))!;

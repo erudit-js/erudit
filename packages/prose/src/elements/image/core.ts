@@ -1,16 +1,19 @@
-import {
-  defineRegistryItem,
-  defineSchema,
-  ensureTagChild,
-  isRawElement,
-} from '@jsprose/core';
+import { defineSchema, ensureTagChildren, type Schema } from 'tsprose';
 
 import { captionSchema } from '../caption/core.js';
 import { defineEruditTag } from '../../tag.js';
-import { defineEruditProseCoreElement } from '../../coreElement.js';
-import { defineResolveStep } from '../../resolveStep.js';
 import { photoswipeDependency } from '../../shared/photoswipe.js';
 import type { Invert } from '../../shared/invert.js';
+import { defineProseCoreElement } from '../../coreElement.js';
+
+export interface ImageSchema extends Schema {
+  name: 'image';
+  type: 'block';
+  linkable: true;
+  Data: ImageData;
+  Storage: ImageStorage;
+  Children: [typeof captionSchema] | undefined;
+}
 
 export interface ImageData {
   src: string;
@@ -24,15 +27,11 @@ export interface ImageStorage {
   height: number;
 }
 
-export const imageSchema = defineSchema({
+export const imageSchema = defineSchema<ImageSchema>({
   name: 'image',
   type: 'block',
   linkable: true,
-})<{
-  Data: ImageData;
-  Storage: ImageStorage;
-  Children: [typeof captionSchema] | undefined;
-}>();
+});
 
 export const Image = defineEruditTag({
   tagName: 'Image',
@@ -44,8 +43,8 @@ export const Image = defineEruditTag({
   children,
 }) => {
   if (children) {
-    ensureTagChild(tagName, children, captionSchema);
-    element.children = children;
+    ensureTagChildren(tagName, children, captionSchema);
+    element.children = [children[0]];
   }
 
   element.data = {
@@ -63,24 +62,17 @@ export const Image = defineEruditTag({
   }
 });
 
-export const imageRegistryItem = defineRegistryItem({
+export default defineProseCoreElement({
   schema: imageSchema,
   tags: [Image],
-});
-
-export default defineEruditProseCoreElement({
-  registryItem: imageRegistryItem,
+  rawToProseHook: ({ result }) => {
+    return {
+      matchStep: ({ rawElement }) => {
+        result.files.add(rawElement.data.src);
+      },
+    };
+  },
   dependencies: {
     ...photoswipeDependency,
   },
-});
-
-//
-// Resolve
-//
-
-export const imageSrcStep = defineResolveStep(({ rawElement }) => {
-  if (isRawElement(rawElement, imageSchema)) {
-    return rawElement.data.src;
-  }
 });

@@ -1,4 +1,5 @@
-import { isUnique } from '@jsprose/core';
+import { isUnique } from 'tsprose';
+
 import type { TopicPart } from '@erudit-js/core/content/topic';
 import type { ContentType } from '@erudit-js/core/content/type';
 import type { PreviewRequest } from '@erudit-js/core/preview/request';

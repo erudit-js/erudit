@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script lang="ts" setup>
 import type { ContentExternals } from '@erudit-js/core/content/externals';
 import ScrollPane from './ScrollPane.vue';
 

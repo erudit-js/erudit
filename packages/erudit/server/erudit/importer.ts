@@ -1,6 +1,6 @@
 import { createJiti, type Jiti, type JitiOptions } from 'jiti';
-import { insertDocumentId } from '@jsprose/core';
 import { sn } from 'unslash';
+import { injectDocumentId } from 'tsprose';
 import {
   pathToDocumentId,
   stringifyDocumentId,
@@ -45,18 +45,18 @@ export async function setupServerImporter() {
       const documentId = pathToDocumentId(filename, ERUDIT.paths.project());
 
       if (documentId) {
-        code = insertDocumentId({
+        code = injectDocumentId(
+          stringifyDocumentId(documentId),
           code,
-          documentId: stringifyDocumentId(documentId),
-          aliasName: 'defineProse',
-        });
+          'defineProse',
+        );
       }
 
       //
       // Problem Scripts
       //
 
-      code = insertProblemScriptId(filename, code);
+      code = insertProblemScriptId(toRelPath(filename), code);
 
       return { code };
     },
@@ -77,9 +77,17 @@ function createBaseJitiOptions(): JitiOptions {
     },
     jsx: {
       runtime: 'automatic',
-      importSource: '@jsprose/core',
+      importSource: 'tsprose',
     },
   };
+}
+
+function toRelPath(filename: string): string {
+  const projectPath = ERUDIT.paths.project();
+  if (filename.startsWith(projectPath + '/')) {
+    return filename.slice(projectPath.length + 1);
+  }
+  return filename;
 }
 
 function tryStaticAssetModule(filename: unknown) {
@@ -88,7 +96,7 @@ function tryStaticAssetModule(filename: unknown) {
     STATIC_ASSET_EXTENSIONS.some((ext) => filename.endsWith('.' + ext))
   ) {
     return {
-      code: `exports.default = "${filename}";`,
+      code: `exports.default = "${toRelPath(filename)}";`,
     };
   }
 }

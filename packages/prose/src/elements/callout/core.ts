@@ -1,16 +1,14 @@
 import {
-  defineRegistryItem,
   defineSchema,
   ensureTagBlockChildren,
-  isRawElement,
   type BlockSchema,
-  type TagChildren,
-} from '@jsprose/core';
+  type Schema,
+} from 'tsprose';
 
 import type { Invert } from '../../shared/invert.js';
 import { defineEruditTag } from '../../tag.js';
-import { defineEruditProseCoreElement } from '../../coreElement.js';
-import { defineResolveStep } from '../../resolveStep.js';
+import { defineProseCoreElement } from '../../coreElement.js';
+import { paragraphWrap } from '../../shared/paragraphWrap.js';
 
 export interface CalloutData {
   iconSrc: string;
@@ -22,28 +20,37 @@ export interface CalloutStorage {
   resolvedIconSrc: string;
 }
 
-export const calloutSchema = defineSchema({
-  name: 'callout',
-  type: 'block',
-  linkable: true,
-})<{
+export interface CalloutSchema extends Schema {
+  name: 'callout';
+  type: 'block';
+  linkable: true;
   Data: CalloutData;
   Storage: CalloutStorage;
   Children: BlockSchema[];
-}>();
+}
+
+export const calloutSchema = defineSchema<CalloutSchema>({
+  name: 'callout',
+  type: 'block',
+  linkable: true,
+});
 
 export const Callout = defineEruditTag({
   tagName: 'Callout',
   schema: calloutSchema,
-})<{ icon: string; invert?: Invert; title: string } & TagChildren>(({
+})<{ icon: string; invert?: Invert; title: string }>(({
   element,
   tagName,
   props,
   children,
-  registry,
 }) => {
-  ensureTagBlockChildren(tagName, children, registry);
-  element.children = children;
+  const wrap = paragraphWrap(children);
+  if (wrap) {
+    element.children = wrap;
+  } else {
+    ensureTagBlockChildren(tagName, children);
+    element.children = children;
+  }
 
   element.data = {
     iconSrc: props.icon,
@@ -57,21 +64,14 @@ export const Callout = defineEruditTag({
   }
 });
 
-export const calloutRegistryItem = defineRegistryItem({
+export default defineProseCoreElement({
   schema: calloutSchema,
   tags: [Callout],
-});
-
-export default defineEruditProseCoreElement({
-  registryItem: calloutRegistryItem,
-});
-
-//
-// Resolve
-//
-
-export const calloutIconSrcStep = defineResolveStep(({ rawElement }) => {
-  if (isRawElement(rawElement, calloutSchema)) {
-    return rawElement.data.iconSrc;
-  }
+  rawToProseHook: ({ result }) => {
+    return {
+      matchStep: ({ rawElement }) => {
+        result.files.add(rawElement.data.iconSrc);
+      },
+    };
+  },
 });

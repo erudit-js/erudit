@@ -39,6 +39,7 @@ export function usePhrases<const T extends readonly LanguagePhraseKey[]>(
 
     const strFunctions = await $fetch<Record<string, string>>(
       '/api/language/functions',
+      { responseType: 'json' },
     );
 
     payloadLanguage.functions = strFunctions;
@@ -69,9 +70,7 @@ export function usePhrases<const T extends readonly LanguagePhraseKey[]>(
       try {
         payloadPhraseValue = await $fetch<PayloadLanguagePhraseValue>(
           `/api/language/phrase/${phraseKey}`,
-          {
-            responseType: 'json',
-          },
+          { responseType: 'json' },
         );
 
         payloadLanguage.phrases[phraseKey] = payloadPhraseValue;

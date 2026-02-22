@@ -1,42 +1,47 @@
 import chalk from 'chalk';
 import { sql } from 'drizzle-orm';
-import { type ResolvedRawElement } from '@jsprose/core';
 import type { ContentProseType } from '@erudit-js/core/content/prose';
-import type { ResolvedEruditRawElement } from '@erudit-js/prose';
+import { builtValidPaths } from '../../global/build';
 import type {
   ContentLinks,
   ContentLinkUsage,
-} from '@erudit-js/prose/elements/link/step';
+} from '@erudit-js/prose/elements/link/hook';
+import {
+  toKeySnippet,
+  toSearchSnippet,
+  toSeoSnippet,
+  type EruditRawToProseResult,
+} from '@erudit-js/prose';
 
 export async function insertContentResolved(
   contentFullId: string,
   contentProseType: ContentProseType,
-  resolveResult: ResolvedRawElement & ResolvedEruditRawElement,
+  result: EruditRawToProseResult,
 ) {
-  for (const file of resolveResult.files) {
+  for (const file of result.files) {
     await ERUDIT.repository.db.pushFile(file, `content-item:${contentFullId}`);
   }
 
-  for (const [uniqueName, unique] of Object.entries(resolveResult.uniques)) {
+  for (const [uniqueName, unique] of Object.entries(result.uniques)) {
     await ERUDIT.db.insert(ERUDIT.db.schema.contentUniques).values({
       contentFullId,
       contentProseType,
       uniqueName,
-      title: resolveResult.uniqueTitles[uniqueName],
+      title: result.uniqueTitles[uniqueName],
       prose: unique,
     });
   }
 
-  for (const snippet of resolveResult.snippets) {
+  for (const snippet of result.snippets) {
     await ERUDIT.db.insert(ERUDIT.db.schema.contentSnippets).values({
       contentFullId,
       contentProseType,
       elementId: snippet.elementId,
       schemaName: snippet.schemaName,
-      snippetData: snippet.snippetData,
-      search: !!snippet.snippetData.search,
-      quick: !!snippet.snippetData.quick,
-      seo: !!snippet.snippetData.seo,
+      snippetData: snippet.snippet,
+      search: !!toSearchSnippet(snippet.snippet),
+      key: !!toKeySnippet(snippet.snippet),
+      seo: !!toSeoSnippet(snippet.snippet),
     });
   }
 
@@ -49,25 +54,26 @@ export async function insertContentResolved(
     await deduplicateTopicSnippetsSearch(contentFullId);
   }
 
-  for (const problemScript of resolveResult.problemScripts) {
+  for (const problemScript of result.problemScripts) {
     await ERUDIT.repository.db.pushProblemScript(problemScript, contentFullId);
   }
 
-  const targetFullIds = filterTargetFullIds(
-    contentFullId,
-    resolveResult.contentLinks,
-  );
+  const targetMap = filterTargetMap(contentFullId, result.contentLinks);
 
-  await insertContentDeps(contentFullId, Array.from(targetFullIds));
+  await insertContentDeps(contentFullId, targetMap);
 }
 
-async function insertContentDeps(fromFullId: string, toFullIds: string[]) {
-  const contentDeps = toFullIds
-    .filter((toFullId) => toFullId !== fromFullId)
-    .map((toFullId) => ({
+async function insertContentDeps(
+  fromFullId: string,
+  targetMap: Map<string, Set<string>>,
+) {
+  const contentDeps = Array.from(targetMap.entries())
+    .filter(([toFullId]) => toFullId !== fromFullId)
+    .map(([toFullId, uniqueSet]) => ({
       fromFullId,
       toFullId,
       hard: false,
+      uniqueNames: uniqueSet.size > 0 ? Array.from(uniqueSet).join(',') : null,
     }));
 
   if (contentDeps.length > 0) {
@@ -78,10 +84,12 @@ async function insertContentDeps(fromFullId: string, toFullIds: string[]) {
   }
 }
 
-function filterTargetFullIds(
+// Returns a map from resolved toFullId → set of unique names targeted in that
+// content item. An empty set means the dep targets the whole page (no unique).
+function filterTargetMap(
   contentFullId: string,
   contentLinks: ContentLinks,
-) {
+): Map<string, Set<string>> {
   const brokenLinkMessage = (message: string, metas: ContentLinkUsage[]) => {
     let output = `${message} in ${ERUDIT.log.stress(contentFullId)}:\n`;
     for (const { type, label } of metas) {
@@ -90,7 +98,7 @@ function filterTargetFullIds(
     return output;
   };
 
-  const targetFullIds = new Set<string>();
+  const targetMap = new Map<string, Set<string>>();
 
   for (const [storageKey, metas] of contentLinks) {
     if (storageKey.startsWith('<link:unknown>/')) {
@@ -103,6 +111,14 @@ function filterTargetFullIds(
     } else if (storageKey.startsWith('<link:global>')) {
       try {
         const globalContentId = storageKey.replace('<link:global>/', '');
+
+        // Extract unique name before stripping it for nav resolution
+        const parts = globalContentId.split('/');
+        const lastPart = parts.at(-1);
+        const uniqueName = lastPart?.startsWith('$')
+          ? lastPart.slice(1)
+          : undefined;
+
         const targetFullId = globalContentToNavNode(globalContentId).fullId;
 
         if (
@@ -110,7 +126,12 @@ function filterTargetFullIds(
             (meta) => meta.type === 'Dep' || meta.type === 'Dependency',
           )
         ) {
-          targetFullIds.add(targetFullId);
+          if (!targetMap.has(targetFullId)) {
+            targetMap.set(targetFullId, new Set());
+          }
+          if (uniqueName) {
+            targetMap.get(targetFullId)!.add(uniqueName);
+          }
         }
       } catch {
         ERUDIT.log.warn(
@@ -123,21 +144,28 @@ function filterTargetFullIds(
     }
   }
 
-  return targetFullIds;
+  return targetMap;
 }
 
 function globalContentToNavNode(globalContentPath: string) {
+  // Validate the full path (including any $unique suffix) against the complete
+  // set of known valid paths built from source files. This catches broken
+  // unique names and content paths before we ever touch the nav tree.
+  if (builtValidPaths && !builtValidPaths.has(globalContentPath)) {
+    throw new Error(`Path not found in \$CONTENT: ${globalContentPath}`);
+  }
+
   const parts = globalContentPath.split('/');
 
   if (parts.at(-1)?.startsWith('$')) {
     parts.pop();
   }
 
-  const navNode =
+  // If the exact node isn't found the last segment is a topic part — fall back to parent.
+  return (
     ERUDIT.contentNav.getNode(parts.join('/')) ??
-    ERUDIT.contentNav.getNodeOrThrow(parts.slice(0, -1).join('/'));
-
-  return navNode;
+    ERUDIT.contentNav.getNodeOrThrow(parts.slice(0, -1).join('/'))
+  );
 }
 
 async function deduplicateTopicSnippetsSearch(contentFullId: string) {

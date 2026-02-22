@@ -17,11 +17,8 @@ const pageContributor = await (async () => {
     return cachedContributor;
   }
 
-  let fetchedContributor: PageContributor = await $fetch(
+  let fetchedContributor: PageContributor = await fetchJson(
     '/api/contributor/page/' + contributorId.value,
-    {
-      responseType: 'json',
-    },
   );
 
   fetchedContributor =
@@ -136,9 +133,10 @@ useStandartSeo({
   </MainSectionPreamble>
   <MainSection v-if="pageContributor.description">
     <Prose
-      :element="pageContributor.description.proseElement"
+      :element="pageContributor.description.prose"
       :storage="pageContributor.description.storage"
       :useHashUrl="false"
+      :setHtmlIds="false"
     />
   </MainSection>
 </template>

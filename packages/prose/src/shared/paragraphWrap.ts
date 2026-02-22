@@ -1,28 +1,17 @@
-import {
-  PROSE_REGISTRY,
-  type NormalizedChildren,
-  type RawElement,
-} from '@jsprose/core';
-import type { paragraphSchema } from '../elements/paragraph/core.js';
+import type { NormalizedChildren, ToRawElement } from 'tsprose';
 
-export function tryParagraphWrap(
+import { P, type ParagraphSchema } from '../elements/paragraph/core.js';
+
+export function paragraphWrap(
   children: NormalizedChildren,
-): undefined | [RawElement<typeof paragraphSchema>] {
-  const P = PROSE_REGISTRY.getTag('P');
-
-  let hasInliners = children?.some((child) => {
-    const schema = PROSE_REGISTRY.getSchema(child.schemaName);
-    return schema.type === 'inliner';
-  });
-
-  if (hasInliners) {
-    return [
-      P({
-        children,
-        __JSPROSE_registryProp: PROSE_REGISTRY,
-      }) as any,
-    ];
+): undefined | [ToRawElement<ParagraphSchema>] {
+  if (!children) {
+    return undefined;
   }
+
+  try {
+    return [P({ children })];
+  } catch {}
 
   return undefined;
 }

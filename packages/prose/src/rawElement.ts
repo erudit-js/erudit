@@ -1,22 +1,31 @@
-import type { AnySchema, RawElement, schemaKind } from '@jsprose/core';
+import {
+  isRawElement,
+  type RawElement,
+  type Schema,
+  type ToRawElement,
+} from 'tsprose';
 
-import type { ObjRawElementSnippet } from './snippet.js';
-import type { ObjRawElementToc } from './toc.js';
-import type { ObjRawElementTitle } from './title.js';
+import type { TocRawElementProp } from './toc.js';
+import type { SnippetRawElementProp } from './snippet.js';
 
-export type EruditRawElement<
-  TSchema extends AnySchema,
-  TTagName extends string = string,
-> = RawElement<TSchema, TTagName> &
-  ObjRawElementSnippet &
-  ObjRawElementToc &
-  ObjRawElementTitle;
+export type ToEruditRawElement<
+  TSchema extends Schema,
+  TagName extends string = string,
+> = ToRawElement<TSchema, TagName> &
+  SnippetRawElementProp &
+  TocRawElementProp & { title?: string };
 
-export function asEruditRaw<
-  TSchema extends AnySchema,
-  TRawElement extends RawElement<TSchema>,
->(
-  rawElement: TRawElement,
-): EruditRawElement<TRawElement[typeof schemaKind], TRawElement['tagName']> {
+export type EruditRawElement = ToEruditRawElement<Schema>;
+
+export function asEruditRaw<TSchema extends Schema>(
+  rawElement: RawElement,
+): ToEruditRawElement<TSchema> {
   return rawElement as any;
+}
+
+export function isEruditRawElement<TSchema extends Schema>(
+  element: any,
+  schema?: TSchema,
+): element is ToEruditRawElement<TSchema> {
+  return isRawElement(element, schema);
 }

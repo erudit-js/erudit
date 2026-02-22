@@ -8,8 +8,17 @@ interface BaseContentDep {
   link: string;
 }
 
+/** A specific named element inside a page that was targeted by a <Dep> tag. */
+export interface ContentDepUnique {
+  name: string;
+  title: string | undefined;
+  link: string;
+  schemaName: string;
+}
+
 export interface ContentAutoDep extends BaseContentDep {
   type: 'auto';
+  uniques?: ContentDepUnique[];
 }
 
 export interface ContentHardDep extends BaseContentDep {

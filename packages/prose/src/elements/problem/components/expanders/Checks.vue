@@ -1,13 +1,16 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
-import { isProseElement, type ProseElement } from '@jsprose/core';
+import { isProseElement, type ToProseElement } from 'tsprose';
 
 import type { CheckFunction } from '../../problemScript.js';
-import { problemCheckSchema } from '../../problemCheck.js';
+import {
+  problemCheckSchema,
+  type ProblemCheckSchema,
+} from '../../problemCheck.js';
 import ProblemExpander from '../ProblemExpander.vue';
 import Check from './Check.vue';
 
-type CheckProseElement = ProseElement<typeof problemCheckSchema>;
+type CheckProseElement = ToProseElement<ProblemCheckSchema>;
 type CheckStatus = 'default' | 'correct' | 'wrong';
 
 const { value } = defineProps<{

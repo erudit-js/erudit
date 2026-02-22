@@ -1,189 +1,276 @@
 import { describe, expect, it } from 'vitest';
-import { isolateProse, PROSE_REGISTRY } from '@jsprose/core';
 
-import {
-  finalizeToc,
-  resolveEruditRawElement,
-  type ResolvedTocItem,
-} from '@erudit-js/prose';
-import {
-  P,
-  paragraphRegistryItem,
-} from '@erudit-js/prose/elements/paragraph/core';
-import {
-  H1,
-  headingRegistryItem,
-} from '@erudit-js/prose/elements/heading/core';
-import {
-  B,
-  emphasisRegistryItem,
-} from '@erudit-js/prose/elements/emphasis/core';
+import { finalizeToc, type TocRawElementProp } from '@src/toc';
+import type { EruditRawElement } from '@src/rawElement';
+import { defineSchema, type Schema } from 'tsprose';
+import { defineEruditTag } from '@src/tag';
+import { eruditRawToProse } from '@src/rawToProse';
+import { H1, H2 } from '@src/elements/heading/core';
+import { P } from '@src/elements/paragraph/core';
 
-type DeepPartial<T> = T extends object
-  ? {
-      [P in keyof T]?: DeepPartial<T[P]>;
-    }
-  : T;
-
-const testFinalizeToc = finalizeToc as (
-  args: DeepPartial<Parameters<typeof finalizeToc>[0]>,
-) => any;
+function mockRawElement(
+  overrides: TocRawElementProp & {
+    title?: string;
+    snippet?: { title: string };
+  } = {},
+): EruditRawElement {
+  return { ...overrides } as any;
+}
 
 describe('finalizeToc', () => {
-  it('should repsect manually set TOC via tag props', () => {
-    expect(
-      testFinalizeToc({
-        props: { toc: false },
-        element: {
-          toc: {
-            title: 'Element Title',
-            add: true,
-          },
-        },
-      }),
-    ).toBeUndefined();
-
-    expect(
-      testFinalizeToc({
-        props: { toc: true },
-        element: {
-          toc: {
-            title: 'Element Title',
-            add: false,
-          },
-        },
-      }),
-    ).toStrictEqual({
-      title: 'Element Title',
-    });
-
-    expect(
-      testFinalizeToc({
-        props: { toc: 'Manual Title' },
-        element: {
-          toc: {
-            title: 'Element Title',
-            add: true,
-          },
-        },
-      }),
-    ).toStrictEqual({
-      title: 'Manual Title',
-    });
+  it('should set toc to false when propToc is false', () => {
+    const el = mockRawElement({ toc: 'Title' });
+    finalizeToc(el, false);
+    expect(el.toc).toBe(false);
   });
 
-  it('should fallback to internal TOC if manually set TOC title string is empty', () => {
-    expect(
-      testFinalizeToc({
-        props: { toc: '   ' },
-        element: {
-          toc: {
-            title: 'Element Title',
-            add: true,
-          },
-        },
-      }),
-    ).toStrictEqual({
-      title: 'Element Title',
-    });
+  it('should set toc true flag to false when propToc is false', () => {
+    const el = mockRawElement({ toc: true });
+    finalizeToc(el, false);
+    expect(el.toc).toBe(false);
   });
 
-  it('should fallback to element title when no other way to get TOC title', () => {
-    expect(
-      testFinalizeToc({
-        props: { toc: true },
-        element: {
-          title: 'Element Title',
-        },
-      }),
-    ).toStrictEqual({
-      title: 'Element Title',
-    });
+  it('should set toc to trimmed propToc string', () => {
+    const el = mockRawElement();
+    finalizeToc(el, '   Custom Title   ');
+    expect(el.toc).toBe('Custom Title');
   });
 
-  it('should throw when TOC title is not available but TOC flag is manually true', () => {
-    expect(() =>
-      testFinalizeToc({
-        props: { toc: true },
-        element: {},
-      }),
-    ).toThrow();
+  it('should override internal toc string with propToc string', () => {
+    const el = mockRawElement({ toc: 'Internal' });
+    finalizeToc(el, '   Override   ');
+    expect(el.toc).toBe('Override');
   });
 
-  it('should handle implicit TOC addition from element', () => {
-    expect(
-      testFinalizeToc({
-        props: {},
-        element: {
-          toc: {
-            title: 'Element Title',
-            add: true,
-          },
-        },
-      }),
-    ).toStrictEqual({
-      title: 'Element Title',
+  it('should throw when propToc is an empty string', () => {
+    const el = mockRawElement();
+    expect(() => finalizeToc(el, '')).toThrow();
+  });
+
+  it('should throw when propToc is a whitespace-only string', () => {
+    const el = mockRawElement();
+    expect(() => finalizeToc(el, '   ')).toThrow();
+  });
+
+  it('should resolve toc true flag using element title', () => {
+    const el = mockRawElement({ toc: true, title: '   Element Title   ' });
+    finalizeToc(el, undefined);
+    expect(el.toc).toBe('Element Title');
+  });
+
+  it('should throw when toc is true but title is missing', () => {
+    const el = mockRawElement({ toc: true });
+    expect(() => finalizeToc(el, undefined)).toThrow();
+  });
+
+  it('should throw when toc is true but title is empty', () => {
+    const el = mockRawElement({ toc: true, title: '   ' });
+    expect(() => finalizeToc(el, undefined)).toThrow();
+  });
+
+  it('should fall back to snippet title when toc is true and element title is missing', () => {
+    const el = mockRawElement({
+      toc: true,
+      snippet: { title: 'Snippet Title' },
     });
+    finalizeToc(el, undefined);
+    expect(el.toc).toBe('Snippet Title');
+  });
+
+  it('should prefer element title over snippet title when toc is true', () => {
+    const el = mockRawElement({
+      toc: true,
+      title: 'Element Title',
+      snippet: { title: 'Snippet Title' },
+    });
+    finalizeToc(el, undefined);
+    expect(el.toc).toBe('Element Title');
+  });
+
+  it('should throw when toc is true and both element title and snippet title are missing', () => {
+    const el = mockRawElement({ toc: true });
+    expect(() => finalizeToc(el, undefined)).toThrow();
+  });
+
+  it('should use internal toc string when propToc is true', () => {
+    const el = mockRawElement({ toc: '   Internal Title   ' });
+    finalizeToc(el, true);
+    expect(el.toc).toBe('Internal Title');
+  });
+
+  it('should fall back to element title when propToc is true and no toc string', () => {
+    const el = mockRawElement({ title: '   Fallback Title   ' });
+    finalizeToc(el, true);
+    expect(el.toc).toBe('Fallback Title');
+  });
+
+  it('should prefer internal toc string over title when propToc is true', () => {
+    const el = mockRawElement({
+      toc: '   TOC String   ',
+      title: '   Title   ',
+    });
+    finalizeToc(el, true);
+    expect(el.toc).toBe('TOC String');
+  });
+
+  it('should throw when propToc is true but no toc string or title', () => {
+    const el = mockRawElement();
+    expect(() => finalizeToc(el, true)).toThrow();
+  });
+
+  it('should fall back to snippet title when propToc is true and toc string and element title are missing', () => {
+    const el = mockRawElement({ snippet: { title: 'Snippet Title' } });
+    finalizeToc(el, true);
+    expect(el.toc).toBe('Snippet Title');
+  });
+
+  it('should prefer element title over snippet title when propToc is true', () => {
+    const el = mockRawElement({
+      title: 'Element Title',
+      snippet: { title: 'Snippet Title' },
+    });
+    finalizeToc(el, true);
+    expect(el.toc).toBe('Element Title');
+  });
+
+  it('should prefer toc string over snippet title when propToc is true', () => {
+    const el = mockRawElement({
+      toc: 'TOC String',
+      snippet: { title: 'Snippet Title' },
+    });
+    finalizeToc(el, true);
+    expect(el.toc).toBe('TOC String');
+  });
+
+  it('should throw when propToc is true and toc string, element title, and snippet title are all missing', () => {
+    const el = mockRawElement();
+    expect(() => finalizeToc(el, true)).toThrow();
+  });
+
+  it('should keep valid internal toc string as-is', () => {
+    const el = mockRawElement({ toc: '   Valid  ' });
+    finalizeToc(el, undefined);
+    expect(el.toc).toBe('Valid');
+  });
+
+  it('should throw when internal toc string is empty', () => {
+    const el = mockRawElement({ toc: '' });
+    expect(() => finalizeToc(el, undefined)).toThrow();
+  });
+
+  it('should throw when internal toc string is whitespace-only', () => {
+    const el = mockRawElement({ toc: '   ' });
+    expect(() => finalizeToc(el, undefined)).toThrow();
+  });
+
+  it('should leave element unchanged when no toc is involved', () => {
+    const el = mockRawElement();
+    finalizeToc(el, undefined);
+    expect(el.toc).toBeUndefined();
   });
 });
 
-describe('tocStep', () => {
-  it('should collect TOC items in hierarchical structure', async () => {
-    await isolateProse(async () => {
-      PROSE_REGISTRY.setItems(
-        paragraphRegistryItem,
-        headingRegistryItem,
-        emphasisRegistryItem,
-      );
+describe('tocHook', () => {
+  interface AutoTocSchema extends Schema {
+    name: 'autoToc';
+    type: 'block';
+    linkable: true;
+    Data: undefined;
+    Storage: undefined;
+    Children: undefined;
+  }
 
-      const { tocItems, proseElement } = await resolveEruditRawElement({
-        context: {
-          language: 'en',
-          linkable: true,
-        },
-        rawElement: (
-          <>
-            <H1>Heading 1 Title</H1>
-            <P>Some paragraph text.</P>
-            <P toc="P Toc Title">
-              Paragraph <B toc="Bold Too">in</B> Toc
-            </P>
-            <P snippet={{ title: 'P Snippet Title', quick: true }} toc={true}>
-              Paragraph in Toc too
-            </P>
-          </>
-        ),
-      });
+  const autoTocSchema = defineSchema<AutoTocSchema>({
+    name: 'autoToc',
+    type: 'block',
+    linkable: true,
+  });
 
-      expect(tocItems).toHaveLength(1);
-      expect(tocItems).toEqual<ResolvedTocItem[]>([
-        {
-          type: 'heading',
-          level: 1,
-          title: 'Heading 1 Title',
-          elementId: proseElement.children![0].id!,
-          children: [
-            {
-              type: 'element',
-              schemaName: 'emphasis',
-              title: 'Bold Too',
-              elementId: proseElement.children![2].children![1].id!,
-            },
-            {
-              type: 'element',
-              schemaName: 'paragraph',
-              title: 'P Toc Title',
-              elementId: proseElement.children![2].id!,
-            },
-            {
-              type: 'element',
-              schemaName: 'paragraph',
-              title: 'P Snippet Title',
-              elementId: proseElement.children![3].id!,
-            },
-          ],
-        },
-      ]);
+  const AutoToc = defineEruditTag({
+    schema: autoTocSchema,
+    tagName: 'AutoToc',
+  })<{ label: string }>(({ element, props }) => {
+    element.title = props.label;
+  });
+
+  it('should build toc tree with correct hierarchy', async () => {
+    const rawToProseResult = await eruditRawToProse({
+      toc: {
+        enabled: true,
+        addSchemas: [autoTocSchema],
+      },
+      rawProse: (
+        <>
+          <AutoToc label="The First!" />
+          <H1>Article Heading</H1>
+          <AutoToc label="The Skipped!" toc={false} />
+          <P toc="Important Paragraph">Some text</P>
+          <AutoToc label="The Second!" />
+          <H2>Sub Heading</H2>
+          <AutoToc label="The Third!" />
+          <H1>Another Big Section</H1>
+          <AutoToc label="The Fourth!" />
+        </>
+      ),
     });
+
+    const toc = rawToProseResult.toc;
+
+    expect(toc).toEqual([
+      {
+        type: 'element',
+        schemaName: 'autoToc',
+        title: 'The First!',
+        elementId: expect.any(String),
+      },
+      {
+        type: 'heading',
+        level: 1,
+        title: 'Article Heading',
+        elementId: expect.any(String),
+        children: [
+          {
+            type: 'element',
+            schemaName: 'paragraph',
+            title: 'Important Paragraph',
+            elementId: expect.any(String),
+          },
+          {
+            type: 'element',
+            schemaName: 'autoToc',
+            title: 'The Second!',
+            elementId: expect.any(String),
+          },
+          {
+            type: 'heading',
+            level: 2,
+            title: 'Sub Heading',
+            elementId: expect.any(String),
+            children: [
+              {
+                type: 'element',
+                schemaName: 'autoToc',
+                title: 'The Third!',
+                elementId: expect.any(String),
+              },
+            ],
+          },
+        ],
+      },
+      {
+        type: 'heading',
+        level: 1,
+        title: 'Another Big Section',
+        elementId: expect.any(String),
+        children: [
+          {
+            type: 'element',
+            schemaName: 'autoToc',
+            title: 'The Fourth!',
+            elementId: expect.any(String),
+          },
+        ],
+      },
+    ]);
   });
 });

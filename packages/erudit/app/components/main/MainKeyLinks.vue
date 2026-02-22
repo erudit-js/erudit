@@ -4,12 +4,12 @@ const { elementSnippets } = defineProps<{
   elementSnippets?: ElementSnippet[];
 }>();
 
-const quickLinks = (() => {
+const keyLinks = (() => {
   if (!elementSnippets) {
     return;
   }
 
-  const filtered = elementSnippets.filter((snippet) => !!snippet.quick);
+  const filtered = elementSnippets.filter((snippet) => !!snippet.key);
 
   return filtered.length > 0 ? filtered : undefined;
 })();
@@ -18,23 +18,23 @@ const phrase = await usePhrases('key_elements');
 </script>
 
 <template>
-  <template v-if="quickLinks">
+  <template v-if="keyLinks">
     <section v-if="mode === 'single'" class="px-main py-main-half">
       <MainSubTitle :title="phrase.key_elements + ':'" />
       <div
-        :style="{ '--quickBg': 'var(--color-bg-aside)' }"
+        :style="{ '--keyBg': 'var(--color-bg-aside)' }"
         class="gap-small micro:gap-normal micro:justify-start flex flex-wrap
           justify-center"
       >
-        <MainQuickLink v-for="quickLink of quickLinks" :quickLink />
+        <MainKeyLink v-for="keyLink of keyLinks" :keyLink />
       </div>
     </section>
     <div
       v-else
-      :style="{ '--quickBg': 'var(--color-bg-main)' }"
+      :style="{ '--keyBg': 'var(--color-bg-main)' }"
       class="gap-small text-main-sm flex flex-wrap"
     >
-      <MainQuickLink v-for="quickLink of quickLinks" :quickLink />
+      <MainKeyLink v-for="keyLink of keyLinks" :keyLink />
     </div>
   </template>
 </template>

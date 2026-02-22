@@ -50,9 +50,9 @@ export default defineNuxtConfig({
       },
     },
     rollupConfig: {
-      // Prevent inlining some packages to avoid singleton and Symbol duplication issues
+      // Prevent inlining some packages
       external(source) {
-        const ignore = ['jiti', '@jsprose'];
+        const ignore = ['jiti', 'tsprose'];
 
         for (const ignoreItem of ignore) {
           if (source.includes(ignoreItem)) {

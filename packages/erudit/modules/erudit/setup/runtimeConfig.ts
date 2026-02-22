@@ -43,6 +43,8 @@ export async function setupEruditRuntimeConfig(nuxt: Nuxt) {
       slowTransition: eruditConfig.debug?.slowTransition ?? false,
       fakeApi: {
         repository: eruditConfig.debug?.fakeApi?.repository ?? nuxt.options.dev,
+        lastChanged:
+          eruditConfig.debug?.fakeApi?.lastChanged ?? nuxt.options.dev,
       },
       analytics: eruditConfig.debug?.analytics,
     },

@@ -1,30 +1,38 @@
 import { and, eq, sql } from 'drizzle-orm';
 
-export async function addContentElementCount(
+export async function updateContentSchemaCounts(
   fullId: string,
-  schemaName: string,
-  amount: number,
+  schemaCounts: Record<string, number>,
+  // schemaName: string,
+  // amount: number,
 ): Promise<void> {
-  await ERUDIT.db
-    .insert(ERUDIT.db.schema.contentElementStats)
-    .values({
-      fullId,
-      schemaName,
-      count: 0,
-    })
-    .onConflictDoNothing();
+  const schemasFilter = ERUDIT.config.countElements.flat();
+  const filteredSchemaCounts = Object.entries(schemaCounts).filter(
+    ([schemaName]) => schemasFilter.includes(schemaName),
+  );
 
-  await ERUDIT.db
-    .update(ERUDIT.db.schema.contentElementStats)
-    .set({
-      count: sql`${ERUDIT.db.schema.contentElementStats.count} + ${amount}`,
-    })
-    .where(
-      and(
-        eq(ERUDIT.db.schema.contentElementStats.fullId, fullId),
-        eq(ERUDIT.db.schema.contentElementStats.schemaName, schemaName),
-      ),
-    );
+  for (const [schemaName, amount] of filteredSchemaCounts) {
+    await ERUDIT.db
+      .insert(ERUDIT.db.schema.contentElementStats)
+      .values({
+        fullId,
+        schemaName,
+        count: 0,
+      })
+      .onConflictDoNothing();
+
+    await ERUDIT.db
+      .update(ERUDIT.db.schema.contentElementStats)
+      .set({
+        count: sql`${ERUDIT.db.schema.contentElementStats.count} + ${amount}`,
+      })
+      .where(
+        and(
+          eq(ERUDIT.db.schema.contentElementStats.fullId, fullId),
+          eq(ERUDIT.db.schema.contentElementStats.schemaName, schemaName),
+        ),
+      );
+  }
 }
 
 export async function getContentStats(

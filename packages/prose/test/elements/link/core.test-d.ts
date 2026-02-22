@@ -1,10 +1,7 @@
 import { describe, it } from 'vitest';
 
-import { Ref, Reference } from '@erudit-js/prose/elements/link/reference/core';
-import {
-  Dep,
-  Dependency,
-} from '@erudit-js/prose/elements/link/dependency/core';
+import { Ref, Reference } from '@src/elements/link/reference/core';
+import { Dep, Dependency } from '@src/elements/link/dependency/core';
 
 describe('Link and Block Link', () => {
   it('should require "to" or "on" tag prop', () => {

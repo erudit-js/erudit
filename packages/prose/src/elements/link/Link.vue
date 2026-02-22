@@ -1,9 +1,9 @@
 <script lang="ts" setup>
 import { onMounted } from 'vue';
-import type { ProseElement } from '@jsprose/core';
+import type { ToProseElement } from 'tsprose';
 
-import type { depSchema } from './dependency/core.js';
-import type { refSchema } from './reference/core.js';
+import type { DepSchema } from './dependency/core.js';
+import type { RefSchema } from './reference/core.js';
 import type { LinkStorage } from './storage.js';
 import { useProseContext } from '../../app/composables/context.js';
 import { useFormatText } from '../../app/composables/formatText.js';
@@ -12,7 +12,7 @@ import { useElementIcon } from '../../app/composables/elementIcon.js';
 import Inliner from '../../app/shared/inliner/Inliner.vue';
 
 const { element } = defineProps<{
-  element: ProseElement<typeof refSchema> | ProseElement<typeof depSchema>;
+  element: ToProseElement<RefSchema> | ToProseElement<DepSchema>;
 }>();
 
 const {

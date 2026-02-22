@@ -2,7 +2,7 @@ import { dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 
-import { getImageSize } from '@erudit-js/prose/elements/image/storage';
+import { getImageSize } from '@src/elements/image/storage';
 
 describe('getImageSize', () => {
   const currentDir = dirname(fileURLToPath(import.meta.url));

@@ -10,7 +10,7 @@ const hasPreamble = computed(() => {
   let hasKeyElements = false;
   if (mainContent.type === 'topic' || mainContent.type === 'page') {
     hasKeyElements =
-      mainContent.snippets?.some((snippet) => !!snippet.quick) ?? false;
+      mainContent.snippets?.some((snippet) => !!snippet.key) ?? false;
   }
 
   return (

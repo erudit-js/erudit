@@ -22,9 +22,8 @@ export function createGlobalTemplate(nuxt: Nuxt, elementsData: ElementData[]) {
   }
 
   const template = `
-import { PROSE_REGISTRY } from '@jsprose/core';
-import { jsx, jsxs, Fragment } from '@jsprose/core/jsx-runtime';
-import type { EruditProseCoreElement } from '@erudit-js/prose';
+import { jsx, jsxs, Fragment } from 'tsprose/jsx-runtime';
+import type { ProseCoreElements } from '@erudit-js/prose';
 import { defineProblemScript } from '@erudit-js/prose/elements/problem/problemScript';
 
 ${Object.entries(cores)
@@ -41,32 +40,39 @@ ${Object.entries(globals)
   )
   .join('\n')}
 
-const coreElements: EruditProseCoreElement[] = [
-    ${Object.keys(cores).join(',\n    ')}
-].flatMap(element => (Array.isArray(element) ? element : [element]) as any);
+export const coreElements: ProseCoreElements = Object.fromEntries([
+  ${Object.keys(cores).join(',\n  ')}
+  ]
+  .flatMap((element: any) => (Array.isArray(element) ? element : [element]))
+  .map((element: any) => [element.schema.name, element])
+);
 
-const elementsGlobals = {
-    ${Object.keys(globals)
-      .map((key) => `...${key}`)
-      .join(',\n    ')}
+export const elementsGlobals = {
+  ${Object.keys(globals)
+    .map((key) => `...${key}`)
+    .join(',\n    ')}
 }
 
 export function registerProseGlobals() {
-    for (const element of coreElements) {
-        PROSE_REGISTRY.addItem(element.registryItem);
-        Object.assign(globalThis, element.registryItem.tags || {});
+  for (const coreElement of Object.values(coreElements)) {
+    const tags = coreElement.tags || [];
+    for (const tag of tags) {
+      Object.assign(globalThis, {
+        [tag.tagName]: tag,
+      });
     }
+  }
 
-    Object.assign(globalThis, {
-        // Make jsx runtime globally available (for prose generation in isolated modules like problem scripts)
-        jsx,
-        jsxs,
-        Fragment,
-        // Problem globals
-        defineProblemScript,
-        // Elements globals
-        ...elementsGlobals
-    });
+  Object.assign(globalThis, {
+    // Make jsx runtime globally available (for prose generation in isolated modules like problem scripts)
+    jsx,
+    jsxs,
+    Fragment,
+    // Problem globals
+    defineProblemScript,
+    // Elements globals
+    ...elementsGlobals
+  });
 }
     `.trim();
 

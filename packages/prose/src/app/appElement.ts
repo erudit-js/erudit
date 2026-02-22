@@ -1,5 +1,3 @@
-import type { AnySchema, ProseElement } from '@jsprose/core';
-
 import {
   resolveElementIcon,
   type ElementIcon,
@@ -16,28 +14,31 @@ import {
   type ElementLanguagesRaw,
   type ElementPhrases,
 } from './language/element.js';
+import type { Schema, ToProseElement } from 'tsprose';
 
-export interface AppElementDefinition<TSchema extends AnySchema> {
+export interface ProseAppElementDefinition<TSchema extends Schema> {
   schema: TSchema;
   component: ElementComponentRaw;
   languages?: ElementLanguagesRaw<ElementPhrases>;
   icon?: ElementIconRaw;
   createStorage?: (
-    proseElement: ProseElement<TSchema>,
+    proseElement: ToProseElement<TSchema>,
   ) => Promise<TSchema['Storage']> | TSchema['Storage'];
 }
 
-export interface AppElement<TSchema extends AnySchema = AnySchema> {
+export interface ProseAppElement<TSchema extends Schema = Schema> {
   schema: TSchema;
   component: ElementComponent;
   languages: ElementLanguages<ElementPhrases>;
   icon: ElementIcon;
-  createStorage?: (proseElement: ProseElement<TSchema>) => Promise<any> | any;
+  createStorage?: (proseElement: ToProseElement<TSchema>) => Promise<any> | any;
 }
 
-export function defineEruditProseAppElement<TSchema extends AnySchema>(
-  appElement: AppElementDefinition<TSchema>,
-): AppElement<TSchema> {
+export type ProseAppElements = Record<string, ProseAppElement>;
+
+export function defineProseAppElement<TSchema extends Schema>(
+  appElement: ProseAppElementDefinition<TSchema>,
+): ProseAppElement<TSchema> {
   return {
     schema: appElement.schema,
     component: resolveElementComponent(appElement.component),
@@ -49,6 +50,6 @@ export function defineEruditProseAppElement<TSchema extends AnySchema>(
       appElement.schema.type === 'block',
       appElement.icon,
     ),
-    createStorage: appElement.createStorage as AppElement['createStorage'],
+    createStorage: appElement.createStorage as ProseAppElement['createStorage'],
   };
 }

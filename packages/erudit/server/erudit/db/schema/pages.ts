@@ -1,7 +1,7 @@
 import { sqliteTable, text } from 'drizzle-orm/sqlite-core';
-import type { AnySchema, ProseElement } from '@jsprose/core';
+import type { ProseElement } from 'tsprose';
 
 export const pages = sqliteTable('pages', {
   fullId: text().primaryKey(),
-  prose: text({ mode: 'json' }).$type<ProseElement<AnySchema>>().notNull(),
+  prose: text({ mode: 'json' }).$type<ProseElement>().notNull(),
 });

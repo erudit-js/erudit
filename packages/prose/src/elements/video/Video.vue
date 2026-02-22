@@ -1,17 +1,17 @@
 <script lang="ts" setup>
 import { onMounted, onUnmounted, ref, useTemplateRef } from 'vue';
-import type { ProseElement } from '@jsprose/core';
+import type { ToProseElement } from 'tsprose';
 
-import type { videoSchema } from './core.js';
+import type { VideoSchema } from './core.js';
 import { useElementStorage } from '../../app/composables/storage.js';
 import { lightInvert, darkInvert } from '../../app/shared/invert.js';
 import Block from '../../app/shared/block/Block.vue';
 import Caption from '../caption/Caption.vue';
 
 const { element } = defineProps<{
-  element: ProseElement<typeof videoSchema>;
+  element: ToProseElement<VideoSchema>;
 }>();
-const videoStorage = await useElementStorage<typeof videoSchema>(element);
+const videoStorage = await useElementStorage(element);
 
 const videoElement = useTemplateRef('video');
 const observer = ref<IntersectionObserver | null>(null);

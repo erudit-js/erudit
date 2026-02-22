@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { isMyIcon, type MyIconName } from '#my-icons';
-import { computed, ref, watch } from 'vue';
+import { computed, nextTick, ref, watch } from 'vue';
 
 const { url } = defineProps<{ url?: MyIconName | (string & {}) }>();
 
@@ -77,7 +77,7 @@ onMounted(() => {
                 text-(--_mediaColor) transition-[color,background]"
             >
               <MyIcon
-                @vue:mounted="loaded = true"
+                @vue:mounted="nextTick(() => (loaded = true))"
                 :name="url as MyIconName"
                 class="h-2/3 w-2/3"
               />
@@ -87,13 +87,13 @@ onMounted(() => {
             v-if="mediaType === 'image'"
             :src="url"
             loading="lazy"
-            @load="loaded = true"
+            @load="nextTick(() => (loaded = true))"
             class="absolute block h-full w-full object-cover"
           />
           <video
             v-else-if="mediaType === 'video'"
             :src="url"
-            @loadeddata="loaded = true"
+            @loadeddata="nextTick(() => (loaded = true))"
             autoplay
             muted
             loop

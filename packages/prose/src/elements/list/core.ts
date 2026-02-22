@@ -1,61 +1,79 @@
+import type { XOR } from 'ts-xor';
 import {
-  defineRegistryItem,
   defineSchema,
+  ensureTagBlockChildren,
   ensureTagChildren,
-  type AnySchema,
-  type TagChildren,
-} from '@jsprose/core';
+  type Schema,
+} from 'tsprose';
 
 import { defineEruditTag } from '../../tag.js';
-import { defineEruditProseCoreElements } from '../../coreElement.js';
-import { tryParagraphWrap } from '../../shared/paragraphWrap.js';
+import { paragraphWrap } from '../../shared/paragraphWrap.js';
+import { defineProseCoreElements } from '../../coreElement.js';
 
-export const listItemSchema = defineSchema({
+//
+// List Item
+//
+
+export interface ListItemSchema extends Schema {
+  name: 'listItem';
+  type: 'block';
+  linkable: false;
+  Data: undefined;
+  Storage: undefined;
+  Children: Schema[];
+}
+
+export const listItemSchema = defineSchema<ListItemSchema>({
   name: 'listItem',
   type: 'block',
   linkable: false,
-})<{
-  Data: undefined;
-  Storage: undefined;
-  Children: AnySchema[];
-}>();
+});
 
 export const Li = defineEruditTag({
   tagName: 'Li',
   schema: listItemSchema,
-})<TagChildren>(({ tagName, element, children }) => {
-  ensureTagChildren(tagName, children);
-  element.children = children;
-
-  const paragraphWrap = tryParagraphWrap(children);
-  if (paragraphWrap) {
-    element.children = paragraphWrap;
+})(({ tagName, element, children }) => {
+  const wrap = paragraphWrap(children);
+  if (wrap) {
+    element.children = wrap;
+  } else {
+    ensureTagBlockChildren(tagName, children);
+    element.children = children;
   }
 });
 
-export interface UlListData {
-  type: 'ul';
+//
+// List
+//
+
+export interface ListSchema extends Schema {
+  name: 'list';
+  type: 'block';
+  linkable: true;
+  Data: UnorderedListData | OrderedListData;
+  Storage: undefined;
+  Children: ListItemSchema[];
 }
 
-export interface OlListData {
-  type: 'ol';
+export interface UnorderedListData {
+  type: 'unordered';
+}
+
+export interface OrderedListData {
+  type: 'ordered';
   start?: number;
 }
 
-export const listSchema = defineSchema({
+export const listSchema = defineSchema<ListSchema>({
   name: 'list',
   type: 'block',
   linkable: true,
-})<{
-  Data: UlListData | OlListData;
-  Storage: undefined;
-  Children: (typeof listItemSchema)[];
-}>();
+});
 
 export const List = defineEruditTag({
   tagName: 'List',
   schema: listSchema,
-})<({ type: 'ol'; start?: number } | { type: 'ul' }) & TagChildren>(({
+})<XOR<{ ordered: true; start?: number }, { unordered: true }>>(({
   element,
   tagName,
   props,
@@ -64,24 +82,27 @@ export const List = defineEruditTag({
   ensureTagChildren(tagName, children, listItemSchema);
   element.children = children;
 
-  if (props.type === 'ol') {
-    element.data = { type: 'ol', start: props.start ?? 1 };
+  if ('ordered' in props) {
+    element.data = {
+      type: 'ordered',
+      start: 'start' in props ? props.start : 1,
+    };
   } else {
-    element.data = { type: 'ul' };
+    element.data = { type: 'unordered' };
   }
 });
 
-export const listItemRegistryItem = defineRegistryItem({
-  schema: listItemSchema,
-  tags: [Li],
-});
+//
+// Core Elements
+//
 
-export const listRegistryItem = defineRegistryItem({
-  schema: listSchema,
-  tags: [List],
-});
-
-export default defineEruditProseCoreElements(
-  { registryItem: listItemRegistryItem },
-  { registryItem: listRegistryItem },
+export default defineProseCoreElements(
+  {
+    schema: listItemSchema,
+    tags: [Li],
+  },
+  {
+    schema: listSchema,
+    tags: [List],
+  },
 );

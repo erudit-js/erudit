@@ -1,9 +1,10 @@
 import {
-  defineRegistryItem,
   defineSchema,
-  ProseError,
-  type AnyUnique,
-} from '@jsprose/core';
+  type NoChildren,
+  type RequiredChildren,
+  type Schema,
+  type Unique,
+} from 'tsprose';
 
 import {
   problemProps2Info,
@@ -15,27 +16,33 @@ import {
   type ProblemContentChild,
 } from './problemContent.js';
 import { defineEruditTag } from '../../tag.js';
-import { defineEruditProseCoreElement } from '../../coreElement.js';
 import {
   problemScriptStorageKey,
   type ProblemScriptStorage,
 } from './storage.js';
 import { type ProblemScriptInstance } from './problemScript.js';
+import { EruditProseError } from '../../error.js';
+import { defineProseCoreElement } from '../../coreElement.js';
 
-export interface ProblemData {
-  info: ProblemInfo;
-  scriptUniques?: Record<string, AnyUnique>;
-}
-
-export const problemSchema = defineSchema({
-  name: 'problem',
-  type: 'block',
-  linkable: true,
-})<{
+export interface ProblemSchema extends Schema {
+  name: 'problem';
+  type: 'block';
+  linkable: true;
   Data: ProblemData;
   Storage: ProblemScriptStorage;
   Children: ProblemContentChild[];
-}>();
+}
+
+export interface ProblemData {
+  info: ProblemInfo;
+  scriptUniques?: Record<string, Unique>;
+}
+
+export const problemSchema = defineSchema<ProblemSchema>({
+  name: 'problem',
+  type: 'block',
+  linkable: true,
+});
 
 export const Problem = defineEruditTag({
   tagName: 'Problem',
@@ -43,8 +50,8 @@ export const Problem = defineEruditTag({
 })<
   ProblemInfoProps &
     (
-      | { children: {}; script?: undefined }
-      | { script: ProblemScriptInstance; children?: undefined }
+      | ({ script?: undefined } & RequiredChildren)
+      | ({ script: ProblemScriptInstance } & NoChildren)
     )
 >(({ element, tagName, props, children }) => {
   const problemInfo = problemProps2Info(props);
@@ -53,7 +60,7 @@ export const Problem = defineEruditTag({
   element.title = problemInfo.title;
 
   if (children && props.script) {
-    throw new ProseError(
+    throw new EruditProseError(
       `<${tagName}> cannot have both script and children in Problem element!`,
     );
   }
@@ -70,11 +77,7 @@ export const Problem = defineEruditTag({
   }
 });
 
-export const problemRegistryItem = defineRegistryItem({
+export const problemCoreElement = defineProseCoreElement({
   schema: problemSchema,
   tags: [Problem],
-});
-
-export const problemCoreElement = defineEruditProseCoreElement({
-  registryItem: problemRegistryItem,
 });

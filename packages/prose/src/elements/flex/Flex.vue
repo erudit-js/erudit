@@ -1,11 +1,11 @@
 <script lang="ts" setup>
-import type { ProseElement } from '@jsprose/core';
+import type { ToProseElement } from 'tsprose';
 
-import type { flexSchema } from './core.js';
+import type { FlexSchema } from './core.js';
 import Block from '../../app/shared/block/Block.vue';
 import Render from '../../app/shared/Render.vue';
 
-const { element } = defineProps<{ element: ProseElement<typeof flexSchema> }>();
+const { element } = defineProps<{ element: ToProseElement<FlexSchema> }>();
 
 const justify = (() => {
   return element?.data?.justifyContent ?? 'center';

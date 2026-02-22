@@ -1,16 +1,10 @@
 import { describe, expectTypeOf, it } from 'vitest';
-import type {
-  WrapSchemas,
-  AnySchema,
-  RawElement,
-  Unique,
-  AutoUnique,
-} from '@jsprose/core';
+import type { ToRawElement, RawElement, ToUnique, AutoUnique } from 'tsprose';
 
-import { defineProblemScript } from '@erudit-js/prose/elements/problem/problemScript';
-import { P } from '@erudit-js/prose/elements/paragraph/core';
-import type { ProblemContentChild } from '@erudit-js/prose/elements/problem/problemContent';
-import { Video } from '@erudit-js/prose/elements/video/core';
+import { defineProblemScript } from '@src/elements/problem/problemScript';
+import { P } from '@src/elements/paragraph/core';
+import type { ProblemContentChild } from '@src/elements/problem/problemContent';
+import { Video } from '@src/elements/video/core';
 
 describe('Problem Script', () => {
   const autoUnique = () => undefined as any as AutoUnique;
@@ -26,7 +20,7 @@ describe('Problem Script', () => {
       // @ts-expect-error
       args.random;
 
-      return undefined as any as RawElement<AnySchema>;
+      return undefined as any as RawElement;
     });
 
     // @ts-expect-error
@@ -41,7 +35,7 @@ describe('Problem Script', () => {
     const instance = minimalScript();
 
     expectTypeOf(instance.generate().problemContent).toEqualTypeOf<
-      WrapSchemas<'raw-prose', ProblemContentChild>[]
+      ToRawElement<ProblemContentChild>[]
     >();
   });
 
@@ -55,10 +49,10 @@ describe('Problem Script', () => {
     })(({ uniques, initial, random }) => {
       const { myP, myVideo } = uniques;
 
-      expectTypeOf(myP).toEqualTypeOf<Unique<typeof P>>();
-      expectTypeOf(myVideo).toEqualTypeOf<Unique<typeof Video>>();
+      expectTypeOf(myP).toEqualTypeOf<ToUnique<typeof P>>();
+      expectTypeOf(myVideo).toEqualTypeOf<ToUnique<typeof Video>>();
 
-      return undefined as any as RawElement<AnySchema>;
+      return undefined as any as RawElement;
     });
 
     // @ts-expect-error
@@ -71,7 +65,7 @@ describe('Problem Script', () => {
       myVideo: autoUnique,
     });
 
-    const myPUnique = undefined as any as Unique<typeof P>;
+    const myPUnique = undefined as any as ToUnique<typeof P>;
 
     const instance = uniquesWithGenerator({
       myP: myPUnique,
@@ -79,7 +73,7 @@ describe('Problem Script', () => {
     });
 
     expectTypeOf(instance.generate('some-seed').problemContent).toEqualTypeOf<
-      WrapSchemas<'raw-prose', ProblemContentChild>[]
+      ToRawElement<ProblemContentChild>[]
     >();
   });
 });
