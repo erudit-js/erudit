@@ -13,7 +13,7 @@
       "playground"
     ],
     "catalog": {
-      "tsprose": "link:tsprose",
+      "tsprose": "^1.0.0",
       "vue": "latest",
       "vue-router": "latest",
       "@floating-ui/vue": "^1.1.9",
