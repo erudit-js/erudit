@@ -17,7 +17,7 @@
     },
     "packages/cli": {
       "name": "@erudit-js/cli",
-      "version": "4.2.0-dev.1",
+      "version": "4.2.0",
       "dependencies": {
         "@erudit-js/core": "workspace:*",
         "chalk": "^5.6.2",
@@ -28,7 +28,7 @@
     },
     "packages/core": {
       "name": "@erudit-js/core",
-      "version": "4.2.0-dev.1",
+      "version": "4.2.0",
       "dependencies": {
         "gradient-string": "^3.0.0",
         "tsprose": "^1.0.0",
@@ -36,7 +36,7 @@
     },
     "packages/erudit": {
       "name": "erudit",
-      "version": "4.2.0-dev.1",
+      "version": "4.2.0",
       "bin": {
         "erudit": "bin/erudit.js",
       },
@@ -73,7 +73,7 @@
     },
     "packages/prose": {
       "name": "@erudit-js/prose",
-      "version": "4.2.0-dev.1",
+      "version": "4.2.0",
       "dependencies": {
         "@erudit-js/core": "workspace:*",
         "@floating-ui/vue": "^1.1.10",
