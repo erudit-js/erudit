@@ -230,7 +230,7 @@ async function resolveUniqueEntries(
   const results = await Promise.all(
     unique.map(async ({ contentFullId, uniqueName }) => {
       const dbUnique = await ERUDIT.db.query.contentUniques.findFirst({
-        columns: { title: true, prose: true },
+        columns: { title: true, prose: true, contentProseType: true },
         where: and(
           eq(ERUDIT.db.schema.contentUniques.contentFullId, contentFullId),
           eq(ERUDIT.db.schema.contentUniques.uniqueName, uniqueName),
@@ -239,15 +239,24 @@ async function resolveUniqueEntries(
 
       if (!dbUnique) return null;
 
-      const pageLink = await ERUDIT.repository.content.link(contentFullId);
+      const navNode = ERUDIT.contentNav.getNodeOrThrow(contentFullId);
       const schemaName = dbUnique.prose.schema.name;
 
       if (!schemaName) return null;
 
+      const link =
+        navNode.type === 'topic'
+          ? PAGES.topic(
+              dbUnique.contentProseType as any,
+              navNode.shortId,
+              dbUnique.prose.id,
+            )
+          : PAGES.page(navNode.shortId, dbUnique.prose.id);
+
       return {
         name: uniqueName,
         title: dbUnique.title ?? undefined,
-        link: `${pageLink}?element=${dbUnique.prose.id}`,
+        link,
         schemaName,
       } satisfies ContentDepUnique;
     }),
