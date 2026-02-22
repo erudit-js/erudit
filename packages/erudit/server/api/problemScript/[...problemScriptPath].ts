@@ -73,12 +73,20 @@ const jsxRuntimePlugin: Plugin = {
   },
 };
 
-// Collect all tag names that are registered in globalThis
-const proseTagNames = new Set<string>(
-  Object.values(coreElements).flatMap((el: any) =>
+// Names that are available on globalThis and should not be bundled as real imports
+const globalNames = new Set<string>([
+  // JSX runtime
+  'jsx',
+  '_jsx',
+  'jsxs',
+  '_jsxs',
+  'Fragment',
+  '_Fragment',
+  // Prose tag names registered in globalThis
+  ...Object.values(coreElements).flatMap((el: any) =>
     (el.tags ?? []).map((t: any) => String(t.tagName)),
   ),
-);
+]);
 
 // Pre-transform: rewrite any import of a known globalThis tag name → const from globalThis.
 // Non-tag imports are left as real imports and bundled normally.
@@ -106,7 +114,7 @@ const proseGlobalsPlugin: Plugin = {
               continue;
             }
             const localName = m[2] ?? m[1]!;
-            if (proseTagNames.has(localName)) {
+            if (globalNames.has(localName)) {
               shimLines.push(
                 `const ${localName} = globalThis[${JSON.stringify(localName)}];`,
               );
