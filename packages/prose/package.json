@@ -22,7 +22,7 @@
   },
   "files": [
     "dist",
-    "types.d.ts"
+    "raw.d.ts"
   ],
   "license": "MIT",
   "scripts": {
