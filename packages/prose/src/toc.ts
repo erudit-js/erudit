@@ -38,8 +38,9 @@ export function finalizeToc(
   }
 
   if (rawElement.toc === true) {
-    // Implicitly add to TOC using general title
-    const tocString = rawElement.title?.trim();
+    // Implicitly add to TOC using general title, fall back to finalized snippet title
+    const tocString =
+      rawElement.title?.trim() || rawElement.snippet?.title?.trim();
     if (!tocString) {
       throw new EruditProseError(
         'Addition to TOC was requested via internal toc: true flag, but unable to retrieve title!',
@@ -55,8 +56,11 @@ export function finalizeToc(
   }
 
   if (tocTagProp === true) {
-    // Explicitly add to TOC using general internal toc string or general title
-    const tocString = rawElement.toc?.trim() || rawElement.title?.trim();
+    // Explicitly add to TOC using general internal toc string, general title, or finalized snippet title
+    const tocString =
+      rawElement.toc?.trim() ||
+      rawElement.title?.trim() ||
+      rawElement.snippet?.title?.trim();
     if (!tocString) {
       throw new EruditProseError(
         'Addition to TOC was manually requested via true tag toc prop, but unable to retrieve title!',

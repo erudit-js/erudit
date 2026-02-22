@@ -9,7 +9,10 @@ import { H1, H2 } from '@src/elements/heading/core';
 import { P } from '@src/elements/paragraph/core';
 
 function mockRawElement(
-  overrides: TocRawElementProp & { title?: string } = {},
+  overrides: TocRawElementProp & {
+    title?: string;
+    snippet?: { title: string };
+  } = {},
 ): EruditRawElement {
   return { ...overrides } as any;
 }
@@ -65,6 +68,30 @@ describe('finalizeToc', () => {
     expect(() => finalizeToc(el, undefined)).toThrow();
   });
 
+  it('should fall back to snippet title when toc is true and element title is missing', () => {
+    const el = mockRawElement({
+      toc: true,
+      snippet: { title: 'Snippet Title' },
+    });
+    finalizeToc(el, undefined);
+    expect(el.toc).toBe('Snippet Title');
+  });
+
+  it('should prefer element title over snippet title when toc is true', () => {
+    const el = mockRawElement({
+      toc: true,
+      title: 'Element Title',
+      snippet: { title: 'Snippet Title' },
+    });
+    finalizeToc(el, undefined);
+    expect(el.toc).toBe('Element Title');
+  });
+
+  it('should throw when toc is true and both element title and snippet title are missing', () => {
+    const el = mockRawElement({ toc: true });
+    expect(() => finalizeToc(el, undefined)).toThrow();
+  });
+
   it('should use internal toc string when propToc is true', () => {
     const el = mockRawElement({ toc: '   Internal Title   ' });
     finalizeToc(el, true);
@@ -87,6 +114,35 @@ describe('finalizeToc', () => {
   });
 
   it('should throw when propToc is true but no toc string or title', () => {
+    const el = mockRawElement();
+    expect(() => finalizeToc(el, true)).toThrow();
+  });
+
+  it('should fall back to snippet title when propToc is true and toc string and element title are missing', () => {
+    const el = mockRawElement({ snippet: { title: 'Snippet Title' } });
+    finalizeToc(el, true);
+    expect(el.toc).toBe('Snippet Title');
+  });
+
+  it('should prefer element title over snippet title when propToc is true', () => {
+    const el = mockRawElement({
+      title: 'Element Title',
+      snippet: { title: 'Snippet Title' },
+    });
+    finalizeToc(el, true);
+    expect(el.toc).toBe('Element Title');
+  });
+
+  it('should prefer toc string over snippet title when propToc is true', () => {
+    const el = mockRawElement({
+      toc: 'TOC String',
+      snippet: { title: 'Snippet Title' },
+    });
+    finalizeToc(el, true);
+    expect(el.toc).toBe('TOC String');
+  });
+
+  it('should throw when propToc is true and toc string, element title, and snippet title are all missing', () => {
     const el = mockRawElement();
     expect(() => finalizeToc(el, true)).toThrow();
   });
