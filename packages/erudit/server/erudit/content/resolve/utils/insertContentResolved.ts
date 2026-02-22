@@ -1,7 +1,7 @@
 import chalk from 'chalk';
 import { sql } from 'drizzle-orm';
 import type { ContentProseType } from '@erudit-js/core/content/prose';
-import { builtLinkObject } from '../../global/build';
+import { builtValidPaths } from '../../global/build';
 import type {
   ContentLinks,
   ContentLinkUsage,
@@ -148,25 +148,11 @@ function filterTargetMap(
 }
 
 function globalContentToNavNode(globalContentPath: string) {
-  // Validate the full path (including any $unique suffix) against the link
-  // object that was built from the source files. This catches broken unique
-  // names as well as broken content paths before we ever touch the nav tree.
-  if (builtLinkObject) {
-    const parts = globalContentPath.split('/');
-    let cursor: any = builtLinkObject;
-    let valid = true;
-
-    for (const part of parts) {
-      if (!cursor || typeof cursor !== 'object' || !(part in cursor)) {
-        valid = false;
-        break;
-      }
-      cursor = cursor[part];
-    }
-
-    if (!valid) {
-      throw new Error(`Path not found in \$CONTENT: ${globalContentPath}`);
-    }
+  // Validate the full path (including any $unique suffix) against the complete
+  // set of known valid paths built from source files. This catches broken
+  // unique names and content paths before we ever touch the nav tree.
+  if (builtValidPaths && !builtValidPaths.has(globalContentPath)) {
+    throw new Error(`Path not found in \$CONTENT: ${globalContentPath}`);
   }
 
   const parts = globalContentPath.split('/');
@@ -175,8 +161,7 @@ function globalContentToNavNode(globalContentPath: string) {
     parts.pop();
   }
 
-  // Path already validated against builtLinkObject, so if the exact node
-  // isn't found the last segment must be a topic part — fall back to parent.
+  // If the exact node isn't found the last segment is a topic part — fall back to parent.
   return (
     ERUDIT.contentNav.getNode(parts.join('/')) ??
     ERUDIT.contentNav.getNodeOrThrow(parts.slice(0, -1).join('/'))

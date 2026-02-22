@@ -11,6 +11,11 @@ const contentRoot = () => ERUDIT.paths.project('content');
 
 export let builtLinkObject: Record<string, any> | null = null;
 
+/** All valid fully-qualified $CONTENT paths — content items, topic parts,
+ *  public uniques, and internal (underscore) uniques.
+ *  Used for server-side prose link validation. */
+export let builtValidPaths: Set<string> | null = null;
+
 export async function buildGlobalContent() {
   ERUDIT.log.debug.start('Building global content...');
 
@@ -22,8 +27,9 @@ export async function buildGlobalContent() {
     return;
   }
 
-  const linkObject = await buildLinkObject();
+  const { linkObject, validPaths } = await buildLinkObject();
   builtLinkObject = linkObject;
+  builtValidPaths = validPaths;
 
   const linkTypes = linkObjectToTypes(linkObject);
   writeFileSync(
@@ -120,6 +126,7 @@ ${body}
  */
 async function buildLinkObject() {
   const linkTree: any = {};
+  const validPaths = new Set<string>();
 
   await ERUDIT.contentNav.walk((navItem) => {
     // Navigate to the correct position in the tree based on the full path
@@ -161,6 +168,11 @@ ${jsdoc}
           navItem.contentRelPath,
         ),
       };
+
+      validPaths.add(navItem.fullId);
+      for (const name of getAllUniqueNames(moduleContent)) {
+        validPaths.add(`${navItem.fullId}/$${name}`);
+      }
     } else if (navItem.type === 'topic') {
       const pathToTopicFile = ERUDIT.paths.project(
         `content/${navItem.contentRelPath}/topic.ts`,
@@ -182,6 +194,8 @@ ${jsdoc}
  */
                 `.trim(),
       };
+
+      validPaths.add(navItem.fullId);
 
       for (const part of topicParts) {
         try {
@@ -210,6 +224,11 @@ ${jsdoc}
               navItem.contentRelPath,
             ),
           };
+
+          validPaths.add(`${navItem.fullId}/${part}`);
+          for (const name of getAllUniqueNames(partContent)) {
+            validPaths.add(`${navItem.fullId}/${part}/$${name}`);
+          }
         } catch {}
       }
     } else {
@@ -233,10 +252,12 @@ ${jsdoc}
  */
                 `.trim(),
       };
+
+      validPaths.add(navItem.fullId);
     }
   });
 
-  return linkTree;
+  return { linkObject: linkTree, validPaths };
 }
 
 function tryGetTitle(moduleContent: string) {
@@ -252,6 +273,25 @@ function jsdocLines(lines: any[]) {
     .filter(Boolean)
     .map((line) => ` * * ${line}`)
     .join('\n');
+}
+
+/** Returns ALL unique names from a module — both public and internal. Used to
+ *  populate builtValidPaths for server-side prose link validation. */
+function getAllUniqueNames(moduleContent: string): string[] {
+  const uniquesMatch = moduleContent.match(/uniques:\s*\{([^}]*)\}/s);
+  if (!uniquesMatch) return [];
+
+  const names: string[] = [];
+  for (const line of uniquesMatch[1]!.split('\n')) {
+    if (line.trim().startsWith('//')) continue;
+
+    const pairMatch =
+      line.match(/\[['"](.*?)['"]\]:\s*(\w+)/) ||
+      line.match(/['"](.*?)['"]:\s*(\w+)/) ||
+      line.match(/(\w+):\s*(\w+)/);
+    if (pairMatch) names.push(pairMatch[1]!);
+  }
+  return names;
 }
 
 function tryGetUniquesObject(
@@ -278,7 +318,7 @@ function tryGetUniquesObject(
       continue;
     }
 
-    // Skip uniques starting with underscore
+    // Skip uniques starting with underscore (internal — excluded from $CONTENT types)
     if (line.trim().startsWith('_')) {
       continue;
     }
