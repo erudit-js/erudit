@@ -41,7 +41,15 @@ const rows = computed(() =>
             <td
               v-for="cell in row.children"
               :key="cell.id"
-              class="py-small px-normal rounded"
+              :class="[
+                'py-small px-normal rounded',
+                cell.data?.center
+                  ? 'text-center'
+                  : cell.data?.right
+                    ? 'text-right'
+                    : '',
+                cell.data?.freeze && 'whitespace-nowrap',
+              ]"
             >
               <Render
                 v-for="inliner of cell.children"

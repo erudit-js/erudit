@@ -5,6 +5,7 @@ import {
   type InlinerSchema,
   type Schema,
 } from 'tsprose';
+import type { XOR } from 'ts-xor';
 
 import { defineEruditTag } from '../../tag.js';
 import { captionSchema, type CaptionSchema } from '../caption/core.js';
@@ -18,9 +19,15 @@ export interface TableDataSchema extends Schema {
   name: 'tableData';
   type: 'inliner';
   linkable: false;
-  Data: undefined;
+  Data: TableDataData | undefined;
   Storage: undefined;
   Children: InlinerSchema[];
+}
+
+export interface TableDataData {
+  center?: boolean;
+  right?: boolean;
+  freeze?: boolean;
 }
 
 export const tableDataSchema = defineSchema<TableDataSchema>({
@@ -32,9 +39,30 @@ export const tableDataSchema = defineSchema<TableDataSchema>({
 export const Td = defineEruditTag({
   tagName: 'Td',
   schema: tableDataSchema,
-})(({ element, children, tagName }) => {
+})<{ freeze?: true } & XOR<{ center?: true }, { right?: true }>>(({
+  props,
+  element,
+  children,
+  tagName,
+}) => {
   ensureTagInlinerChildren(tagName, children);
   element.children = children;
+
+  element.data = {};
+
+  if (props.center) {
+    element.data = { center: true };
+  } else if (props.right) {
+    element.data = { right: true };
+  }
+
+  if (props.freeze) {
+    element.data.freeze = true;
+  }
+
+  if (Object.keys(element.data).length === 0) {
+    delete element.data;
+  }
 });
 
 //
