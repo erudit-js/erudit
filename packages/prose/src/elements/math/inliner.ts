@@ -88,9 +88,14 @@ export interface InlinerMathSchema extends Schema {
   name: 'inlinerMath';
   type: 'inliner';
   linkable: true;
-  Data: string;
+  Data: InlinerMathData;
   Storage: InlinerMathStorage;
   Children: undefined;
+}
+
+export interface InlinerMathData {
+  katex: string;
+  currentColor?: boolean;
 }
 
 export const inlinerMathSchema = defineSchema<InlinerMathSchema>({
@@ -102,7 +107,12 @@ export const inlinerMathSchema = defineSchema<InlinerMathSchema>({
 export const M = defineEruditTag({
   tagName: 'M',
   schema: inlinerMathSchema,
-})<RequiredChildren>(({ element, tagName, children }) => {
+})<{ currentColor?: true } & RequiredChildren>(({
+  props,
+  element,
+  tagName,
+  children,
+}) => {
   ensureTagChildren(tagName, children, textSchema);
   const katex = normalizeKatex(children[0].data);
 
@@ -112,14 +122,21 @@ export const M = defineEruditTag({
     );
   }
 
-  element.data = katex;
+  element.data = {
+    katex,
+  };
   element.storageKey = `$ ${katex} $`;
+
+  if (props.currentColor) {
+    element.data.currentColor = true;
+  }
 });
 
 export const inlinerMathCoreElement = defineProseCoreElement({
   schema: inlinerMathSchema,
   tags: [M],
-  createStorage: async (element) => createInlinerMathStorage(element.data),
+  createStorage: async (element) =>
+    createInlinerMathStorage(element.data.katex),
   dependencies: katexDependency,
 });
 

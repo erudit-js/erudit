@@ -137,7 +137,7 @@ describe('Inliner Math', () => {
     const inlinerMath = asEruditRaw<InlinerMathSchema>(<M>A + b</M>);
 
     expect(isRawElement(inlinerMath, inlinerMathSchema)).toBe(true);
-    expect(inlinerMath.data).toBe('A + b');
+    expect(inlinerMath.data.katex).toBe('A + b');
     expect(inlinerMath.storageKey).toBe('$ A + b $');
   });
 
