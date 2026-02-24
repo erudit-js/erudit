@@ -36,13 +36,15 @@ const rows = computed(() =>
           <tr
             v-for="row in rows"
             :key="row.id"
-            class="odd:bg-(--oddCellBg) even:bg-(--evenCellBg)"
+            class="group odd:bg-(--oddCellBg) even:bg-(--evenCellBg)"
           >
             <td
               v-for="cell in row.children"
               :key="cell.id"
               :class="[
-                'py-small px-normal rounded',
+                `py-small px-normal group-hocus:inset-ring-(--tableBorder)
+                rounded inset-ring-2 inset-ring-transparent
+                transition-[box-shadow]`,
                 cell.data?.center
                   ? 'text-center'
                   : cell.data?.right
@@ -70,38 +72,38 @@ const rows = computed(() =>
   --tableBorder: color-mix(
     in srgb,
     var(--color-brand),
-    var(--color-border) 85%
+    var(--color-border) 75%
   );
 
   --evenCellBg: color-mix(
     in srgb,
     light-dark(#f5f5f5, #282828),
-    var(--color-brand) 3%
+    var(--color-brand) 5%
   );
 
   --oddCellBg: color-mix(
     in srgb,
     light-dark(#f5f5f5, #282828),
-    var(--color-brand) 10%
+    var(--color-brand) 8%
   );
 
   [data-prose-accent] & {
     --tableBorder: color-mix(
       in srgb,
-      var(--accentBorder),
-      var(--color-border) 50%
+      var(--accentText),
+      var(--color-border) 60%
     );
 
     --evenCellBg: color-mix(
       in srgb,
-      light-dark(var(--color-bg-main), #202020),
+      light-dark(color-mix(in srgb, #fff, var(--accentText) 13%), #252525),
       var(--accentText) 12%
     );
 
     --oddCellBg: color-mix(
       in srgb,
-      light-dark(var(--color-bg-main), #202020),
-      var(--accentText) 18%
+      light-dark(color-mix(in srgb, #fff, var(--accentText) 13%), #252525),
+      var(--accentText) 19%
     );
   }
 }
