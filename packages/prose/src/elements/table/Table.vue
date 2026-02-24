@@ -69,22 +69,19 @@ const rows = computed(() =>
 
 <style module>
 .table {
-  --tableBorder: color-mix(
-    in srgb,
-    var(--color-brand),
-    var(--color-border) 75%
+  --tableBorder: light-dark(
+    color-mix(in hsl, var(--color-brand), var(--color-border) 70%),
+    color-mix(in hsl, var(--color-brand), var(--color-border) 85%)
   );
 
-  --evenCellBg: color-mix(
-    in srgb,
-    light-dark(#f5f5f5, #282828),
-    var(--color-brand) 5%
+  --evenCellBg: light-dark(
+    color-mix(in hsl, #f5f5f5, var(--color-brand) 12%),
+    color-mix(in hsl, #2b2b2b, var(--color-brand) 4%)
   );
 
-  --oddCellBg: color-mix(
-    in srgb,
-    light-dark(#f5f5f5, #282828),
-    var(--color-brand) 8%
+  --oddCellBg: light-dark(
+    color-mix(in hsl, #f5f5f5, var(--color-brand) 18%),
+    color-mix(in hsl, #2b2b2b, var(--color-brand) 8%)
   );
 
   [data-prose-accent] & {
