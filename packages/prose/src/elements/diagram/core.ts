@@ -47,5 +47,11 @@ export default defineProseCoreElement({
   tags: [Diagram],
   dependencies: {
     ...photoswipeDependency,
+    ...{
+      mermaid: {
+        optimize: true,
+        transpile: true,
+      },
+    },
   },
 });

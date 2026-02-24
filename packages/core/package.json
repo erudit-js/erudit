@@ -20,7 +20,7 @@
     "prepack": "bun run build"
   },
   "dependencies": {
-    "tsprose": "^1.0.0",
+    "tsprose": "catalog:",
     "gradient-string": "^3.0.0"
   }
 }
