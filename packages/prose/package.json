@@ -38,7 +38,7 @@
     "image-size": "^2.0.2",
     "katex": "^0.16.33",
     "photoswipe": "^5.4.4",
-    "vue": "^3.5.28"
+    "vue": "^3.5.29"
   },
   "devDependencies": {
     "glob": "13.0.0",
