@@ -1,4 +1,4 @@
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 
 import { cliError } from './cliError.js';
 
@@ -101,6 +101,8 @@ function normalizeBasePath(input: string): '/' | `/${string}/` {
 }
 
 export function logUrlProps(urlProps: UrlProps): void {
-  console.log(`Site URL: ${chalk.bold.cyan(urlProps.siteUrl)}`);
-  console.log(`Site base path: ${chalk.bold.cyan(urlProps.basePath)}`);
+  console.log(`Site URL: ${styleText(['bold', 'cyan'], urlProps.siteUrl)}`);
+  console.log(
+    `Site base path: ${styleText(['bold', 'cyan'], urlProps.basePath)}`,
+  );
 }

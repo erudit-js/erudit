@@ -1,4 +1,4 @@
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 import type { Nuxt } from 'nuxt/schema';
 import { findPath } from 'nuxt/kit';
 
@@ -161,5 +161,5 @@ Registered ${elementsNumber} prose elements: ${schemasNumber} schema(s) and ${ta
   );
 
   const tagsTable = createTagsTable(elementsData);
-  console.log(chalk.gray(tagsTable));
+  console.log(styleText('gray', tagsTable));
 }

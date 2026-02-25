@@ -1,4 +1,4 @@
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 import chokidar from 'chokidar';
 import { debounce } from 'perfect-debounce';
 import { sn } from 'unslash';
@@ -28,7 +28,7 @@ export async function buildServerErudit() {
       await buildContentNav();
       await buildGlobalContent();
       await resolveContent();
-      ERUDIT.log.success(chalk.green('Build Complete!'));
+      ERUDIT.log.success(styleText('green', 'Build Complete!'));
     } catch (buildError) {
       requestFullContentResolve();
 
@@ -73,8 +73,10 @@ export async function tryServerWatchProject() {
       const files = Array.from(ERUDIT.changedFiles);
       console.log();
       ERUDIT.log.warn(
-        `${chalk.yellow('Rebuilding due to file change(s):')}\n\n` +
-          files.map((p, i) => chalk.gray(`${i + 1} -`) + ` "${p}"`).join('\n'),
+        `${styleText('yellow', 'Rebuilding due to file change(s):')}\n\n` +
+          files
+            .map((p, i) => styleText('gray', `${i + 1} -`) + ` "${p}"`)
+            .join('\n'),
       );
       console.log();
       await buildServerErudit();

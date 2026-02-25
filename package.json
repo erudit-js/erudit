@@ -36,7 +36,6 @@
     "play:preview": "bun erudit preview playground"
   },
   "devDependencies": {
-    "chalk": "^5.6.2",
     "prettier": "^3.8.1",
     "prettier-plugin-classnames": "^0.9.0",
     "prettier-plugin-merge": "^0.9.1",

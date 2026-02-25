@@ -1,4 +1,4 @@
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 import { globSync } from 'glob';
 import { existsSync, readdirSync } from 'node:fs';
 import { contentTypes, type ContentType } from '@erudit-js/core/content/type';
@@ -132,7 +132,7 @@ export async function buildContentNav() {
 
   const stats = ERUDIT.contentNav.id2Node.size
     ? getContentNavStats(ERUDIT.contentNav.id2Node)
-    : chalk.gray('empty');
+    : styleText('gray', 'empty');
 
   ERUDIT.log.success(
     isInitial
@@ -324,7 +324,7 @@ const duplicateIdValidator: ContentNavValidator = () => {
 Content navigation node short ID duplication!
 + ${seenShortIds.get(navNode.shortId)}
 + ${navNode.fullId}
-    -> ${chalk.yellow(navNode.shortId)}
+    -> ${styleText('yellow', navNode.shortId)}
                     `.trim(),
         );
         duplicateIds.push(navNode.fullId);
@@ -348,7 +348,7 @@ const subsetValidator: ContentNavValidator = () => {
         ERUDIT.log.warn(
           `
 Only groups and books can have children!
--> ${chalk.yellow(navNode.fullId)}
+-> ${styleText('yellow', navNode.fullId)}
                     `.trim(),
         );
         wrongSubsetIds.push(navNode.fullId);
@@ -368,7 +368,7 @@ const bookCantSkipValidator: ContentNavValidator = () => {
         ERUDIT.log.warn(
           `
 Books can not be skipped!
-    -> ${navNode.contentRelPath.split('/').slice(0, -1).join('/')}/${chalk.yellow(navNode.contentRelPath.split('/').pop())}
+    -> ${navNode.contentRelPath.split('/').slice(0, -1).join('/')}/${styleText('yellow', navNode.contentRelPath.split('/').pop()!)}
                     `.trim(),
         );
         wrongBookIds.push(navNode.fullId);

@@ -2,7 +2,7 @@ import { spawn } from 'node:child_process';
 import { existsSync, readdirSync } from 'node:fs';
 import { join, relative, sep } from 'node:path';
 import { defineCommand } from 'citty';
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 
 import { projectPathArg } from '../shared/args.js';
 import {
@@ -46,7 +46,7 @@ export const preview = defineCommand({
     }
 
     console.log(
-      `Launching static site preview...\n → ${chalk.underline.cyan(`http://localhost:3000${possibleBasePath}`)}\n`,
+      `Launching static site preview...\n → ${styleText(['underline', 'cyan'], `http://localhost:3000${possibleBasePath}`)}\n`,
     );
     spawn(`http-server ${distPath} -p 3000`, {
       shell: true,

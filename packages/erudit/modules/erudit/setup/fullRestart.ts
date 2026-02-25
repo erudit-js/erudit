@@ -1,6 +1,6 @@
 import type { Nuxt } from '@nuxt/schema';
 import { debounce } from 'perfect-debounce';
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 import { sn } from 'unslash';
 
 import { ERUDIT_PACKAGE_WATCHER, ERUDIT_PROJECT_WATCHER } from '../watcher';
@@ -15,8 +15,10 @@ export async function setupEruditFullRestart(nuxt: Nuxt) {
     changedPaths.clear();
 
     moduleLogger.warn(
-      `${chalk.yellow('Full restart due to critical file change(s):')}\n\n` +
-        files.map((p, i) => chalk.gray(`${i + 1} -`) + ` "${p}"`).join('\n'),
+      `${styleText('yellow', 'Full restart due to critical file change(s):')}\n\n` +
+        files
+          .map((p, i) => styleText('gray', `${i + 1} -`) + ` "${p}"`)
+          .join('\n'),
     );
 
     await nuxt.callHook('close', nuxt);
