@@ -2,8 +2,9 @@ import { existsSync } from 'node:fs';
 import type { Nuxt } from '@nuxt/schema';
 import { sn } from 'unslash';
 import type { EruditConfig } from '@erudit-js/core/eruditConfig/config';
+import { isDevLikeMode } from '@erudit-js/core/mode';
 
-import { PROJECT_PATH } from '../env.js';
+import { ERUDIT_MODE, PROJECT_PATH } from '../env.js';
 import { moduleLogger } from '../logger.js';
 import type {
   EruditPublicRuntimeConfig,
@@ -42,9 +43,12 @@ export async function setupEruditRuntimeConfig(nuxt: Nuxt) {
       log: eruditConfig.debug?.log ?? false,
       slowTransition: eruditConfig.debug?.slowTransition ?? false,
       fakeApi: {
-        repository: eruditConfig.debug?.fakeApi?.repository ?? nuxt.options.dev,
+        repository:
+          eruditConfig.debug?.fakeApi?.repository ??
+          (nuxt.options.dev || isDevLikeMode(ERUDIT_MODE)),
         lastChanged:
-          eruditConfig.debug?.fakeApi?.lastChanged ?? nuxt.options.dev,
+          eruditConfig.debug?.fakeApi?.lastChanged ??
+          (nuxt.options.dev || isDevLikeMode(ERUDIT_MODE)),
       },
       analytics: eruditConfig.debug?.analytics,
     },
