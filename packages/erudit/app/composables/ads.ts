@@ -11,7 +11,7 @@ export function adsAllowed() {
     return false;
   }
 
-  return ERUDIT.config.mode === 'static';
+  return ERUDIT.mode === 'static';
 }
 
 export function adsAsideAllowed() {

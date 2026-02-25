@@ -13,7 +13,7 @@ export function initAnalytics() {
       return debugValue;
     }
 
-    return ERUDIT.config.mode === 'static' ? true : false;
+    return ERUDIT.mode === 'static' ? true : false;
   })();
 
   if (!analytics || !analyticsEnabled) {
