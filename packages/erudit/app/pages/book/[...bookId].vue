@@ -19,6 +19,7 @@ if (ERUDIT.config.contributors?.enabled) {
 }
 
 const phrase = await usePhrases('begin_learning');
+const lastChangedDate = useLastChanged(() => mainContent.contentRelativePath);
 
 await useContentSeo({
   title: mainContent.title,
@@ -43,7 +44,7 @@ await useContentSeo({
     <MainContentStats
       mode="single"
       :stats="mainContent.stats"
-      :contentRelativePath="mainContent.contentRelativePath"
+      :lastChangedDate
     />
     <div class="h-main-half"></div>
     <MainAction
@@ -53,7 +54,7 @@ await useContentSeo({
       :link="mainContent.children[0].link"
     />
     <div class="h-main-half"></div>
-    <MainStickyHeader :mainContent />
+    <MainStickyHeader :mainContent :lastChangedDate />
   </MainSectionPreamble>
   <MainContentChildren :children="mainContent.children" />
   <MainSection>

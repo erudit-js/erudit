@@ -1,11 +1,5 @@
 <script lang="ts" setup>
-type LastChangedSource = NonNullable<
-  ReturnType<typeof useLastChangedSource>['value']
->;
-
-const { source } = defineProps<{ source: LastChangedSource }>();
-
-const date = ref<Date | null>(null);
+const { date } = defineProps<{ date: Date }>();
 
 const dateOptions: Intl.DateTimeFormatOptions = {
   year: 'numeric',
@@ -14,44 +8,21 @@ const dateOptions: Intl.DateTimeFormatOptions = {
 };
 
 const isWithinThreeMonths = computed(() => {
-  if (!date.value) return false;
   const now = new Date();
   const threeMonthsAgo = new Date(now);
   threeMonthsAgo.setMonth(now.getMonth() - 3);
-  return date.value >= threeMonthsAgo && date.value <= now;
+  return date >= threeMonthsAgo && date <= now;
 });
 
 const formattedTitle = computed(() =>
-  date.value ? date.value.toLocaleDateString(undefined, dateOptions) : '',
+  date.toLocaleDateString(undefined, dateOptions),
 );
 
 const phrase = await usePhrases('updated');
-
-onMounted(async () => {
-  if (source.type === 'date') {
-    date.value = new Date(source.value);
-    return;
-  }
-
-  if (source.type === 'github') {
-    try {
-      const data = await $fetch<any[]>(source.url, {
-        query: { path: source.path, per_page: 1 },
-        responseType: 'json',
-      });
-      if (Array.isArray(data) && data[0]?.commit?.committer?.date) {
-        date.value = new Date(data[0].commit.committer.date);
-      }
-    } catch {
-      // silently ignore API errors
-    }
-  }
-});
 </script>
 
 <template>
   <div
-    v-if="date"
     class="gap-small px-small text-main-sm border-border bg-bg-aside flex
       items-center rounded-xl border py-1"
   >
