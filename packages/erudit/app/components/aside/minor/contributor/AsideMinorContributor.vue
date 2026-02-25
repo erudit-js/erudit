@@ -7,6 +7,12 @@ const contributions = (asideMinorState.value as AsideMinorContributor)
   .contributions;
 
 const phrase = await usePhrases('contribution', 'no_contribution');
+
+const totalCount = contributions?.reduce((sum, item) => {
+  if (item.type === 'book') return sum + item.items.length;
+  if (item.type === 'topic' || item.type === 'page') return sum + 1;
+  return sum;
+}, 0);
 </script>
 
 <template>
@@ -15,7 +21,7 @@ const phrase = await usePhrases('contribution', 'no_contribution');
       <AsideMinorPlainHeader
         icon="draw"
         :title="phrase.contribution"
-        :count="contributions?.length"
+        :count="totalCount"
       />
       <ScrollHolder v-if="contributions" class="flex-1">
         <TreeContainer>
