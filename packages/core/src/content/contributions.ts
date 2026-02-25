@@ -2,7 +2,7 @@ import type { GlobalContributorTypeguard } from '../contributor.js';
 
 export interface ConfigContributionDescribed {
   contributor: GlobalContributorTypeguard;
-  description: string;
+  description?: string;
 }
 
 export type ConfigContribution =
