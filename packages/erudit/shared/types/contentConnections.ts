@@ -24,6 +24,7 @@ export interface ContentAutoDep extends BaseContentDep {
 export interface ContentHardDep extends BaseContentDep {
   type: 'hard';
   reason: string;
+  uniques?: ContentDepUnique[];
 }
 
 export type ContentDep = ContentAutoDep | ContentHardDep;
