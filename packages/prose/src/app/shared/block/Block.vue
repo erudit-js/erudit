@@ -11,6 +11,7 @@ import { useFloating, autoUpdate, offset, shift } from '@floating-ui/vue';
 
 import { useProseContext } from '../../composables/context.js';
 import { useElementIcon } from '../../composables/elementIcon.js';
+import { useProseLanguage } from '../../composables/language.js';
 import {
   useIsAnchor,
   useJumpToAnchor,
@@ -22,6 +23,10 @@ import type { BlockProseElement } from 'tsprose';
 
 const { element } = defineProps<{ element: BlockProseElement }>();
 const { EruditIcon, EruditTransition, setHtmlIds } = useProseContext();
+
+// Pre-warm the prose language module so it is cached before the aside menu opens.
+const _proseLang = useProseLanguage();
+
 const elementIcon = await useElementIcon(element);
 
 const formatTextState = useFormatTextState();
