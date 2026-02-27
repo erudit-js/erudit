@@ -4,7 +4,11 @@ import Externals from './Externals.vue';
 
 const { connections } = defineProps<{ connections?: ContentConnections }>();
 
-const phrase = await usePhrases('connections');
+const phrase = await usePhrases(
+  'connections',
+  'externals_own',
+  'externals_from',
+);
 
 const currentType = ref<keyof ContentConnections | undefined>(
   'hardDependencies',
@@ -85,7 +89,9 @@ const parentExternalsCount = computed(() => {
         :type="currentType === 'dependents' ? 'dependent' : 'dependency'"
         :deps="connections[currentType]!"
       />
-      <Externals v-else :externals="connections[currentType]!" />
+      <Suspense v-else>
+        <Externals :externals="connections[currentType]!" />
+      </Suspense>
     </template>
   </section>
 </template>
