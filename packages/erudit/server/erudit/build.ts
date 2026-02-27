@@ -11,6 +11,7 @@ import { buildContentNav } from './content/nav/build';
 import { requestFullContentResolve, resolveContent } from './content/resolve';
 import { buildGlobalContent } from './content/global/build';
 import { buildNews } from './news/build';
+import { triggerReload } from './reloadSignal';
 
 export type EruditServerChangedFiles = Set<string>;
 export type EruditServerBuildError = Error | undefined;
@@ -80,6 +81,9 @@ export async function tryServerWatchProject() {
       );
       console.log();
       await buildServerErudit();
+      if (!ERUDIT.buildError) {
+        triggerReload();
+      }
       ERUDIT.changedFiles.clear();
     } finally {
       ERUDIT.changedFiles.clear();

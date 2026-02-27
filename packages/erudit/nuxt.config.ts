@@ -25,6 +25,7 @@ export default defineNuxtConfig({
     public: {
       eruditVersion: '',
       eruditMode: '',
+      eruditReload: true,
       siteUrl: '',
     },
   },

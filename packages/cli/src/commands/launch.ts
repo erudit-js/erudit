@@ -8,6 +8,7 @@ import {
   contentTargetsArg,
   projectPathArg,
   siteUrlArg,
+  reloadArg,
 } from '../shared/args.js';
 import {
   logProjectPath,
@@ -34,6 +35,7 @@ export const launch = defineCommand({
     ...siteUrlArg,
     ...basePathArg,
     ...contentTargetsArg,
+    ...reloadArg,
   },
   async run({ args }) {
     const absProjectPath = normalizeProjectPath(
@@ -68,6 +70,7 @@ export const launch = defineCommand({
         NUXT_PROJECT_PATH: absProjectPath,
         NUXT_CONTENT_TARGETS: args.target,
         NUXT_PUBLIC_ERUDIT_MODE: <EruditMode>'write',
+        NUXT_PUBLIC_ERUDIT_RELOAD: String(args.reload ?? true),
         NUXT_PUBLIC_ERUDIT_VERSION: version,
         NUXT_APP_BASE_URL: urlProps.basePath,
         NUXT_PUBLIC_SITE_URL: urlProps.siteUrl,
