@@ -58,6 +58,40 @@ export async function setupServerImporter() {
 
       code = insertProblemScriptId(toRelPath(filename), code);
 
+      //
+      // Rebind problem script creator src to this file's path.
+      //
+      // When defineProblemScript is called inside a shared utility file (e.g.
+      // shared.tsx) and then re-exported through an entry file (e.g.
+      // my-script.tsx), jiti injects the *shared* file's path as the scriptSrc.
+      // That makes the client fetch `/api/problemScript/.../shared.js`, which has
+      // no default export and fails at runtime.
+      //
+      // After the module's own code runs we inspect its default export: if it is
+      // a ProblemScriptInstanceCreator (a function whose return value has a
+      // `.generate` method), we wrap it so every created instance gets its
+      // scriptSrc replaced with **this** file's relative path – the actual entry
+      // file the API route will serve.
+      //
+      if (!filename.startsWith(ERUDIT.paths.project() + '/')) {
+        return { code };
+      }
+
+      const relFilePath = toRelPath(filename).replace(/\.[jt]sx?$/, '');
+      code += `
+;(function() {
+  var _eruditFileSrc = ${JSON.stringify(relFilePath)};
+  var _def = exports.default;
+  if (typeof _def !== 'function') return;
+  exports.default = Object.assign(function() {
+    var instance = _def.apply(this, arguments);
+    if (instance && typeof instance === 'object' && typeof instance.generate === 'function') {
+      return Object.assign({}, instance, { scriptSrc: _eruditFileSrc });
+    }
+    return instance;
+  }, _def);
+})();`;
+
       return { code };
     },
   });
