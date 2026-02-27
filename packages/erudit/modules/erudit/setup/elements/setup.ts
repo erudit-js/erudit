@@ -161,5 +161,10 @@ Registered ${elementsNumber} prose elements: ${schemasNumber} schema(s) and ${ta
   );
 
   const tagsTable = createTagsTable(elementsData);
-  console.log(styleText('gray', tagsTable));
+  console.log(
+    tagsTable
+      .split('\n')
+      .map((line) => styleText('gray', line))
+      .join('\n'),
+  );
 }
