@@ -34,6 +34,9 @@ export default defineEventHandler<Promise<string>>(async (event) => {
 
   let code = buildResult.outputFiles[0]!.text;
 
+  // Normalize all jsx/jsxs/Fragment shim variables emitted by esbuild
+  code = normalizeJsxShims(code);
+
   // Transform $CONTENT patterns to link objects
   code = code.replace(/\$CONTENT(\.[a-zA-Z_$][\w$]*)+/g, (match) => {
     const path = match
@@ -63,14 +66,27 @@ const jsxRuntimePlugin: Plugin = {
     }));
 
     build.onLoad({ filter: /.*/, namespace: 'jsx-runtime-shim' }, () => ({
+      // Export both the canonical and underscore-prefixed names so that
+      // pre-built modules importing `jsx as _jsx` also resolve correctly.
       contents: `
                 export const jsx = globalThis.jsx;
                 export const jsxs = globalThis.jsxs;
                 export const Fragment = globalThis.Fragment;
+                export const _jsx = globalThis.jsx;
+                export const _jsxs = globalThis.jsxs;
+                export const _Fragment = globalThis.Fragment;
             `,
       loader: 'js',
     }));
   },
+};
+
+// Maps underscore-prefixed JSX names (emitted by some bundlers/transpilers) to
+// the canonical globalThis key where the value actually lives.
+const JSX_UNDERSCORE_ALIASES: Record<string, string> = {
+  _jsx: 'jsx',
+  _jsxs: 'jsxs',
+  _Fragment: 'Fragment',
 };
 
 // Names that are available on globalThis and should not be bundled as real imports
@@ -115,8 +131,12 @@ const proseGlobalsPlugin: Plugin = {
             }
             const localName = m[2] ?? m[1]!;
             if (globalNames.has(localName)) {
+              // Underscore-prefixed JSX names (_jsx, _jsxs, _Fragment) must resolve
+              // to the canonical globalThis key (jsx, jsxs, Fragment) because the
+              // runtime only registers the un-prefixed versions.
+              const globalKey = JSX_UNDERSCORE_ALIASES[localName] ?? localName;
               shimLines.push(
-                `const ${localName} = globalThis[${JSON.stringify(localName)}];`,
+                `const ${localName} = globalThis[${JSON.stringify(globalKey)}];`,
               );
             } else {
               keepParts.push(part);
@@ -143,6 +163,34 @@ const proseGlobalsPlugin: Plugin = {
     });
   },
 };
+
+/**
+ * Post-build pass that removes redundant var declarations pulling jsx/jsxs/Fragment
+ * from globalThis (emitted by esbuild shims and proseGlobalsPlugin) and normalizes
+ * all underscore-prefixed call-site names (_jsx2, _jsxs3, _Fragment, …) back to
+ * their canonical forms so the output is clean and doesn't reference undefined globals.
+ *
+ * After this transform, `jsx`, `jsxs`, and `Fragment` are bare identifiers resolved
+ * from globalThis at runtime (window.jsx etc. registered by registerProseGlobals).
+ */
+function normalizeJsxShims(code: string): string {
+  // Remove var declarations of the form:
+  //   var jsx = globalThis.jsx;
+  //   var _jsx2 = globalThis["jsx"];
+  // This covers both the jsxRuntimePlugin shim and the proseGlobalsPlugin shims.
+  code = code.replace(
+    /^var (?:_?jsx\d*|_?jsxs\d*|_?Fragment\d*) = globalThis(?:\.[a-zA-Z_$][\w$]*|\[["'][a-zA-Z_$][\w$]*["']\]);[ \t]*\n?/gm,
+    '',
+  );
+  // Normalize call-site names (_jsxs must precede _jsx to avoid partial match):
+  //   _jsxs2(…)  →  jsxs(…)
+  //   _jsx2(…)   →  jsx(…)
+  //   _Fragment2 →  Fragment
+  code = code.replace(/_jsxs\d*\b/g, 'jsxs');
+  code = code.replace(/_jsx\d*\b/g, 'jsx');
+  code = code.replace(/_Fragment\d*\b/g, 'Fragment');
+  return code;
+}
 
 const staticFilesPlugin: Plugin = {
   name: 'static-files',
