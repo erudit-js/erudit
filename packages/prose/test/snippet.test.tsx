@@ -539,7 +539,11 @@ describe('toSeoSnippet', () => {
   describe('seo: true', () => {
     it('should return snippet title and description', () => {
       const result = toSeoSnippet(makeSnippet({ description: 'D', seo: true }));
-      expect(result).toEqual({ title: 'Default Title', description: 'D' });
+      expect(result).toEqual({
+        title: 'Default Title',
+        description: 'D',
+        titleInherited: true,
+      });
     });
 
     it('should return undefined description when snippet has none', () => {
@@ -547,6 +551,7 @@ describe('toSeoSnippet', () => {
       expect(result).toEqual({
         title: 'Default Title',
         description: undefined,
+        titleInherited: true,
       });
     });
   });
@@ -555,16 +560,19 @@ describe('toSeoSnippet', () => {
     it('should use string as title', () => {
       const result = toSeoSnippet(makeSnippet({ seo: 'SEO Title' }));
       expect(result!.title).toBe('SEO Title');
+      expect(result!.titleInherited).toBe(false);
     });
 
     it('should trim string title', () => {
       const result = toSeoSnippet(makeSnippet({ seo: '  Trimmed  ' }));
       expect(result!.title).toBe('Trimmed');
+      expect(result!.titleInherited).toBe(false);
     });
 
     it('should fall back to snippet title when string is empty', () => {
       const result = toSeoSnippet(makeSnippet({ seo: '   ' }));
       expect(result!.title).toBe('Default Title');
+      expect(result!.titleInherited).toBe(true);
     });
 
     it('should include snippet description', () => {
@@ -578,12 +586,17 @@ describe('toSeoSnippet', () => {
       const result = toSeoSnippet(
         makeSnippet({ seo: { title: 'ST', description: 'SD' } }),
       );
-      expect(result).toEqual({ title: 'ST', description: 'SD' });
+      expect(result).toEqual({
+        title: 'ST',
+        description: 'SD',
+        titleInherited: false,
+      });
     });
 
     it('should fall back to snippet title when object title is empty', () => {
       const result = toSeoSnippet(makeSnippet({ seo: { title: '   ' } }));
       expect(result!.title).toBe('Default Title');
+      expect(result!.titleInherited).toBe(true);
     });
 
     it('should fall back to snippet description when object description is empty', () => {

@@ -144,8 +144,6 @@ export async function useContentSeo(args: {
         return;
       }
 
-      // ── Synchronous: set title/description immediately so there is no
-      //    flash of the base-page title on first render.
       const seoSnippet = toSeoSnippet(snippet)!;
       const quickTitle = (() => seoSnippet.title)();
       const quickDescription = (() => seoSnippet.description)();
@@ -155,11 +153,13 @@ export async function useContentSeo(args: {
         urlPath: snippet.link,
       });
 
-      // ── Async: refine title with element-type phrase once loaded.
       const elementPhrase = await getElementPhrase(snippet.schemaName);
-      const fullTitle = (() => seoSnippet.title)();
+      const fullTitle = seoSnippet.title;
+      const refinedTitle = seoSnippet.titleInherited
+        ? `${fullTitle} [${elementPhrase.element_name}]`
+        : fullTitle;
       setupSeo({
-        title: `${fullTitle} [${elementPhrase.element_name}] - ${seoSiteTitle}`,
+        title: `${refinedTitle} - ${seoSiteTitle}`,
         description: quickDescription || '',
         urlPath: snippet.link,
       });
