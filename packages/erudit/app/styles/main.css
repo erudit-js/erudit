@@ -27,7 +27,7 @@
   --text-main-2xl: calc(1.5 * var(--text-main));
 
   --default-transition-timing-function: cubic-bezier(0, 0, 0.5, 1);
-  --default-transition-duration: calc(200ms * var(--duration-multiplier));
+  --default-transition-duration: calc(180ms * var(--duration-multiplier));
 
   --spacing-normal: calc(4 * var(--spacing));
   --spacing-big: calc(2 * var(--spacing-normal));
