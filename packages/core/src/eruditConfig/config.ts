@@ -1,4 +1,4 @@
-import type { Nuxt } from '@nuxt/schema';
+import type { Nuxt } from 'nuxt/schema';
 import type { NitroConfig } from 'nitropack';
 
 import type { EruditIndexPage } from './indexPage.js';
@@ -37,17 +37,15 @@ export interface EruditConfig {
    * Erudit uses Nuxt under the hood.
    * Use this to alter Nuxt configuration.
    */
-  nuxtAugmentations?: [
-    ({
-      nuxt,
-      nitro,
-      projectPath,
-      eruditPath,
-    }: {
-      nuxt: Nuxt;
-      nitro: NitroConfig;
-      projectPath: string;
-      eruditPath: string;
-    }) => Promise<void> | void,
-  ];
+  nuxtAugmentations?: (({
+    nuxt,
+    nitro,
+    projectPath,
+    eruditPath,
+  }: {
+    nuxt: Nuxt;
+    nitro: NitroConfig;
+    projectPath: string;
+    eruditPath: string;
+  }) => Promise<void> | void)[];
 }
