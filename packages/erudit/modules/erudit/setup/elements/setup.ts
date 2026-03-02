@@ -1,4 +1,3 @@
-import { styleText } from 'node:util';
 import type { Nuxt } from 'nuxt/schema';
 import { findPath } from 'nuxt/kit';
 
@@ -6,8 +5,8 @@ import type { ProseCoreElement } from '@erudit-js/prose';
 
 import type { EruditRuntimeConfig } from '../../../../shared/types/runtimeConfig';
 import { moduleLogger } from '../../logger';
+import { printGrayNamesTable } from '../namesTable';
 import type { ElementData } from './shared';
-import { createTagsTable } from './tagsTable';
 import { createElementGlobalTypes } from './elementGlobalTypes';
 import { createGlobalTemplate } from './globalTemplate';
 import { createAppTemplate } from './appTemplate';
@@ -152,11 +151,9 @@ Registered ${elementsNumber} prose elements: ${schemasNumber} schema(s) and ${ta
         `.trim(),
   );
 
-  const tagsTable = createTagsTable(elementsData);
-  console.log(
-    tagsTable
-      .split('\n')
-      .map((line) => styleText('gray', line))
-      .join('\n'),
+  const tagNames = elementsData.flatMap((data) =>
+    data.coreElements.flatMap((coreElement) => Object.keys(coreElement.tags)),
   );
+
+  printGrayNamesTable(tagNames.map((t) => `<${t}>`));
 }

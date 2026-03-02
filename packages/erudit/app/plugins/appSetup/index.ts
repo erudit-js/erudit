@@ -15,6 +15,9 @@ export default defineNuxtPlugin({
       const { registerProseGlobals } = await import('#erudit/prose/global');
       await registerProseGlobals();
 
+      const { registerAutoImportGlobals } = await import('#erudit/autoImports');
+      await registerAutoImportGlobals();
+
       await setupHtmlBranding();
       await setupWelcomeMessage();
     },

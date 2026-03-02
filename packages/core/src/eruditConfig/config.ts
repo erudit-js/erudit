@@ -34,6 +34,16 @@ export interface EruditConfig {
   elements?: string[];
   countElements?: (string | string[])[];
   problemChecks?: string[];
+  /**
+   * Files whose named exports become globally available
+   * in all content files (no imports needed).
+   *
+   * Paths are resolved relative to the project root,
+   * just like `elements` and `problemChecks`.
+   *
+   * @example ['./my-globals']
+   */
+  autoImports?: string[];
   dependencies?: EruditDependencies;
   /**
    * Erudit uses Nuxt under the hood.

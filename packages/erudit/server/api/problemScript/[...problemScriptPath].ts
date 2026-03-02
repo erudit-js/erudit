@@ -4,7 +4,8 @@ import { build, type Plugin } from 'esbuild';
 
 import { STATIC_ASSET_EXTENSIONS } from '#layers/erudit/server/erudit/prose/transform/extensions';
 import { createGlobalContent } from '@erudit-js/core/content/global';
-import { coreElements } from '#erudit/prose/global';
+import { coreElements, eruditGlobalNames } from '#erudit/prose/global';
+import { autoImportNames } from '#erudit/autoImports';
 
 /**
  * Pure function calls irrelevant to the problem script runtime.
@@ -48,8 +49,10 @@ export default defineEventHandler<Promise<string>>(async (event) => {
 
   let code = buildResult.outputFiles[0]!.text;
 
-  // Normalize all jsx/jsxs/Fragment shim variables emitted by esbuild
-  code = normalizeJsxShims(code);
+  // Post-build: strip redundant ERUDIT_GLOBAL declarations emitted by esbuild,
+  // normalize JSX identifiers, and prepend a selective destructuring preamble
+  // with only the global names actually used in the bundle.
+  code = normalizeEruditGlobals(code);
 
   // Transform $CONTENT patterns to link objects
   code = code.replace(/\$CONTENT(\.[a-zA-Z_$][\w$]*)+/g, (match) => {
@@ -83,12 +86,12 @@ const jsxRuntimePlugin: Plugin = {
       // Export both the canonical and underscore-prefixed names so that
       // pre-built modules importing `jsx as _jsx` also resolve correctly.
       contents: `
-                export const jsx = globalThis.jsx;
-                export const jsxs = globalThis.jsxs;
-                export const Fragment = globalThis.Fragment;
-                export const _jsx = globalThis.jsx;
-                export const _jsxs = globalThis.jsxs;
-                export const _Fragment = globalThis.Fragment;
+                export const jsx = globalThis.ERUDIT_GLOBAL.jsx;
+                export const jsxs = globalThis.ERUDIT_GLOBAL.jsxs;
+                export const Fragment = globalThis.ERUDIT_GLOBAL.Fragment;
+                export const _jsx = globalThis.ERUDIT_GLOBAL.jsx;
+                export const _jsxs = globalThis.ERUDIT_GLOBAL.jsxs;
+                export const _Fragment = globalThis.ERUDIT_GLOBAL.Fragment;
             `,
       loader: 'js',
     }));
@@ -103,20 +106,16 @@ const JSX_UNDERSCORE_ALIASES: Record<string, string> = {
   _Fragment: 'Fragment',
 };
 
-// Names that are available on globalThis and should not be bundled as real imports.
+// Names that are available on globalThis.ERUDIT_GLOBAL and should not be bundled as real imports.
 function getGlobalNames(): Set<string> {
   return new Set<string>([
-    // JSX runtime
-    'jsx',
+    ...eruditGlobalNames,
+    // Auto-imported names from erudit config
+    ...autoImportNames,
+    // Underscore-prefixed aliases for JSX
     '_jsx',
-    'jsxs',
     '_jsxs',
-    'Fragment',
     '_Fragment',
-    // Prose tag names registered in globalThis
-    ...Object.values(coreElements).flatMap((el: any) =>
-      (el.tags ?? []).map((t: any) => String(t.tagName)),
-    ),
   ]);
 }
 
@@ -241,7 +240,7 @@ function rewriteGlobalImports(
           // runtime only registers the un-prefixed versions.
           const globalKey = JSX_UNDERSCORE_ALIASES[localName] ?? localName;
           shimLines.push(
-            `const ${localName} = globalThis[${JSON.stringify(globalKey)}];`,
+            `var ${localName} = globalThis.ERUDIT_GLOBAL[${JSON.stringify(globalKey)}];`,
           );
         } else {
           keepParts.push(part);
@@ -260,6 +259,7 @@ function rewriteGlobalImports(
 // Pre-transform: wipe out pure function calls irrelevant to problem scripts,
 // then rewrite imports of known globalThis tag names → const from globalThis.
 // Applies to every .ts/.tsx/.js/.jsx file esbuild processes (including utility files).
+
 const sourceTransformPlugin: Plugin = {
   name: 'source-transform',
   setup(build) {
@@ -284,23 +284,26 @@ const sourceTransformPlugin: Plugin = {
 };
 
 /**
- * Post-build pass that removes redundant var declarations pulling jsx/jsxs/Fragment
- * from globalThis (emitted by esbuild shims and proseGlobalsPlugin) and normalizes
- * all underscore-prefixed call-site names (_jsx2, _jsxs3, _Fragment, …) back to
- * their canonical forms so the output is clean and doesn't reference undefined globals.
- *
- * After this transform, `jsx`, `jsxs`, and `Fragment` are bare identifiers resolved
- * from globalThis at runtime (window.jsx etc. registered by registerProseGlobals).
+ * Post-build pass that:
+ * 1. Strips all `var X = globalThis.ERUDIT_GLOBAL[...]` declarations (from
+ *    rewriteGlobalImports and the jsxRuntimePlugin shim) and the shim comment.
+ * 2. Normalizes underscore-prefixed JSX call-site names (_jsx2 → jsx, etc.).
+ * 3. Detects which ERUDIT_GLOBAL names are actually referenced in the code.
+ * 4. Prepends a single destructuring preamble with only those names.
  */
-function normalizeJsxShims(code: string): string {
-  // Remove var declarations of the form:
-  //   var jsx = globalThis.jsx;
-  //   var _jsx2 = globalThis["jsx"];
-  // This covers both the jsxRuntimePlugin shim and the proseGlobalsPlugin shims.
+function normalizeEruditGlobals(code: string): string {
+  // Strip the jsx-runtime-shim comment
+  code = code.replace(/^\/\/ jsx-runtime-shim:jsx-runtime-shim\n/gm, '');
+
+  // Strip ALL var declarations pulling from globalThis.ERUDIT_GLOBAL
+  //   var jsx = globalThis.ERUDIT_GLOBAL.jsx;
+  //   var P = globalThis.ERUDIT_GLOBAL["P"];
+  //   var _jsx2 = globalThis.ERUDIT_GLOBAL.jsx;
   code = code.replace(
-    /^var (?:_?jsx\d*|_?jsxs\d*|_?Fragment\d*) = globalThis(?:\.[a-zA-Z_$][\w$]*|\[["'][a-zA-Z_$][\w$]*["']\]);[ \t]*\n?/gm,
+    /^var \w+ = globalThis\.ERUDIT_GLOBAL(?:\.[a-zA-Z_$][\w$]*|\[["'][a-zA-Z_$][\w$]*["']\]);[ \t]*\n?/gm,
     '',
   );
+
   // Normalize call-site names (_jsxs must precede _jsx to avoid partial match):
   //   _jsxs2(…)  →  jsxs(…)
   //   _jsx2(…)   →  jsx(…)
@@ -308,6 +311,21 @@ function normalizeJsxShims(code: string): string {
   code = code.replace(/_jsxs\d*\b/g, 'jsxs');
   code = code.replace(/_jsx\d*\b/g, 'jsx');
   code = code.replace(/_Fragment\d*\b/g, 'Fragment');
+
+  // Detect which ERUDIT_GLOBAL names are actually used in the code
+  const allNames = getGlobalNames();
+  const usedNames = [...allNames]
+    .filter((n) => /^[a-zA-Z_$]\w*$/.test(n) && !n.startsWith('_'))
+    .filter((n) => new RegExp('\\b' + n + '\\b').test(code));
+
+  if (usedNames.length > 0) {
+    code =
+      'var { ' +
+      usedNames.join(', ') +
+      ' } = globalThis.ERUDIT_GLOBAL;\n' +
+      code;
+  }
+
   return code;
 }
 

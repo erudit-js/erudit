@@ -16,6 +16,29 @@ export type EruditServerImporter = Jiti['import'];
 
 export let jiti: Jiti;
 
+/** Cached preamble that destructures all ERUDIT_GLOBAL keys into local vars. */
+let eruditGlobalPreamble: string | undefined;
+
+function getEruditGlobalPreamble(): string {
+  if (eruditGlobalPreamble !== undefined) return eruditGlobalPreamble;
+
+  const eg = (globalThis as any).ERUDIT_GLOBAL;
+  if (!eg || typeof eg !== 'object') {
+    eruditGlobalPreamble = '';
+    return eruditGlobalPreamble;
+  }
+
+  const names = Object.keys(eg).filter((n) => /^[a-zA-Z_$]\w*$/.test(n));
+  if (names.length === 0) {
+    eruditGlobalPreamble = '';
+    return eruditGlobalPreamble;
+  }
+
+  eruditGlobalPreamble =
+    'var { ' + names.join(', ') + ' } = globalThis.ERUDIT_GLOBAL;\n';
+  return eruditGlobalPreamble;
+}
+
 export async function setupServerImporter() {
   const jitiId = ERUDIT.paths.project();
   const defaultJiti = createJiti(jitiId, createBaseJitiOptions());
@@ -37,6 +60,18 @@ export async function setupServerImporter() {
       }
 
       let code = getDefaultCode(opts);
+
+      //
+      // Inject ERUDIT_GLOBAL preamble for project files
+      // Destructures all erudit globals (tags, defineX, jsx runtime, etc.)
+      // into local variables so bare identifiers resolve correctly.
+      //
+      if (filename.startsWith(ERUDIT.paths.project() + '/')) {
+        const preamble = getEruditGlobalPreamble();
+        if (preamble) {
+          code = preamble + code;
+        }
+      }
 
       //
       // Insert IDs in `defineDocument(...)` calls

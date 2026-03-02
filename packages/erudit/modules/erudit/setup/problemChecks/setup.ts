@@ -5,6 +5,8 @@ import type { ProblemChecker } from '@erudit-js/core/problemCheck';
 
 import type { ResolvedProblemCheck } from './shared';
 import { PROJECT_PATH } from '../../env';
+import { moduleLogger } from '../../logger';
+import { printGrayNamesTable } from '../namesTable';
 import { createTemplate } from './template';
 
 export async function setupProblemChecks(
@@ -47,4 +49,12 @@ export async function setupProblemChecks(
   }
 
   createTemplate(nuxt, resolvedProblemChecks);
+
+  if (resolvedProblemChecks.length > 0) {
+    moduleLogger.success(
+      `Registered ${resolvedProblemChecks.length} problem check(s)!`,
+    );
+
+    printGrayNamesTable(resolvedProblemChecks.map((c) => c.name));
+  }
 }

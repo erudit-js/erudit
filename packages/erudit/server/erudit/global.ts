@@ -11,6 +11,7 @@ import type { EruditServerPaths } from './path';
 import type { EruditServerRepository } from './repository';
 
 import { registerProseGlobals } from '#erudit/prose/global';
+import { registerAutoImportGlobals } from '#erudit/autoImports';
 
 export const ERUDIT: {
   buildError: EruditServerBuildError;
@@ -27,7 +28,9 @@ export const ERUDIT: {
   import: EruditServerImporter;
 } = {} as any;
 
-Object.assign(globalThis, {
+(globalThis as any).ERUDIT_GLOBAL = (globalThis as any).ERUDIT_GLOBAL || {};
+
+Object.assign((globalThis as any).ERUDIT_GLOBAL, {
   defineContributor,
   defineSponsor,
   defineCameo,
@@ -40,3 +43,4 @@ Object.assign(globalThis, {
 });
 
 registerProseGlobals();
+registerAutoImportGlobals();
