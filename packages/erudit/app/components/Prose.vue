@@ -4,6 +4,7 @@ import type { EruditMode } from '@erudit-js/core/mode';
 import { Prose, type ProseContext } from '@erudit-js/prose/app';
 
 import { EruditLink, MaybeMyIcon, TransitionFade } from '#components';
+import { problemCheckers } from '#erudit/checks';
 
 const { element, storage, useHashUrl, setHtmlIds } = defineProps<{
   element: ProseElement;
@@ -35,6 +36,7 @@ const context: ProseContext = {
   baseUrl: runtimeConfig.app.baseURL,
   hashUrl,
   eruditIcons: ICONS,
+  problemCheckers,
   EruditIcon: MaybeMyIcon,
   EruditTransition: TransitionFade,
   EruditLink,

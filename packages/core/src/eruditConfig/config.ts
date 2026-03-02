@@ -9,10 +9,10 @@ import type { EruditDebug } from './debug.js';
 import type { EruditRepository } from './repository.js';
 import type { EruditSeo } from './seo.js';
 import type { EruditLanguage } from './language.js';
-import type { EruditElements } from './elements.js';
 import type { EruditContributors } from '../contributor.js';
 import type { EruditAsideMajor } from './asideMajor.js';
 import type { EruditFavicons } from './favicons.js';
+import type { EruditDependencies } from '../dependencies.js';
 
 export interface EruditConfig {
   language?: EruditLanguage;
@@ -31,8 +31,10 @@ export interface EruditConfig {
   sponsors?: EruditSponsors;
   seo?: EruditSeo;
   repository?: EruditRepository;
-  elements?: EruditElements;
+  elements?: string[];
   countElements?: (string | string[])[];
+  problemChecks?: string[];
+  dependencies?: EruditDependencies;
   /**
    * Erudit uses Nuxt under the hood.
    * Use this to alter Nuxt configuration.

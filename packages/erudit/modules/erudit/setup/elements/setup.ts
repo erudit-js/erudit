@@ -12,6 +12,7 @@ import { createElementGlobalTypes } from './elementGlobalTypes';
 import { createGlobalTemplate } from './globalTemplate';
 import { createAppTemplate } from './appTemplate';
 import { PROJECT_PATH } from '../../env';
+import { addDependencies } from '../../dependencies';
 
 const BUILTIN_ELEMENT_PATHS = [
   '@erudit-js/prose/elements/callout',
@@ -131,16 +132,7 @@ export async function setupProseElements(
         }
       }
 
-      const transpile = (nuxt.options.build.transpile ||= []);
-      const optimizeDeps = nuxt.options.vite.optimizeDeps || {};
-      const optimizeDepsInclude = (optimizeDeps.include ||= []);
-
-      for (const [name, options] of Object.entries(
-        coreElement.dependencies ?? {},
-      )) {
-        if (options?.transpile) transpile.push(name);
-        if (options?.optimize) optimizeDepsInclude.push(name);
-      }
+      addDependencies(nuxt, coreElement.dependencies);
     }
 
     elementsData.push(elementData);

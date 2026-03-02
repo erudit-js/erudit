@@ -5,6 +5,11 @@ import {
   type OptionalChildren,
   type Schema,
 } from 'tsprose';
+import {
+  isProblemCheckObject,
+  type ProblemCheckObject,
+  type ProblemCheckers,
+} from '@erudit-js/core/problemCheck';
 
 import { defineEruditTag } from '../../tag.js';
 import { defineProseCoreElement } from '../../coreElement.js';
@@ -100,9 +105,19 @@ export const ProblemCheck = defineEruditTag({
       answer: !!props.boolean,
     };
   } else if ('answer' in props) {
+    const answerProp = props.answer;
+
+    if (!Array.isArray(answerProp) && isProblemCheckObject(answerProp)) {
+      element.data = {
+        ...checkInfo,
+        serializedValidator: answerProp,
+      };
+      return;
+    }
+
     validator = {
       type: 'value',
-      answer: props.answer,
+      answer: answerProp,
     };
   } else if ('answers' in props) {
     const answersProp = props.answers!;
@@ -146,12 +161,23 @@ export const problemCheckCoreElement = defineProseCoreElement({
 // ProblemCheck Data
 //
 
+export {
+  type ProblemCheckObject,
+  isProblemCheckObject,
+  type ProblemCheckers,
+} from '@erudit-js/core/problemCheck';
+
 export interface ProblemCheckValidatorBoolean {
   type: 'boolean';
   answer: boolean;
 }
 
-export type ProblemCheckValue = undefined | number | string | RegExp;
+export type ProblemCheckValue =
+  | undefined
+  | number
+  | string
+  | RegExp
+  | ProblemCheckObject;
 export type ProblemCheckValueDefined = Exclude<ProblemCheckValue, undefined>;
 
 export interface ProblemCheckValidatorValue {
@@ -178,6 +204,10 @@ export type ProblemCheckValidator =
   | ProblemCheckValidatorScript;
 
 export function toSerializableValidator(validator: ProblemCheckValidator) {
+  if ((validator as any).__ERUDIT_CHECK === true) {
+    return validator;
+  }
+
   if (validator.type === 'boolean') {
     return validator;
   }
@@ -228,7 +258,11 @@ export function toSerializableValidator(validator: ProblemCheckValidator) {
 
 export function fromSerializableValidator(
   serializedValidator: any,
-): ProblemCheckValidator {
+): ProblemCheckValidator | ProblemCheckObject {
+  if (serializedValidator.__ERUDIT_CHECK === true) {
+    return serializedValidator as ProblemCheckObject;
+  }
+
   if (serializedValidator.type === 'boolean') {
     return serializedValidator as ProblemCheckValidatorBoolean;
   }
@@ -273,22 +307,45 @@ export function fromSerializableValidator(
   );
 }
 
-export function checkProblemAnswer(
+export interface ProblemCheckContext {
+  yesRegexp: RegExp;
+  noRegexp: RegExp;
+  checkers: ProblemCheckers;
+}
+
+export async function checkProblemAnswer(
   answer: string,
-  yesRegexp: RegExp,
-  noRegexp: RegExp,
-  validator: ProblemCheckValidator,
-): boolean {
-  if (validator.type === 'boolean') {
-    return validator.answer === true
-      ? yesRegexp.test(answer)
-      : noRegexp.test(answer);
+  against: ProblemCheckValidator | ProblemCheckObject,
+  context: ProblemCheckContext,
+): Promise<boolean> {
+  if (isProblemCheckObject(against)) {
+    const checker = context.checkers[against.name];
+    if (!checker) {
+      console.warn(`No problem checker found for "${against.name}"`);
+      return false;
+    }
+    return await checker.check(against.data, answer);
   }
 
-  const checkDefinedAnswer = (
+  if (against.type === 'boolean') {
+    return against.answer === true
+      ? context.yesRegexp.test(answer)
+      : context.noRegexp.test(answer);
+  }
+
+  const checkDefinedAnswer = async (
     expected: ProblemCheckValueDefined,
     answer: string,
-  ): boolean => {
+  ): Promise<boolean> => {
+    if (isProblemCheckObject(expected)) {
+      const checker = context.checkers[expected.name];
+      if (!checker) {
+        console.warn(`No problem checker found for "${expected.name}"`);
+        return false;
+      }
+      return await checker.check(expected.data, answer);
+    }
+
     if (typeof expected === 'number') {
       return Number(answer) === expected;
     }
@@ -300,7 +357,10 @@ export function checkProblemAnswer(
     return answer === String(expected);
   };
 
-  const checkAnswer = (expect: ProblemCheckValue, answer: string): boolean => {
+  const checkAnswer = async (
+    expect: ProblemCheckValue,
+    answer: string,
+  ): Promise<boolean> => {
     if (expect === undefined || expect === null) {
       return answer.trim() === '';
     }
@@ -308,61 +368,71 @@ export function checkProblemAnswer(
     return checkDefinedAnswer(expect, answer);
   };
 
-  if (validator.type === 'value') {
-    const anyOf = Array.isArray(validator.answer)
-      ? validator.answer
-      : [validator.answer];
-    return anyOf.some((expect) => checkAnswer(expect, answer));
+  if (against.type === 'value') {
+    const anyOf = Array.isArray(against.answer)
+      ? against.answer
+      : [against.answer];
+    const results = await Promise.all(
+      anyOf.map((expect) => checkAnswer(expect, answer)),
+    );
+    return results.some(Boolean);
   }
 
-  if (validator.type === 'array') {
+  if (against.type === 'array') {
     const separatorRegexp = new RegExp(
-      `\\s*${validator.separator.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\s*`,
+      `\\s*${against.separator.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\s*`,
       'g',
     );
 
     const parts = answer.split(separatorRegexp).map((p) => p.trim());
 
-    const checkExpected = (
+    const checkExpected = async (
       expected: ProblemCheckValueDefined | ProblemCheckValueDefined[],
       actual: string,
-    ): boolean => {
+    ): Promise<boolean> => {
       if (Array.isArray(expected)) {
-        // any-of logic
-        return expected.some((e) => checkDefinedAnswer(e, actual));
+        const results = await Promise.all(
+          expected.map((e) => checkDefinedAnswer(e, actual)),
+        );
+        return results.some(Boolean);
       }
       return checkDefinedAnswer(expected, actual);
     };
 
-    if (parts.length !== validator.answers.length) {
+    if (parts.length !== against.answers.length) {
       return false;
     }
 
-    if (validator.ordered) {
-      return validator.answers.every((expected, i) =>
-        checkExpected(expected, parts[i]),
+    if (against.ordered) {
+      const results = await Promise.all(
+        against.answers.map((expected, i) => checkExpected(expected, parts[i])),
       );
+      return results.every(Boolean);
     }
 
     // unordered matching (multiset semantics)
     const remaining = [...parts];
 
-    for (const expected of validator.answers) {
-      const index = remaining.findIndex((actual) =>
-        checkExpected(expected, actual),
-      );
+    for (const expected of against.answers) {
+      let foundIndex = -1;
+      for (let i = 0; i < remaining.length; i++) {
+        if (await checkExpected(expected, remaining[i])) {
+          foundIndex = i;
+          break;
+        }
+      }
 
-      if (index === -1) {
+      if (foundIndex === -1) {
         return false;
       }
 
-      remaining.splice(index, 1);
+      remaining.splice(foundIndex, 1);
     }
 
     return true;
   }
 
   throw new EruditProseError(
-    `"checkProblemAnswer" not implemented for type "${(validator as any).type}"!`,
+    `"checkProblemAnswer" not implemented for type "${(against as any).type}"!`,
   );
 }

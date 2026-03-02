@@ -13,7 +13,7 @@ export default defineNuxtPlugin({
   hooks: {
     'app:mounted': async () => {
       const { registerProseGlobals } = await import('#erudit/prose/global');
-      registerProseGlobals();
+      await registerProseGlobals();
 
       await setupHtmlBranding();
       await setupWelcomeMessage();

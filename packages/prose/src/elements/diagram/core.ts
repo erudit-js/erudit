@@ -49,7 +49,7 @@ export default defineProseCoreElement({
     ...photoswipeDependency,
     ...{
       mermaid: {
-        optimize: true,
+        // optimize: true,
         transpile: true,
       },
     },

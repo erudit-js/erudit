@@ -27,17 +27,17 @@ export async function setupEruditRuntimeConfig(nuxt: Nuxt) {
   // Erudit Runtime Config
   //
 
-  nuxt.options.runtimeConfig.erudit = {
+  nuxt.options.runtimeConfig.erudit = (<EruditRuntimeConfig>{
     elements: eruditConfig.elements || [],
     countElements: eruditConfig.countElements || [],
     indexPage: eruditConfig.indexPage,
-  } satisfies EruditRuntimeConfig;
+  }) satisfies EruditRuntimeConfig;
 
   //
   // Erudit Public Runtime Config
   //
 
-  nuxt.options.runtimeConfig.public.erudit = {
+  nuxt.options.runtimeConfig.public.erudit = (<EruditPublicRuntimeConfig>{
     debug: {
       ads: eruditConfig.debug?.ads ?? false,
       log: eruditConfig.debug?.log ?? false,
@@ -89,7 +89,7 @@ export async function setupEruditRuntimeConfig(nuxt: Nuxt) {
     sponsors: eruditConfig.sponsors,
     ads: eruditConfig.ads,
     analytics: eruditConfig.analytics,
-  } satisfies EruditPublicRuntimeConfig;
+  }) satisfies EruditPublicRuntimeConfig;
 
   //
   // Other
@@ -98,6 +98,7 @@ export async function setupEruditRuntimeConfig(nuxt: Nuxt) {
   nuxt.options.runtimeConfig.public.buildTime = Date.now();
 
   return {
+    eruditConfig,
     eruditRuntimeConfig: nuxt.options.runtimeConfig
       .erudit as EruditRuntimeConfig,
     eruditPublicRuntimeConfig: nuxt.options.runtimeConfig.public

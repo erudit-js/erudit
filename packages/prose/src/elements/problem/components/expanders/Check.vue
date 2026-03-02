@@ -6,6 +6,7 @@ import {
   checkProblemAnswer,
   fromSerializableValidator,
   type ProblemCheckSchema,
+  type ProblemCheckContext,
 } from '../../problemCheck.js';
 import checkIcon from '../../assets/actions/check.svg?raw';
 import plusIcon from '../../../../app/shared/assets/plus.svg?raw';
@@ -14,7 +15,7 @@ import { useFormatText } from '../../../../app/composables/formatText.js';
 import { useProseContext } from '../../../../app/index.js';
 import { useProblemPhrase } from '../../composables/phrase.js';
 
-type CheckStatus = 'default' | 'correct' | 'wrong';
+type CheckStatus = 'default' | 'loading' | 'correct' | 'wrong';
 
 type CheckState = {
   icon: string;
@@ -40,6 +41,13 @@ const emit = defineEmits<{
   (event: 'status-change', status: CheckStatus): void;
 }>();
 
+const state = ref<CheckStatus>('default');
+
+const formatText = useFormatText();
+const { EruditIcon, EruditTransition, loadingSvg, problemCheckers } =
+  useProseContext();
+const phrase = await useProblemPhrase();
+
 const states: Record<CheckStatus, CheckState> = {
   default: {
     icon: checkIcon,
@@ -47,6 +55,12 @@ const states: Record<CheckStatus, CheckState> = {
     inputClass: 'border-border text-text',
     buttonClass:
       'text-text-muted border-border hocus:border-text-muted hocus:text-text',
+  },
+  loading: {
+    icon: loadingSvg,
+    labelClass: 'text-text-muted',
+    inputClass: 'border-border text-text',
+    buttonClass: 'text-text-muted border-border',
   },
   correct: {
     icon: successIcon,
@@ -63,11 +77,8 @@ const states: Record<CheckStatus, CheckState> = {
   },
 };
 
-const state = ref<CheckStatus>('default');
-
-const formatText = useFormatText();
-const { EruditIcon, EruditTransition } = useProseContext();
-const phrase = await useProblemPhrase();
+const currentState = computed(() => states[state.value]);
+const isLoading = computed(() => state.value === 'loading');
 
 const hint = computed(() => {
   if (check.data.hint) {
@@ -109,7 +120,7 @@ watch(answerInput, () => {
   emit('status-change', 'default');
 });
 
-function doCheck() {
+async function doCheck() {
   const newInput = answerInput.value.replace(/\s+/g, ' ').trim();
 
   if (newInput === lastCheckedInput.value) {
@@ -117,6 +128,7 @@ function doCheck() {
   }
 
   lastCheckedInput.value = newInput;
+  state.value = 'loading';
 
   if (script) {
     const ok = script.check(newInput || undefined);
@@ -125,12 +137,17 @@ function doCheck() {
     return;
   }
 
-  state.value = checkProblemAnswer(
+  const checkContext: ProblemCheckContext = {
+    yesRegexp: phrase.yes_regexp,
+    noRegexp: phrase.no_regexp,
+    checkers: problemCheckers,
+  };
+
+  state.value = (await checkProblemAnswer(
     newInput,
-    phrase.yes_regexp,
-    phrase.no_regexp,
     validator.value,
-  )
+    checkContext,
+  ))
     ? 'correct'
     : 'wrong';
 
@@ -143,7 +160,7 @@ function doCheck() {
     <div
       :class="[
         'text-main-sm font-medium transition-[color]',
-        states[state].labelClass,
+        currentState.labelClass,
       ]"
     >
       <span @click="answerInputElement?.focus()">
@@ -157,36 +174,38 @@ function doCheck() {
         v-model="answerInput"
         type="text"
         autocomplete="off"
+        :disabled="isLoading"
         :placeholder="check.data.placeholder"
         :class="[
           `bg-bg-main text-main-sm focus:ring-brand relative z-10 min-w-0 flex-1
           rounded rounded-tr-none rounded-br-none border border-r-0 px-2.5 py-1
           ring-2 ring-transparent outline-0
           transition-[border,color,background,box-shadow]`,
-          states[state].inputClass,
+          currentState.inputClass,
         ]"
       />
 
       <button
         type="submit"
+        :disabled="isLoading"
         :class="[
           `bg-bg-main relative w-[50px] cursor-pointer rounded rounded-tl-none
           rounded-bl-none border outline-0 transition-[border,color,background]`,
-          states[state].buttonClass,
+          currentState.buttonClass,
         ]"
       >
         <EruditIcon
           :key="state"
-          :name="states[state].icon"
-          :class="['invisible m-auto text-[1.2em]', states[state].iconClass]"
+          :name="currentState.icon"
+          :class="['invisible m-auto text-[1.2em]', currentState.iconClass]"
         />
         <EruditTransition>
           <EruditIcon
             :key="state"
-            :name="states[state].icon"
+            :name="currentState.icon"
             :class="[
               'absolute top-1/2 left-1/2 -translate-1/2 text-[1.2em]',
-              states[state].iconClass,
+              currentState.iconClass,
             ]"
           />
         </EruditTransition>
