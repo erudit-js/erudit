@@ -4,7 +4,7 @@ import { build, type Plugin } from 'esbuild';
 
 import { STATIC_ASSET_EXTENSIONS } from '#layers/erudit/server/erudit/prose/transform/extensions';
 import { createGlobalContent } from '@erudit-js/core/content/global';
-import { coreElements, eruditGlobalNames } from '#erudit/prose/global';
+import { eruditGlobalNames } from '#erudit/prose/global';
 import { autoImportNames } from '#erudit/autoImports';
 
 /**
