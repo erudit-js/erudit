@@ -28,7 +28,7 @@
     "@erudit-js/core": "workspace:*",
     "@erudit-js/prose": "workspace:*",
     "unslash": "^2.0.0",
-    "@floating-ui/vue": "^1.1.10",
+    "@floating-ui/vue": "^1.1.11",
     "tsprose": "^1.0.0",
     "@tailwindcss/vite": "^4.2.1",
     "better-sqlite3": "^12.6.2",
