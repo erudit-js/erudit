@@ -2,15 +2,17 @@ import type { Nuxt } from 'nuxt/schema';
 import { addTemplate } from 'nuxt/kit';
 
 import type { ElementData } from './shared';
+import { toJsSlug } from '../toJsSlug';
 
 export function createAppTemplate(nuxt: Nuxt, elementsData: ElementData[]) {
-  const defaultImportName = (elementName: string) => `app_${elementName}`;
+  const importName = (i: number, name: string) => `app_${i}_${toJsSlug(name)}`;
 
   const apps: Record<string, string> = {};
 
-  for (const elementData of elementsData) {
+  for (let i = 0; i < elementsData.length; i++) {
+    const elementData = elementsData[i]!;
     if (elementData.absAppPath) {
-      apps[defaultImportName(elementData.name)] = elementData.absAppPath;
+      apps[importName(i, elementData.name)] = elementData.absAppPath;
     }
   }
 

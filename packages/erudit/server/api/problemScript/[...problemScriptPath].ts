@@ -312,10 +312,28 @@ function normalizeEruditGlobals(code: string): string {
   code = code.replace(/_jsx\d*\b/g, 'jsx');
   code = code.replace(/_Fragment\d*\b/g, 'Fragment');
 
+  // Collect names already declared via real imports that esbuild kept
+  // (i.e. non-global imports). These must NOT appear in the preamble to avoid
+  // duplicate-identifier errors when a file explicitly imports a global name.
+  const declaredByImports = new Set<string>();
+  const importPattern = /^import\s+\{([^}]+)\}\s+from\s+/gm;
+  let im;
+  while ((im = importPattern.exec(code)) !== null) {
+    for (const part of im[1]!.split(',')) {
+      const trimmed = part.trim();
+      if (!trimmed) continue;
+      // Handle "X as Y" — the local name Y is the declared identifier
+      const asMatch = trimmed.match(/\w+\s+as\s+(\w+)/);
+      const name = asMatch ? asMatch[1]! : trimmed.match(/^(\w+)$/)?.[1];
+      if (name) declaredByImports.add(name);
+    }
+  }
+
   // Detect which ERUDIT_GLOBAL names are actually used in the code
   const allNames = getGlobalNames();
   const usedNames = [...allNames]
     .filter((n) => /^[a-zA-Z_$]\w*$/.test(n) && !n.startsWith('_'))
+    .filter((n) => !declaredByImports.has(n))
     .filter((n) => new RegExp('\\b' + n + '\\b').test(code));
 
   if (usedNames.length > 0) {

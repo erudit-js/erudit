@@ -3,20 +3,21 @@ import type { Nuxt } from 'nuxt/schema';
 import { addTemplate } from 'nuxt/kit';
 
 import type { ElementData } from './shared';
+import { toJsSlug } from '../toJsSlug';
 
 export function createGlobalTemplate(nuxt: Nuxt, elementsData: ElementData[]) {
-  const defaultImportName = (type: 'core' | 'global', elementName: string) =>
-    `${type}_${elementName}`;
+  const importName = (type: 'core' | 'global', i: number, name: string) =>
+    `${type}_${i}_${toJsSlug(name)}`;
 
   const cores: Record<string, string> = {};
   const globals: Record<string, string> = {};
 
-  for (const elementData of elementsData) {
-    cores[defaultImportName('core', elementData.name)] =
-      elementData.absCorePath;
+  for (let i = 0; i < elementsData.length; i++) {
+    const elementData = elementsData[i]!;
+    cores[importName('core', i, elementData.name)] = elementData.absCorePath;
 
     if (existsSync(elementData.absDirectory + '/_global.ts')) {
-      globals[defaultImportName('global', elementData.name)] =
+      globals[importName('global', i, elementData.name)] =
         elementData.absDirectory + '/_global.ts';
     }
   }

@@ -2,23 +2,27 @@ import type { Nuxt } from 'nuxt/schema';
 import { addTemplate } from 'nuxt/kit';
 
 import type { ResolvedProblemCheck } from './shared';
+import { toJsSlug } from '../toJsSlug';
 
 export function createTemplate(
   nuxt: Nuxt,
   problemChecks: ResolvedProblemCheck[],
 ) {
+  const importName = (i: number, name: string) =>
+    `check_${i}_${toJsSlug(name)}`;
+
   const template = `
 import type { ProblemCheckers } from '@erudit-js/core/problemCheck';
 
 ${problemChecks
   .map(
-    (check) =>
-      `import ${check.name} from '${check.absPath.replace(/\.(ts|js)$/, '')}';`,
+    (check, i) =>
+      `import ${importName(i, check.name)} from '${check.absPath.replace(/\.(ts|js)$/, '')}';`,
   )
   .join('\n')}
 
 export const problemCheckers: ProblemCheckers = {
-  ${problemChecks.map((check) => `${check.name},`).join('\n  ')}
+  ${problemChecks.map((check, i) => `${JSON.stringify(check.name)}: ${importName(i, check.name)},`).join('\n  ')}
 }
   `.trim();
 

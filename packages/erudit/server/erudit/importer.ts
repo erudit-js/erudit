@@ -16,27 +16,85 @@ export type EruditServerImporter = Jiti['import'];
 
 export let jiti: Jiti;
 
-/** Cached preamble that destructures all ERUDIT_GLOBAL keys into local vars. */
-let eruditGlobalPreamble: string | undefined;
+/** Cached list of valid identifier keys from ERUDIT_GLOBAL. */
+let cachedGlobalKeys: string[] | undefined;
 
-function getEruditGlobalPreamble(): string {
-  if (eruditGlobalPreamble !== undefined) return eruditGlobalPreamble;
+function getGlobalKeys(): string[] {
+  if (cachedGlobalKeys !== undefined) return cachedGlobalKeys;
 
   const eg = (globalThis as any).ERUDIT_GLOBAL;
   if (!eg || typeof eg !== 'object') {
-    eruditGlobalPreamble = '';
-    return eruditGlobalPreamble;
+    cachedGlobalKeys = [];
+    return cachedGlobalKeys;
   }
 
-  const names = Object.keys(eg).filter((n) => /^[a-zA-Z_$]\w*$/.test(n));
-  if (names.length === 0) {
-    eruditGlobalPreamble = '';
-    return eruditGlobalPreamble;
+  cachedGlobalKeys = Object.keys(eg).filter((n) => /^[a-zA-Z_$]\w*$/.test(n));
+  return cachedGlobalKeys;
+}
+
+/**
+ * Collect names already declared in the transpiled code via imports.
+ * Jiti transpiles ESM imports to CJS-style interop, so we match patterns like:
+ *   const/var/let { X, Y } = require(...)   — destructured CJS
+ *   const/var/let X = require(...)          — default CJS
+ *   const/var/let X = ...                   — interop helpers
+ *   import { X } from '...'                — preserved ESM (if any)
+ */
+function collectDeclaredNames(code: string): Set<string> {
+  const declared = new Set<string>();
+
+  // Destructured require/import: const/var/let { X, Y as Z } = require(...)
+  // or: import { X, Y as Z } from '...'
+  const destructuredPattern =
+    /\b(?:const|let|var)\s+\{([^}]+)\}\s*=\s*require\s*\(|\bimport\s+\{([^}]+)\}\s+from\s+/g;
+  let m;
+  while ((m = destructuredPattern.exec(code)) !== null) {
+    const bindings = m[1] ?? m[2];
+    if (!bindings) continue;
+    for (const part of bindings.split(',')) {
+      const trimmed = part.trim();
+      if (!trimmed) continue;
+      // Handle "X as Y" (import) or "X: Y" (destructured require)
+      const asMatch = trimmed.match(/\w+\s+as\s+(\w+)/);
+      if (asMatch) {
+        declared.add(asMatch[1]!);
+        continue;
+      }
+      const colonMatch = trimmed.match(/\w+\s*:\s*(\w+)/);
+      if (colonMatch) {
+        declared.add(colonMatch[1]!);
+        continue;
+      }
+      const nameOnly = trimmed.match(/^(\w+)$/);
+      if (nameOnly) declared.add(nameOnly[1]!);
+    }
   }
 
-  eruditGlobalPreamble =
-    'var { ' + names.join(', ') + ' } = globalThis.ERUDIT_GLOBAL;\n';
-  return eruditGlobalPreamble;
+  // Simple declarations: const/var/let X = require(...) or interop helpers
+  const simplePattern = /\b(?:const|let|var)\s+(\w+)\s*=/g;
+  let sm;
+  while ((sm = simplePattern.exec(code)) !== null) {
+    declared.add(sm[1]!);
+  }
+
+  return declared;
+}
+
+/**
+ * Build a per-file preamble that destructures ERUDIT_GLOBAL keys, skipping
+ * any names the file already declares via explicit imports.
+ */
+function buildFilteredPreamble(code: string): string {
+  const allKeys = getGlobalKeys();
+  if (allKeys.length === 0) return '';
+
+  const declared = collectDeclaredNames(code);
+  const filtered =
+    declared.size > 0 ? allKeys.filter((n) => !declared.has(n)) : allKeys;
+
+  if (filtered.length === 0) return '';
+
+  return 'var { ' + filtered.join(', ') + ' } = globalThis.ERUDIT_GLOBAL;\n';
 }
 
 export async function setupServerImporter() {
@@ -67,7 +125,7 @@ export async function setupServerImporter() {
       // into local variables so bare identifiers resolve correctly.
       //
       if (filename.startsWith(ERUDIT.paths.project() + '/')) {
-        const preamble = getEruditGlobalPreamble();
+        const preamble = buildFilteredPreamble(code);
         if (preamble) {
           code = preamble + code;
         }
