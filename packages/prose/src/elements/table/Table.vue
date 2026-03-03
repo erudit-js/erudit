@@ -36,12 +36,22 @@ const rows = computed(() =>
           <tr
             v-for="row in rows"
             :key="row.id"
-            class="odd:bg-(--oddCellBg) even:bg-(--evenCellBg)"
+            class="group odd:bg-(--oddCellBg) even:bg-(--evenCellBg)"
           >
             <td
               v-for="cell in row.children"
               :key="cell.id"
-              class="py-small px-normal rounded"
+              :class="[
+                `py-small px-normal group-hocus:inset-ring-(--tableBorder)
+                rounded inset-ring-2 inset-ring-transparent
+                transition-[box-shadow]`,
+                cell.data?.center
+                  ? 'text-center'
+                  : cell.data?.right
+                    ? 'text-right'
+                    : '',
+                cell.data?.freeze && 'whitespace-nowrap',
+              ]"
             >
               <Render
                 v-for="inliner of cell.children"
@@ -59,41 +69,38 @@ const rows = computed(() =>
 
 <style module>
 .table {
-  --tableBorder: color-mix(
-    in srgb,
-    var(--color-brand),
-    var(--color-border) 85%
+  --tableBorder: light-dark(
+    color-mix(in hsl, var(--color-brand), var(--color-border) 70%),
+    color-mix(in hsl, var(--color-brand), var(--color-border) 85%)
   );
 
-  --evenCellBg: color-mix(
-    in srgb,
-    light-dark(#f5f5f5, #282828),
-    var(--color-brand) 3%
+  --evenCellBg: light-dark(
+    color-mix(in hsl, #f5f5f5, var(--color-brand) 12%),
+    color-mix(in hsl, #2b2b2b, var(--color-brand) 4%)
   );
 
-  --oddCellBg: color-mix(
-    in srgb,
-    light-dark(#f5f5f5, #282828),
-    var(--color-brand) 10%
+  --oddCellBg: light-dark(
+    color-mix(in hsl, #f5f5f5, var(--color-brand) 18%),
+    color-mix(in hsl, #2b2b2b, var(--color-brand) 8%)
   );
 
   [data-prose-accent] & {
     --tableBorder: color-mix(
       in srgb,
-      var(--accentBorder),
-      var(--color-border) 50%
+      var(--accentText),
+      var(--color-border) 60%
     );
 
     --evenCellBg: color-mix(
       in srgb,
-      light-dark(var(--color-bg-main), #202020),
+      light-dark(color-mix(in srgb, #fff, var(--accentText) 13%), #252525),
       var(--accentText) 12%
     );
 
     --oddCellBg: color-mix(
       in srgb,
-      light-dark(var(--color-bg-main), #202020),
-      var(--accentText) 18%
+      light-dark(color-mix(in srgb, #fff, var(--accentText) 13%), #252525),
+      var(--accentText) 19%
     );
   }
 }

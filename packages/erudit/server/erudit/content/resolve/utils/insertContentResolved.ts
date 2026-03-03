@@ -1,4 +1,4 @@
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 import { sql } from 'drizzle-orm';
 import type { ContentProseType } from '@erudit-js/core/content/prose';
 import { builtValidPaths } from '../../global/build';
@@ -80,7 +80,24 @@ async function insertContentDeps(
     await ERUDIT.db
       .insert(ERUDIT.db.schema.contentDeps)
       .values(contentDeps)
-      .onConflictDoNothing();
+      .onConflictDoUpdate({
+        target: [
+          ERUDIT.db.schema.contentDeps.fromFullId,
+          ERUDIT.db.schema.contentDeps.toFullId,
+        ],
+        set: {
+          // Merge unique names from the auto dep into the existing row
+          // (which may already be a hard dep that has no uniqueNames yet).
+          // Only uniqueNames is updated — hard/reason are left untouched.
+          uniqueNames: sql`CASE
+            WHEN ${ERUDIT.db.schema.contentDeps.uniqueNames} IS NULL
+              THEN excluded.uniqueNames
+            WHEN excluded.uniqueNames IS NULL
+              THEN ${ERUDIT.db.schema.contentDeps.uniqueNames}
+            ELSE ${ERUDIT.db.schema.contentDeps.uniqueNames} || ',' || excluded.uniqueNames
+          END`,
+        },
+      });
   }
 }
 
@@ -93,7 +110,7 @@ function filterTargetMap(
   const brokenLinkMessage = (message: string, metas: ContentLinkUsage[]) => {
     let output = `${message} in ${ERUDIT.log.stress(contentFullId)}:\n`;
     for (const { type, label } of metas) {
-      output += `  ${chalk.gray('➔')}  <${type}>${label}</${type}>\n`;
+      output += `  ${styleText('gray', '➔')}  <${type}>${label}</${type}>\n`;
     }
     return output;
   };
@@ -104,7 +121,7 @@ function filterTargetMap(
     if (storageKey.startsWith('<link:unknown>/')) {
       ERUDIT.log.warn(
         brokenLinkMessage(
-          `Unknown link ${chalk.red(storageKey.replace('<link:unknown>/', ''))}`,
+          `Unknown link ${styleText('red', storageKey.replace('<link:unknown>/', ''))}`,
           metas,
         ),
       );
@@ -136,7 +153,7 @@ function filterTargetMap(
       } catch {
         ERUDIT.log.warn(
           brokenLinkMessage(
-            `Failed to resolve content link ${chalk.red(storageKey.replace('<link:global>/', ''))}`,
+            `Failed to resolve content link ${styleText('red', storageKey.replace('<link:global>/', ''))}`,
             metas,
           ),
         );

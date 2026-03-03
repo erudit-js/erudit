@@ -42,6 +42,7 @@ export interface SubProblemSchema extends Schema {
 
 export interface SubProblemData {
   label?: string;
+  standalone?: true;
   scriptUniques?: Record<string, Unique>;
 }
 
@@ -55,7 +56,7 @@ export const SubProblem = defineEruditTag({
   tagName: 'SubProblem',
   schema: subProblemSchema,
 })<
-  { label?: string } & (
+  { label?: string; standalone?: true } & (
     | { children: {}; script?: undefined }
     | { script: ProblemScriptInstance; children?: undefined }
   )
@@ -65,6 +66,10 @@ export const SubProblem = defineEruditTag({
   const label = props.label?.trim();
   if (label) {
     element.data.label = label;
+  }
+
+  if (props.standalone) {
+    element.data.standalone = true;
   }
 
   if (props.script && children) {

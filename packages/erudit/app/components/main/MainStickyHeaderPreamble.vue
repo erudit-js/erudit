@@ -1,5 +1,8 @@
 <script lang="ts" setup>
-const { mainContent } = defineProps<{ mainContent: MainContent }>();
+const { mainContent, lastChangedDate } = defineProps<{
+  mainContent: MainContent;
+  lastChangedDate?: Date;
+}>();
 </script>
 
 <template>
@@ -20,7 +23,7 @@ const { mainContent } = defineProps<{ mainContent: MainContent }>();
     <MainContentStats
       mode="single"
       :stats="mainContent.stats"
-      :contentRelativePath="mainContent.contentRelativePath"
+      :lastChangedDate
     />
     <div class="h-main-half"></div>
   </div>

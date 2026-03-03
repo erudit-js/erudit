@@ -37,6 +37,7 @@ export async function spawnNuxt(config: NuxtConfig) {
           shell: true,
           stdio: 'inherit',
           env: {
+            FORCE_COLOR: '3',
             ...process.env,
             ...config.env,
           },

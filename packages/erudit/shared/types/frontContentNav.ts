@@ -1,4 +1,5 @@
 import type { ContentFlags } from '@erudit-js/core/content/flags';
+import type { TopicPart } from '@erudit-js/core/content/topic';
 
 export interface FrontContentNavItemBase {
   shortId: string;
@@ -9,6 +10,7 @@ export interface FrontContentNavItemBase {
 
 export interface FrontContentNavTopic extends FrontContentNavItemBase {
   type: 'topic';
+  parts: TopicPart[];
 }
 
 export interface FrontContentNavPage extends FrontContentNavItemBase {

@@ -85,12 +85,14 @@ export function initScrollUpWatcher() {
       addEventListener('resize', resetLayoutEstablished);
 
       addEventListener('scroll', () => {
+        const currentY = window.scrollY;
+
         if (!layoutEstablished) {
           resetLayoutEstablished();
+          lastY = currentY;
           return;
         }
 
-        const currentY = window.scrollY;
         const delta = currentY - lastY;
 
         sumDelta += delta;

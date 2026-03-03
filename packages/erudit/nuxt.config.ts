@@ -3,11 +3,6 @@ import { sn } from 'unslash';
 
 import { BASE_URL, ERUDIT_COMMAND, PROJECT_PATH } from './modules/erudit/env';
 
-/**
- * This is context-unaware or "static" Nuxt configuration.
- * The only thing that works here are aliases.
- * If you need to use context (e.g. paths to package/project or Erudit project config), use `./modules/erudit/setup/nuxtConfig.ts` file.
- */
 export default defineNuxtConfig({
   compatibilityDate: '2026-01-01',
   devtools: { enabled: true },
@@ -18,6 +13,11 @@ export default defineNuxtConfig({
     iconsDir: '#layers/erudit/app/assets/icons',
   },
   plugins: ['#layers/erudit/app/plugins/appSetup'],
+  typescript: {
+    nodeTsConfig: {
+      include: [sn(PROJECT_PATH, 'packages/erudit/modules/erudit/**/*.ts')],
+    },
+  },
   runtimeConfig: {
     eruditPath: '',
     projectPath: '',
@@ -25,6 +25,7 @@ export default defineNuxtConfig({
     public: {
       eruditVersion: '',
       eruditMode: '',
+      eruditReload: true,
       siteUrl: '',
     },
   },
@@ -93,7 +94,14 @@ export default defineNuxtConfig({
       },
     ],
     optimizeDeps: {
-      noDiscovery: true,
+      include: [
+        '@vue/devtools-core',
+        '@vue/devtools-kit',
+        '@floating-ui/vue',
+        'unslash',
+        'tsprose',
+        'tsprose/jsx-runtime',
+      ],
     },
     server: {
       fs: { strict: false },

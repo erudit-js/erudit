@@ -25,10 +25,7 @@ defineProps<{ type: 'dependency' | 'dependent'; deps: ContentDep[] }>();
         >
           {{ formatText(dep.reason) }}
         </div>
-        <div
-          v-if="dep.type === 'auto' && dep.uniques?.length"
-          class="mt-small flex flex-col gap-0.5"
-        >
+        <div v-if="dep.uniques?.length" class="mt-small flex flex-col gap-0.5">
           <DepUnique
             v-for="unique in dep.uniques"
             :type

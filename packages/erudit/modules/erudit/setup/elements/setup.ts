@@ -1,4 +1,3 @@
-import chalk from 'chalk';
 import type { Nuxt } from 'nuxt/schema';
 import { findPath } from 'nuxt/kit';
 
@@ -6,12 +5,13 @@ import type { ProseCoreElement } from '@erudit-js/prose';
 
 import type { EruditRuntimeConfig } from '../../../../shared/types/runtimeConfig';
 import { moduleLogger } from '../../logger';
+import { printGrayNamesTable } from '../namesTable';
 import type { ElementData } from './shared';
-import { createTagsTable } from './tagsTable';
 import { createElementGlobalTypes } from './elementGlobalTypes';
 import { createGlobalTemplate } from './globalTemplate';
 import { createAppTemplate } from './appTemplate';
 import { PROJECT_PATH } from '../../env';
+import { addDependencies } from '../../dependencies';
 
 const BUILTIN_ELEMENT_PATHS = [
   '@erudit-js/prose/elements/callout',
@@ -131,16 +131,7 @@ export async function setupProseElements(
         }
       }
 
-      const transpile = (nuxt.options.build.transpile ||= []);
-      const optimizeDeps = nuxt.options.vite.optimizeDeps || {};
-      const optimizeDepsInclude = (optimizeDeps.include ||= []);
-
-      for (const [name, options] of Object.entries(
-        coreElement.dependencies ?? {},
-      )) {
-        if (options?.transpile) transpile.push(name);
-        if (options?.optimize) optimizeDepsInclude.push(name);
-      }
+      addDependencies(nuxt, coreElement.dependencies);
     }
 
     elementsData.push(elementData);
@@ -160,6 +151,9 @@ Registered ${elementsNumber} prose elements: ${schemasNumber} schema(s) and ${ta
         `.trim(),
   );
 
-  const tagsTable = createTagsTable(elementsData);
-  console.log(chalk.gray(tagsTable));
+  const tagNames = elementsData.flatMap((data) =>
+    data.coreElements.flatMap((coreElement) => Object.keys(coreElement.tags)),
+  );
+
+  printGrayNamesTable(tagNames.map((t) => `<${t}>`));
 }

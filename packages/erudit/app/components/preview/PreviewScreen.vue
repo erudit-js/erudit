@@ -18,20 +18,22 @@ const { closePreview, hasPreviousRequest, setPreviousPreview } = usePreview();
       <slot></slot>
     </div>
     <div
-      class="border-border gap-small micro:gap-normal micro:h-[60px] px-main
-        flex h-[54px] shrink-0 items-center border-t"
+      class="border-brand/20 dark:border-brand/14 gap-small micro:gap-normal
+        micro:h-[60px] px-main flex h-[54px] shrink-0 items-center border-t
+        [box-shadow:0px_2px_10px_var(--color-border)]
+        dark:[box-shadow:0px_2px_10px_var(--color-bg-aside)]"
     >
       <MaybeMyIcon
         :name="icon"
-        class="text-text-muted micro:text-[34px] shrink-0 text-[30px]"
+        class="micro:text-[34px] shrink-0 text-[30px]
+          text-[color-mix(in_srgb,var(--color-brand),var(--color-text)_70%)]"
       />
       <div class="flex flex-1 flex-col justify-center overflow-hidden">
-        <div
+        <FancyBold
+          :text="main"
           class="micro:text-sm overflow-hidden text-xs font-bold text-nowrap
             overflow-ellipsis"
-        >
-          {{ formatText(main) }}
-        </div>
+        />
         <div
           v-if="secondary"
           class="text-text-muted text-tiny micro:text-xs overflow-hidden

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watchEffect } from 'vue';
+import { ref, computed, watchEffect } from 'vue';
 import {
   isProseElement,
   type BlockProseElement,
@@ -36,6 +36,10 @@ const subProblems = element.children.filter((child) =>
 
 const activeSubProblemI = ref(0);
 
+const showShared = computed(
+  () => subProblems[activeSubProblemI.value]?.data.standalone !== true,
+);
+
 function getUnlabeledOrdinal(index: number) {
   let count = 0;
   for (let i = 0; i <= index; i++) {
@@ -57,7 +61,10 @@ watchEffect(() => {
   <Block :element>
     <ProblemContainer>
       <ProblemHeader :info="element.data" />
-      <div v-if="sharedChildren.length" class="pt-(--proseAsideWidth)">
+      <div
+        v-if="sharedChildren.length && showShared"
+        class="pt-(--proseAsideWidth)"
+      >
         <Render v-for="sharedChild of sharedChildren" :element="sharedChild" />
       </div>
       <div

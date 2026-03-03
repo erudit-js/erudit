@@ -2,8 +2,9 @@ import { existsSync } from 'node:fs';
 import type { Nuxt } from '@nuxt/schema';
 import { sn } from 'unslash';
 import type { EruditConfig } from '@erudit-js/core/eruditConfig/config';
+import { isDevLikeMode } from '@erudit-js/core/mode';
 
-import { PROJECT_PATH } from '../env.js';
+import { ERUDIT_MODE, PROJECT_PATH } from '../env.js';
 import { moduleLogger } from '../logger.js';
 import type {
   EruditPublicRuntimeConfig,
@@ -26,25 +27,28 @@ export async function setupEruditRuntimeConfig(nuxt: Nuxt) {
   // Erudit Runtime Config
   //
 
-  nuxt.options.runtimeConfig.erudit = {
+  nuxt.options.runtimeConfig.erudit = (<EruditRuntimeConfig>{
     elements: eruditConfig.elements || [],
     countElements: eruditConfig.countElements || [],
     indexPage: eruditConfig.indexPage,
-  } satisfies EruditRuntimeConfig;
+  }) satisfies EruditRuntimeConfig;
 
   //
   // Erudit Public Runtime Config
   //
 
-  nuxt.options.runtimeConfig.public.erudit = {
+  nuxt.options.runtimeConfig.public.erudit = (<EruditPublicRuntimeConfig>{
     debug: {
       ads: eruditConfig.debug?.ads ?? false,
       log: eruditConfig.debug?.log ?? false,
       slowTransition: eruditConfig.debug?.slowTransition ?? false,
       fakeApi: {
-        repository: eruditConfig.debug?.fakeApi?.repository ?? nuxt.options.dev,
+        repository:
+          eruditConfig.debug?.fakeApi?.repository ??
+          (nuxt.options.dev || isDevLikeMode(ERUDIT_MODE)),
         lastChanged:
-          eruditConfig.debug?.fakeApi?.lastChanged ?? nuxt.options.dev,
+          eruditConfig.debug?.fakeApi?.lastChanged ??
+          (nuxt.options.dev || isDevLikeMode(ERUDIT_MODE)),
       },
       analytics: eruditConfig.debug?.analytics,
     },
@@ -85,7 +89,7 @@ export async function setupEruditRuntimeConfig(nuxt: Nuxt) {
     sponsors: eruditConfig.sponsors,
     ads: eruditConfig.ads,
     analytics: eruditConfig.analytics,
-  } satisfies EruditPublicRuntimeConfig;
+  }) satisfies EruditPublicRuntimeConfig;
 
   //
   // Other
@@ -94,6 +98,7 @@ export async function setupEruditRuntimeConfig(nuxt: Nuxt) {
   nuxt.options.runtimeConfig.public.buildTime = Date.now();
 
   return {
+    eruditConfig,
     eruditRuntimeConfig: nuxt.options.runtimeConfig
       .erudit as EruditRuntimeConfig,
     eruditPublicRuntimeConfig: nuxt.options.runtimeConfig.public

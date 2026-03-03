@@ -4,7 +4,22 @@ import { build, type Plugin } from 'esbuild';
 
 import { STATIC_ASSET_EXTENSIONS } from '#layers/erudit/server/erudit/prose/transform/extensions';
 import { createGlobalContent } from '@erudit-js/core/content/global';
-import { coreElements } from '#erudit/prose/global';
+import { eruditGlobalNames } from '#erudit/prose/global';
+import { autoImportNames } from '#erudit/autoImports';
+
+/**
+ * Pure function calls irrelevant to the problem script runtime.
+ * Their entire call expressions (including all arguments) are replaced with
+ * `undefined` before bundling so esbuild never follows transitive imports
+ * inside their arguments (e.g. heavy checker handlers importing `mathjs`).
+ */
+const WIPE_OUT_FUNCTIONS: string[] = [
+  'defineProblemChecker',
+  'defineContributor',
+  'defineTopic',
+  'defineBook',
+  'definePage',
+];
 
 export default defineEventHandler<Promise<string>>(async (event) => {
   // <filepathToScriptFile>.js
@@ -25,7 +40,7 @@ export default defineEventHandler<Promise<string>>(async (event) => {
       $CONTRIBUTOR: '{}',
     },
     jsx: 'automatic',
-    plugins: [jsxRuntimePlugin, proseGlobalsPlugin, staticFilesPlugin],
+    plugins: [jsxRuntimePlugin, sourceTransformPlugin, staticFilesPlugin],
     alias: {
       '#project': ERUDIT.paths.project() + '/',
       '#content': ERUDIT.paths.project('content') + '/',
@@ -33,6 +48,11 @@ export default defineEventHandler<Promise<string>>(async (event) => {
   });
 
   let code = buildResult.outputFiles[0]!.text;
+
+  // Post-build: strip redundant ERUDIT_GLOBAL declarations emitted by esbuild,
+  // normalize JSX identifiers, and prepend a selective destructuring preamble
+  // with only the global names actually used in the bundle.
+  code = normalizeEruditGlobals(code);
 
   // Transform $CONTENT patterns to link objects
   code = code.replace(/\$CONTENT(\.[a-zA-Z_$][\w$]*)+/g, (match) => {
@@ -63,73 +83,192 @@ const jsxRuntimePlugin: Plugin = {
     }));
 
     build.onLoad({ filter: /.*/, namespace: 'jsx-runtime-shim' }, () => ({
+      // Export both the canonical and underscore-prefixed names so that
+      // pre-built modules importing `jsx as _jsx` also resolve correctly.
       contents: `
-                export const jsx = globalThis.jsx;
-                export const jsxs = globalThis.jsxs;
-                export const Fragment = globalThis.Fragment;
+                export const jsx = globalThis.ERUDIT_GLOBAL.jsx;
+                export const jsxs = globalThis.ERUDIT_GLOBAL.jsxs;
+                export const Fragment = globalThis.ERUDIT_GLOBAL.Fragment;
+                export const _jsx = globalThis.ERUDIT_GLOBAL.jsx;
+                export const _jsxs = globalThis.ERUDIT_GLOBAL.jsxs;
+                export const _Fragment = globalThis.ERUDIT_GLOBAL.Fragment;
             `,
       loader: 'js',
     }));
   },
 };
 
-// Names that are available on globalThis and should not be bundled as real imports
-const globalNames = new Set<string>([
-  // JSX runtime
-  'jsx',
-  '_jsx',
-  'jsxs',
-  '_jsxs',
-  'Fragment',
-  '_Fragment',
-  // Prose tag names registered in globalThis
-  ...Object.values(coreElements).flatMap((el: any) =>
-    (el.tags ?? []).map((t: any) => String(t.tagName)),
-  ),
-]);
+// Maps underscore-prefixed JSX names (emitted by some bundlers/transpilers) to
+// the canonical globalThis key where the value actually lives.
+const JSX_UNDERSCORE_ALIASES: Record<string, string> = {
+  _jsx: 'jsx',
+  _jsxs: 'jsxs',
+  _Fragment: 'Fragment',
+};
 
-// Pre-transform: rewrite any import of a known globalThis tag name → const from globalThis.
-// Non-tag imports are left as real imports and bundled normally.
-// Applies recursively to every .ts/.tsx file esbuild processes (including utility files).
-const proseGlobalsPlugin: Plugin = {
-  name: 'prose-globals',
-  setup(build) {
-    build.onLoad({ filter: /\.[jt]sx?$/ }, (args) => {
-      const source = readFileSync(args.path, 'utf8');
+// Names that are available on globalThis.ERUDIT_GLOBAL and should not be bundled as real imports.
+function getGlobalNames(): Set<string> {
+  return new Set<string>([
+    ...eruditGlobalNames,
+    // Auto-imported names from erudit config
+    ...autoImportNames,
+    // Underscore-prefixed aliases for JSX
+    '_jsx',
+    '_jsxs',
+    '_Fragment',
+  ]);
+}
 
-      const transformed = source.replace(
-        /^import\s+\{([^}]+)\}\s+from\s+(['"])([^'"]+)\2.*$/gm,
-        (_match, bindings: string, _quote: string, pkg: string) => {
-          const keepParts: string[] = [];
-          const shimLines: string[] = [];
+/**
+ * Replace calls to functions listed in `WIPE_OUT_FUNCTIONS` with `undefined`.
+ * Uses balanced-parenthesis scanning so nested calls/objects inside arguments
+ * are handled correctly.
+ *
+ * Example:
+ *   export default defineProblemChecker(def, async (d, i) => { ... });
+ *   →  export default undefined;
+ */
+function wipeOutCalls(source: string): string {
+  const pattern = new RegExp(
+    '\\b(' + WIPE_OUT_FUNCTIONS.join('|') + ')\\s*\\(',
+  );
 
-          for (const part of bindings
-            .split(',')
-            .map((s) => s.trim())
-            .filter(Boolean)) {
-            // handle "ExportName as LocalName"
-            const m = part.match(/^(\w+)(?:\s+as\s+(\w+))?$/);
-            if (!m) {
-              keepParts.push(part);
-              continue;
-            }
-            const localName = m[2] ?? m[1]!;
-            if (globalNames.has(localName)) {
-              shimLines.push(
-                `const ${localName} = globalThis[${JSON.stringify(localName)}];`,
-              );
-            } else {
-              keepParts.push(part);
-            }
+  let result = '';
+  let remaining = source;
+
+  while (true) {
+    const m = pattern.exec(remaining);
+    if (!m) {
+      result += remaining;
+      break;
+    }
+
+    // Skip function/method declarations (e.g. `function defineProblemChecker(`)
+    const prefix = remaining.slice(Math.max(0, m.index - 20), m.index);
+    if (/\bfunction\s*$/.test(prefix)) {
+      result += remaining.slice(0, m.index + m[0].length);
+      remaining = remaining.slice(m.index + m[0].length);
+      continue;
+    }
+
+    // Append everything before the function name
+    result += remaining.slice(0, m.index);
+
+    // Find the opening paren position (right after the function name + optional whitespace)
+    const openParenIndex = m.index + m[0].length - 1;
+    let depth = 1;
+    let i = openParenIndex + 1;
+
+    // Scan forward to find the matching closing paren, skipping strings/templates
+    while (i < remaining.length && depth > 0) {
+      const ch = remaining[i]!;
+
+      if (ch === '(') {
+        depth++;
+      } else if (ch === ')') {
+        depth--;
+      } else if (ch === "'" || ch === '"' || ch === '`') {
+        // Skip string/template literal
+        const quote = ch;
+        i++;
+        while (i < remaining.length) {
+          const sc = remaining[i]!;
+          if (sc === '\\') {
+            i += 2; // skip escaped char
+            continue;
           }
+          if (sc === quote) break;
+          i++;
+        }
+      } else if (ch === '/' && remaining[i + 1] === '/') {
+        // Skip single-line comment
+        while (i < remaining.length && remaining[i] !== '\n') i++;
+        continue;
+      } else if (ch === '/' && remaining[i + 1] === '*') {
+        // Skip block comment
+        i += 2;
+        while (i < remaining.length - 1) {
+          if (remaining[i] === '*' && remaining[i + 1] === '/') {
+            i += 2;
+            break;
+          }
+          i++;
+        }
+        continue;
+      }
 
-          const lines: string[] = [];
-          if (keepParts.length > 0)
-            lines.push(`import { ${keepParts.join(', ')} } from '${pkg}';`);
-          lines.push(...shimLines);
-          return lines.join('\n');
-        },
-      );
+      i++;
+    }
+
+    // Replace the entire call expression with `undefined`
+    result += 'undefined';
+    remaining = remaining.slice(i);
+  }
+
+  return result;
+}
+
+/**
+ * Rewrite imports of known globalThis names (JSX runtime + prose tags) from
+ * real import statements to `const X = globalThis["X"]` lookups.
+ * Non-global imports are left as real imports and bundled normally.
+ */
+function rewriteGlobalImports(
+  source: string,
+  globalNames: Set<string>,
+): string {
+  return source.replace(
+    /^import\s+\{([^}]+)\}\s+from\s+(['"])([^'"]+)\2.*$/gm,
+    (_match, bindings: string, _quote: string, pkg: string) => {
+      const keepParts: string[] = [];
+      const shimLines: string[] = [];
+
+      for (const part of bindings
+        .split(',')
+        .map((s) => s.trim())
+        .filter(Boolean)) {
+        // handle "ExportName as LocalName"
+        const m = part.match(/^(\w+)(?:\s+as\s+(\w+))?$/);
+        if (!m) {
+          keepParts.push(part);
+          continue;
+        }
+        const localName = m[2] ?? m[1]!;
+        if (globalNames.has(localName)) {
+          // Underscore-prefixed JSX names (_jsx, _jsxs, _Fragment) must resolve
+          // to the canonical globalThis key (jsx, jsxs, Fragment) because the
+          // runtime only registers the un-prefixed versions.
+          const globalKey = JSX_UNDERSCORE_ALIASES[localName] ?? localName;
+          shimLines.push(
+            `var ${localName} = globalThis.ERUDIT_GLOBAL[${JSON.stringify(globalKey)}];`,
+          );
+        } else {
+          keepParts.push(part);
+        }
+      }
+
+      const lines: string[] = [];
+      if (keepParts.length > 0)
+        lines.push(`import { ${keepParts.join(', ')} } from '${pkg}';`);
+      lines.push(...shimLines);
+      return lines.join('\n');
+    },
+  );
+}
+
+// Pre-transform: wipe out pure function calls irrelevant to problem scripts,
+// then rewrite imports of known globalThis tag names → const from globalThis.
+// Applies to every .ts/.tsx/.js/.jsx file esbuild processes (including utility files).
+
+const sourceTransformPlugin: Plugin = {
+  name: 'source-transform',
+  setup(build) {
+    const globalNames = getGlobalNames();
+    build.onLoad({ filter: /\.[jt]sx?$/ }, (args) => {
+      let source = readFileSync(args.path, 'utf8');
+
+      source = wipeOutCalls(source);
+      source = rewriteGlobalImports(source, globalNames);
 
       const ext = (args.path.match(/[jt]sx?$/)?.[0] ?? 'js') as
         | 'js'
@@ -137,12 +276,76 @@ const proseGlobalsPlugin: Plugin = {
         | 'ts'
         | 'tsx';
       return {
-        contents: transformed,
+        contents: source,
         loader: ext,
       };
     });
   },
 };
+
+/**
+ * Post-build pass that:
+ * 1. Strips all `var X = globalThis.ERUDIT_GLOBAL[...]` declarations (from
+ *    rewriteGlobalImports and the jsxRuntimePlugin shim) and the shim comment.
+ * 2. Normalizes underscore-prefixed JSX call-site names (_jsx2 → jsx, etc.).
+ * 3. Detects which ERUDIT_GLOBAL names are actually referenced in the code.
+ * 4. Prepends a single destructuring preamble with only those names.
+ */
+function normalizeEruditGlobals(code: string): string {
+  // Strip the jsx-runtime-shim comment
+  code = code.replace(/^\/\/ jsx-runtime-shim:jsx-runtime-shim\n/gm, '');
+
+  // Strip ALL var declarations pulling from globalThis.ERUDIT_GLOBAL
+  //   var jsx = globalThis.ERUDIT_GLOBAL.jsx;
+  //   var P = globalThis.ERUDIT_GLOBAL["P"];
+  //   var _jsx2 = globalThis.ERUDIT_GLOBAL.jsx;
+  code = code.replace(
+    /^var \w+ = globalThis\.ERUDIT_GLOBAL(?:\.[a-zA-Z_$][\w$]*|\[["'][a-zA-Z_$][\w$]*["']\]);[ \t]*\n?/gm,
+    '',
+  );
+
+  // Normalize call-site names (_jsxs must precede _jsx to avoid partial match):
+  //   _jsxs2(…)  →  jsxs(…)
+  //   _jsx2(…)   →  jsx(…)
+  //   _Fragment2 →  Fragment
+  code = code.replace(/_jsxs\d*\b/g, 'jsxs');
+  code = code.replace(/_jsx\d*\b/g, 'jsx');
+  code = code.replace(/_Fragment\d*\b/g, 'Fragment');
+
+  // Collect names already declared via real imports that esbuild kept
+  // (i.e. non-global imports). These must NOT appear in the preamble to avoid
+  // duplicate-identifier errors when a file explicitly imports a global name.
+  const declaredByImports = new Set<string>();
+  const importPattern = /^import\s+\{([^}]+)\}\s+from\s+/gm;
+  let im;
+  while ((im = importPattern.exec(code)) !== null) {
+    for (const part of im[1]!.split(',')) {
+      const trimmed = part.trim();
+      if (!trimmed) continue;
+      // Handle "X as Y" — the local name Y is the declared identifier
+      const asMatch = trimmed.match(/\w+\s+as\s+(\w+)/);
+      const name = asMatch ? asMatch[1]! : trimmed.match(/^(\w+)$/)?.[1];
+      if (name) declaredByImports.add(name);
+    }
+  }
+
+  // Detect which ERUDIT_GLOBAL names are actually used in the code
+  const allNames = getGlobalNames();
+  const usedNames = [...allNames]
+    .filter((n) => /^[a-zA-Z_$]\w*$/.test(n) && !n.startsWith('_'))
+    .filter((n) => !declaredByImports.has(n))
+    .filter((n) => new RegExp('\\b' + n + '\\b').test(code));
+
+  if (usedNames.length > 0) {
+    code =
+      'var { ' +
+      usedNames.join(', ') +
+      ' } = globalThis.ERUDIT_GLOBAL;\n' +
+      code;
+  }
+
+  return code;
+}
 
 const staticFilesPlugin: Plugin = {
   name: 'static-files',

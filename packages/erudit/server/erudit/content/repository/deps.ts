@@ -4,7 +4,7 @@ export async function getContentDependencies(fullId: string) {
   const hardDependencies: ContentHardDep[] = [];
 
   const dbHardDependencies = await ERUDIT.db.query.contentDeps.findMany({
-    columns: { toFullId: true, hard: true, reason: true },
+    columns: { toFullId: true, hard: true, reason: true, uniqueNames: true },
     where: and(
       or(
         eq(ERUDIT.db.schema.contentDeps.fromFullId, fullId),
@@ -21,13 +21,35 @@ export async function getContentDependencies(fullId: string) {
     return map;
   }, new Map<string, string>());
 
+  // Merge unique names across hard dep rows sharing the same toFullId
+  // (can happen when a topic and its children both hard-dep the same target).
+  const hardUniqueMap = new Map<string, Set<string>>();
+  for (const row of dbHardDependencies) {
+    if (!hardUniqueMap.has(row.toFullId)) {
+      hardUniqueMap.set(row.toFullId, new Set());
+    }
+    if (row.uniqueNames) {
+      for (const name of row.uniqueNames.split(',')) {
+        hardUniqueMap.get(row.toFullId)!.add(name);
+      }
+    }
+  }
+
   const hardToFullIds = ERUDIT.contentNav.orderIds(
     externalToFullIds(dbHardDependencies),
   );
 
   for (const toFullId of hardToFullIds) {
     const reason = fullId2Reason.get(toFullId)!;
-    const hardDep = await createContentDep('hard', toFullId, undefined, reason);
+    const uniquePairs = Array.from(hardUniqueMap.get(toFullId) ?? []).map(
+      (uniqueName) => ({ contentFullId: toFullId, uniqueName }),
+    );
+    const hardDep = await createContentDep(
+      'hard',
+      toFullId,
+      uniquePairs.length > 0 ? uniquePairs : undefined,
+      reason,
+    );
     if (hardDep) {
       hardDependencies.push(hardDep);
     }
@@ -166,7 +188,7 @@ async function createContentDep(
 async function createContentDep(
   type: 'hard',
   fullId: string,
-  uniquePairs: undefined,
+  uniquePairs: { contentFullId: string; uniqueName: string }[] | undefined,
   reason: string,
 ): Promise<ContentHardDep | undefined>;
 async function createContentDep(
@@ -189,12 +211,20 @@ async function createContentDep(
   ]);
 
   if (type === 'hard') {
+    const hardUniques =
+      uniquePairs && uniquePairs.length > 0
+        ? await resolveUniqueEntries(uniquePairs)
+        : undefined;
+
     return {
       type: 'hard',
       reason: reason!,
       contentType,
       title,
       link,
+      ...(hardUniques && hardUniques.length > 0
+        ? { uniques: hardUniques }
+        : {}),
     };
   }
 

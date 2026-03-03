@@ -1,6 +1,6 @@
 import { readFile, writeFile, readdir } from 'node:fs/promises';
 import { join } from 'node:path';
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 
 async function updatePackageVersion(packagePath: string, newVersion: string) {
   const packageJsonPath = join(packagePath, 'package.json');
@@ -19,14 +19,14 @@ async function updatePackageVersion(packagePath: string, newVersion: string) {
     );
 
     console.log(
-      `${chalk.green('✔')} ${chalk.bold(pkg.name || packagePath)}: ${chalk.gray(oldVersion)} → ${chalk.blue(newVersion)}`,
+      `${styleText('green', '✔')} ${styleText('bold', pkg.name || packagePath)}: ${styleText('gray', oldVersion)} → ${styleText('blue', newVersion)}`,
     );
   } catch (err: any) {
     if (err.code === 'ENOENT') {
       return;
     }
     console.error(
-      `${chalk.red('✘')} Failed to update ${packagePath}: ${err.message}`,
+      `${styleText('red', '✘')} Failed to update ${packagePath}: ${err.message}`,
     );
   }
 }
@@ -50,15 +50,15 @@ async function updateBunLock(newVersion: string) {
     await writeFile(bunLockPath, content, 'utf8');
 
     console.log(
-      `${chalk.green('✔')} ${chalk.bold('bun.lock')}: Updated ${updatedCount} workspace versions`,
+      `${styleText('green', '✔')} ${styleText('bold', 'bun.lock')}: Updated ${updatedCount} workspace versions`,
     );
   } catch (err: any) {
     if (err.code === 'ENOENT') {
-      console.log(chalk.yellow('⚠ bun.lock not found, skipping...'));
+      console.log(styleText('yellow', '⚠ bun.lock not found, skipping...'));
       return;
     }
     console.error(
-      `${chalk.red('✘')} Failed to update bun.lock: ${err.message}`,
+      `${styleText('red', '✘')} Failed to update bun.lock: ${err.message}`,
     );
   }
 }
@@ -68,7 +68,7 @@ async function main() {
 
   if (!newVersion) {
     console.log(
-      `\n${chalk.yellow('Usage:')} bun run scripts/version.ts ${chalk.cyan('<new-version>')}`,
+      `\n${styleText('yellow', 'Usage:')} bun run scripts/version.ts ${styleText('cyan', '<new-version>')}`,
     );
     process.exit(1);
   }
@@ -76,7 +76,8 @@ async function main() {
   // Basic version validation (major.minor.patch or with suffix)
   if (!/^\d+\.\d+\.\d+(?:-.+)?$/.test(newVersion)) {
     console.warn(
-      chalk.yellow(
+      styleText(
+        'yellow',
         `⚠ Warning: "${newVersion}" doesn't look like a standard semver version. Proceeding anyway...\n`,
       ),
     );
@@ -86,7 +87,10 @@ async function main() {
   const packagesDir = join(rootDir, 'packages');
 
   console.log(
-    chalk.cyan(`\n🚀 Updating versions to ${chalk.bold(newVersion)}...\n`),
+    styleText(
+      'cyan',
+      `\n🚀 Updating versions to ${styleText('bold', newVersion)}...\n`,
+    ),
   );
 
   // Update all packages in ./packages
@@ -103,10 +107,12 @@ async function main() {
     // Update bun.lock
     await updateBunLock(newVersion);
 
-    console.log(chalk.green(chalk.bold('\n✨ All package versions updated!')));
+    console.log(
+      styleText(['green', 'bold'], '\n✨ All package versions updated!'),
+    );
   } catch (err: any) {
     console.error(
-      chalk.red(`\nFailed to read packages directory: ${err.message}`),
+      styleText('red', `\nFailed to read packages directory: ${err.message}`),
     );
     process.exit(1);
   }

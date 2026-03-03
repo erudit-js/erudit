@@ -86,6 +86,7 @@ async function createFrontContentNavItem(
       return {
         type: 'topic',
         ...baseItem,
+        parts: await ERUDIT.repository.content.topicParts(navNode.fullId),
       };
     case 'page':
       return {

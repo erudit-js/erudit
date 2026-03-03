@@ -11,4 +11,24 @@ describe('SubProblem', () => {
       children: 3,
     });
   });
+
+  it('should accept standalone as true flag', () => {
+    SubProblem({ standalone: true, children: {} });
+  });
+
+  it('should reject standalone as false', () => {
+    SubProblem({
+      // @ts-expect-error
+      standalone: false,
+      children: {},
+    });
+  });
+
+  it('should reject standalone as a string', () => {
+    SubProblem({
+      // @ts-expect-error
+      standalone: 'yes',
+      children: {},
+    });
+  });
 });

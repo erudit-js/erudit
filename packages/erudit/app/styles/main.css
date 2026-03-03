@@ -27,7 +27,7 @@
   --text-main-2xl: calc(1.5 * var(--text-main));
 
   --default-transition-timing-function: cubic-bezier(0, 0, 0.5, 1);
-  --default-transition-duration: calc(200ms * var(--duration-multiplier));
+  --default-transition-duration: calc(180ms * var(--duration-multiplier));
 
   --spacing-normal: calc(4 * var(--spacing));
   --spacing-big: calc(2 * var(--spacing-normal));
@@ -42,7 +42,7 @@
 
   --h-min-aside-item: 60px;
 
-  --color-brand: light-dark(#00b886, #00dcb5);
+  --color-brand: light-dark(#00a545, #129adc);
   --color-bg-root: light-dark(#ebebeb, #141414);
   --color-bg-aside: light-dark(#f7f7f7, #1b1b1b);
   --color-bg-main: light-dark(#ffffff, #212121);

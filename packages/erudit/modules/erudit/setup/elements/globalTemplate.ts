@@ -3,20 +3,21 @@ import type { Nuxt } from 'nuxt/schema';
 import { addTemplate } from 'nuxt/kit';
 
 import type { ElementData } from './shared';
+import { toJsSlug } from '../toJsSlug';
 
 export function createGlobalTemplate(nuxt: Nuxt, elementsData: ElementData[]) {
-  const defaultImportName = (type: 'core' | 'global', elementName: string) =>
-    `${type}_${elementName}`;
+  const importName = (type: 'core' | 'global', i: number, name: string) =>
+    `${type}_${i}_${toJsSlug(name)}`;
 
   const cores: Record<string, string> = {};
   const globals: Record<string, string> = {};
 
-  for (const elementData of elementsData) {
-    cores[defaultImportName('core', elementData.name)] =
-      elementData.absCorePath;
+  for (let i = 0; i < elementsData.length; i++) {
+    const elementData = elementsData[i]!;
+    cores[importName('core', i, elementData.name)] = elementData.absCorePath;
 
     if (existsSync(elementData.absDirectory + '/_global.ts')) {
-      globals[defaultImportName('global', elementData.name)] =
+      globals[importName('global', i, elementData.name)] =
         elementData.absDirectory + '/_global.ts';
     }
   }
@@ -53,17 +54,25 @@ export const elementsGlobals = {
     .join(',\n    ')}
 }
 
+export const eruditGlobalNames = new Set<string>([
+  ...Object.values(coreElements).flatMap((el: any) => (el.tags ?? []).map((t: any) => String(t.tagName))),
+  ...Object.keys(elementsGlobals),
+  'jsx', 'jsxs', 'Fragment', 'defineProblemScript',
+]);
+
 export function registerProseGlobals() {
+  (globalThis as any).ERUDIT_GLOBAL = (globalThis as any).ERUDIT_GLOBAL || {};
+
   for (const coreElement of Object.values(coreElements)) {
     const tags = coreElement.tags || [];
     for (const tag of tags) {
-      Object.assign(globalThis, {
+      Object.assign((globalThis as any).ERUDIT_GLOBAL, {
         [tag.tagName]: tag,
       });
     }
   }
 
-  Object.assign(globalThis, {
+  Object.assign((globalThis as any).ERUDIT_GLOBAL, {
     // Make jsx runtime globally available (for prose generation in isolated modules like problem scripts)
     jsx,
     jsxs,

@@ -1,5 +1,5 @@
 import { defineCommand } from 'citty';
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 import { brandColorLogotype } from '@erudit-js/core/brandTerminal';
 
 import { version } from '../inject.js';
@@ -30,10 +30,12 @@ export const main = defineCommand({
   },
   setup({ args }) {
     console.log(brandColorLogotype);
-    console.log(`Version: ${chalk.bold.cyan(version)}`);
+    console.log(`Version: ${styleText(['bold', 'cyan'], version)}`);
     if (args._[0]) {
       logCommand(args._[0]);
     }
-    console.log(`Erudit path: ${chalk.bold.cyan(CONFIG.ERUDIT_PATH)}`);
+    console.log(
+      `Erudit path: ${styleText(['bold', 'cyan'], CONFIG.ERUDIT_PATH)}`,
+    );
   },
 });

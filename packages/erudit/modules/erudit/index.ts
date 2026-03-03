@@ -16,6 +16,9 @@ import {
   registerServerGlobals,
 } from './setup/globals';
 import { setupProseElements } from './setup/elements/setup';
+import { setupProblemChecks } from './setup/problemChecks/setup';
+import { setupAutoImports } from './setup/autoImports';
+import { addDependencies } from './dependencies';
 
 export default defineNuxtModule({
   meta: { name: 'Erudit', configKey: 'erudit', version },
@@ -27,12 +30,16 @@ export default defineNuxtModule({
     await registerServerGlobals();
     await registerGlobalContentTypes();
 
-    const { eruditRuntimeConfig, nuxtAugmentations } =
+    const { eruditConfig, eruditRuntimeConfig, nuxtAugmentations } =
       await setupEruditRuntimeConfig(nuxt);
     await setupWatchers(nuxt);
     await setupEruditFullRestart(nuxt);
     await setupEruditPublicAssets(nuxt);
     await setupProseElements(nuxt, eruditRuntimeConfig);
+    await setupProblemChecks(nuxt, eruditConfig);
+    await setupAutoImports(nuxt, eruditConfig);
+
+    addDependencies(nuxt, eruditConfig.dependencies);
 
     if (nuxtAugmentations) {
       for (const augment of nuxtAugmentations) {

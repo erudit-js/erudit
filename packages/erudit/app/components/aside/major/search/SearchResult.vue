@@ -95,8 +95,22 @@ const secondaryTitle = computed(() =>
 );
 
 async function searchResultClick() {
-  await router.replace({ ...route, hash: '' });
-  await nextTick();
+  const linkUrl = new URL(result.link, 'http://x');
+  const elementId = linkUrl.searchParams.get('element');
+
+  if (elementId) {
+    // Clear the element param first so watchers re-trigger scroll/highlight.
+    linkUrl.searchParams.delete('element');
+    const withoutElement =
+      linkUrl.pathname + (linkUrl.search || '') + (linkUrl.hash || '');
+    await router.replace({
+      ...route,
+      query: { ...route.query, element: undefined },
+    });
+    await navigateTo(withoutElement);
+    await nextTick();
+  }
+
   await navigateTo(result.link);
 }
 </script>

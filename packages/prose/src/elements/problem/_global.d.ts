@@ -231,6 +231,12 @@ export const Problems = '_tag_';
  * - `<ProblemCheck>` (repeatable)
  * - `<ProblemNote>`
  *
+ * ### Props
+ * - `label` — optional tab label string
+ * - `standalone` — when set, hides any shared description blocks defined at the
+ *   `<Problems>` level for this sub-problem only. Useful when a general task
+ *   applies to all sub-problems except certain ones.
+ *
  * @title SubProblem
  * @layout block
  * @example
@@ -242,6 +248,22 @@ export const Problems = '_tag_';
  *
  *   <ProblemCheck answer={42} />
  * </SubProblem>
+ * ```
+ * @example
+ * ```tsx
+ * <Problems title="Problem Set">
+ *   <P>Find all roots.</P>
+ *   <SubProblem>
+ *     <ProblemDescription>
+ *       This text is visible along with the "Find all roots" description since standalone is not set.
+ *     </ProblemDescription>
+ *   </SubProblem>
+ *   <SubProblem standalone>
+ *     <ProblemDescription>
+ *       Custom problem description. No "Find all roots" text shown since standalone is set.
+ *     </ProblemDescription>
+ *   </SubProblem>
+ * </Problems>
  * ```
  */
 export const SubProblem = '_tag_';

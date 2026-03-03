@@ -189,6 +189,13 @@ onMounted(async () => {
   }
 });
 
+function stripIds(el: ToProseElement<any>): void {
+  delete (el as any).id;
+  for (const child of (el.children ?? []) as ToProseElement<any>[]) {
+    stripIds(child);
+  }
+}
+
 let currentSeed: ProblemSeed = DEFAULT_SEED;
 async function doGenerate(seed: ProblemSeed) {
   if (!scriptInstance.value) {
@@ -207,7 +214,9 @@ async function doGenerate(seed: ProblemSeed) {
   const proseElements: ToProseElement<ProblemContentChild>[] = [];
   for (const rawElement of rawElements) {
     const resolveResult = await eruditRawToProse({ rawProse: rawElement });
-    proseElements.push(resolveResult.prose as any);
+    const prose = resolveResult.prose as ToProseElement<ProblemContentChild>;
+    stripIds(prose);
+    proseElements.push(prose);
   }
 
   if (currentSeed !== seed) {

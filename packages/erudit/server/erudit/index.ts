@@ -1,4 +1,4 @@
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 import type { EruditMode } from '@erudit-js/core/mode';
 
 import { setupServerLogger } from './logger';
@@ -72,7 +72,7 @@ async function setupServer() {
     await setupServerDatabase();
     await setupServerRepository();
     await setupServerContentNav();
-    ERUDIT.log.success(chalk.green('Setup Complete!'));
+    ERUDIT.log.success(styleText('green', 'Setup Complete!'));
 
     await tryServerWatchProject();
     await buildServerErudit();

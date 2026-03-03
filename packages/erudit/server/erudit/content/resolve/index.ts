@@ -1,4 +1,4 @@
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 import { inArray, or } from 'drizzle-orm';
 import { contentPathToId } from '@erudit-js/core/content/path';
 
@@ -180,7 +180,7 @@ function renderChangedContentTree(ids: Set<string>): string {
   const walkTree = (node: Node, depth: number) => {
     if (node.name) {
       const indent = '  '.repeat(Math.max(0, depth - 1));
-      lines.push(`${indent}- ${chalk.cyan(node.name)}`);
+      lines.push(`${indent}- ${styleText('cyan', node.name)}`);
     }
 
     const children = Array.from(node.children.values()).sort((a, b) =>
@@ -199,7 +199,7 @@ function renderChangedContentTree(ids: Set<string>): string {
     walkTree(child, 1);
   });
 
-  const header = chalk.gray('Changed content:');
+  const header = styleText('gray', 'Changed content:');
   return [header, ...lines].join('\n');
 }
 

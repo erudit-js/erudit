@@ -39,6 +39,15 @@ export const contentTargetsArg = {
   },
 } satisfies { target: ArgDef };
 
+export const reloadArg = {
+  reload: {
+    type: 'boolean',
+    alias: 'r',
+    default: true,
+    description: 'Auto-reload browser tabs on successful content rebuild',
+  },
+} satisfies { reload: ArgDef };
+
 export const nitroPresetArg = {
   preset: {
     type: 'string',

@@ -6,16 +6,15 @@ import ItemMaterials from './ItemMaterials.vue';
 const props = defineProps<{
   mode: 'single' | 'children';
   stats?: ContentStats;
-  contentRelativePath?: string;
+  lastChangedDate?: Date;
 }>();
 
 const phrase = await usePhrases('stats');
-const lastChangedSource = useLastChangedSource(() => props.contentRelativePath);
 </script>
 
 <template>
   <section
-    v-if="mode === 'single' && (stats || lastChangedSource)"
+    v-if="mode === 'single' && (stats || lastChangedDate)"
     class="px-main py-main-half"
   >
     <MainSubTitle :title="phrase.stats + ':'" />
@@ -35,7 +34,7 @@ const lastChangedSource = useLastChangedSource(() => props.contentRelativePath);
         :count
         mode="detailed"
       />
-      <ItemLastChanged v-if="lastChangedSource" :source="lastChangedSource" />
+      <ItemLastChanged v-if="lastChangedDate" :date="lastChangedDate" />
     </div>
   </section>
   <div

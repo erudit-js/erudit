@@ -9,6 +9,7 @@ import type { useFloating, UseFloatingOptions } from '@floating-ui/vue';
 import type { EruditLanguageCode } from '@erudit-js/core/eruditConfig/language';
 import type { EruditMode } from '@erudit-js/core/mode';
 import type { FormatText } from '@erudit-js/core/formatText';
+import type { ProblemCheckers } from '@erudit-js/core/problemCheck';
 
 import type { ProseAppElement } from '../appElement.js';
 
@@ -22,6 +23,7 @@ export interface ProseContext {
   baseUrl: string;
   hashUrl: Ref<string | undefined>;
   eruditIcons: Record<string, string>;
+  problemCheckers: ProblemCheckers;
   EruditTransition: Component;
   EruditIcon: Component;
   EruditLink: Component;

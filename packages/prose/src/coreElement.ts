@@ -1,14 +1,8 @@
 import type { ElementStorageCreator, Schema } from 'tsprose';
+import type { EruditDependencies } from '@erudit-js/core/dependencies';
 
 import type { RawToProseSchemaHook } from './rawToProse/hook.js';
 import type { EruditTag, ToEruditTag } from './tag.js';
-
-export interface ProseCoreElementDependencies {
-  [dependencyName: string]: {
-    transpile?: boolean;
-    optimize?: boolean;
-  };
-}
 
 export type ToProseCoreElement<
   TSchema extends Schema,
@@ -16,7 +10,7 @@ export type ToProseCoreElement<
 > = {
   schema: TSchema;
   tags: Tags;
-  dependencies?: ProseCoreElementDependencies;
+  dependencies?: EruditDependencies;
 } & (
   | { createStorage: ElementStorageCreator<TSchema> }
   | { createStorage?: undefined }

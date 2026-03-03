@@ -1,4 +1,4 @@
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 import { brandColorTitle } from '@erudit-js/core/brandTerminal';
 
 interface Logger {
@@ -15,8 +15,12 @@ export type EruditServerLogger = Logger & {
 };
 
 export async function setupServerLogger() {
-  const serverLogger = createLogger(brandColorTitle + ' Server');
-  const serverDebugLogger = createLogger(brandColorTitle + ' Server Debug');
+  const serverLogger = createLogger(
+    `${brandColorTitle}${styleText('gray', ' Server')}`,
+  );
+  const serverDebugLogger = createLogger(
+    `${brandColorTitle}${styleText('gray', ' Server Debug')}`,
+  );
   const debugLogEnabled = !!ERUDIT.config.public.debug.log;
 
   ERUDIT.log = new Proxy(serverLogger, {
@@ -42,32 +46,36 @@ export async function setupServerLogger() {
 }
 
 function createLogger(tag: string): Logger {
-  const formattedTag = chalk.gray(`[${tag}]`);
+  const formattedTag = `${styleText('gray', '[')}${tag}${styleText('gray', ']')}`;
 
   return {
     info(message: any) {
-      console.log(`${formattedTag} ${chalk.blueBright('ℹ')} ${message}`);
+      console.log(`${formattedTag} ${styleText('blueBright', 'ℹ')} ${message}`);
     },
     start(message: any) {
-      console.log(`${formattedTag} ${chalk.magentaBright('◐')} ${message}`);
+      console.log(
+        `${formattedTag} ${styleText('magentaBright', '◐')} ${message}`,
+      );
     },
     success(message: any) {
-      console.log(`${formattedTag} ${chalk.greenBright('✔')} ${message}`);
+      console.log(
+        `${formattedTag} ${styleText('greenBright', '✔')} ${message}`,
+      );
     },
     warn(message: any) {
       console.log(
-        `${formattedTag} ${chalk.bgYellowBright.black(' WARN ')} ${message}`,
+        `${formattedTag} ${styleText(['bgYellowBright', 'black'], ' WARN ')} ${message}`,
       );
     },
     error(message: any) {
       console.log();
       console.log(
-        `${formattedTag} ${chalk.bgRed.whiteBright(' ERROR ')} ${message}`,
+        `${formattedTag} ${styleText(['bgRed', 'whiteBright'], ' ERROR ')} ${message}`,
       );
       console.log();
     },
     stress(message: any) {
-      return chalk.cyanBright(message);
+      return styleText('cyanBright', String(message));
     },
   };
 }

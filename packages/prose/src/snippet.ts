@@ -226,6 +226,7 @@ export function toKeySnippet(snippet?: Snippet): KeySnippet | undefined {
 export interface SeoSnippet {
   title: string;
   description?: string;
+  titleInherited: boolean;
 }
 
 export function toSeoSnippet(snippet?: Snippet): SeoSnippet | undefined {
@@ -237,23 +238,28 @@ export function toSeoSnippet(snippet?: Snippet): SeoSnippet | undefined {
     return {
       title: snippet.title,
       description: snippet.description,
+      titleInherited: true,
     };
   }
 
   if (typeof snippet.seo === 'string') {
-    const title = snippet.seo.trim() || snippet.title;
+    const manualTitle = snippet.seo.trim();
+    const title = manualTitle || snippet.title;
     return {
       title,
       description: snippet.description,
+      titleInherited: !manualTitle,
     };
   }
 
-  const title = snippet.seo.title?.trim() || snippet.title;
+  const manualTitle = snippet.seo.title?.trim();
+  const title = manualTitle || snippet.title;
   const description = snippet.seo.description?.trim() || snippet.description;
 
   return {
     title,
     description,
+    titleInherited: !manualTitle,
   };
 }
 

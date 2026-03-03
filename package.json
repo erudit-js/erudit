@@ -1,29 +1,20 @@
 {
-  "private": true,
   "name": "erudit-monorepo",
-  "type": "module",
-  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/erudit-js/erudit.git"
   },
-  "workspaces": {
-    "packages": [
-      "packages/*",
-      "playground"
-    ],
-    "catalog": {
-      "tsprose": "^1.0.0",
-      "vue": "latest",
-      "vue-router": "latest",
-      "@floating-ui/vue": "^1.1.9",
-      "image-size": "^2.0.2",
-      "chalk": "^5.6.2",
-      "consola": "^3.4.2",
-      "unslash": "^2.0.0",
-      "ts-xor": "^1.3.0"
-    }
+  "devDependencies": {
+    "prettier": "^3.8.1",
+    "prettier-plugin-classnames": "^0.9.0",
+    "prettier-plugin-merge": "^0.10.0",
+    "prettier-plugin-tailwindcss": "^0.7.2",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.18",
+    "ts-xor": "^1.3.0"
   },
+  "license": "MIT",
+  "private": true,
   "scripts": {
     "format": "prettier --write .",
     "version": "bun run scripts/version.ts",
@@ -36,14 +27,22 @@
     "play:launch": "bun erudit launch playground",
     "play:preview": "bun erudit preview playground"
   },
-  "devDependencies": {
-    "chalk": "^5.6.2",
-    "prettier": "^3.8.1",
-    "prettier-plugin-classnames": "^0.9.0",
-    "prettier-plugin-merge": "^0.10.0",
-    "prettier-plugin-tailwindcss": "^0.7.2",
-    "typescript": "^5.9.3",
-    "vitest": "^4.0.18",
-    "ts-xor": "^1.3.0"
+  "type": "module",
+  "workspaces": {
+    "packages": [
+      "packages/*",
+      "playground"
+    ],
+    "catalog": {
+      "tsprose": "^1.0.1",
+      "vue": "latest",
+      "vue-router": "latest",
+      "@floating-ui/vue": "^1.1.11",
+      "image-size": "^2.0.2",
+      "consola": "^3.4.2",
+      "unslash": "^2.0.0",
+      "ts-xor": "^1.3.0",
+      "glob": "^13.0.6"
+    }
   }
 }

@@ -24,6 +24,7 @@ const phrase = await usePhrases(
   'summary_seo_description',
   'practice_seo_description',
 );
+const lastChangedDate = useLastChanged(() => mainContent.contentRelativePath);
 
 await useContentSeo({
   title: mainContent.title,
@@ -62,12 +63,12 @@ await useContentSeo({
     <MainContentStats
       mode="single"
       :stats="mainContent.stats"
-      :contentRelativePath="mainContent.contentRelativePath"
+      :lastChangedDate
     />
     <div class="h-main-half"></div>
     <MainQuoteLoader />
     <div class="h-main-half"></div>
-    <MainStickyHeader :mainContent />
+    <MainStickyHeader :mainContent :lastChangedDate />
   </MainSectionPreamble>
   <MainSection>
     <template #header>

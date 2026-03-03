@@ -43,17 +43,28 @@ const data: Record<TopicPart, TopicPartSwitchData> = {
       :to="partData.state !== 'missing' ? partData.link : undefined"
       :class="[
         `micro:[--switchHeight:50px] micro:gap-small px-small micro:px-normal
-        border-border relative -bottom-[2px] flex h-(--switchHeight)
-        items-center gap-1 rounded rounded-b-none border-2 transition-[color]`,
+        relative -bottom-[2px] flex h-(--switchHeight) items-center gap-1
+        overflow-clip rounded rounded-b-none transition-[color]`,
         partData.state === 'missing' &&
-          'text-text-disabled/75 border-b-border cursor-not-allowed',
-        partData.state === 'active' &&
-          'text-brand bg-bg-main border-b-transparent',
+          'text-text-disabled/75 cursor-not-allowed',
+        partData.state === 'active' && 'text-brand bg-bg-main',
         partData.state === 'inactive' &&
-          `text-text-muted hocus:text-text bg-bg-aside
-          border-b-[color-mix(in_srgb,var(--color-border),var(--color-bg-main)_65%)]`,
+          'text-text-muted hocus:text-text bg-bg-aside',
       ]"
     >
+      <div
+        :class="[
+          'border-border absolute top-0 left-0 h-full w-full rounded-t border-2',
+          partData.state === 'active' && 'border-b-transparent',
+          partData.state === 'inactive' &&
+            'border-b-[color-mix(in_srgb,var(--color-border),var(--color-bg-main)_65%)]',
+        ]"
+      ></div>
+      <div
+        v-if="partData.state === 'active'"
+        class="from-brand/80 via-brand/10 absolute top-0 left-0 z-0 h-full
+          w-full bg-linear-to-b via-5% to-transparent"
+      ></div>
       <MyIcon :name="ICONS[partKey]" class="max-micro:mx-1 text-[1.2em]" />
       <span
         :class="[

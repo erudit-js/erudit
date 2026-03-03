@@ -10,6 +10,7 @@ import {
   useTemplateRef,
 } from 'vue';
 import type { ToProseElement } from 'tsprose';
+import type { Mermaid } from 'mermaid';
 
 import type { DiagramSchema } from './core.js';
 import { usePhotoSwipe } from '../../app/shared/photoswipe/composable.js';
@@ -183,8 +184,9 @@ async function diagramIntersectHit(entries: IntersectionObserverEntry[]) {
 }
 
 async function renderDiagram() {
-  const mermaid = //@ts-ignore
-    (await import('https://cdn.jsdelivr.net/npm/mermaid@11.12.2/+esm')).default;
+  // @ts-expect-error
+  const mermaid = (await import('mermaid/dist/mermaid.esm.min'))
+    .default as Mermaid;
 
   mermaid.initialize({
     startOnLoad: false,
@@ -192,8 +194,8 @@ async function renderDiagram() {
     markdownAutoWrap: false,
     flowchart: {
       useMaxWidth: true,
-      padding: 10,
-      wrappingWidth: 400,
+      padding: 16,
+      wrappingWidth: 600,
     },
     theme: 'base',
   });

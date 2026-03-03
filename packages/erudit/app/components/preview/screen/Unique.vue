@@ -43,8 +43,9 @@ const secondary = (() => {
       />
       <div
         v-if="previewData.fadeOverlay"
-        class="to-bg-main pointer-events-none absolute bottom-0 left-0 h-full
-          w-full touch-none bg-linear-to-b from-transparent"
+        class="pointer-events-none absolute bottom-0 left-0 h-full w-full
+          touch-none bg-linear-to-b from-transparent
+          to-[color-mix(in_srgb,var(--color-bg-aside),var(--color-brand)_5%)]"
       ></div>
     </div>
   </PreviewScreen>

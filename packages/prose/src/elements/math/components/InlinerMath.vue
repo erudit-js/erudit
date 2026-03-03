@@ -16,13 +16,19 @@ const { element } = defineProps<{
 
 const inlinerMathStorage =
   (await useElementStorage(element)) ??
-  (await createInlinerMathStorage(element.data));
+  (await createInlinerMathStorage(element.data.katex));
 </script>
 
 <template>
   <Inliner :element>
     <template v-if="inlinerMathStorage.type === 'text'">
-      <span :class="[$style.inlinerMath, $style.textMath]">
+      <span
+        :class="[
+          $style.inlinerMath,
+          $style.textMath,
+          element.data.currentColor && $style.currentColor,
+        ]"
+      >
         <template v-for="token of inlinerMathStorage.tokens">
           <span :class="{ [$style.word]: token.type === 'word' }">
             {{ token.value }}
@@ -32,7 +38,10 @@ const inlinerMathStorage =
     </template>
     <Katex
       v-else
-      :class="$style.inlinerMath"
+      :class="[
+        $style.inlinerMath,
+        element.data.currentColor && $style.currentColor,
+      ]"
       :math="inlinerMathStorage.mathHtml"
       mode="inline"
       :freeze="false"
@@ -42,10 +51,12 @@ const inlinerMathStorage =
 
 <style module>
 .inlinerMath {
-  --katex-color_default: light-dark(
-    color-mix(in hsl, var(--color-text-muted), var(--color-brand) 35%),
-    color-mix(in hsl, var(--color-text), var(--color-brand) 30%)
-  );
+  &:not(.currentColor) {
+    --katex-color_default: light-dark(
+      color-mix(in hsl, var(--color-text-muted), var(--color-brand) 35%),
+      color-mix(in hsl, var(--color-text), var(--color-brand) 30%)
+    );
+  }
 }
 
 .textMath {

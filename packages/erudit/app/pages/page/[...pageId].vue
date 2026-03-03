@@ -17,6 +17,8 @@ async function proseMounted() {
   );
 }
 
+const lastChangedDate = useLastChanged(() => mainContent.contentRelativePath);
+
 await useContentSeo({
   title: mainContent.title,
   bookTitle: mainContent.bookTitle,
@@ -43,12 +45,12 @@ await useContentSeo({
     <MainContentStats
       mode="single"
       :stats="mainContent.stats"
-      :contentRelativePath="mainContent.contentRelativePath"
+      :lastChangedDate
     />
     <div class="h-main-half"></div>
     <MainQuoteLoader />
     <div class="h-main-half"></div>
-    <MainStickyHeader :mainContent />
+    <MainStickyHeader :mainContent :lastChangedDate />
   </MainSectionPreamble>
   <MainSection>
     <Prose

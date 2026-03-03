@@ -1,4 +1,4 @@
-import chalk from 'chalk';
+import { styleText } from 'node:util';
 
 import { absDirectoryEnsured } from './absPath.js';
 import { cliError } from './cliError.js';
@@ -24,5 +24,5 @@ export function normalizeProjectPath(projectPath: string): string {
 }
 
 export function logProjectPath(projectPath: string): void {
-  console.log('Project path:', chalk.bold.cyan(projectPath));
+  console.log('Project path:', styleText(['bold', 'cyan'], projectPath));
 }

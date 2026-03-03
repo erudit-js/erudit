@@ -108,9 +108,10 @@ await usePhrases(
   <div
     ref="preview"
     :class="[
-      `fixed-main bg-bg-main micro:max-h-[70dvh] border-border
-      pointer-events-auto bottom-0 z-5 max-h-[90dvh] touch-auto overflow-hidden
-      rounded-[25px] rounded-b-none border-t
+      `fixed-main micro:max-h-[70dvh] border-border bg-bg-aside from-brand/8
+      dark:from-brand/10 to-brand/2 pointer-events-auto bottom-0 z-5
+      max-h-[90dvh] touch-auto overflow-hidden rounded-[25px] rounded-b-none
+      border-t bg-linear-to-t
       transition-[max-height,height,translate,box-shadow,left,width]`,
       previewState.opened
         ? `translate-y-0
@@ -136,10 +137,11 @@ await usePhrases(
     <TransitionFade>
       <div
         v-if="loading"
-        class="bg-bg-main absolute bottom-0 flex h-full w-full items-center
-          justify-center"
+        class="bg-bg-main from-brand/8 dark:from-brand/10 to-brand/2 absolute
+          bottom-0 flex h-full w-full items-center justify-center
+          bg-linear-to-t"
       >
-        <Loading class="text-text-dimmed text-[50px]" />
+        <Loading class="text-text-dimmed text-[65px]" />
       </div>
     </TransitionFade>
 

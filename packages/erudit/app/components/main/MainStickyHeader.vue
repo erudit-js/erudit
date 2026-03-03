@@ -1,5 +1,8 @@
 <script lang="ts" setup>
-const { mainContent } = defineProps<{ mainContent: MainContent }>();
+const { mainContent, lastChangedDate } = defineProps<{
+  mainContent: MainContent;
+  lastChangedDate?: Date;
+}>();
 
 const hasPreamble = computed(() => {
   const hasBreadcrumbs = mainContent.breadcrumbs.length > 0;
@@ -136,7 +139,7 @@ onMounted(() => {
               class="text-main nice-scrollbars max-h-[70dvh] overflow-auto"
             >
               <Suspense>
-                <MainStickyHeaderPreamble :mainContent />
+                <MainStickyHeaderPreamble :mainContent :lastChangedDate />
               </Suspense>
             </div>
           </div>
