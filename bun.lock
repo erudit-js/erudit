@@ -16,7 +16,7 @@
     },
     "packages/cli": {
       "name": "@erudit-js/cli",
-      "version": "4.3.0",
+      "version": "4.3.1",
       "dependencies": {
         "@erudit-js/core": "workspace:*",
         "citty": "^0.2.1",
@@ -26,14 +26,14 @@
     },
     "packages/core": {
       "name": "@erudit-js/core",
-      "version": "4.3.0",
+      "version": "4.3.1",
       "dependencies": {
         "tsprose": "catalog:",
       },
     },
     "packages/erudit": {
       "name": "erudit",
-      "version": "4.3.0",
+      "version": "4.3.1",
       "bin": {
         "erudit": "bin/erudit.js",
       },
@@ -69,7 +69,7 @@
     },
     "packages/prose": {
       "name": "@erudit-js/prose",
-      "version": "4.3.0",
+      "version": "4.3.1",
       "dependencies": {
         "@erudit-js/core": "workspace:*",
         "@floating-ui/vue": "catalog:",
