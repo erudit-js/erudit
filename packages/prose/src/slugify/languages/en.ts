@@ -5,7 +5,7 @@ export default (text: string): string => {
     .replace(/(\p{L})(\d)/gu, '$1-$2')
     .replace(/(\d)(\p{L})/gu, '$1-$2')
     .toLowerCase()
-    .replace(/[^a-z0-9]/g, '-')
+    .replace(/[^\p{L}0-9]/gu, '-')
     .replace(/-+/g, '-')
     .replace(/^-|-$/g, '');
 };

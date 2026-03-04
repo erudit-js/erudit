@@ -5,6 +5,7 @@ type LanguageFormatText = (text: string) => string;
 const formatTextLoaders: Partial<
   Record<LanguageCode, () => Promise<{ default: LanguageFormatText }>>
 > = {
+  en: () => import('../formatters/en'),
   ru: () => import('../formatters/ru'),
 };
 

@@ -16,6 +16,11 @@ describe('Default Slugifiers', () => {
       ['!@#$%', ''],
       ['   ', ''],
       ['', ''],
+      // Non-Latin letters preserved (not stripped)
+      ['Привет мир', 'привет-мир'],
+      ['Hello Привет', 'hello-привет'],
+      ['Ёлка', 'ёлка'],
+      ['日本語テスト', '日本語テスト'],
     ])('"%s" -> %s', async (input, expected) => {
       const result = enSlugify(input);
       expected === undefined
@@ -39,6 +44,9 @@ describe('Default Slugifiers', () => {
       ['!@#$%', ''],
       ['   ', ''],
       ['', ''],
+      // Non-Cyrillic, non-Latin letters preserved as-is
+      ['日本語テスト', '日本語テスト'],
+      ['Hello мир 世界', 'hello-mir-世界'],
     ])('"%s" -> %s', async (input, expected) => {
       expect(ruSlugify(input)).toBe(expected);
     });
