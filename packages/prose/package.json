@@ -36,7 +36,7 @@
     "@floating-ui/vue": "catalog:",
     "image-size": "catalog:",
     "katex": "^0.16.38",
-    "mermaid": "^11.12.3",
+    "mermaid": "^11.13.0",
     "photoswipe": "^5.4.4",
     "tsprose": "catalog:",
     "vue": "catalog:"
