@@ -15,15 +15,19 @@ export function initOgSiteName() {
 }
 
 export function initOgImage() {
+  const ogImageConfig = ERUDIT.config.seo?.ogImage;
+
+  if (ogImageConfig === false) {
+    return;
+  }
+
   const withSiteUrl = useSiteUrl();
 
-  const fallbackOgImage = {
-    src: eruditPublic('og.png'),
-    width: 500,
-    height: 500,
-  };
+  const ogImage =
+    typeof ogImageConfig === 'object'
+      ? ogImageConfig
+      : { src: eruditPublic('og.png'), width: 500, height: 500 };
 
-  const ogImage = ERUDIT.config.seo?.image || fallbackOgImage;
   useSeoMeta({
     ogImage: {
       url: withSiteUrl(ogImage.src),
@@ -39,12 +43,25 @@ export function useIndexSeo(indexPage: IndexPage) {
     description: indexPage.seo?.description || indexPage.description,
     urlPath: '/',
   });
+
+  const ogImageConfig = ERUDIT.config.seo?.ogImage;
+  if (ogImageConfig !== false && typeof ogImageConfig !== 'object') {
+    const withSiteUrl = useSiteUrl();
+    useSeoMeta({
+      ogImage: {
+        url: withSiteUrl('/og/site/index.png'),
+        width: 1200,
+        height: 630,
+      },
+    });
+  }
 }
 
 export function useStandartSeo(args: {
   title: string;
   description?: string;
   urlPath: string;
+  ogImagePath?: string;
 }) {
   const seoSiteTitle =
     ERUDIT.config.seo?.siteTitle ||
@@ -58,6 +75,20 @@ export function useStandartSeo(args: {
     description: args.description,
     urlPath: args.urlPath,
   });
+
+  if (args.ogImagePath) {
+    const ogImageConfig = ERUDIT.config.seo?.ogImage;
+    if (ogImageConfig !== false && typeof ogImageConfig !== 'object') {
+      const withSiteUrl = useSiteUrl();
+      useSeoMeta({
+        ogImage: {
+          url: withSiteUrl(args.ogImagePath),
+          width: 1200,
+          height: 630,
+        },
+      });
+    }
+  }
 }
 
 export async function useContentSeo(args: {
@@ -99,6 +130,35 @@ export async function useContentSeo(args: {
   } satisfies Parameters<typeof setupSeo>[0];
 
   setupSeo(baseSeo);
+
+  // Auto-generated OG image for content
+  const ogImageConfig = ERUDIT.config.seo?.ogImage;
+  if (ogImageConfig !== false) {
+    const withSiteUrl = useSiteUrl();
+
+    if (typeof ogImageConfig === 'object') {
+      useSeoMeta({
+        ogImage: {
+          url: withSiteUrl(ogImageConfig.src),
+          width: ogImageConfig.width,
+          height: ogImageConfig.height,
+        },
+      });
+    } else {
+      const ogTypePart =
+        args.contentTypePath.type === 'topic'
+          ? args.contentTypePath.topicPart
+          : args.contentTypePath.type;
+      const ogPath = `/og/content/${ogTypePart}/${args.contentTypePath.contentId}.png`;
+      useSeoMeta({
+        ogImage: {
+          url: withSiteUrl(ogPath),
+          width: 1200,
+          height: 630,
+        },
+      });
+    }
+  }
 
   //
   // SEO snippets

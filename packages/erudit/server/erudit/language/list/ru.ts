@@ -101,6 +101,8 @@ export const phrases: LanguagePhrases = {
     `Разнообразные задачи с подсказками и ответами по теме «${contentTitle}». Интересные условия, подсказки и подробные решения. Превратите знания в навык!`,
   externals_own: 'Собственные',
   externals_from: 'Из',
+  og_learn: 'Изучить',
+  og_open: 'Открыть',
 
   default_index_title: 'Erudit',
   default_index_short: 'Современные цифровые учебники!',
