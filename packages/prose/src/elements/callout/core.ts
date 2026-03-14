@@ -18,6 +18,7 @@ export interface CalloutData {
 
 export interface CalloutStorage {
   resolvedIconSrc: string;
+  videoIcon: boolean;
 }
 
 export interface CalloutSchema extends Schema {
