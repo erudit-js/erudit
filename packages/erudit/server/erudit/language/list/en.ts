@@ -100,8 +100,6 @@ export const phrases: LanguagePhrases = {
     `Various problems with hints and answers on the topic "${contentTitle}". Interesting conditions, hints and detailed solutions. Turn knowledge into a skill!`,
   externals_own: 'Own',
   externals_from: 'From',
-  og_learn: 'Learn',
-  og_open: 'Open',
 
   default_index_title: 'Erudit',
   default_index_short: 'Modern digital textbooks!',

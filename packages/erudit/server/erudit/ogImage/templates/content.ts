@@ -1,6 +1,5 @@
 import {
   type SatoriNode,
-  ARROW_RIGHT_SVG,
   DIM_COLOR,
   svgToDataUri,
   truncate,
@@ -9,6 +8,7 @@ import {
   ogTopRow,
   ogDescription,
   ogBottomSpacer,
+  ogActionButton,
 } from '../shared';
 
 export interface ContentOgParams {
@@ -163,48 +163,9 @@ export function buildContentOgTemplate(params: ContentOgParams): SatoriNode {
 
   // Learn button
   if (params.learnButtonText) {
-    centerContent.push({
-      type: 'div',
-      props: {
-        style: {
-          display: 'flex',
-          alignItems: 'center',
-          gap: 10,
-          marginTop: 24,
-          backgroundColor: params.brandColor,
-          borderRadius: 32,
-          paddingLeft: 32,
-          paddingRight: 26,
-          paddingTop: 14,
-          paddingBottom: 14,
-          boxShadow: `0 6px 20px rgba(0,0,0,0.25), 0 2px 6px rgba(0,0,0,0.1)`,
-          alignSelf: 'flex-start' as const,
-          border: '3px solid rgba(255,255,255,0.4)',
-        },
-        children: [
-          {
-            type: 'span',
-            props: {
-              style: {
-                fontSize: 24,
-                fontWeight: 700,
-                color: '#ffffff',
-                letterSpacing: 0.5,
-              },
-              children: params.learnButtonText,
-            },
-          },
-          {
-            type: 'img',
-            props: {
-              src: 'data:image/svg+xml,' + encodeURIComponent(ARROW_RIGHT_SVG),
-              width: 22,
-              height: 22,
-            },
-          },
-        ],
-      },
-    });
+    centerContent.push(
+      ogActionButton(params.brandColor, params.learnButtonText),
+    );
   }
 
   children.push({

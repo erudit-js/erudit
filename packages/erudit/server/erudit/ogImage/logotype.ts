@@ -1,13 +1,17 @@
 import { readFileSync, existsSync } from 'node:fs';
+import { isAbsolute } from 'node:path';
 
 let cachedLogotypeDataUri: string | undefined | null;
 
-export async function loadLogotypeDataUri(): Promise<string | undefined> {
+export async function loadLogotypeDataUri(
+  explicitPath?: string,
+): Promise<string | undefined> {
   if (cachedLogotypeDataUri !== undefined) {
     return cachedLogotypeDataUri ?? undefined;
   }
 
-  const logotypeUrl = ERUDIT.config.public.asideMajor?.siteInfo?.logotype;
+  const logotypeUrl =
+    explicitPath || ERUDIT.config.public.asideMajor?.siteInfo?.logotype;
   if (!logotypeUrl || logotypeUrl === '') {
     cachedLogotypeDataUri = null;
     return undefined;
@@ -30,11 +34,10 @@ export async function loadLogotypeDataUri(): Promise<string | undefined> {
     return undefined;
   }
 
-  // Local path
-  const localPath = ERUDIT.paths.project(
-    'public',
-    logotypeUrl.replace(/^\/+/, ''),
-  );
+  // Local path — resolve relative to project root, or use as-is if absolute
+  const localPath = isAbsolute(logotypeUrl)
+    ? logotypeUrl
+    : ERUDIT.paths.project(logotypeUrl.replace(/^\/+/, ''));
   if (existsSync(localPath)) {
     const buffer = readFileSync(localPath);
     const ext = logotypeUrl.split('.').pop()?.toLowerCase();

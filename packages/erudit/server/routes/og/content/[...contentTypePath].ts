@@ -1,8 +1,5 @@
 import { readFileSync, existsSync } from 'node:fs';
-import {
-  getIconSvg,
-  getBookIconSvg,
-} from '#layers/erudit/server/erudit/ogImage/icons';
+import { getIconSvg } from '#layers/erudit/server/erudit/ogImage/icons';
 import { renderOgImage } from '#layers/erudit/server/erudit/ogImage/render';
 import {
   type ContentOgParams,
@@ -14,6 +11,8 @@ import {
   checkOgEnabled,
   getOgBrandColor,
   getOgSiteName,
+  getOgLearnPhrase,
+  getOgLogotypePath,
   sendOgPng,
 } from '#layers/erudit/server/erudit/ogImage/shared';
 import { parseContentTypePath } from '#layers/erudit/shared/utils/contentTypePath';
@@ -77,7 +76,7 @@ export default defineEventHandler(async (event) => {
                 : phrases.content;
 
   // Book icon (for book row above title)
-  const bookIconSvg = bookTitle ? getBookIconSvg() : undefined;
+  const bookIconSvg = bookTitle ? getIconSvg('book') : undefined;
 
   // Decoration image
   let decorationDataUri: string | undefined;
@@ -101,7 +100,7 @@ export default defineEventHandler(async (event) => {
     }
   }
 
-  const logotypeDataUri = await loadLogotypeDataUri();
+  const logotypeDataUri = await loadLogotypeDataUri(getOgLogotypePath());
 
   const params: ContentOgParams = {
     title,
@@ -116,7 +115,7 @@ export default defineEventHandler(async (event) => {
     siteName,
     brandColor,
     formatText: ogFormatText,
-    learnButtonText: phrases.og_learn,
+    learnButtonText: getOgLearnPhrase(),
   };
 
   const template = buildContentOgTemplate(params);

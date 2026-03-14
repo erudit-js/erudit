@@ -22,10 +22,10 @@ export function buildIndexOgTemplate(params: IndexOgParams): SatoriNode {
   const children: SatoriNode[] = [];
 
   // Centered logotype + site name
-  const centerRow: SatoriNode[] = [];
+  const centerColumn: SatoriNode[] = [];
 
   if (params.logotypeDataUri) {
-    centerRow.push({
+    centerColumn.push({
       type: 'div',
       props: {
         style: {
@@ -55,47 +55,33 @@ export function buildIndexOgTemplate(params: IndexOgParams): SatoriNode {
     });
   }
 
-  if (params.siteName || params.short) {
-    const textColumn: SatoriNode[] = [];
-
-    if (params.siteName) {
-      textColumn.push({
-        type: 'span',
-        props: {
-          style: {
-            fontSize: 56,
-            fontWeight: 700,
-            color: titleColor,
-          },
-          children: fmt(params.siteName),
-        },
-      });
-    }
-
-    if (params.short) {
-      textColumn.push({
-        type: 'span',
-        props: {
-          style: {
-            fontSize: 28,
-            fontWeight: 600,
-            color: DIM_COLOR,
-            lineHeight: 1.3,
-          },
-          children: fmt(params.short),
-        },
-      });
-    }
-
-    centerRow.push({
-      type: 'div',
+  if (params.siteName) {
+    centerColumn.push({
+      type: 'span',
       props: {
         style: {
-          display: 'flex',
-          flexDirection: 'column' as const,
-          gap: 2,
+          fontSize: 56,
+          fontWeight: 700,
+          color: titleColor,
+          textAlign: 'center' as const,
         },
-        children: textColumn,
+        children: fmt(params.siteName),
+      },
+    });
+  }
+
+  if (params.short) {
+    centerColumn.push({
+      type: 'span',
+      props: {
+        style: {
+          fontSize: 36,
+          fontWeight: 600,
+          color: DIM_COLOR,
+          lineHeight: 1.3,
+          textAlign: 'center' as const,
+        },
+        children: fmt(params.short),
       },
     });
   }
@@ -106,12 +92,13 @@ export function buildIndexOgTemplate(params: IndexOgParams): SatoriNode {
       style: {
         display: 'flex',
         flex: 1,
+        flexDirection: 'column' as const,
         alignItems: 'center',
         justifyContent: 'center',
-        gap: 24,
+        gap: 12,
         paddingTop: params.description ? 40 : 0,
       },
-      children: centerRow,
+      children: centerColumn,
     },
   });
 

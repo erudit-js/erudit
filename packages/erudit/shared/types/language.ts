@@ -96,8 +96,6 @@ export type LanguagePhrases = Phrases<{
   practice_seo_description: (contentTitle: string) => string;
   externals_own: string;
   externals_from: string;
-  og_learn: string;
-  og_open: string;
 
   default_index_title: string;
   default_index_short: string;

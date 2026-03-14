@@ -9,6 +9,8 @@ import {
   checkOgEnabled,
   getOgBrandColor,
   getOgSiteName,
+  getOgSiteShort,
+  getOgLogotypePath,
   sendOgPng,
 } from '#layers/erudit/server/erudit/ogImage/shared';
 
@@ -17,9 +19,10 @@ export default defineEventHandler(async (event) => {
 
   const brandColor = getOgBrandColor();
   const siteName = getOgSiteName();
-  const logotypeDataUri = await loadLogotypeDataUri();
+  const logotypeDataUri = await loadLogotypeDataUri(getOgLogotypePath());
 
-  const siteShort = ERUDIT.config.public.asideMajor?.siteInfo?.short;
+  const siteShort =
+    getOgSiteShort() || ERUDIT.config.public.asideMajor?.siteInfo?.short;
 
   let description: string | undefined;
   try {

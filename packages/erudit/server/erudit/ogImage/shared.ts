@@ -22,7 +22,7 @@ export function svgToDataUri(svg: string, fill?: string): string {
   return 'data:image/svg+xml,' + encodeURIComponent(processed);
 }
 
-export function mixColors(hex1: string, hex2: string, ratio: number): string {
+function mixColors(hex1: string, hex2: string, ratio: number): string {
   const r1 = parseInt(hex1.slice(1, 3), 16);
   const g1 = parseInt(hex1.slice(3, 5), 16);
   const b1 = parseInt(hex1.slice(5, 7), 16);
@@ -35,7 +35,7 @@ export function mixColors(hex1: string, hex2: string, ratio: number): string {
   return `rgb(${r}, ${g}, ${b})`;
 }
 
-export function mixWithWhite(hex: string, ratio: number): string {
+function mixWithWhite(hex: string, ratio: number): string {
   const r = parseInt(hex.slice(1, 3), 16);
   const g = parseInt(hex.slice(3, 5), 16);
   const b = parseInt(hex.slice(5, 7), 16);
@@ -190,7 +190,52 @@ export function ogDescription(params: {
   };
 }
 
-export const ARROW_RIGHT_SVG = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>`;
+const ARROW_RIGHT_SVG = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>`;
+
+export function ogActionButton(brandColor: string, text: string): SatoriNode {
+  return {
+    type: 'div',
+    props: {
+      style: {
+        display: 'flex',
+        alignItems: 'center',
+        gap: 10,
+        marginTop: 24,
+        backgroundColor: brandColor,
+        borderRadius: 32,
+        paddingLeft: 32,
+        paddingRight: 26,
+        paddingTop: 14,
+        paddingBottom: 14,
+        boxShadow: `0 6px 20px rgba(0,0,0,0.25), 0 2px 6px rgba(0,0,0,0.1)`,
+        alignSelf: 'flex-start' as const,
+        border: '3px solid rgba(255,255,255,0.4)',
+      },
+      children: [
+        {
+          type: 'span',
+          props: {
+            style: {
+              fontSize: 24,
+              fontWeight: 700,
+              color: '#ffffff',
+              letterSpacing: 0.5,
+            },
+            children: text,
+          },
+        },
+        {
+          type: 'img',
+          props: {
+            src: 'data:image/svg+xml,' + encodeURIComponent(ARROW_RIGHT_SVG),
+            width: 22,
+            height: 22,
+          },
+        },
+      ],
+    },
+  };
+}
 
 export function ogBottomSpacer(): SatoriNode {
   return {
@@ -208,9 +253,13 @@ export function sendOgPng(event: Parameters<typeof setHeader>[0], png: Buffer) {
   return png;
 }
 
+function getOgImageConfig() {
+  return ERUDIT.config.public.seo?.ogImage;
+}
+
 export function checkOgEnabled() {
-  const ogImageConfig = ERUDIT.config.public.seo?.ogImage;
-  if (ogImageConfig === false || typeof ogImageConfig === 'object') {
+  const ogImageConfig = getOgImageConfig();
+  if (ogImageConfig?.type !== 'auto') {
     throw createError({
       statusCode: 404,
       statusMessage: 'OG image generation is disabled',
@@ -219,12 +268,53 @@ export function checkOgEnabled() {
 }
 
 export function getOgBrandColor(): string {
-  return ERUDIT.config.public.style?.brandColor || '#4aa44c';
+  const ogImageConfig = getOgImageConfig();
+  if (ogImageConfig?.type === 'auto') {
+    return ogImageConfig.siteColor;
+  }
+  return '#4aa44c';
 }
 
 export function getOgSiteName(): string | undefined {
-  return (
-    ERUDIT.config.public.seo?.siteTitle ||
-    ERUDIT.config.public.asideMajor?.siteInfo?.title
-  );
+  const ogImageConfig = getOgImageConfig();
+  if (ogImageConfig?.type === 'auto') {
+    return ogImageConfig.siteName;
+  }
+  return undefined;
+}
+
+export function getOgSiteShort(): string | undefined {
+  const ogImageConfig = getOgImageConfig();
+  if (ogImageConfig?.type === 'auto') {
+    return ogImageConfig.siteShort;
+  }
+  return undefined;
+}
+
+export function getOgLearnPhrase(): string {
+  const ogImageConfig = getOgImageConfig();
+  if (ogImageConfig?.type === 'auto') {
+    return typeof ogImageConfig.phrases === 'string'
+      ? ogImageConfig.phrases
+      : ogImageConfig.phrases.learn;
+  }
+  return 'Learn';
+}
+
+export function getOgOpenPhrase(): string {
+  const ogImageConfig = getOgImageConfig();
+  if (ogImageConfig?.type === 'auto') {
+    return typeof ogImageConfig.phrases === 'string'
+      ? ogImageConfig.phrases
+      : ogImageConfig.phrases.open;
+  }
+  return 'Open';
+}
+
+export function getOgLogotypePath(): string | undefined {
+  const ogImageConfig = getOgImageConfig();
+  if (ogImageConfig?.type === 'auto') {
+    return ogImageConfig.logotype;
+  }
+  return undefined;
 }

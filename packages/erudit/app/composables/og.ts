@@ -17,24 +17,16 @@ export function initOgSiteName() {
 export function initOgImage() {
   const ogImageConfig = ERUDIT.config.seo?.ogImage;
 
-  if (ogImageConfig === false) {
-    return;
+  if (ogImageConfig?.type === 'manual') {
+    const withSiteUrl = useSiteUrl();
+    useSeoMeta({
+      ogImage: {
+        url: withSiteUrl(ogImageConfig.src),
+        width: ogImageConfig.width,
+        height: ogImageConfig.height,
+      },
+    });
   }
-
-  const withSiteUrl = useSiteUrl();
-
-  const ogImage =
-    typeof ogImageConfig === 'object'
-      ? ogImageConfig
-      : { src: eruditPublic('og.png'), width: 500, height: 500 };
-
-  useSeoMeta({
-    ogImage: {
-      url: withSiteUrl(ogImage.src),
-      width: ogImage.width,
-      height: ogImage.height,
-    },
-  });
 }
 
 export function useIndexSeo(indexPage: IndexPage) {
@@ -45,7 +37,7 @@ export function useIndexSeo(indexPage: IndexPage) {
   });
 
   const ogImageConfig = ERUDIT.config.seo?.ogImage;
-  if (ogImageConfig !== false && typeof ogImageConfig !== 'object') {
+  if (ogImageConfig?.type === 'auto') {
     const withSiteUrl = useSiteUrl();
     useSeoMeta({
       ogImage: {
@@ -78,7 +70,7 @@ export function useStandartSeo(args: {
 
   if (args.ogImagePath) {
     const ogImageConfig = ERUDIT.config.seo?.ogImage;
-    if (ogImageConfig !== false && typeof ogImageConfig !== 'object') {
+    if (ogImageConfig?.type === 'auto') {
       const withSiteUrl = useSiteUrl();
       useSeoMeta({
         ogImage: {
@@ -132,32 +124,22 @@ export async function useContentSeo(args: {
   setupSeo(baseSeo);
 
   // Auto-generated OG image for content
+  // Manual OG image is handled globally by initOgImage() in app.vue
   const ogImageConfig = ERUDIT.config.seo?.ogImage;
-  if (ogImageConfig !== false) {
+  if (ogImageConfig?.type === 'auto') {
     const withSiteUrl = useSiteUrl();
-
-    if (typeof ogImageConfig === 'object') {
-      useSeoMeta({
-        ogImage: {
-          url: withSiteUrl(ogImageConfig.src),
-          width: ogImageConfig.width,
-          height: ogImageConfig.height,
-        },
-      });
-    } else {
-      const ogTypePart =
-        args.contentTypePath.type === 'topic'
-          ? args.contentTypePath.topicPart
-          : args.contentTypePath.type;
-      const ogPath = `/og/content/${ogTypePart}/${args.contentTypePath.contentId}.png`;
-      useSeoMeta({
-        ogImage: {
-          url: withSiteUrl(ogPath),
-          width: 1200,
-          height: 630,
-        },
-      });
-    }
+    const ogTypePart =
+      args.contentTypePath.type === 'topic'
+        ? args.contentTypePath.topicPart
+        : args.contentTypePath.type;
+    const ogPath = `/og/content/${ogTypePart}/${args.contentTypePath.contentId}.png`;
+    useSeoMeta({
+      ogImage: {
+        url: withSiteUrl(ogPath),
+        width: 1200,
+        height: 630,
+      },
+    });
   }
 
   //

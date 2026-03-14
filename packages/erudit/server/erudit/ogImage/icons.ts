@@ -20,7 +20,3 @@ export function getIconSvg(contentType: string): string {
   iconCache.set(contentType, svg);
   return svg;
 }
-
-export function getBookIconSvg(): string {
-  return getIconSvg('book');
-}

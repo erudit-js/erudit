@@ -1,6 +1,6 @@
 export default defineEventHandler(async () => {
   const ogImageConfig = ERUDIT.config.public.seo?.ogImage;
-  if (ogImageConfig === false || typeof ogImageConfig === 'object') {
+  if (ogImageConfig?.type !== 'auto') {
     return [];
   }
 

@@ -10,6 +10,8 @@ import {
   checkOgEnabled,
   getOgBrandColor,
   getOgSiteName,
+  getOgOpenPhrase,
+  getOgLogotypePath,
   sendOgPng,
 } from '#layers/erudit/server/erudit/ogImage/shared';
 
@@ -22,11 +24,11 @@ export default defineEventHandler(async (event) => {
     title: phrases.sponsors,
     description: phrases.sponsors_description,
     pageIconSvg: getIconSvg('sponsors'),
-    logotypeDataUri: await loadLogotypeDataUri(),
+    logotypeDataUri: await loadLogotypeDataUri(getOgLogotypePath()),
     siteName: getOgSiteName(),
     brandColor: getOgBrandColor(),
     formatText: ogFormatText,
-    buttonText: phrases.og_open,
+    learnButtonText: getOgOpenPhrase(),
   };
 
   const template = buildSitePageOgTemplate(params);
