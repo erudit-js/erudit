@@ -53,7 +53,7 @@ export default defineNuxtConfig({
     rollupConfig: {
       // Prevent inlining some packages
       external(source) {
-        const ignore = ['jiti', 'tsprose'];
+        const ignore = ['jiti', 'tsprose', '@resvg/resvg-js'];
 
         for (const ignoreItem of ignore) {
           if (source.includes(ignoreItem)) {

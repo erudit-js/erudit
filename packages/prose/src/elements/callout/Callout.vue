@@ -21,7 +21,18 @@ const formatText = useFormatText();
       class="gap-big flex"
     >
       <div class="max-micro:hidden shrink-0">
+        <video
+          v-if="calloutStorage.videoIcon"
+          :src="calloutStorage.resolvedIconSrc"
+          autoplay
+          loop
+          muted
+          playsinline
+          class="outline-border size-[60px] rounded-full border-2
+            border-transparent object-cover outline-2"
+        />
         <img
+          v-else
           :src="calloutStorage.resolvedIconSrc"
           loading="lazy"
           class="outline-border size-[60px] rounded-full border-2
@@ -39,7 +50,17 @@ const formatText = useFormatText();
           class="gap-small mb-(--proseAsideWidth) flex items-center
             px-(--proseAsideWidth) font-semibold"
         >
+          <video
+            v-if="calloutStorage.videoIcon"
+            :src="calloutStorage.resolvedIconSrc"
+            autoplay
+            loop
+            muted
+            playsinline
+            class="micro:hidden size-[30px] shrink-0 rounded-full object-cover"
+          />
           <img
+            v-else
             :src="calloutStorage.resolvedIconSrc"
             class="micro:hidden size-[30px] shrink-0 rounded-full"
           />

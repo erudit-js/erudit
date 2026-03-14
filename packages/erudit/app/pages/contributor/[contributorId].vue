@@ -45,6 +45,7 @@ useStandartSeo({
     pageContributor.displayName || pageContributor.id,
   ),
   urlPath: PAGES.contributor(contributorId.value),
+  ogImagePath: `/og/site/contributor/${contributorId.value}.png`,
 });
 </script>
 

@@ -24,6 +24,7 @@ useStandartSeo({
   title: phrase.sponsors,
   description: phrase.sponsors_description,
   urlPath: PAGES.sponsors,
+  ogImagePath: '/og/site/sponsors.png',
 });
 </script>
 

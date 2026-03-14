@@ -33,6 +33,7 @@ useStandartSeo({
   title: phrase.contributors,
   description: phrase.contributors_description,
   urlPath: PAGES.contributors,
+  ogImagePath: '/og/site/contributors.png',
 });
 </script>
 

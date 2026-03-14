@@ -9,6 +9,7 @@ import core, {
 } from '@src/elements/callout/core';
 import { P } from '@src/elements/paragraph/core';
 import { eruditRawToProse } from '@src/rawToProse';
+import { createCalloutStorage } from '@src/elements/callout/storage';
 
 describe('Callout', () => {
   it('should create callout correctly', () => {
@@ -55,5 +56,22 @@ describe('rawToProseHook', () => {
     });
 
     expect(files.has('icon.png')).toBe(true);
+  });
+});
+
+describe('createCalloutStorage', () => {
+  it('should detect image icon', () => {
+    const storage = createCalloutStorage('/project', '/', '/project/icon.png');
+    expect(storage.videoIcon).toBe(false);
+  });
+
+  it('should detect video icon', () => {
+    const storage = createCalloutStorage('/project', '/', '/project/icon.mp4');
+    expect(storage.videoIcon).toBe(true);
+  });
+
+  it('should detect webm video icon', () => {
+    const storage = createCalloutStorage('/project', '/', '/project/icon.webm');
+    expect(storage.videoIcon).toBe(true);
   });
 });

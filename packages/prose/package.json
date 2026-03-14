@@ -1,7 +1,7 @@
 {
   "type": "module",
   "name": "@erudit-js/prose",
-  "version": "4.3.0",
+  "version": "4.3.1",
   "description": "📝 JSX prose subsystem for Erudit sites",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -43,7 +43,7 @@
   },
   "devDependencies": {
     "glob": "catalog:",
-    "oxc-transform": "0.117.0",
+    "oxc-transform": "0.119.0",
     "ts-xor": "catalog:"
   }
 }

@@ -49,6 +49,8 @@ onMounted(async () => {
     (/AppleWebKit/.test(ua) && !/Chrome/.test(ua)) ||
     /\b(iPad|iPhone|iPod)\b/.test(ua);
 
+  prepareMarkdown();
+
   if (hasLatex(diagramContent.value)) {
     await prepareMathDiagram();
   }
@@ -126,6 +128,29 @@ function hasLatex(content: string): boolean {
   return latexRegex.display.test(content) || latexRegex.inline.test(content);
 }
 
+function prepareMarkdown() {
+  const mathPattern = /\$\$[\s\S]*?\$\$|\$(?!\$).*?(?<!\$)\$/g;
+
+  const applyMarkdown = (text: string): string => {
+    return text
+      .replace(/\*\*(.+?)\*\*/g, '<b>$1</b>')
+      .replace(/\*(.+?)\*/g, '<i>$1</i>');
+  };
+
+  const content = diagramContent.value;
+  const parts: string[] = [];
+  let lastIndex = 0;
+
+  for (const match of content.matchAll(mathPattern)) {
+    parts.push(applyMarkdown(content.slice(lastIndex, match.index)));
+    parts.push(match[0]);
+    lastIndex = match.index + match[0].length;
+  }
+
+  parts.push(applyMarkdown(content.slice(lastIndex)));
+  diagramContent.value = parts.join('');
+}
+
 async function prepareMathDiagram() {
   await import('katex/dist/katex.min.css');
   const katex = await import('katex');
@@ -141,11 +166,7 @@ async function prepareMathDiagram() {
           displayMode,
           output: 'mathml',
         })
-        .replace(/<mtd>/g, '<mtd style="padding: 0.2em 0;">')
-        .replace(
-          /<annotation encoding="application\/x-tex">[\s\S]*?<\/annotation>/g,
-          '',
-        );
+        .replace(/<mtd>/g, '<mtd style="padding: 0.2em 0;">');
     });
   };
 

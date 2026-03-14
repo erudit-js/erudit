@@ -45,7 +45,7 @@ export default (text: string): string => {
     .map((char) =>
       cyrillicToLatin[char] !== undefined
         ? cyrillicToLatin[char]
-        : /[a-z0-9]/.test(char)
+        : /[\p{L}0-9]/u.test(char)
           ? char
           : '-',
     )

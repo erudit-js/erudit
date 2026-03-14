@@ -2,6 +2,7 @@
 import { computed } from 'vue';
 import type { ProseElement } from 'tsprose';
 
+import { useProseContext } from '../../composables/context.js';
 import { useElementPhrase } from '../../composables/language.js';
 import AsideMenuSeparator from './AsideMenuSeparator.vue';
 import AsideMenuCopyLink from './AsideMenuCopyLink.vue';
@@ -10,8 +11,10 @@ const { element } = defineProps<{
   element: ProseElement;
 }>();
 
+const { setHtmlIds } = useProseContext();
+
 const hasLink = computed(() => {
-  return Boolean(element.id);
+  return setHtmlIds && Boolean(element.id);
 });
 
 const hasButtons = computed(() => {
