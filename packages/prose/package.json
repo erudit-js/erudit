@@ -35,15 +35,15 @@
     "@erudit-js/core": "workspace:*",
     "@floating-ui/vue": "catalog:",
     "image-size": "catalog:",
-    "katex": "^0.16.33",
-    "mermaid": "^11.12.3",
+    "katex": "^0.16.38",
+    "mermaid": "^11.13.0",
     "photoswipe": "^5.4.4",
     "tsprose": "catalog:",
     "vue": "catalog:"
   },
   "devDependencies": {
     "glob": "catalog:",
-    "oxc-transform": "0.116.0",
+    "oxc-transform": "0.119.0",
     "ts-xor": "catalog:"
   }
 }
