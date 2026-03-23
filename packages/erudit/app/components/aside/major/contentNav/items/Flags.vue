@@ -5,28 +5,24 @@ import type { MyIconName } from '#my-icons';
 
 defineProps<{ flags: ContentFlags }>();
 
-const phrase = await usePhrases(
-  'flag_title_dev',
-  'flag_title_advanced',
-  'flag_title_secondary',
-);
+const phrase = await usePhrases('flag_dev', 'flag_advanced', 'flag_secondary');
 
 const flagData = ((flagType: ContentFlag) => {
   switch (flagType) {
     case 'dev':
       return {
         icon: 'construction',
-        title: phrase.flag_title_dev,
+        title: phrase.flag_dev,
       };
     case 'advanced':
       return {
         icon: 'asterisk',
-        title: phrase.flag_title_advanced,
+        title: phrase.flag_advanced,
       };
     case 'secondary':
       return {
         icon: 'puzzle',
-        title: phrase.flag_title_secondary,
+        title: phrase.flag_secondary,
       };
   }
 }) as (flagType: ContentFlag) => { icon: MyIconName; title: string };

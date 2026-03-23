@@ -71,9 +71,9 @@ await usePhrases(
   'no_content',
   'to_index',
   'about_textbook',
-  'flag_title_dev',
-  'flag_title_advanced',
-  'flag_title_secondary',
+  'flag_dev',
+  'flag_advanced',
+  'flag_secondary',
 );
 </script>
 

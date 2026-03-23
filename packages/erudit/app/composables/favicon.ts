@@ -3,6 +3,25 @@ import { isContentType, type ContentType } from '@erudit-js/core/content/type';
 
 const fallbackFaviconHref = eruditPublic('favicons/default.svg');
 
+const faviconMimeByExt: Record<string, string> = {
+  '.svg': 'image/svg+xml',
+  '.png': 'image/png',
+  '.ico': 'image/x-icon',
+  '.jpg': 'image/jpeg',
+  '.jpeg': 'image/jpeg',
+  '.gif': 'image/gif',
+  '.webp': 'image/webp',
+  '.bmp': 'image/bmp',
+};
+
+function getFaviconMimeType(href: string): string | undefined {
+  const pathPart = href.split(/[?#]/)[0] ?? '';
+  const dot = pathPart.lastIndexOf('.');
+  if (dot === -1) return undefined;
+  const ext = pathPart.slice(dot).toLowerCase();
+  return faviconMimeByExt[ext];
+}
+
 export const useFaviconHref = () => {
   return useState<string>('favicon-href', () => fallbackFaviconHref);
 };
@@ -51,11 +70,16 @@ export function initFavicon() {
 
   useHead({
     link: [
-      computed(() => ({
-        key: 'favicon',
-        rel: 'icon',
-        href: withBaseUrl(faviconHref.value),
-      })),
+      computed(() => {
+        const href = withBaseUrl(faviconHref.value);
+        const type = getFaviconMimeType(faviconHref.value);
+        return {
+          key: 'favicon',
+          rel: 'icon',
+          href,
+          ...(type && { type }),
+        };
+      }),
     ],
   });
 

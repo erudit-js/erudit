@@ -34,12 +34,6 @@ export type LanguagePhrases = Phrases<{
   no_content: string;
   to_index: string;
   about_textbook: string;
-  flag_title_dev: string;
-  flag_hint_dev: string;
-  flag_title_advanced: string;
-  flag_hint_advanced: string;
-  flag_title_secondary: string;
-  flag_hint_secondary: string;
   ads_replacer: string;
   direct_link: string;
   direct_link_explain: string;
