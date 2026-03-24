@@ -24,7 +24,7 @@ const phrase = await usePhrases(
   'summary_seo_description',
   'practice_seo_description',
 );
-const lastChangedDate = useLastChanged(() => mainContent.contentRelativePath);
+const lastChangedDate = useLastChanged(() => mainContent.lastmod);
 
 await useContentSeo({
   title: mainContent.title,
@@ -47,6 +47,8 @@ await useContentSeo({
           : undefined,
   seo: mainContent.seo,
   snippets: mainContent.snippets,
+  breadcrumbs: mainContent.breadcrumbs,
+  lastmod: mainContent.lastmod,
 });
 </script>
 

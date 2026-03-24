@@ -19,7 +19,7 @@ if (ERUDIT.config.contributors?.enabled) {
 }
 
 const phrase = await usePhrases('begin_learning');
-const lastChangedDate = useLastChanged(() => mainContent.contentRelativePath);
+const lastChangedDate = useLastChanged(() => mainContent.lastmod);
 
 await useContentSeo({
   title: mainContent.title,
@@ -29,6 +29,8 @@ await useContentSeo({
     contentId: mainContent.shortId,
   },
   seo: mainContent.seo,
+  breadcrumbs: mainContent.breadcrumbs,
+  lastmod: mainContent.lastmod,
 });
 </script>
 

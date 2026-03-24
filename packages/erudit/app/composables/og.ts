@@ -1,6 +1,8 @@
 import type { ContentSeo } from '@erudit-js/core/content/seo';
 import { toSeoSnippet } from '@erudit-js/prose';
 
+import type { Breadcrumbs } from '../../shared/types/breadcrumbs';
+
 export function initOgSiteName() {
   const siteTitle =
     ERUDIT.config.seo?.siteTitle || ERUDIT.config.asideMajor?.siteInfo?.title;
@@ -91,6 +93,8 @@ export async function useContentSeo(args: {
   description?: string;
   seo?: ContentSeo;
   snippets?: ElementSnippet[];
+  breadcrumbs?: Breadcrumbs;
+  lastmod?: string;
 }) {
   const canUseBookTitle = ERUDIT.config.seo?.useBookSiteTitle;
 
@@ -141,6 +145,23 @@ export async function useContentSeo(args: {
       },
     });
   }
+
+  //
+  // JSON-LD structured data
+  //
+
+  useContentBreadcrumbsJsonLd(args.breadcrumbs);
+
+  useContentArticleJsonLd({
+    title: args.seo?.title || args.title,
+    description: args.seo?.description || args.description,
+    urlPath: canonicalPath,
+    contentType:
+      args.contentTypePath.type === 'topic'
+        ? 'article'
+        : args.contentTypePath.type,
+    lastmod: args.lastmod,
+  });
 
   //
   // SEO snippets

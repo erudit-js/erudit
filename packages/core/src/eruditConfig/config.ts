@@ -13,6 +13,7 @@ import type { EruditContributors } from '../contributor.js';
 import type { EruditAsideMajor } from './asideMajor.js';
 import type { EruditFavicons } from './favicons.js';
 import type { EruditDependencies } from '../dependencies.js';
+import type { EruditLastmod } from './lastmod.js';
 
 export interface EruditConfig {
   language?: EruditLanguage;
@@ -31,6 +32,7 @@ export interface EruditConfig {
   sponsors?: EruditSponsors;
   seo?: EruditSeo;
   repository?: EruditRepository;
+  lastmod?: EruditLastmod;
   elements?: string[];
   countElements?: (string | string[])[];
   problemChecks?: string[];

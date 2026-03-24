@@ -13,6 +13,10 @@ export interface EruditRuntimeConfig {
   elements: string[];
   countElements: (string | string[])[];
   indexPage?: EruditIndexPage;
+  lastmod?: {
+    type: 'git' | 'custom';
+    scriptPath?: string;
+  };
 }
 
 export interface EruditPublicRuntimeConfig {
@@ -27,7 +31,6 @@ export interface EruditPublicRuntimeConfig {
     ads: boolean;
     fakeApi: {
       repository: boolean;
-      lastChanged: boolean | string;
     };
     analytics?: boolean;
   };

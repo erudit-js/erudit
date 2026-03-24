@@ -17,7 +17,7 @@ async function proseMounted() {
   );
 }
 
-const lastChangedDate = useLastChanged(() => mainContent.contentRelativePath);
+const lastChangedDate = useLastChanged(() => mainContent.lastmod);
 
 await useContentSeo({
   title: mainContent.title,
@@ -29,6 +29,8 @@ await useContentSeo({
   },
   seo: mainContent.seo,
   snippets: mainContent.snippets,
+  breadcrumbs: mainContent.breadcrumbs,
+  lastmod: mainContent.lastmod,
 });
 </script>
 

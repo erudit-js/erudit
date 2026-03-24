@@ -26,6 +26,7 @@ export default defineNuxtPlugin({
       '/api/prerender/quotes',
       '/api/prerender/news',
       '/api/prerender/ogImages',
+      '/api/prerender/favicons',
     ];
 
     for (const provider of routeProviders) {

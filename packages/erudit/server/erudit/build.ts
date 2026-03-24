@@ -9,6 +9,7 @@ import { buildSponsors } from './sponsors/build';
 import { buildCameos } from './cameos/build';
 import { buildContentNav } from './content/nav/build';
 import { requestFullContentResolve, resolveContent } from './content/resolve';
+import { buildContentLastmod } from './content/lastmod';
 import { buildGlobalContent } from './content/global/build';
 import { buildNews } from './news/build';
 import { triggerReload } from './reloadSignal';
@@ -29,6 +30,7 @@ export async function buildServerErudit() {
       await buildContentNav();
       await buildGlobalContent();
       await resolveContent();
+      await buildContentLastmod();
       ERUDIT.log.success(styleText('green', 'Build Complete!'));
     } catch (buildError) {
       requestFullContentResolve();
