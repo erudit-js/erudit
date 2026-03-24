@@ -31,6 +31,7 @@ await useContentSeo({
     contentId: mainContent.shortId,
   },
   seo: mainContent.seo,
+  breadcrumbs: mainContent.breadcrumbs,
 });
 </script>
 

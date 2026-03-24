@@ -29,6 +29,7 @@ await useContentSeo({
   },
   seo: mainContent.seo,
   snippets: mainContent.snippets,
+  breadcrumbs: mainContent.breadcrumbs,
 });
 </script>
 

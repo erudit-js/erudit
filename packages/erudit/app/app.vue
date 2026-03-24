@@ -2,6 +2,7 @@
 initFavicon();
 initOgImage();
 initOgSiteName();
+initWebSiteJsonLd();
 initAnalytics();
 initScrollUpWatcher();
 
