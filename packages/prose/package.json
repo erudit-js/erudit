@@ -43,7 +43,7 @@
   },
   "devDependencies": {
     "glob": "catalog:",
-    "oxc-transform": "0.120.0",
+    "oxc-transform": "0.121.0",
     "ts-xor": "catalog:"
   }
 }
