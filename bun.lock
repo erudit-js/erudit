@@ -6,7 +6,7 @@
       "name": "erudit-monorepo",
       "devDependencies": {
         "prettier": "^3.8.1",
-        "prettier-plugin-classnames": "^0.9.0",
+        "prettier-plugin-classnames": "^0.10.0",
         "prettier-plugin-merge": "^0.10.0",
         "prettier-plugin-tailwindcss": "^0.7.2",
         "ts-xor": "^1.3.0",
@@ -1660,7 +1660,7 @@
 
     "prettier": ["prettier@3.8.1", "", { "bin": { "prettier": "bin/prettier.cjs" } }, "sha512-UOnG6LftzbdaHZcKoPFtOcCKztrQ57WkHDeRD9t/PTQtmT0NHSeWWepj6pS0z/N7+08BHFDQVUrfmfMRcZwbMg=="],
 
-    "prettier-plugin-classnames": ["prettier-plugin-classnames@0.9.0", "", { "dependencies": { "zod": "3.22.4" }, "peerDependencies": { "@prettier/plugin-oxc": "*", "prettier": "^3", "prettier-plugin-astro": "*", "prettier-plugin-svelte": "*" }, "optionalPeers": ["@prettier/plugin-oxc", "prettier-plugin-astro", "prettier-plugin-svelte"] }, "sha512-xTTKf/us7YMcY4tuoQq0/WaFJzc/ZA0pPpWGphV1noLHX19mIMAJgqmy6ByX6ksVPtmcPDuAF36XVGr3DZYh4g=="],
+    "prettier-plugin-classnames": ["prettier-plugin-classnames@0.10.0", "", { "dependencies": { "zod": "3.22.4" }, "peerDependencies": { "@prettier/plugin-oxc": "*", "prettier": "^3", "prettier-plugin-astro": "*", "prettier-plugin-svelte": "*" }, "optionalPeers": ["@prettier/plugin-oxc", "prettier-plugin-astro", "prettier-plugin-svelte"] }, "sha512-s6lBfiLW/f2pavoi8Aak91KN8Zx5cdN2GEAlzQ+hosPpwntxXRdrroPc+UZRjFm0gsGJe5+J0P5PwAShFa2a8g=="],
 
     "prettier-plugin-merge": ["prettier-plugin-merge@0.10.0", "", { "dependencies": { "diff": "5.2.2" }, "peerDependencies": { "prettier": "^3" } }, "sha512-OWF0lOnjH16U2iiviF5+6s77n863c6Wff8hAcCNH2bDgOxr+HlPEM6xsVnnaHd7xCrscgJxhMcBaYot/6D/o3g=="],
 
