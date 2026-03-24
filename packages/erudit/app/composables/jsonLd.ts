@@ -59,6 +59,7 @@ export function useContentArticleJsonLd(args: {
   description?: string;
   urlPath: string;
   contentType: string;
+  lastmod?: string;
 }) {
   const withSiteUrl = useSiteUrl();
 
@@ -83,6 +84,10 @@ export function useContentArticleJsonLd(args: {
 
   if (args.description) {
     data.description = formatText(args.description);
+  }
+
+  if (args.lastmod) {
+    data.dateModified = args.lastmod;
   }
 
   if (siteTitle) {

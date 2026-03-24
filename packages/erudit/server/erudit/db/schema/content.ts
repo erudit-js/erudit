@@ -15,4 +15,5 @@ export const content = sqliteTable('content', {
   decorationExtension: text(),
   externals: text({ mode: 'json' }).$type<ContentExternalItem[]>(),
   seo: text({ mode: 'json' }).$type<ContentSeo>(),
+  lastmod: text(),
 });

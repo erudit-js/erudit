@@ -2,7 +2,14 @@ import { sn } from 'unslash';
 
 export default defineEventHandler(async (event) => {
   const urls = new Set<string>();
-  urls.add(PAGES.index);
+  const urlLastmod = new Map<string, string>();
+
+  function addUrl(url: string, lastmod?: string) {
+    urls.add(url);
+    if (lastmod) urlLastmod.set(url, lastmod);
+  }
+
+  addUrl(PAGES.index);
 
   //
   // Contributors
@@ -34,7 +41,7 @@ export default defineEventHandler(async (event) => {
 
   {
     const dbContentItems = await ERUDIT.db.query.content.findMany({
-      columns: { fullId: true },
+      columns: { fullId: true, lastmod: true },
     });
 
     for (const dbContentItem of dbContentItems) {
@@ -45,14 +52,15 @@ export default defineEventHandler(async (event) => {
       }
 
       const contentNode = ERUDIT.contentNav.getNodeOrThrow(fullId);
+      const lastmod = dbContentItem.lastmod ?? undefined;
 
       if (contentNode.type === 'topic') {
         const parts = await ERUDIT.repository.content.topicParts(fullId);
         for (const part of parts) {
-          urls.add(PAGES.topic(part, contentNode.shortId));
+          addUrl(PAGES.topic(part, contentNode.shortId), lastmod);
         }
       } else {
-        urls.add(PAGES[contentNode.type](fullId));
+        addUrl(PAGES[contentNode.type](fullId), lastmod);
       }
 
       const elementSnippets =
@@ -60,7 +68,7 @@ export default defineEventHandler(async (event) => {
 
       for (const snippet of elementSnippets || []) {
         if (snippet.seo) {
-          urls.add(snippet.link);
+          addUrl(snippet.link, lastmod);
         }
       }
     }
@@ -75,11 +83,12 @@ export default defineEventHandler(async (event) => {
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${Array.from(urls)
-  .map(
-    (url) => `    <url>
-        <loc>${sn(runtimeConfig.public.siteUrl, url)}</loc>
-    </url>`,
-  )
+  .map((url) => {
+    const lastmod = urlLastmod.get(url);
+    return `    <url>
+        <loc>${sn(runtimeConfig.public.siteUrl, url)}</loc>${lastmod ? `\n        <lastmod>${lastmod}</lastmod>` : ''}
+    </url>`;
+  })
   .join('\n')}
 </urlset>`.trim();
 

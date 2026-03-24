@@ -1,6 +1,7 @@
 import { existsSync } from 'node:fs';
 import type { Nuxt } from '@nuxt/schema';
 import { sn } from 'unslash';
+import { findPath } from 'nuxt/kit';
 import type { EruditConfig } from '@erudit-js/core/eruditConfig/config';
 import { isDevLikeMode } from '@erudit-js/core/mode';
 
@@ -31,6 +32,7 @@ export async function setupEruditRuntimeConfig(nuxt: Nuxt) {
     elements: eruditConfig.elements || [],
     countElements: eruditConfig.countElements || [],
     indexPage: eruditConfig.indexPage,
+    lastmod: await resolveLastmodConfig(eruditConfig),
   }) satisfies EruditRuntimeConfig;
 
   //
@@ -45,9 +47,6 @@ export async function setupEruditRuntimeConfig(nuxt: Nuxt) {
       fakeApi: {
         repository:
           eruditConfig.debug?.fakeApi?.repository ??
-          (nuxt.options.dev || isDevLikeMode(ERUDIT_MODE)),
-        lastChanged:
-          eruditConfig.debug?.fakeApi?.lastChanged ??
           (nuxt.options.dev || isDevLikeMode(ERUDIT_MODE)),
       },
       analytics: eruditConfig.debug?.analytics,
@@ -105,4 +104,41 @@ export async function setupEruditRuntimeConfig(nuxt: Nuxt) {
       .erudit as EruditPublicRuntimeConfig,
     nuxtAugmentations: eruditConfig.nuxtAugmentations,
   };
+}
+
+async function resolveLastmodConfig(
+  eruditConfig: EruditConfig,
+): Promise<EruditRuntimeConfig['lastmod']> {
+  const lastmod = eruditConfig.lastmod;
+
+  if (!lastmod || lastmod.enabled === false) {
+    return undefined;
+  }
+
+  if (lastmod.type === 'git') {
+    return { type: 'git' };
+  }
+
+  if (lastmod.type === 'custom') {
+    if (!lastmod.scriptPath) {
+      throw new Error(
+        'Lastmod config with type "custom" requires a "scriptPath"!',
+      );
+    }
+
+    const absPath = await findPath(lastmod.scriptPath, {
+      cwd: PROJECT_PATH,
+      extensions: ['.ts', '.js'],
+    });
+
+    if (!absPath) {
+      throw new Error(
+        `Failed to resolve lastmod provider path "${lastmod.scriptPath}"!`,
+      );
+    }
+
+    return { type: 'custom', scriptPath: absPath };
+  }
+
+  return undefined;
 }

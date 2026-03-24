@@ -20,6 +20,7 @@ export default defineEventHandler<Promise<MainContent>>(async (event) => {
     ['topic', 'page'].includes(contentTypePath.type),
   );
   const seo = await ERUDIT.repository.content.seo(fullId);
+  const lastmod = await ERUDIT.repository.content.lastmod(fullId);
 
   const bookNode = ERUDIT.contentNav.getBookFor(fullId);
   const bookTitle = bookNode
@@ -37,6 +38,7 @@ export default defineEventHandler<Promise<MainContent>>(async (event) => {
     bookTitle,
     breadcrumbs: await ERUDIT.repository.content.breadcrumbs(fullId),
     seo,
+    lastmod,
   };
 
   if (description) {

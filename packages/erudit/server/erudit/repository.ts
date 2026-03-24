@@ -37,6 +37,7 @@ import {
 import { getContentSeo } from './content/repository/seo';
 import { getContentElementSnippets } from './content/repository/elementSnippets';
 import { isContentHidden } from './content/repository/hidden';
+import { getContentLastmod } from './content/repository/lastmod';
 import { serverRawToProse } from './prose/repository/rawToProse';
 
 export const repository = {
@@ -77,6 +78,7 @@ export const repository = {
     updateSchemaCounts: updateContentSchemaCounts,
     contentContributions: getContentContributions,
     seo: getContentSeo,
+    lastmod: getContentLastmod,
   },
   prose: {
     fromRaw: serverRawToProse,

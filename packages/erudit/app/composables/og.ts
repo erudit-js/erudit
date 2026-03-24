@@ -94,6 +94,7 @@ export async function useContentSeo(args: {
   seo?: ContentSeo;
   snippets?: ElementSnippet[];
   breadcrumbs?: Breadcrumbs;
+  lastmod?: string;
 }) {
   const canUseBookTitle = ERUDIT.config.seo?.useBookSiteTitle;
 
@@ -159,6 +160,7 @@ export async function useContentSeo(args: {
       args.contentTypePath.type === 'topic'
         ? 'article'
         : args.contentTypePath.type,
+    lastmod: args.lastmod,
   });
 
   //

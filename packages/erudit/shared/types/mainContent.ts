@@ -27,6 +27,7 @@ export interface MainContentBase {
   connections?: ContentConnections;
   contributions?: ContentContribution[];
   seo?: ContentSeo;
+  lastmod?: string;
 }
 
 export interface MainContentChildrenItem {
