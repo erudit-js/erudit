@@ -43,7 +43,7 @@
     "nuxt": "4.4.2",
     "nuxt-my-icons": "1.2.2",
     "perfect-debounce": "^2.1.0",
-    "satori": "^0.25.0",
+    "satori": "^0.26.0",
     "sharp": "^0.34.5",
     "tailwindcss": "^4.2.1",
     "ts-xor": "catalog:",
