@@ -35,7 +35,7 @@
     "@erudit-js/core": "workspace:*",
     "@floating-ui/vue": "catalog:",
     "image-size": "catalog:",
-    "katex": "^0.16.38",
+    "katex": "^0.16.41",
     "mermaid": "^11.13.0",
     "photoswipe": "^5.4.4",
     "tsprose": "catalog:",
