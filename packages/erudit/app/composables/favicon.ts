@@ -1,9 +1,9 @@
 import { isTopicPart, type TopicPart } from '@erudit-js/core/content/topic';
 import { isContentType, type ContentType } from '@erudit-js/core/content/type';
 
-const fallbackFaviconHref = eruditPublic('favicons/default.svg');
+const FALLBACK_FAVICON_EXT = '.svg';
 
-const faviconMimeByExt: Record<string, string> = {
+const mimeByExt: Record<string, string> = {
   '.svg': 'image/svg+xml',
   '.png': 'image/png',
   '.ico': 'image/x-icon',
@@ -14,24 +14,28 @@ const faviconMimeByExt: Record<string, string> = {
   '.bmp': 'image/bmp',
 };
 
-function getFaviconMimeType(href: string): string | undefined {
-  const pathPart = href.split(/[?#]/)[0] ?? '';
-  const dot = pathPart.lastIndexOf('.');
-  if (dot === -1) return undefined;
-  const ext = pathPart.slice(dot).toLowerCase();
-  return faviconMimeByExt[ext];
+function extFromConfigHref(key: string): string {
+  const href =
+    (ERUDIT.config.favicon as Record<string, string> | undefined)?.[key] ||
+    ERUDIT.config.favicon?.default;
+  if (!href) return FALLBACK_FAVICON_EXT;
+  const path = href.split(/[?#]/)[0] ?? '';
+  const dot = path.lastIndexOf('.');
+  return dot === -1 ? '' : path.slice(dot).toLowerCase();
 }
 
-export const useFaviconHref = () => {
-  return useState<string>('favicon-href', () => fallbackFaviconHref);
-};
+function mimeFromConfigHref(key: string): string | undefined {
+  return mimeByExt[extFromConfigHref(key)];
+}
+
+export const useFaviconKey = () =>
+  useState<string>('favicon-key', () => 'default');
 
 export function useFavicon() {
-  const faviconHref = useFaviconHref();
+  const faviconKey = useFaviconKey();
 
   function showDefaultFavicon() {
-    const defaultFaviconHref = ERUDIT.config.favicon?.default;
-    faviconHref.value = defaultFaviconHref || fallbackFaviconHref;
+    faviconKey.value = 'default';
   }
 
   function showContentFavicon(
@@ -40,15 +44,13 @@ export function useFavicon() {
       | { type: 'topic'; part: TopicPart },
   ) {
     if (args.type === 'topic') {
-      const topicPartHref = ERUDIT.config.favicon?.[args.part];
-      if (topicPartHref) {
-        faviconHref.value = topicPartHref;
+      if (ERUDIT.config.favicon?.[args.part]) {
+        faviconKey.value = args.part;
         return;
       }
     } else {
-      const typeHref = ERUDIT.config.favicon?.[args.type];
-      if (typeHref) {
-        faviconHref.value = typeHref;
+      if (ERUDIT.config.favicon?.[args.type]) {
+        faviconKey.value = args.type;
         return;
       }
     }
@@ -64,22 +66,43 @@ export function useFavicon() {
 
 export function initFavicon() {
   const withBaseUrl = useBaseUrl();
-  const faviconHref = useFaviconHref();
+  const faviconKey = useFaviconKey();
   const { showDefaultFavicon, showContentFavicon } = useFavicon();
   showDefaultFavicon();
 
   useHead({
     link: [
       computed(() => {
-        const href = withBaseUrl(faviconHref.value);
-        const type = getFaviconMimeType(faviconHref.value);
+        const key = faviconKey.value;
+        const ext = extFromConfigHref(key);
+        const mime = mimeFromConfigHref(key);
         return {
           key: 'favicon',
           rel: 'icon',
-          href,
-          ...(type && { type }),
+          href: withBaseUrl(`/favicon/${key}/source${ext}`),
+          ...(mime && { type: mime }),
         };
       }),
+      computed(() => ({
+        key: 'favicon-png-48',
+        rel: 'icon',
+        type: 'image/png',
+        sizes: '48x48',
+        href: withBaseUrl(`/favicon/${faviconKey.value}/48.png`),
+      })),
+      computed(() => ({
+        key: 'favicon-png-32',
+        rel: 'icon',
+        type: 'image/png',
+        sizes: '32x32',
+        href: withBaseUrl(`/favicon/${faviconKey.value}/32.png`),
+      })),
+      computed(() => ({
+        key: 'apple-touch-icon',
+        rel: 'apple-touch-icon',
+        sizes: '180x180',
+        href: withBaseUrl(`/favicon/${faviconKey.value}/180.png`),
+      })),
     ],
   });
 
