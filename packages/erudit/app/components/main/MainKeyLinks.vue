@@ -19,16 +19,22 @@ const phrase = await usePhrases('key_elements');
 
 <template>
   <template v-if="keyLinks">
-    <section v-if="mode === 'single'" class="px-main py-main-half">
+    <nav
+      v-if="mode === 'single'"
+      :aria-label="phrase.key_elements"
+      class="px-main py-main-half"
+    >
       <MainSubTitle :title="phrase.key_elements + ':'" />
-      <div
+      <ul
         :style="{ '--keyBg': 'var(--color-bg-aside)' }"
-        class="gap-small micro:gap-normal micro:justify-start flex flex-wrap
-          justify-center"
+        class="gap-small micro:gap-normal micro:justify-start m-0 flex list-none
+          flex-wrap justify-center p-0"
       >
-        <MainKeyLink v-for="keyLink of keyLinks" :keyLink />
-      </div>
-    </section>
+        <li v-for="keyLink of keyLinks">
+          <MainKeyLink :keyLink />
+        </li>
+      </ul>
+    </nav>
     <div
       v-else
       :style="{ '--keyBg': 'var(--color-bg-main)' }"

@@ -27,11 +27,15 @@ const parentExternalsCount = computed(() => {
 </script>
 
 <template>
-  <section v-if="connections" class="px-main py-main-half">
+  <section
+    v-if="connections"
+    :aria-label="phrase.connections"
+    class="px-main py-main-half"
+  >
     <MainSubTitle :title="phrase.connections + ':'" />
-    <div
-      class="gap-small micro:gap-normal micro:justify-start flex flex-wrap
-        justify-center"
+    <ul
+      class="gap-small micro:gap-normal micro:justify-start m-0 flex list-none
+        flex-wrap justify-center p-0"
     >
       <template
         v-for="(items, type) of {
@@ -40,49 +44,52 @@ const parentExternalsCount = computed(() => {
           dependents: connections.dependents,
         }"
       >
-        <MainConnectionsButton
-          v-if="items && items.length > 0"
-          :type="type"
-          :count="items.length"
-          :active="currentType === type"
-          @click="
-            currentType === type
-              ? (currentType = undefined)
-              : (currentType = type)
-          "
-        />
+        <li v-if="items && items.length > 0">
+          <MainConnectionsButton
+            :type="type"
+            :count="items.length"
+            :active="currentType === type"
+            @click="
+              currentType === type
+                ? (currentType = undefined)
+                : (currentType = type)
+            "
+          />
+        </li>
       </template>
-      <MainConnectionsButton
-        v-if="connections.externals"
-        type="externals"
-        :active="currentType === 'externals'"
-        @click="
-          currentType === 'externals'
-            ? (currentType = undefined)
-            : (currentType = 'externals')
-        "
-      >
-        <template #after>
-          <div
-            v-if="connections.externals"
-            class="gap-small *:border-border *:pl-small flex items-center
-              font-bold *:border-l"
-          >
+      <li v-if="connections.externals">
+        <MainConnectionsButton
+          type="externals"
+          :active="currentType === 'externals'"
+          @click="
+            currentType === 'externals'
+              ? (currentType = undefined)
+              : (currentType = 'externals')
+          "
+        >
+          <template #after>
             <div
-              v-if="ownExternalsCount"
-              class="flex items-center gap-1 text-amber-600 dark:text-amber-400"
+              v-if="connections.externals"
+              class="gap-small *:border-border *:pl-small flex items-center
+                font-bold *:border-l"
             >
-              <MyIcon name="arrow/left" class="-scale-x-100" />
-              <span>{{ ownExternalsCount }}</span>
+              <div
+                v-if="ownExternalsCount"
+                class="flex items-center gap-1 text-amber-600
+                  dark:text-amber-400"
+              >
+                <MyIcon name="arrow/left" class="-scale-x-100" />
+                <span>{{ ownExternalsCount }}</span>
+              </div>
+              <div v-if="parentExternalsCount" class="flex items-center gap-1">
+                <MyIcon name="arrow/up-to-right" />
+                <span>{{ parentExternalsCount }}</span>
+              </div>
             </div>
-            <div v-if="parentExternalsCount" class="flex items-center gap-1">
-              <MyIcon name="arrow/up-to-right" />
-              <span>{{ parentExternalsCount }}</span>
-            </div>
-          </div>
-        </template>
-      </MainConnectionsButton>
-    </div>
+          </template>
+        </MainConnectionsButton>
+      </li>
+    </ul>
     <template v-if="currentType && connections[currentType]">
       <Deps
         v-if="currentType !== 'externals'"

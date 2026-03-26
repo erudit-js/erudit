@@ -52,6 +52,7 @@ export type LanguagePhrases = Phrases<{
   flag_advanced_description: string;
   flag_secondary: string;
   flag_secondary_description: string;
+  breadcrumb: string;
   key_elements: string;
   stats: string;
   connections: string;

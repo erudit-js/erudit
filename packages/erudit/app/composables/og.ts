@@ -161,6 +161,8 @@ export async function useContentSeo(args: {
         ? 'article'
         : args.contentTypePath.type,
     lastmod: args.lastmod,
+    keyElements: args.snippets?.filter((snippet) => !!snippet.key),
+    breadcrumbs: args.breadcrumbs,
   });
 
   //

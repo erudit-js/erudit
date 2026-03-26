@@ -47,6 +47,7 @@ export const phrases: LanguagePhrases = {
   flag_secondary: 'Дополнение',
   flag_secondary_description:
     'Это дополнительный материал для тех, кто хочет глубже погрузиться в предмет и получить дополнительные знания и контекст.',
+  breadcrumb: 'Путь',
   key_elements: 'Ключевые элементы',
   stats: 'Статистика',
   connections: 'Связи',

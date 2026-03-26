@@ -15,27 +15,26 @@ const phrase = await usePhrases('stats');
 <template>
   <section
     v-if="mode === 'single' && (stats || lastChangedDate)"
+    :aria-label="phrase.stats"
     class="px-main py-main-half"
   >
     <MainSubTitle :title="phrase.stats + ':'" />
-    <div
-      class="micro:justify-start gap-small micro:gap-normal flex flex-wrap
-        justify-center"
+    <ul
+      class="micro:justify-start gap-small micro:gap-normal m-0 flex list-none
+        flex-wrap justify-center p-0"
     >
-      <ItemMaterials
-        v-if="stats?.materials"
-        :count="stats.materials"
-        mode="detailed"
-      />
-      <ItemElement
-        v-if="stats?.elements"
-        v-for="(count, schemaName) of stats.elements"
-        :schemaName
-        :count
-        mode="detailed"
-      />
-      <ItemLastChanged v-if="lastChangedDate" :date="lastChangedDate" />
-    </div>
+      <li v-if="stats?.materials">
+        <ItemMaterials :count="stats.materials" mode="detailed" />
+      </li>
+      <template v-if="stats?.elements">
+        <li v-for="(count, schemaName) of stats.elements">
+          <ItemElement :schemaName :count mode="detailed" />
+        </li>
+      </template>
+      <li v-if="lastChangedDate">
+        <ItemLastChanged :date="lastChangedDate" />
+      </li>
+    </ul>
   </section>
   <div
     v-else-if="mode === 'children' && stats"

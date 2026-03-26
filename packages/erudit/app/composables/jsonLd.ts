@@ -1,4 +1,5 @@
 import type { Breadcrumbs } from '../../shared/types/breadcrumbs';
+import type { ElementSnippet } from '../../shared/types/elementSnippet';
 
 export function useJsonLd(key: string, data: Record<string, unknown>) {
   useHead({
@@ -60,6 +61,8 @@ export function useContentArticleJsonLd(args: {
   urlPath: string;
   contentType: string;
   lastmod?: string;
+  keyElements?: ElementSnippet[];
+  breadcrumbs?: Breadcrumbs;
 }) {
   const withSiteUrl = useSiteUrl();
 
@@ -90,11 +93,30 @@ export function useContentArticleJsonLd(args: {
     data.dateModified = args.lastmod;
   }
 
-  if (siteTitle) {
+  const parentBreadcrumb =
+    args.breadcrumbs && args.breadcrumbs.length >= 1
+      ? args.breadcrumbs[args.breadcrumbs.length - 1]
+      : undefined;
+
+  if (parentBreadcrumb) {
+    data.isPartOf = {
+      '@type': 'WebPage',
+      name: formatText(parentBreadcrumb.title),
+      url: withSiteUrl(parentBreadcrumb.link),
+    };
+  } else if (siteTitle) {
     data.isPartOf = {
       '@type': 'WebSite',
       name: siteTitle,
     };
+  }
+
+  if (args.keyElements && args.keyElements.length > 0) {
+    data.hasPart = args.keyElements.map((el) => ({
+      '@type': 'DefinedTerm',
+      name: formatText(el.seo?.title || el.key?.title || el.title),
+      url: withSiteUrl(el.link),
+    }));
   }
 
   useJsonLd('jsonld-content', data);
