@@ -9,6 +9,7 @@
     "target": "esnext",
     "module": "nodenext",
     "moduleResolution": "nodenext",
+    "rootDir": "./src",
     "outDir": "dist",
     "types": ["./env.d.ts"]
   },

@@ -9,6 +9,7 @@
     "module": "nodenext",
     "moduleResolution": "nodenext",
     "lib": ["ESNext"],
+    "rootDir": "./src",
     "outDir": "dist"
   },
   "include": ["src/**/*"]

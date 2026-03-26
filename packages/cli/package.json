@@ -1,6 +1,6 @@
 {
   "name": "@erudit-js/cli",
-  "version": "4.3.3",
+  "version": "4.3.4-dev.2",
   "type": "module",
   "description": "📟 Command Line Interface for Erudit",
   "license": "MIT",
