@@ -31,6 +31,9 @@ await useContentSeo({
   snippets: mainContent.snippets,
   breadcrumbs: mainContent.breadcrumbs,
   lastmod: mainContent.lastmod,
+  contributions: mainContent.contributions,
+  flags: mainContent.flags,
+  connections: mainContent.connections,
 });
 </script>
 
