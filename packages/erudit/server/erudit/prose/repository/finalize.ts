@@ -1,8 +1,11 @@
 import {
   fillProseStorage,
   isProseElement,
+  isRawElement,
   type ProseElement,
+  type ProseStorage,
   type ProseWithStorage,
+  type RawElement,
 } from 'tsprose';
 import { imageSchema } from '@erudit-js/prose/elements/image/core';
 import { videoSchema } from '@erudit-js/prose/elements/video/core';
@@ -25,6 +28,67 @@ import { createLinkStorage } from '../storage/link';
 import { createProblemScriptStorage } from '../storage/problemScript';
 
 import { coreElements } from '#erudit/prose/global';
+
+async function createStorageForRawElement(
+  rawElement: RawElement,
+  storageKey: string,
+) {
+  switch (true) {
+    case isRawElement(rawElement, imageSchema):
+      return await createImageStorage(rawElement as any);
+    case isRawElement(rawElement, videoSchema):
+      return createVideoStorage(rawElement as any);
+    case isRawElement(rawElement, calloutSchema):
+      return createCalloutStorage(rawElement as any);
+    case isRawElement(rawElement, refSchema):
+    case isRawElement(rawElement, referenceSchema):
+    case isRawElement(rawElement, depSchema):
+    case isRawElement(rawElement, dependencySchema):
+      return await createLinkStorage(rawElement as any, storageKey);
+    case isRawElement(rawElement, problemSchema):
+    case isRawElement(rawElement, subProblemSchema):
+      return createProblemScriptStorage(rawElement as any, storageKey);
+  }
+}
+
+async function collectEnsureStorage(
+  rawElements: RawElement[],
+  storage: ProseStorage,
+) {
+  for (const rawElement of rawElements) {
+    if (rawElement.storageKey && !(rawElement.storageKey in storage)) {
+      const value = await createStorageForRawElement(
+        rawElement,
+        rawElement.storageKey,
+      );
+      if (value !== undefined) {
+        storage[rawElement.storageKey] = value;
+      }
+    }
+    if (rawElement.children) {
+      await collectEnsureStorage(rawElement.children as RawElement[], storage);
+    }
+  }
+}
+
+async function processEnsureStorage(
+  element: ProseElement,
+  storage: ProseStorage,
+) {
+  if (
+    (isProseElement(element, problemSchema) ||
+      isProseElement(element, subProblemSchema)) &&
+    element.data.ensureStorage
+  ) {
+    await collectEnsureStorage(element.data.ensureStorage, storage);
+    delete element.data.ensureStorage;
+  }
+  if (element.children) {
+    for (const child of element.children as ProseElement[]) {
+      await processEnsureStorage(child, storage);
+    }
+  }
+}
 
 export async function finalizeProse(
   prose: ProseElement,
@@ -57,6 +121,8 @@ export async function finalizeProse(
       }
     },
   });
+
+  await processEnsureStorage(prose, storage);
 
   return {
     prose,
