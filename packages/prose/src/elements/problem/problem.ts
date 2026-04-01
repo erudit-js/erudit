@@ -1,6 +1,7 @@
 import {
   defineSchema,
   type NoChildren,
+  type RawElement,
   type RequiredChildren,
   type Schema,
   type Unique,
@@ -36,6 +37,7 @@ export interface ProblemSchema extends Schema {
 export interface ProblemData {
   info: ProblemInfo;
   scriptUniques?: Record<string, Unique>;
+  ensureStorage?: RawElement[];
 }
 
 export const problemSchema = defineSchema<ProblemSchema>({
@@ -70,7 +72,12 @@ export const Problem = defineEruditTag({
 
     element.storageKey = problemScriptStorageKey(props.script.scriptSrc);
 
-    element.children = props.script.generate().problemContent;
+    const generated = props.script.generate();
+    element.children = generated.problemContent;
+
+    if (generated.ensureStorage) {
+      element.data.ensureStorage = generated.ensureStorage;
+    }
   } else {
     validateProblemContent(tagName, children);
     element.children = children as any;

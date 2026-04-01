@@ -429,4 +429,126 @@ describe('checkProblemAnswer', () => {
       warnSpy.mockRestore();
     });
   });
+
+  describe('select type', () => {
+    it('should return true when selected index matches correct option', async () => {
+      const checkData: ProblemCheckValidator = {
+        type: 'select',
+        multiple: false,
+        options: [
+          { content: ['A'] },
+          { content: ['B'], answer: true },
+          { content: ['C'] },
+        ],
+      };
+      expect(await check('1', checkData)).toBe(true);
+    });
+
+    it('should return false when selected index does not match correct option', async () => {
+      const checkData: ProblemCheckValidator = {
+        type: 'select',
+        multiple: false,
+        options: [
+          { content: ['A'] },
+          { content: ['B'], answer: true },
+          { content: ['C'] },
+        ],
+      };
+      expect(await check('0', checkData)).toBe(false);
+      expect(await check('2', checkData)).toBe(false);
+    });
+
+    it('should match exact set of correct indices for multi-select', async () => {
+      const checkData: ProblemCheckValidator = {
+        type: 'select',
+        multiple: true,
+        options: [
+          { content: ['1'] },
+          { content: ['2'], answer: true },
+          { content: ['3'] },
+          { content: ['4'], answer: true },
+          { content: ['5'], answer: true },
+        ],
+      };
+      expect(await check('1,3,4', checkData)).toBe(true);
+      expect(await check('3,1,4', checkData)).toBe(true);
+    });
+
+    it('should reject partial selection for multi-select', async () => {
+      const checkData: ProblemCheckValidator = {
+        type: 'select',
+        multiple: true,
+        options: [
+          { content: ['A'] },
+          { content: ['B'], answer: true },
+          { content: ['C'], answer: true },
+        ],
+      };
+      expect(await check('1', checkData)).toBe(false);
+    });
+
+    it('should reject superset selection for multi-select', async () => {
+      const checkData: ProblemCheckValidator = {
+        type: 'select',
+        multiple: true,
+        options: [
+          { content: ['A'] },
+          { content: ['B'], answer: true },
+          { content: ['C'] },
+        ],
+      };
+      expect(await check('0,1', checkData)).toBe(false);
+    });
+
+    it('should return false when no correct options are defined', async () => {
+      const checkData: ProblemCheckValidator = {
+        type: 'select',
+        multiple: false,
+        options: [{ content: ['A'] }, { content: ['B'] }],
+      };
+      expect(await check('0', checkData)).toBe(false);
+      expect(await check('1', checkData)).toBe(false);
+    });
+
+    it('should return false for empty selection', async () => {
+      const checkData: ProblemCheckValidator = {
+        type: 'select',
+        multiple: true,
+        options: [{ content: ['A'], answer: true }, { content: ['B'] }],
+      };
+      expect(await check('', checkData)).toBe(false);
+    });
+  });
+});
+
+describe('ProblemCheckData select serialization', () => {
+  it('should serialize and deserialize select data correctly', () => {
+    const data: ProblemCheckValidator = {
+      type: 'select',
+      multiple: true,
+      columns: 3,
+      options: [
+        { content: ['A'] },
+        { content: ['B'], answer: true },
+        { content: ['C'], answer: true },
+      ],
+    };
+    expect(
+      fromSerializableValidator(toSerializableValidator(data)),
+    ).toStrictEqual(data);
+  });
+
+  it('should preserve columns as undefined when not set', () => {
+    const data: ProblemCheckValidator = {
+      type: 'select',
+      multiple: false,
+      options: [{ content: ['X'] }, { content: ['Y'], answer: true }],
+    };
+    const roundTripped = fromSerializableValidator(
+      toSerializableValidator(data),
+    );
+    expect((roundTripped as any).type).toBe('select');
+    expect((roundTripped as any).multiple).toBe(false);
+    expect((roundTripped as any).columns).toBeUndefined();
+  });
 });

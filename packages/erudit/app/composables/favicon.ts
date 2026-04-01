@@ -112,7 +112,7 @@ export function initFavicon() {
   let stopWatchingRoute: ReturnType<typeof watch> | undefined;
   onMounted(() => {
     stopWatchingRoute = watch(
-      route,
+      () => route.path,
       () => {
         clearTimeout(contentFaviconChangeTimeout);
 

@@ -14,8 +14,12 @@ import successIcon from '../../../../app/shared/assets/check.svg?raw';
 import { useFormatText } from '../../../../app/composables/formatText.js';
 import { useProseContext } from '../../../../app/index.js';
 import { useProblemPhrase } from '../../composables/phrase.js';
-
-type CheckStatus = 'default' | 'loading' | 'correct' | 'wrong';
+import CheckSelect from './CheckSelect.vue';
+import {
+  type CheckStatus,
+  createBaseStatusStyles,
+  useCheckLabel,
+} from './shared.js';
 
 type CheckState = {
   icon: string;
@@ -37,6 +41,15 @@ const validator = computed(() => {
   return fromSerializableValidator(check.data.serializedValidator);
 });
 
+const isSelectMode = computed(() => {
+  const v = check.data.serializedValidator;
+  return v.type === 'select' || v.type === 'boolean';
+});
+
+const isBooleanMode = computed(() => {
+  return check.data.serializedValidator.type === 'boolean';
+});
+
 const emit = defineEmits<{
   (event: 'status-change', status: CheckStatus): void;
 }>();
@@ -48,34 +61,42 @@ const { EruditIcon, EruditTransition, loadingSvg, problemCheckers } =
   useProseContext();
 const phrase = await useProblemPhrase();
 
-const states: Record<CheckStatus, CheckState> = {
+const inputButtonStyles: Record<
+  CheckStatus,
+  { inputClass: string; buttonClass: string }
+> = {
   default: {
-    icon: checkIcon,
-    labelClass: 'text-text-muted',
     inputClass: 'border-border text-text',
     buttonClass:
       'text-text-muted border-border hocus:border-text-muted hocus:text-text',
   },
   loading: {
-    icon: loadingSvg,
-    labelClass: 'text-text-muted',
     inputClass: 'border-border text-text',
     buttonClass: 'text-text-muted border-border',
   },
   correct: {
-    icon: successIcon,
-    labelClass: 'text-lime-600',
     inputClass: 'text-lime-600 border-lime-500',
     buttonClass: 'text-lime-600 border-lime-500',
   },
   wrong: {
-    icon: plusIcon,
-    iconClass: 'rotate-45',
-    labelClass: 'text-red-700 dark:text-red-400',
     inputClass: 'text-red-700 dark:text-red-400 border-red-400',
     buttonClass: 'text-red-700 dark:text-red-400 border-red-400',
   },
 };
+
+const baseStyles = createBaseStatusStyles({
+  check: checkIcon,
+  loading: loadingSvg,
+  success: successIcon,
+  plus: plusIcon,
+});
+
+const states: Record<CheckStatus, CheckState> = Object.fromEntries(
+  (Object.keys(baseStyles) as CheckStatus[]).map((key) => [
+    key,
+    { ...baseStyles[key], ...inputButtonStyles[key] },
+  ]),
+) as Record<CheckStatus, CheckState>;
 
 const currentState = computed(() => states[state.value]);
 const isLoading = computed(() => state.value === 'loading');
@@ -83,10 +104,6 @@ const isLoading = computed(() => state.value === 'loading');
 const hint = computed(() => {
   if (check.data.hint) {
     return check.data.hint;
-  }
-
-  if (check.data.serializedValidator.type === 'boolean') {
-    return phrase.boolean_check_hint;
   }
 
   if (check.data.serializedValidator.type === 'array') {
@@ -97,17 +114,7 @@ const hint = computed(() => {
   }
 });
 
-const labelText = computed(() => {
-  const rawLabel = formatText(check.data.label ?? phrase.action_answer);
-  const trimmed = rawLabel.trimEnd();
-
-  if (!trimmed) {
-    return '';
-  }
-
-  const endsWithAlphaNum = /[\p{L}\p{N}]$/u.test(trimmed);
-  return endsWithAlphaNum ? `${trimmed}:` : trimmed;
-});
+const labelText = useCheckLabel(check, phrase, formatText);
 
 const answerInputElement = useTemplateRef<HTMLInputElement>('answer');
 const answerInput = ref('');
@@ -156,7 +163,15 @@ async function doCheck() {
 </script>
 
 <template>
-  <div class="gap-small flex w-full flex-col">
+  <Suspense v-if="isSelectMode" suspensible>
+    <CheckSelect
+      :check="check"
+      :script="script"
+      :isBoolean="isBooleanMode"
+      @status-change="(status) => emit('status-change', status)"
+    />
+  </Suspense>
+  <div v-else class="gap-small flex w-full flex-col">
     <div
       :class="[
         'text-main-sm font-medium transition-[color]',
@@ -189,7 +204,7 @@ async function doCheck() {
         type="submit"
         :disabled="isLoading"
         :class="[
-          `bg-bg-main relative w-[50px] cursor-pointer rounded rounded-tl-none
+          `bg-bg-main relative w-12.5 cursor-pointer rounded rounded-tl-none
           rounded-bl-none border outline-0 transition-[border,color,background]`,
           currentState.buttonClass,
         ]"

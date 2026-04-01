@@ -129,21 +129,25 @@ function scriptClearFunction(check: CheckProseElement) {
       class="micro:grid-cols-2 grid gap-(--proseAsideWidth)
         p-(--proseAsideWidth)"
     >
-      <Check
+      <div
         v-for="check in allChecks"
         :key="getCheckId(check)"
-        :check="check"
+        :class="{ 'micro:col-span-2': check.data.expand }"
         v-show="isVisible(check)"
-        :script="
-          check.data.serializedValidator.type === 'script'
-            ? {
-                check: (answer) => scriptCheckFunction(check, answer),
-                clear: () => scriptClearFunction(check),
-              }
-            : undefined
-        "
-        @status-change="(status) => setStatus(check, status)"
-      />
+      >
+        <Check
+          :check="check"
+          :script="
+            check.data.serializedValidator.type === 'script'
+              ? {
+                  check: (answer) => scriptCheckFunction(check, answer),
+                  clear: () => scriptClearFunction(check),
+                }
+              : undefined
+          "
+          @status-change="(status) => setStatus(check, status)"
+        />
+      </div>
     </div>
   </ProblemExpander>
 </template>

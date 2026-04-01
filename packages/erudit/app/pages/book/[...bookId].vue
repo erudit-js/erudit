@@ -31,6 +31,10 @@ await useContentSeo({
   seo: mainContent.seo,
   breadcrumbs: mainContent.breadcrumbs,
   lastmod: mainContent.lastmod,
+  children: mainContent.children,
+  contributions: mainContent.contributions,
+  flags: mainContent.flags,
+  connections: mainContent.connections,
 });
 </script>
 

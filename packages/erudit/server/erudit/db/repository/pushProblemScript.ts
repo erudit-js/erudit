@@ -23,8 +23,11 @@ export async function pushProblemScript(
     relativePath = problemScriptSrc;
   }
 
-  await ERUDIT.db.insert(ERUDIT.db.schema.problemScripts).values({
-    problemScriptSrc: relativePath,
-    contentFullId,
-  });
+  await ERUDIT.db
+    .insert(ERUDIT.db.schema.problemScripts)
+    .values({
+      problemScriptSrc: relativePath,
+      contentFullId,
+    })
+    .onConflictDoNothing();
 }

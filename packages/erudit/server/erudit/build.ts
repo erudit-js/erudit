@@ -61,6 +61,14 @@ export async function buildServerErudit() {
 // Watcher
 //
 
+const watchedProjectDirs = [
+  'content',
+  'contributors',
+  'cameos',
+  'sponsors',
+  'news',
+] as const;
+
 export async function tryServerWatchProject() {
   if (ERUDIT.mode === 'static') {
     return;
@@ -93,38 +101,13 @@ export async function tryServerWatchProject() {
     }
   }, 300);
 
-  function isWatched(path: string) {
-    if (path.startsWith(ERUDIT.paths.project('content') + '/')) {
-      return true;
-    }
-
-    if (path.startsWith(ERUDIT.paths.project('contributors') + '/')) {
-      return true;
-    }
-
-    if (path.startsWith(ERUDIT.paths.project('cameos') + '/')) {
-      return true;
-    }
-
-    if (path.startsWith(ERUDIT.paths.project('sponsors') + '/')) {
-      return true;
-    }
-
-    if (path.startsWith(ERUDIT.paths.project('news') + '/')) {
-      return true;
-    }
-  }
-
-  const watcher = chokidar.watch(ERUDIT.paths.project(), {
-    ignoreInitial: true,
-  });
+  const watcher = chokidar.watch(
+    watchedProjectDirs.map((dir) => ERUDIT.paths.project(dir)),
+    { ignoreInitial: true },
+  );
 
   watcher.on('all', (_, path) => {
     path = sn(path);
-
-    if (!isWatched(path)) {
-      return;
-    }
 
     if (pendingRebuild) {
       return;

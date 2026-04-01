@@ -249,7 +249,7 @@ async function doGenerate(seed: ProblemSeed) {
           currentAction = actionKey === currentAction ? undefined : actionKey
         "
         :active="actionKey === currentAction"
-        class="flex items-center gap-[7px]"
+        class="flex items-center gap-1.75"
       >
         <EruditIcon :name="actionIcons[actionKey]" class="text-[1.3em]" />
         <span>{{ phrase[`action_${actionKey}`] }}</span>

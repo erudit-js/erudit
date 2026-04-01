@@ -4,6 +4,7 @@ import {
   isRawElement,
   type BlockRawElement,
   type BlockSchema,
+  type RawElement,
   type Schema,
   type ToRawElement,
   type Unique,
@@ -44,6 +45,7 @@ export interface SubProblemData {
   label?: string;
   standalone?: true;
   scriptUniques?: Record<string, Unique>;
+  ensureStorage?: RawElement[];
 }
 
 export const subProblemSchema = defineSchema<SubProblemSchema>({
@@ -83,7 +85,12 @@ export const SubProblem = defineEruditTag({
 
     element.storageKey = problemScriptStorageKey(props.script.scriptSrc);
 
-    element.children = props.script.generate().problemContent;
+    const generated = props.script.generate();
+    element.children = generated.problemContent;
+
+    if (generated.ensureStorage) {
+      element.data.ensureStorage = generated.ensureStorage;
+    }
   } else {
     validateProblemContent(tagName, children);
     element.children = children as any;

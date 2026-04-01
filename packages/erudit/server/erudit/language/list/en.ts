@@ -46,6 +46,7 @@ export const phrases: LanguagePhrases = {
   flag_secondary: 'Additional',
   flag_secondary_description:
     'This is an optional material is for learners who want to dive deeper and gain additional knowledge and context.',
+  breadcrumb: 'Breadcrumb',
   key_elements: 'Key elements',
   stats: 'Statistics',
   connections: 'Connections',

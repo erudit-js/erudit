@@ -53,7 +53,13 @@ type ProblemContentFnArgs<TDef extends ProblemScriptDefinition> =
 
 type ProblemContentFn<TDef extends ProblemScriptDefinition> = (
   args: ProblemContentFnArgs<TDef>,
-) => RawElement | { problemContent: RawElement; check?: CheckFunction };
+) =>
+  | RawElement
+  | {
+      problemContent: RawElement;
+      check?: CheckFunction;
+      ensureStorage?: RawElement[];
+    };
 
 type ProblemScriptInstanceCreator<TDef extends ProblemScriptDefinition> =
   TDef['uniques'] extends DocumentUniquesTemplate
@@ -162,6 +168,9 @@ export function defineProblemScript<const TDef extends ProblemScriptDefinition>(
             problemContent:
               problemContent.children as ToRawElement<ProblemContentChild>[],
             check: !isRawElement(result) ? result.check : undefined,
+            ensureStorage: !isRawElement(result)
+              ? result.ensureStorage
+              : undefined,
           };
         },
       };
@@ -180,5 +189,6 @@ export interface ProblemScriptInstance {
   generate: (seed?: ProblemSeed) => {
     problemContent: ToRawElement<ProblemContentChild>[];
     check?: CheckFunction;
+    ensureStorage?: RawElement[];
   };
 }

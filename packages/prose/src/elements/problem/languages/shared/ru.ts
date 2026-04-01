@@ -29,6 +29,9 @@ export default defineElementLanguage<ProblemPhrases>({
   yes_regexp: /^\s*(да|1)\s*$/i,
   no_regexp: /^\s*(нет|0)\s*$/i,
   boolean_check_hint: 'Да/Нет',
+  boolean_option_yes: 'Да',
+  boolean_option_no: 'Нет',
+  select_confirm: 'Подтвердить',
   array_check_hint: (ordered, separator) => {
     let hint = '';
     hint +=
