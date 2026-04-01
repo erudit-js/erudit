@@ -3,6 +3,7 @@ import {
   defineSchema,
   ensureTagChildren,
   type OptionalChildren,
+  type RawElement,
   type Schema,
 } from 'tsprose';
 import {
@@ -23,9 +24,13 @@ export interface ProblemCheckInfo {
   label?: string;
   hint?: string;
   placeholder?: string;
+  expand?: true;
 }
 
-export type ProblemCheckData = ProblemCheckInfo & { serializedValidator: any };
+export type ProblemCheckData = ProblemCheckInfo & {
+  serializedValidator: any;
+  ensureStorage?: RawElement[];
+};
 
 export interface ProblemCheckSchema extends Schema {
   name: 'problemCheck';
@@ -46,7 +51,7 @@ export const ProblemCheck = defineEruditTag({
   tagName: 'ProblemCheck',
   schema: problemCheckSchema,
 })<
-  { label?: string; hint?: string; placeholder?: string } & XOR<
+  { label?: string; hint?: string; placeholder?: string; expand?: true } & XOR<
     { yes: true },
     { no: true },
     { boolean: boolean },
@@ -60,7 +65,12 @@ export const ProblemCheck = defineEruditTag({
             values: (ProblemCheckValueDefined | ProblemCheckValueDefined[])[];
           };
     },
-    { script: string }
+    { script: string },
+    {
+      select: ProblemCheckSelectOptionProp[];
+      multiple?: boolean;
+      columns?: number;
+    }
   > &
     OptionalChildren
 >(({ element, tagName, props, children }) => {
@@ -72,6 +82,7 @@ export const ProblemCheck = defineEruditTag({
     label: props.label,
     hint: props.hint,
     placeholder: props.placeholder,
+    ...(props.expand ? { expand: true } : {}),
   };
 
   //
@@ -142,8 +153,47 @@ export const ProblemCheck = defineEruditTag({
   } else if ('script' in props) {
     validator = {
       type: 'script',
-      name: props.script,
+      name: props.script!,
     };
+  } else if ('select' in props) {
+    const selectOptions = props.select;
+    const ensureStorageElements: RawElement[] = [];
+
+    const options: ProblemCheckSelectOption[] = selectOptions.map((opt) => {
+      const contentArray = Array.isArray(opt.content)
+        ? opt.content
+        : [opt.content];
+
+      // Collect raw elements that may need storage
+      for (const rawEl of contentArray) {
+        if (rawEl && typeof rawEl === 'object') {
+          ensureStorageElements.push(rawEl as RawElement);
+        }
+      }
+
+      return {
+        content: contentArray,
+        ...(opt.answer !== undefined ? { answer: opt.answer } : {}),
+      };
+    });
+
+    validator = {
+      type: 'select',
+      multiple: props.multiple ?? false,
+      columns: props.columns,
+      options,
+    };
+
+    element.data = {
+      ...checkInfo,
+      serializedValidator: toSerializableValidator(validator),
+    };
+
+    if (ensureStorageElements.length > 0) {
+      element.data.ensureStorage = ensureStorageElements;
+    }
+
+    return;
   }
 
   element.data = {
@@ -197,11 +247,29 @@ export interface ProblemCheckValidatorScript {
   name: string;
 }
 
+export interface ProblemCheckSelectOptionProp {
+  content: RawElement | RawElement[];
+  answer?: true;
+}
+
+export interface ProblemCheckSelectOption {
+  content: any[];
+  answer?: true;
+}
+
+export interface ProblemCheckValidatorSelect {
+  type: 'select';
+  multiple: boolean;
+  columns?: number;
+  options: ProblemCheckSelectOption[];
+}
+
 export type ProblemCheckValidator =
   | ProblemCheckValidatorBoolean
   | ProblemCheckValidatorValue
   | ProblemCheckValidatorArray
-  | ProblemCheckValidatorScript;
+  | ProblemCheckValidatorScript
+  | ProblemCheckValidatorSelect;
 
 export function toSerializableValidator(validator: ProblemCheckValidator) {
   if ((validator as any).__ERUDIT_CHECK === true) {
@@ -249,6 +317,18 @@ export function toSerializableValidator(validator: ProblemCheckValidator) {
 
   if (validator.type === 'script') {
     return validator;
+  }
+
+  if (validator.type === 'select') {
+    return {
+      type: 'select',
+      multiple: validator.multiple,
+      columns: validator.columns,
+      options: validator.options.map((opt) => ({
+        content: opt.content,
+        ...(opt.answer !== undefined ? { answer: opt.answer } : {}),
+      })),
+    };
   }
 
   throw new Error(
@@ -300,6 +380,18 @@ export function fromSerializableValidator(
 
   if (serializedValidator.type === 'script') {
     return serializedValidator as ProblemCheckValidatorScript;
+  }
+
+  if (serializedValidator.type === 'select') {
+    return {
+      type: 'select',
+      multiple: serializedValidator.multiple,
+      columns: serializedValidator.columns,
+      options: serializedValidator.options.map((opt: any) => ({
+        content: opt.content,
+        ...(opt.answer !== undefined ? { answer: opt.answer } : {}),
+      })),
+    } as ProblemCheckValidatorSelect;
   }
 
   throw new Error(
@@ -427,6 +519,39 @@ export async function checkProblemAnswer(
       }
 
       remaining.splice(foundIndex, 1);
+    }
+
+    return true;
+  }
+
+  if (against.type === 'select') {
+    // answer is a comma-separated list of selected option indices
+    const selectedIndices = answer
+      ? answer.split(',').map((s) => Number(s.trim()))
+      : [];
+
+    // Determine which options are "correct" (have an answer field defined)
+    const correctIndices = against.options
+      .map((opt, i) => (opt.answer !== undefined ? i : -1))
+      .filter((i) => i !== -1);
+
+    if (correctIndices.length === 0) {
+      // No correct options defined — always wrong
+      return false;
+    }
+
+    // Check selected matches correct exactly
+    const selectedSet = new Set(selectedIndices);
+    const correctSet = new Set(correctIndices);
+
+    if (selectedSet.size !== correctSet.size) {
+      return false;
+    }
+
+    for (const idx of selectedSet) {
+      if (!correctSet.has(idx)) {
+        return false;
+      }
     }
 
     return true;

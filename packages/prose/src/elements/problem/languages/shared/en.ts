@@ -31,6 +31,9 @@ export default defineElementLanguage<ProblemPhrases>({
   yes_regexp: /^\s*(yes|y|true|1)\s*$/i,
   no_regexp: /^\s*(no|n|false|0)\s*$/i,
   boolean_check_hint: 'Yes/No',
+  boolean_option_yes: 'Yes',
+  boolean_option_no: 'No',
+  select_confirm: 'Confirm',
   array_check_hint: (ordered, separator) => {
     let hint = '';
     hint +=

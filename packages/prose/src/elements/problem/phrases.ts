@@ -20,6 +20,9 @@ export type ProblemPhrases = ElementPhrases<
     yes_regexp: RegExp;
     no_regexp: RegExp;
     boolean_check_hint: string;
+    boolean_option_yes: string;
+    boolean_option_no: string;
+    select_confirm: string;
     array_check_hint: (ordered: boolean, separator: string) => string;
   }
 >;

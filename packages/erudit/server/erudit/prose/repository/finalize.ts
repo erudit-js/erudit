@@ -20,6 +20,7 @@ import {
 } from '@erudit-js/prose/elements/link/dependency/core';
 import { problemSchema } from '@erudit-js/prose/elements/problem/problem';
 import { subProblemSchema } from '@erudit-js/prose/elements/problem/problems';
+import { problemCheckSchema } from '@erudit-js/prose/elements/problem/problemCheck';
 
 import { createImageStorage } from '../storage/image';
 import { createVideoStorage } from '../storage/video';
@@ -77,7 +78,8 @@ async function processEnsureStorage(
 ) {
   if (
     (isProseElement(element, problemSchema) ||
-      isProseElement(element, subProblemSchema)) &&
+      isProseElement(element, subProblemSchema) ||
+      isProseElement(element, problemCheckSchema)) &&
     element.data.ensureStorage
   ) {
     await collectEnsureStorage(element.data.ensureStorage, storage);
