@@ -1,7 +1,7 @@
 {
   "type": "module",
   "name": "@erudit-js/prose",
-  "version": "4.3.4-dev.2",
+  "version": "4.3.4",
   "description": "📝 JSX prose subsystem for Erudit sites",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -35,7 +35,7 @@
     "@erudit-js/core": "workspace:*",
     "@floating-ui/vue": "catalog:",
     "image-size": "catalog:",
-    "katex": "^0.16.41",
+    "katex": "^0.16.44",
     "mermaid": "^11.13.0",
     "photoswipe": "^5.4.4",
     "tsprose": "catalog:",
@@ -43,7 +43,7 @@
   },
   "devDependencies": {
     "glob": "catalog:",
-    "oxc-transform": "0.121.0",
+    "oxc-transform": "0.123.0",
     "ts-xor": "catalog:"
   }
 }
