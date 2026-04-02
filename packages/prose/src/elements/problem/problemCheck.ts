@@ -15,6 +15,7 @@ import {
 import { defineEruditTag } from '../../tag.js';
 import { defineProseCoreElement } from '../../coreElement.js';
 import { EruditProseError } from '../../error.js';
+import { P } from '../paragraph/core.js';
 
 //
 // Prose Element
@@ -160,9 +161,13 @@ export const ProblemCheck = defineEruditTag({
     const ensureStorageElements: RawElement[] = [];
 
     const options: ProblemCheckSelectOption[] = selectOptions.map((opt) => {
-      const contentArray = Array.isArray(opt.content)
-        ? opt.content
-        : [opt.content];
+      let contentArray: any[];
+
+      if (typeof opt.content === 'string') {
+        contentArray = [P({ children: opt.content })];
+      } else {
+        contentArray = Array.isArray(opt.content) ? opt.content : [opt.content];
+      }
 
       // Collect raw elements that may need storage
       for (const rawEl of contentArray) {
@@ -173,7 +178,7 @@ export const ProblemCheck = defineEruditTag({
 
       return {
         content: contentArray,
-        ...(opt.answer !== undefined ? { answer: opt.answer } : {}),
+        ...(opt.answer === true ? { answer: true as const } : {}),
       };
     });
 
@@ -248,8 +253,8 @@ export interface ProblemCheckValidatorScript {
 }
 
 export interface ProblemCheckSelectOptionProp {
-  content: RawElement | RawElement[];
-  answer?: true;
+  content: string | RawElement | RawElement[];
+  answer?: boolean;
 }
 
 export interface ProblemCheckSelectOption {
@@ -536,8 +541,8 @@ export async function checkProblemAnswer(
       .filter((i) => i !== -1);
 
     if (correctIndices.length === 0) {
-      // No correct options defined — always wrong
-      return false;
+      // No correct options defined — correct answer is selecting nothing
+      return selectedIndices.length === 0;
     }
 
     // Check selected matches correct exactly
