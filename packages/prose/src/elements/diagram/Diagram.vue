@@ -36,8 +36,8 @@ const diagramUid = useId();
 const captionElement = shallowRef<HTMLElement>();
 const { lightbox, initLightbox } = usePhotoSwipe();
 const latexRegex = {
-  display: /\$\$(.*?)\$\$/gs,
-  inline: /\$(?!\$)(.*?)(?<!\$)\$/gs,
+  display: /\$\$(.*?)\$\$/s,
+  inline: /\$(?!\$)(.*?)(?<!\$)\$/s,
 };
 
 let observer: IntersectionObserver;
@@ -166,19 +166,20 @@ async function prepareMathDiagram() {
           displayMode,
           output: 'mathml',
         })
+        .replace(/<annotation[^>]*>[\s\S]*?<\/annotation>/g, '')
         .replace(/<mtd>/g, '<mtd style="padding: 0.2em 0;">');
     });
   };
 
   diagramContent.value = renderMathWithKatex(
     diagramContent.value,
-    latexRegex.display,
+    new RegExp(latexRegex.display, 'gs'),
     true,
   );
 
   diagramContent.value = renderMathWithKatex(
     diagramContent.value,
-    latexRegex.inline,
+    new RegExp(latexRegex.inline, 'gs'),
     false,
   );
 
