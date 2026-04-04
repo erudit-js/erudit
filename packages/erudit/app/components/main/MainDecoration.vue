@@ -1,15 +1,29 @@
 <script lang="ts" setup>
-defineProps<{ decoration?: string }>();
+defineProps<{
+  role: 'preamble-float' | 'preamble-static' | 'content-child';
+  decoration?: string;
+}>();
 </script>
 
 <template>
-  <section
-    v-if="decoration"
-    class="pl-small pb-small pt-main pr-main float-right max-[700px]:hidden"
-  >
-    <img
-      :src="fileUrl(decoration!)"
-      class="block aspect-square max-h-[125px] w-full max-w-[125px]"
-    />
-  </section>
+  <template v-if="decoration">
+    <section
+      v-if="role === 'preamble-float'"
+      class="p-small pr-main float-right pt-3 max-[700px]:hidden"
+    >
+      <ImageTint
+        :src="fileUrl(decoration)"
+        class="block aspect-square max-h-[125px] max-w-[125px]"
+      />
+    </section>
+    <section
+      v-else-if="role === 'preamble-static'"
+      class="px-main py-main-half min-[700px]:hidden"
+    >
+      <ImageTint
+        :src="fileUrl(decoration)"
+        class="micro:m-0 m-auto block aspect-square max-h-[125px] max-w-[125px]"
+      />
+    </section>
+  </template>
 </template>

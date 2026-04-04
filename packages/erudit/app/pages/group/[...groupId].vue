@@ -42,10 +42,21 @@ await useContentSeo({
 
 <template>
   <MainGlow />
-  <MainDecoration :decoration="mainContent.decoration" />
   <MainSectionPreamble>
+    <MainDecoration
+      role="preamble-float"
+      :decoration="mainContent.decoration"
+    />
     <MainBreadcrumbs :breadcrumbs="mainContent.breadcrumbs" />
-    <MainTitle icon="folder-open" :title="mainContent.title" />
+    <MainDecoration
+      role="preamble-static"
+      :decoration="mainContent.decoration"
+    />
+    <MainTitle
+      icon="folder-open"
+      :title="mainContent.title"
+      :contentLabel="phrase.group"
+    />
     <MainFlags :flags="mainContent.flags" />
     <MainDescription :description="mainContent.description" />
     <MainConnections :connections="mainContent.connections" />

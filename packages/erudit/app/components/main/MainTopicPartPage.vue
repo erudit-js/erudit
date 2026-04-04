@@ -18,6 +18,7 @@ async function proseMounted() {
 }
 
 const phrase = await usePhrases(
+  'article',
   'summary',
   'practice',
   'article_seo_description',
@@ -57,10 +58,21 @@ await useContentSeo({
 
 <template>
   <MainGlow />
-  <MainDecoration :decoration="mainContent.decoration" />
   <MainSectionPreamble>
+    <MainDecoration
+      role="preamble-float"
+      :decoration="mainContent.decoration"
+    />
     <MainBreadcrumbs :breadcrumbs="mainContent.breadcrumbs" />
-    <MainTitle :icon="ICONS[mainContent.part]" :title="mainContent.title" />
+    <MainDecoration
+      role="preamble-static"
+      :decoration="mainContent.decoration"
+    />
+    <MainTitle
+      :icon="ICONS[mainContent.part]"
+      :title="mainContent.title"
+      :contentLabel="phrase[mainContent.part]"
+    />
     <MainFlags :flags="mainContent.flags" />
     <MainDescription :description="mainContent.description" />
     <MainKeyLinks mode="single" :elementSnippets="mainContent.snippets" />

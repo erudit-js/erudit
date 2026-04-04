@@ -18,7 +18,7 @@ if (ERUDIT.config.contributors?.enabled) {
   showNewsAside();
 }
 
-const phrase = await usePhrases('begin_learning');
+const phrase = await usePhrases('book', 'begin_learning');
 const lastChangedDate = useLastChanged(() => mainContent.lastmod);
 
 await useContentSeo({
@@ -40,10 +40,21 @@ await useContentSeo({
 
 <template>
   <MainGlow />
-  <MainDecoration :decoration="mainContent.decoration" />
   <MainSectionPreamble>
+    <MainDecoration
+      role="preamble-float"
+      :decoration="mainContent.decoration"
+    />
     <MainBreadcrumbs :breadcrumbs="mainContent.breadcrumbs" />
-    <MainTitle icon="book" :title="mainContent.title" />
+    <MainDecoration
+      role="preamble-static"
+      :decoration="mainContent.decoration"
+    />
+    <MainTitle
+      icon="book"
+      :title="mainContent.title"
+      :contentLabel="phrase.book"
+    />
     <MainFlags :flags="mainContent.flags" />
     <MainDescription :description="mainContent.description" />
     <MainConnections :connections="mainContent.connections" />
