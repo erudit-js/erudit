@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 defineProps<{
-  role: 'preamble-float' | 'preamble-static' | 'content-child';
+  role: 'preamble-float' | 'preamble-static';
   decoration?: string;
 }>();
 </script>

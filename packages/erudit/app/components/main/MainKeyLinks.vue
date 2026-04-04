@@ -38,7 +38,8 @@ const phrase = await usePhrases('key_elements');
     <div
       v-else
       :style="{ '--keyBg': 'var(--color-bg-main)' }"
-      class="gap-small text-main-sm flex flex-wrap"
+      class="gap-small text-main-sm micro:justify-start flex flex-wrap
+        justify-center"
     >
       <MainKeyLink v-for="keyLink of keyLinks" :keyLink />
     </div>

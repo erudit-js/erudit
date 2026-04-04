@@ -1,13 +1,11 @@
 <script lang="ts" setup>
-const { src, tint = 'color-mix(in hsl, var(--color-brand), transparent 90%)' } =
-  defineProps<{
-    src: string;
-    tint?: string;
-  }>();
+const { src } = defineProps<{
+  src: string;
+}>();
 </script>
 
 <template>
-  <div :class="$style.imageTint" :style="{ '--tint': tint }">
+  <div :class="$style.imageTint">
     <img :src />
     <img :src />
   </div>
@@ -17,6 +15,7 @@ const { src, tint = 'color-mix(in hsl, var(--color-brand), transparent 90%)' } =
 .imageTint {
   position: relative;
   overflow: hidden;
+  isolation: isolate;
 
   img {
     width: 100%;
@@ -30,8 +29,14 @@ const { src, tint = 'color-mix(in hsl, var(--color-brand), transparent 90%)' } =
     position: absolute;
     inset: 0;
     z-index: -1;
-    filter: drop-shadow(0px 1000px 0 var(--tint));
+    filter: drop-shadow(
+      0px 1000px 0
+        var(--tint, color-mix(in hsl, var(--color-brand), transparent 90%))
+    );
     transform: translateY(-1000px);
+    opacity: var(--tint-opacity, 1);
+    transition: opacity var(--default-transition-timing-function)
+      var(--default-transition-duration);
   }
 }
 </style>
