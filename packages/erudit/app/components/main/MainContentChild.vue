@@ -10,16 +10,17 @@ const hasExtra = child.stats || child.keyLinks;
       dark:bg-bg-aside rounded border bg-neutral-100 ring-2 ring-transparent
       transition-[border,box-shadow]"
   >
-    <section
+    <EruditLink
       v-if="child.decoration"
+      :to="child.link"
       class="p-normal max-micro:pb-0 not-group-hocus:[--tint-opacity:0]
-        micro:float-right"
+        micro:float-right block"
     >
       <ImageTint
         :src="fileUrl(child.decoration)"
         class="m-auto block aspect-square max-h-[90px] max-w-[90px]"
       />
-    </section>
+    </EruditLink>
 
     <EruditLink :to="child.link" class="p-normal gap-small flex flex-col">
       <h2
