@@ -38,14 +38,8 @@ await useContentSeo({
     contentId: mainContent.shortId,
   },
   description:
-    mainContent.part === 'article'
-      ? mainContent.description ||
-        phrase.article_seo_description(mainContent.title)
-      : mainContent.part === 'summary'
-        ? phrase.summary_seo_description(mainContent.title)
-        : mainContent.part === 'practice'
-          ? phrase.practice_seo_description(mainContent.title)
-          : undefined,
+    (mainContent.part === mainContent.parts[0] && mainContent.description) ||
+    phrase[`${mainContent.part}_seo_description`](mainContent.title),
   seo: mainContent.seo,
   snippets: mainContent.snippets,
   breadcrumbs: mainContent.breadcrumbs,
