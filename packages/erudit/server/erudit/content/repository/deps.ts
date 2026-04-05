@@ -35,6 +35,47 @@ export async function getContentDependencies(fullId: string) {
     }
   }
 
+  // Fetch auto deps early so we can merge their unique names into overlapping
+  // hard deps. On books/groups the hard dep row itself has no uniqueNames
+  // (declared at the container level) while children's auto deps carry the
+  // exact element references from prose <Dep> tags.
+  const dbAutoDependencies = await ERUDIT.db.query.contentDeps.findMany({
+    columns: { toFullId: true, hard: true, uniqueNames: true },
+    where: and(
+      or(
+        eq(ERUDIT.db.schema.contentDeps.fromFullId, fullId),
+        like(ERUDIT.db.schema.contentDeps.fromFullId, `${fullId}/%`),
+      ),
+      eq(ERUDIT.db.schema.contentDeps.hard, false),
+    ),
+  });
+
+  // Merge unique names across rows that share the same toFullId
+  // (can happen when a topic and its children both dep on the same target).
+  const autoUniqueMap = new Map<string, Set<string>>();
+  for (const row of dbAutoDependencies) {
+    if (!autoUniqueMap.has(row.toFullId)) {
+      autoUniqueMap.set(row.toFullId, new Set());
+    }
+    if (row.uniqueNames) {
+      for (const name of row.uniqueNames.split(',')) {
+        autoUniqueMap.get(row.toFullId)!.add(name);
+      }
+    }
+  }
+
+  // When an auto dep targets the same content item as a hard dep, the auto
+  // dep will be filtered out later. Merge its unique names into the hard dep
+  // so the exact element sublisting is not lost.
+  for (const [toFullId, autoUniques] of autoUniqueMap) {
+    if (hardUniqueMap.has(toFullId)) {
+      const hardSet = hardUniqueMap.get(toFullId)!;
+      for (const name of autoUniques) {
+        hardSet.add(name);
+      }
+    }
+  }
+
   const hardToFullIds = ERUDIT.contentNav.orderIds(
     externalToFullIds(dbHardDependencies),
   );
@@ -60,31 +101,6 @@ export async function getContentDependencies(fullId: string) {
   //
 
   const autoDependencies: ContentAutoDep[] = [];
-
-  const dbAutoDependencies = await ERUDIT.db.query.contentDeps.findMany({
-    columns: { toFullId: true, hard: true, uniqueNames: true },
-    where: and(
-      or(
-        eq(ERUDIT.db.schema.contentDeps.fromFullId, fullId),
-        like(ERUDIT.db.schema.contentDeps.fromFullId, `${fullId}/%`),
-      ),
-      eq(ERUDIT.db.schema.contentDeps.hard, false),
-    ),
-  });
-
-  // Merge unique names across rows that share the same toFullId
-  // (can happen when a topic and its children both dep on the same target).
-  const autoUniqueMap = new Map<string, Set<string>>();
-  for (const row of dbAutoDependencies) {
-    if (!autoUniqueMap.has(row.toFullId)) {
-      autoUniqueMap.set(row.toFullId, new Set());
-    }
-    if (row.uniqueNames) {
-      for (const name of row.uniqueNames.split(',')) {
-        autoUniqueMap.get(row.toFullId)!.add(name);
-      }
-    }
-  }
 
   // Skip auto-dependency if a hard dependency from the same source exists
   const autoToFullIds = ERUDIT.contentNav
