@@ -31,7 +31,9 @@ await useContentSeo({
   title: mainContent.title,
   bookTitle: mainContent.bookTitle,
   contentTypeSuffix:
-    mainContent.part !== 'article' ? phrase[mainContent.part] : undefined,
+    mainContent.part !== mainContent.parts[0]
+      ? phrase[mainContent.part]
+      : undefined,
   contentTypePath: {
     type: 'topic',
     topicPart: mainContent.part,
