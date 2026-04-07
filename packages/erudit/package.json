@@ -35,7 +35,7 @@
     "consola": "catalog:",
     "drizzle-kit": "^0.31.10",
     "drizzle-orm": "^0.45.2",
-    "esbuild": "^0.27.4",
+    "esbuild": "^0.28.0",
     "flexsearch": "^0.8.212",
     "glob": "catalog:",
     "image-size": "catalog:",
