@@ -21,6 +21,9 @@ export async function getContentChildren(
       'nav',
     );
     const description = await getContentDescription(childNode.fullId);
+    const decoration = await ERUDIT.repository.content.ownDecoration(
+      childNode.fullId,
+    );
     const elementSnippets = await ERUDIT.repository.content.elementSnippets(
       childNode.fullId,
     );
@@ -35,6 +38,10 @@ export async function getContentChildren(
 
     if (description) {
       child.description = description;
+    }
+
+    if (decoration) {
+      child.decoration = decoration;
     }
 
     if (keyLinks && keyLinks.length > 0) {

@@ -18,6 +18,7 @@ async function proseMounted() {
 }
 
 const phrase = await usePhrases(
+  'article',
   'summary',
   'practice',
   'article_seo_description',
@@ -30,21 +31,17 @@ await useContentSeo({
   title: mainContent.title,
   bookTitle: mainContent.bookTitle,
   contentTypeSuffix:
-    mainContent.part !== 'article' ? phrase[mainContent.part] : undefined,
+    mainContent.part !== mainContent.parts[0]
+      ? phrase[mainContent.part]
+      : undefined,
   contentTypePath: {
     type: 'topic',
     topicPart: mainContent.part,
     contentId: mainContent.shortId,
   },
   description:
-    mainContent.part === 'article'
-      ? mainContent.description ||
-        phrase.article_seo_description(mainContent.title)
-      : mainContent.part === 'summary'
-        ? phrase.summary_seo_description(mainContent.title)
-        : mainContent.part === 'practice'
-          ? phrase.practice_seo_description(mainContent.title)
-          : undefined,
+    (mainContent.part === mainContent.parts[0] && mainContent.description) ||
+    phrase[`${mainContent.part}_seo_description`](mainContent.title),
   seo: mainContent.seo,
   snippets: mainContent.snippets,
   breadcrumbs: mainContent.breadcrumbs,
@@ -57,10 +54,21 @@ await useContentSeo({
 
 <template>
   <MainGlow />
-  <MainDecoration :decoration="mainContent.decoration" />
   <MainSectionPreamble>
+    <MainDecoration
+      role="preamble-float"
+      :decoration="mainContent.decoration"
+    />
     <MainBreadcrumbs :breadcrumbs="mainContent.breadcrumbs" />
-    <MainTitle :icon="ICONS[mainContent.part]" :title="mainContent.title" />
+    <MainDecoration
+      role="preamble-static"
+      :decoration="mainContent.decoration"
+    />
+    <MainTitle
+      :icon="ICONS[mainContent.part]"
+      :title="mainContent.title"
+      :contentLabel="phrase[mainContent.part]"
+    />
     <MainFlags :flags="mainContent.flags" />
     <MainDescription :description="mainContent.description" />
     <MainKeyLinks mode="single" :elementSnippets="mainContent.snippets" />

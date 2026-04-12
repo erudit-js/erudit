@@ -35,14 +35,27 @@ await useContentSeo({
   flags: mainContent.flags,
   connections: mainContent.connections,
 });
+
+const phrase = await usePhrases('page');
 </script>
 
 <template>
   <MainGlow />
-  <MainDecoration :decoration="mainContent.decoration" />
   <MainSectionPreamble>
+    <MainDecoration
+      role="preamble-float"
+      :decoration="mainContent.decoration"
+    />
     <MainBreadcrumbs :breadcrumbs="mainContent.breadcrumbs" />
-    <MainTitle icon="lines" :title="mainContent.title" />
+    <MainDecoration
+      role="preamble-static"
+      :decoration="mainContent.decoration"
+    />
+    <MainTitle
+      icon="lines"
+      :title="mainContent.title"
+      :contentLabel="phrase.page"
+    />
     <MainFlags :flags="mainContent.flags" />
     <MainDescription :description="mainContent.description" />
     <MainKeyLinks mode="single" :elementSnippets="mainContent.snippets" />

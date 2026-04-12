@@ -38,7 +38,8 @@ const phrase = await usePhrases('stats');
   </section>
   <div
     v-else-if="mode === 'children' && stats"
-    class="gap-small micro:gap-normal text-main-sm flex flex-wrap"
+    class="gap-small micro:gap-normal text-main-sm micro:justify-start flex
+      flex-wrap justify-center"
   >
     <ItemMaterials
       v-if="stats.materials"

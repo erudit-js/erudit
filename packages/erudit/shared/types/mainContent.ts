@@ -35,6 +35,7 @@ export interface MainContentChildrenItem {
   link: string;
   title: string;
   description?: string;
+  decoration?: string;
   keyLinks?: ElementSnippet[];
   stats?: ContentStats;
 }

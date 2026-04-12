@@ -16,7 +16,10 @@ import {
   getContentHeadingUnique,
   getContentUnique,
 } from './content/repository/unique';
-import { getContentDecoration } from './content/repository/decoration';
+import {
+  getContentDecoration,
+  getContentOwnDecoration,
+} from './content/repository/decoration';
 import { getContentFlags } from './content/repository/flags';
 import { getContentConnections } from './content/repository/connections';
 import { getQuoteIds } from './quote/repository/ids';
@@ -70,6 +73,7 @@ export const repository = {
     title: getContentTitle,
     description: getContentDescription,
     decoration: getContentDecoration,
+    ownDecoration: getContentOwnDecoration,
     elementSnippets: getContentElementSnippets,
     flags: getContentFlags,
     connections: getContentConnections,

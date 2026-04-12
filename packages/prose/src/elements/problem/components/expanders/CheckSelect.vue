@@ -169,10 +169,6 @@ function toggleOption(index: number) {
 }
 
 async function doCheck() {
-  if (selected.value.size === 0) {
-    return;
-  }
-
   state.value = 'loading';
 
   const answerStr = [...selected.value].sort((a, b) => a - b).join(',');
@@ -281,15 +277,13 @@ const gridStyle = computed(() => ({
     <div v-if="isMultiple" class="flex items-center gap-2">
       <button
         type="button"
-        :disabled="isLoading || selected.size === 0"
+        :disabled="isLoading"
         :class="[
-          `bg-bg-main border-border/80 text-main-xs micro:px-2.5 cursor-pointer
-          rounded border px-1.5 py-1.25 font-semibold shadow
+          `bg-bg-main border-border/80 text-main-xs micro:px-2.5 text-text-muted
+          hocus:text-brand hocus:border-brand/50 cursor-pointer rounded border
+          px-1.5 py-1.25 font-semibold shadow
           shadow-[light-dark(#d9d9d9,#3c3c3c)]
           transition-[color,background,border,box-shadow]`,
-          selected.size > 0
-            ? 'text-text-muted hocus:text-brand hocus:border-brand/50'
-            : 'text-text-disabled cursor-not-allowed',
         ]"
         @click="doCheck"
       >
