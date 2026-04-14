@@ -30,7 +30,7 @@
     "@floating-ui/vue": "catalog:",
     "@resvg/resvg-js": "^2.6.2",
     "@tailwindcss/vite": "^4.2.1",
-    "better-sqlite3": "^12.8.0",
+    "better-sqlite3": "^12.9.0",
     "chokidar": "^5.0.0",
     "consola": "catalog:",
     "drizzle-kit": "^0.31.10",
