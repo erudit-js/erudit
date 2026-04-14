@@ -5,13 +5,13 @@
     "": {
       "name": "erudit-monorepo",
       "devDependencies": {
-        "prettier": "^3.8.1",
+        "prettier": "^3.8.2",
         "prettier-plugin-classnames": "^0.10.1",
         "prettier-plugin-merge": "^0.10.1",
         "prettier-plugin-tailwindcss": "^0.7.2",
         "ts-xor": "^1.3.0",
         "typescript": "^6.0.2",
-        "vitest": "^4.1.3",
+        "vitest": "^4.1.4",
       },
     },
     "packages/cli": {
@@ -20,7 +20,7 @@
       "dependencies": {
         "@erudit-js/core": "workspace:*",
         "citty": "^0.2.1",
-        "dotenv": "^17.4.1",
+        "dotenv": "^17.4.2",
         "http-server": "^14.1.1",
       },
     },
@@ -1136,7 +1136,7 @@
 
     "dot-prop": ["dot-prop@10.1.0", "", { "dependencies": { "type-fest": "^5.0.0" } }, "sha512-MVUtAugQMOff5RnBy2d9N31iG0lNwg1qAoAOn7pOK5wf94WIaE3My2p3uwTQuvS2AcqchkcR3bHByjaM0mmi7Q=="],
 
-    "dotenv": ["dotenv@17.4.1", "", {}, "sha512-k8DaKGP6r1G30Lx8V4+pCsLzKr8vLmV2paqEj1Y55GdAgJuIqpRp5FfajGF8KtwMxCz9qJc6wUIJnm053d/WCw=="],
+    "dotenv": ["dotenv@17.4.2", "", {}, "sha512-nI4U3TottKAcAD9LLud4Cb7b2QztQMUEfHbvhTH09bqXTxnSie8WnjPALV/WMCrJZ6UV/qHJ6L03OqO3LcdYZw=="],
 
     "drizzle-kit": ["drizzle-kit@0.31.10", "", { "dependencies": { "@drizzle-team/brocli": "^0.10.2", "@esbuild-kit/esm-loader": "^2.5.5", "esbuild": "^0.25.4", "tsx": "^4.21.0" }, "bin": { "drizzle-kit": "bin.cjs" } }, "sha512-7OZcmQUrdGI+DUNNsKBn1aW8qSoKuTH7d0mYgSP8bAzdFzKoovxEFnoGQp2dVs82EOJeYycqRtciopszwUf8bw=="],
 
