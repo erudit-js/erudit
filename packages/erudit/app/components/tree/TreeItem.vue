@@ -26,8 +26,14 @@ defineProps<{
         },
       ]"
     >
-      <MaybeMyIcon v-if="icon" :name="icon" class="shrink-0 text-[1.2em]" />
-      <div class="flex-1">{{ main }}</div>
+      <div class="flex-1">
+        <MaybeMyIcon
+          v-if="icon"
+          :name="icon"
+          class="mr-small inline text-[1.2em]"
+        />
+        <span>{{ main }}</span>
+      </div>
       <div class="shrink-0" v-if="$slots.secondary">
         <slot name="secondary"></slot>
       </div>
