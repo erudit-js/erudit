@@ -111,7 +111,7 @@ export async function useContentSeo(args: {
 
   const fullTitle =
     (args.seo?.title || args.title) +
-    (args.contentTypeSuffix ? ' [' + args.contentTypeSuffix + ']' : '') +
+    (args.contentTypeSuffix ? ' - ' + args.contentTypeSuffix : '') +
     ' - ' +
     seoSiteTitle;
 
