@@ -133,12 +133,13 @@ async function searchResultClick() {
           {{ formatText(secondaryTitle) }}
         </div>
         <div class="text-text">
-          <span class="">
+          <span class="mr-small relative">
+            <MyIcon name="__missing" class="invisible inline size-[1.2em]" />
             <TransitionFade>
               <MaybeMyIcon
                 :name="icon"
                 :key="iconKey"
-                class="mr-small relative left-0 inline size-[1.2em]"
+                class="absolute top-0 left-0 inline size-[1.2em]"
               />
             </TransitionFade>
           </span>
