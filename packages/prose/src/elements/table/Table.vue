@@ -41,6 +41,8 @@ const rows = computed(() =>
             <td
               v-for="cell in row.children"
               :key="cell.id"
+              :colspan="cell.data?.hspan"
+              :rowspan="cell.data?.vspan"
               :class="[
                 `py-small px-normal group-hocus:inset-ring-(--tableBorder)
                 rounded inset-ring-2 inset-ring-transparent
