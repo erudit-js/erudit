@@ -132,19 +132,20 @@ async function searchResultClick() {
           />
           {{ formatText(secondaryTitle) }}
         </div>
-        <div class="gap-small text-text flex items-center">
-          <div class="relative size-[1.2em] shrink-0">
+        <div class="text-text">
+          <span class="mr-small relative">
+            <MyIcon name="__missing" class="invisible inline size-[1.2em]" />
             <TransitionFade>
               <MaybeMyIcon
                 :name="icon"
                 :key="iconKey"
-                class="absolute top-px left-0 size-full"
+                class="absolute top-0 left-0 inline size-[1.2em]"
               />
             </TransitionFade>
-          </div>
-          <div>
+          </span>
+          <span>
             {{ formatText(primaryTitle) }}
-          </div>
+          </span>
         </div>
         <div>
           <div

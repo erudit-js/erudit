@@ -33,7 +33,7 @@ export const phrases: LanguagePhrases = {
   topic: 'Тема',
   article: 'Статья',
   summary: 'Конспект',
-  practice: 'Практика',
+  practice: 'Задачи',
   page: 'Страница',
   preview_content_page_description:
     'Вы собираетесь перейти на страницу контента:',

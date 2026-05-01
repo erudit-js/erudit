@@ -28,6 +28,8 @@ export interface TableDataData {
   center?: boolean;
   right?: boolean;
   freeze?: boolean;
+  hspan?: number;
+  vspan?: number;
 }
 
 export const tableDataSchema = defineSchema<TableDataSchema>({
@@ -39,12 +41,12 @@ export const tableDataSchema = defineSchema<TableDataSchema>({
 export const Td = defineEruditTag({
   tagName: 'Td',
   schema: tableDataSchema,
-})<{ freeze?: true } & XOR<{ center?: true }, { right?: true }>>(({
-  props,
-  element,
-  children,
-  tagName,
-}) => {
+})<
+  { freeze?: true; hspan?: number; vspan?: number } & XOR<
+    { center?: true },
+    { right?: true }
+  >
+>(({ props, element, children, tagName }) => {
   ensureTagInlinerChildren(tagName, children);
   element.children = children;
 
@@ -58,6 +60,14 @@ export const Td = defineEruditTag({
 
   if (props.freeze) {
     element.data.freeze = true;
+  }
+
+  if (props.hspan) {
+    element.data.hspan = props.hspan;
+  }
+
+  if (props.vspan) {
+    element.data.vspan = props.vspan;
   }
 
   if (Object.keys(element.data).length === 0) {
